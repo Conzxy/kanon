@@ -1,0 +1,1 @@
+/usr/bin/clang++  -g -pthread   CMakeFiles/test.dir/root/zxy/string/test/string-view-test.cc.o CMakeFiles/test.dir/root/zxy/string/string-view.cc.o  -o test  /usr/local/lib/libgtestc.a 
