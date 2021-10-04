@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/zxy/string/string-view.cc
+string-view.h
+/root/zxy/string/string-view.h
+
+/root/zxy/string/string-view.h
+stdexcept
+-
+string
+-
+string.h
+-
+utility
+-
+util/config.h
+/root/zxy/string/util/config.h
+iostream
+-
+
+/root/zxy/string/test/string-view-test.cc
+../string-view.h
+/root/zxy/string/string-view.h
+gtest/gtest.h
+-
+iostream
+-
+iterator
+-
+
+/root/zxy/util/config.h
+
