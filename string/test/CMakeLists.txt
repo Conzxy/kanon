@@ -1,6 +1,0 @@
-project(string-test)
-#add_executable(lexical-stream-test lexical-stream-test.cc ${STRING_SRC_LIST})
-#add_executable(string-builder-test string-builder-test.cc ${STRING_SRC_LIST})
-add_executable(string-view-test string-view-test.cc ${STRING_SRC_LIST})
-#add_executable(errlog-test errlog-test.cc ${STRING_SRC_LIST})
-#add_executable(lexical-cast-test lexical-cast-test.cc ${STRING_SRC_LIST})
