@@ -50,21 +50,32 @@ message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}; BUILD_TYPE: ${CAMKE_BUILD_T
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
 
-link_libraries("/usr/local/lib/libgtest.a")
+#link_libraries("/usr/local/lib/libgtest.a")
 
 include_directories(${CMAKE_SOURCE_DIR})
-aux_source_directory(${CMAKE_SOURCE_DIR}/string STRING_SRC)
-aux_source_directory(${CMAKE_SOURCE_DIR}/log LOG_SRC)
-aux_source_directory(${CMAKE_SOURCE_DIR}/thread THREAD_SRC)
-aux_source_directory(${CMAKE_SOURCE_DIR}/net NET_SRC)
+
+set(KANON_SOURCE_DIR ${CMAKE_SOURCE_DIR}/kanon)
+
+aux_source_directory(${KANON_SOURCE_DIR}/string STRING_SRC)
+aux_source_directory(${KANON_SOURCE_DIR}/log LOG_SRC)
+aux_source_directory(${KANON_SOURCE_DIR}/thread THREAD_SRC)
+aux_source_directory(${KANON_SOURCE_DIR}/net NET_SRC)
+
+file(GLOB_RECURSE KANON_SRC ${KANON_SOURCE_DIR}/*.cc)
+
+set(ncdm "[0-9a-zA-Z_-]")
+
+list(FILTER KANON_SRC EXCLUDE REGEX "${ncdm}*test${ncdm}*.cc")
+
 message(STATUS "string src: ${STRING_SRC}")
 message(STATUS "log src: ${LOG_SRC}")
 message(STATUS "thread src: ${THREAD_SRC}")
+message(STATUS "KANON_SRC: ${KANON_SRC}")
 
 set(SRC 
 	${LOG_SRC} ${STRING_SRC} ${THREAD_SRC})
 
-add_subdirectory(net)
+add_subdirectory(${KANON_SOURCE_DIR}/net)
 #add_subdirectory(string)
 #add_subdirectory(thread)
 #add_subdirectory(log)
