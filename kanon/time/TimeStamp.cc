@@ -20,7 +20,7 @@ std::string TimeStamp::toString() const {
 	return buf;
 }
 
-std::string TimeStamp::toFormattedStirng(bool isShowMicroseconds) const {
+std::string TimeStamp::toFormattedString(bool isShowMicroseconds) const {
 	char buf[64] {0};
 
 	auto seconds = static_cast<time_t>(microseconds_ / kMicrosecondsPerSeconds_);

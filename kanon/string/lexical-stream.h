@@ -57,7 +57,7 @@ public:
 	void reset() noexcept
 	{ len_ = 0; }
 
-	void set(unsigned diff) noexcept
+	void add(unsigned diff) noexcept
 	{ 
 		len_ += diff; 
 		assert(len_ < SZ);
@@ -165,10 +165,8 @@ namespace detail {
 			std::is_integral<T>::value
 			>::type>
 	unsigned int2Str(char* buf, T integer){
-		static const char digits[] = {
-			'9', '8', '7', '6', '5', '4', '3', '2', '1',
-			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-		};
+		static char const digits[] = "9876543210123456789";
+		static_assert(sizeof digits == 20, "digits size should be 20");
 
 		static char const* pzero = digits + 9;
 
@@ -186,6 +184,33 @@ namespace detail {
 		*end = 0;
 		std::reverse(buf, end);
 		
+		return end - buf;
+	}
+
+	inline unsigned ptrToHexStr(char* buf, uintptr_t p) {
+		static char const hex_digits[] = "0123456789ABCDEF";
+		static_assert(sizeof hex_digits == 17, "hex_digits size should be 17");
+
+		auto end = buf;
+		auto count = 0;
+
+		do {
+			auto r = p % 16;
+			p = p / 16;
+			*(end++) = hex_digits[r];
+			++count;
+		} while (p != 0);
+
+		if (count < 16) {
+			int rest = 16 - count;
+
+			for (; rest > 0; --rest)
+				*(end++) = '0';
+		}
+
+		std::reverse(buf, end);
+		*end = 0;
+
 		return end - buf;
 	}
 
@@ -217,7 +242,7 @@ auto LexicalStream<SZ>::operator<<(type i)->\
 	Self&\
 {\
 	if(buffer_.avali() > kMaxIntSize)\
-		buffer_.set(detail::int2Str(buffer_.cur(), i)); \
+		buffer_.add(detail::int2Str(buffer_.cur(), i)); \
 	return *this; \
 }
 
@@ -238,7 +263,7 @@ auto LexicalStream<SZ>::operator<<(double d)->
 	if(buffer_.avali() > kMaxFloatingSize){
 		int len = snprintf(buffer_.cur(), kMaxFloatingSize, "%.12g", d);
 
-		buffer_.set(len);
+		buffer_.add(len);
 	}
 
 	return *this;
@@ -270,6 +295,24 @@ auto LexicalStream<SZ>::operator<<(StringView const& sv) ->
 	Self&
 {
 	append(sv.data(), sv.size());
+	return *this;
+}
+
+template<unsigned SZ>
+auto LexicalStream<SZ>::operator<<(void const* p) ->
+	Self&
+{
+	auto up = reinterpret_cast<uintptr_t>(p);
+
+	auto cur = buffer_.cur();
+
+	if (buffer_.avali() > 18) {
+		cur[0] = '0';
+		cur[1] = 'x';
+
+		buffer_.add(detail::ptrToHexStr(cur+2, up) + 2);
+	}
+
 	return *this;
 }
 

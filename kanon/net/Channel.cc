@@ -9,7 +9,7 @@ std::string Channel::ev2String(int ev) {
 	std::string buf;
 	buf.reserve(64);
 
-	buf += ":";
+	buf += " :";
 	if (ev & POLLIN)
 		buf += " IN";
 	if (ev & POLLPRI)
@@ -37,7 +37,7 @@ void Channel::handleEvents() {
 
 	if ((revents_ & POLLHUP) && (revents_ & POLLIN)) {
 		if (log_hup_) {
-			LOG_WARN << "fd: " << fd_ << "POLLHUP happened";
+			LOG_WARN << "fd: " << fd_ << " POLLHUP happened";
 		}
 
 		if (close_callback_) close_callback_();
@@ -46,7 +46,7 @@ void Channel::handleEvents() {
 	// fd not open
 	// also a error(after if branch log error)
 	if (revents_ & POLLNVAL) {
-		LOG_WARN << "fd: " << fd_ << "POLLNVAL happend";	
+		LOG_WARN << "fd: " << fd_ << " POLLNVAL happend";	
 	}
 	
 	if (revents_ & (POLLERR | POLLNVAL)) {
@@ -67,6 +67,7 @@ void Channel::handleEvents() {
 }
 
 void Channel::update() {
+	LOG_TRACE << "Channel fd: " << fd_ << this->events2String();
 	loop_->updateChannel(this);
 }
 

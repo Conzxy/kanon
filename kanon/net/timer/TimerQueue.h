@@ -33,7 +33,7 @@ private:
 	int timerfd_;
 	std::unique_ptr<Channel> timer_channel_;
 
-	std::multimap<TimeStamp, Timer*> timer_map_;
+	std::multimap<TimeStamp, std::unique_ptr<Timer>> timer_map_;
 	std::set<ActiveTimer> active_timer_set_;
 	
 	EventLoop* loop_;

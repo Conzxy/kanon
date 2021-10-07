@@ -45,7 +45,7 @@ public:
 		, events_handling_{ false }
 		, loop_{ loop }
 	{ 
-		LOG_TRACE << "Channle: fd = " << fd_ << "created";
+		LOG_TRACE << "Channle: fd = " << fd_ << " created";
 	}
 	
 	int fd() const noexcept { return fd_; }
