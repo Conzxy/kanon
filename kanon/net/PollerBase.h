@@ -5,6 +5,7 @@
 #include "kanon/time/TimeStamp.h"
 #include "kanon/util/type.h"
 #include "kanon/net/Channel.h"
+#include "kanon/util/macro.h"
 
 #include <vector>
 

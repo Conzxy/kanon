@@ -21,7 +21,7 @@ public:
 	~TimeStamp() = default;
 	
 	std::string toString() const;
-	std::string toFormattedStirng(bool isShowMicroseconds) const;
+	std::string toFormattedString(bool isShowMicroseconds) const;
 
 	bool valid() const noexcept
 	{ return microseconds_ > 0; }

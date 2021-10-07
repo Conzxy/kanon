@@ -78,11 +78,10 @@ inline LogFile<T>::~LogFile() noexcept = default;
 
 template<typename T>
 void LogFile<T>::append(char const* data, size_t num) noexcept {
-	printf("LogFile append\n");
 	MutexGuardT<T> guard(lock_);
 	
 	file_->append(data, num);
-	printf("written bytes: %lu\n", file_->writtenBytes());
+
 	if (file_->writtenBytes() > rollSize_)
 		rollFile();
 	else {

@@ -4,6 +4,7 @@
 #include "kanon/thread/current-thread.h"
 #include "kanon/log/Logger.h"
 #include "kanon/net/Channel.h"
+#include "kanon/util/macro.h"
 
 #include <assert.h>
 #include <sys/eventfd.h>
@@ -19,20 +20,22 @@ namespace detail {
 inline int createEventfd() noexcept {
 	int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
-	if (evfd) {
+	LOG_TRACE << "eventfd " << evfd << " created";
+
+	if (evfd < 0) {
 		LOG_SYSERROR << "eventfd() error occurred";
 	}
 
 	return evfd;
 }
 
-inline int readEventfd(int evfd) noexcept {
+inline void readEventfd(int evfd) noexcept {
 	uint64_t dummy;
 	if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "readEventfd() error occurred";
 }
 
-inline int writeEventfd(int evfd) noexcept {
+inline void writeEventfd(int evfd) noexcept {
 	uint64_t dummy = 0;
 	if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "writeEventfd() error occurred";
@@ -43,18 +46,26 @@ inline int writeEventfd(int evfd) noexcept {
 template<typename T>
 EventLoopT<T>::EventLoopT()
 	: ownerThreadId_{ CurrentThread::t_tid }
+	, poller_{ kanon::make_unique<T>(this) }
 	, looping_{ false }
 	, quit_{ false }
 	, callingFunctors_{ false }
 	, evfd_{ detail::createEventfd() }
-	, ev_channel_{ this, evfd_ }
-	, poller_{ new T{ this }}
+	, ev_channel_{ kanon::make_unique<Channel>(this, evfd_) }
+	, timer_queue_{ this }
 { 
-	ev_channel_->set_read_callback(&evRead);
-	ev_channel_->set_write_callback(&wakeup);
+	ev_channel_->set_read_callback([this](){
+		this->evRead();
+	});
+
+	ev_channel_->set_write_callback([this](){
+		this->wakeup();
+	});
+
+	ev_channel_->enableReading();
 
 	LOG_TRACE << "EventLoop " << this 
-			  << " created at " << TimeStamp::now().toFormattedString();
+			  << " created at " << TimeStamp::now().toFormattedString(true);
 }
 
 template<typename T>
@@ -65,7 +76,7 @@ void EventLoopT<T>::loop() {
 	
 	looping_ = true;
 	
-	LOG_TRACE << "EventLoop " <<this << " loop start";
+	LOG_TRACE << "EventLoop " << this << " loop start";
 	
 	while (!quit_) {
 		poller_->poll(POLLTIME, activeChannels_);
@@ -87,7 +98,7 @@ void EventLoopT<T>::runInLoop(FunctorCallback cb) {
 	if (isLoopInThread()) {
 		cb();	
 	} else {
-		queuetoLoop(std::move(cb));
+		queueToLoop(std::move(cb));
 	}
 }
 
@@ -125,7 +136,7 @@ inline TimerId EventLoopT<T>::runAt(TimerCallback cb, TimeStamp expiration) {
 }
 template<typename T>
 inline TimerId EventLoopT<T>::runAfter(TimerCallback cb, double delay) {
-	return runAt(std::move(cb), addTime(expiration, delay));
+	return runAt(std::move(cb), addTime(TimeStamp::now(), delay));
 }
 
 template<typename T>
@@ -135,19 +146,18 @@ inline TimerId EventLoopT<T>::runEvery(TimerCallback cb, TimeStamp expiration, d
 
 template<typename T>
 inline TimerId EventLoopT<T>::runEvery(TimerCallback cb, double interval) {
-	return runEvery(std::move(cb), addTimer(TimeStamp::now, interval), interval);
+	return runEvery(std::move(cb), addTime(TimeStamp::now(), interval), interval);
 }
 
 template<typename T>
 inline void EventLoopT<T>::callFunctors() {
-	decltype(FunctorCallback) functors;
+	decltype(functors_) functors;
 	{
 		MutexGuard dummy{ lock_ };
 		functors.swap(functors_);
 	}	
 
 	callingFunctors_ = true;
-
 	// FIXME: auto& better?
 	for (auto const& func : functors) {
 		try {
@@ -185,20 +195,20 @@ inline void EventLoopT<T>::abortNotInThread() noexcept {
 }
 
 template<typename T>
-inline void EventLoopT<T>::evRead() noexcept {
+inline void EventLoopT<T>::evRead() KANON_NOEXCEPT {
 	detail::readEventfd(evfd_);
 }
 
 template<typename T>
-inline void EventLoopT<T>::wakeup() noexcept {
-	detail::writeEventfd(evfd_);]
+inline void EventLoopT<T>::wakeup() KANON_NOEXCEPT {
+	detail::writeEventfd(evfd_);
 }
 
 template<typename T>
 inline void EventLoopT<T>::quit() noexcept {
 	quit_ = true;
 	
-	if (! isInThread())
+	if (! this->isLoopInThread())
 		wakeup();
 }
 

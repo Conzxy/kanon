@@ -25,7 +25,7 @@ char const* Logger::logLevelName[static_cast<size_t>(Logger::LogLevel::NUM_LOG_L
 static char const* g_logLevelColor[] = {
 	CYAN,
 	BLUE,
-	GRAY,
+	GREEN,
 	YELLOW,
 	RED,
 	L_RED

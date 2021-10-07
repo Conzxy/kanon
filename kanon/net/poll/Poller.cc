@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <assert.h>
 
-
 namespace kanon {
 
 TimeStamp Poller::poll(int ms, ChannelVec& activeChannels) noexcept {
@@ -22,21 +21,23 @@ TimeStamp Poller::poll(int ms, ChannelVec& activeChannels) noexcept {
 		for (auto const& pollfd : pollfds_) {
 			if (ev_num == 0)
 				break;
-
-			LOG_TRACE << ret << " events are ready";
 			
-			auto it = channelMap_.find(pollfd.fd);
-			assert(it != channelMap_.end());
+			if (pollfd.revents > 0) {
+				LOG_TRACE << ret << " events are ready";
+				
+				auto it = channelMap_.find(pollfd.fd);
+				assert(it != channelMap_.end());
 
-			auto channel = it->second;
-			assert(channel);
-			assert(channel->fd() == pollfd.fd);
+				auto channel = it->second;
+				assert(channel);
+				assert(channel->fd() == pollfd.fd);
 
-			channel->set_revents(pollfd.fd);
+				channel->set_revents(pollfd.fd);
 
-			activeChannels.emplace_back(channel);
-
-			--ev_num;
+				activeChannels.emplace_back(channel);
+				
+				--ev_num; 
+			}
 		}
 	} else if (ret == 0) {
 		LOG_TRACE << "none events are ready";
@@ -70,7 +71,7 @@ void Poller::updateChannel(Channel* ch) {
 		assert(channelMap_[ch->fd()] == ch);
 		
 		auto index = ch->index();
-		assert(index >= 0 || index <= static_cast<uint32_t>(pollfds_.size()));
+		assert(index != static_cast<uint32_t>(-1) && index <= static_cast<uint32_t>(pollfds_.size()));
 		auto& now_pollfd = pollfds_[index];
 
 		assert(now_pollfd.fd == ch->fd());
@@ -97,7 +98,7 @@ void Poller::removeChannel(Channel* ch) {
 			// ========================
 			// swap fd and back, then set back index to fd.index
 			auto index = ch->index();
-			assert(index >=0 && index < static_cast<uint32_t>(pollfds_.size()));
+			assert(index != static_cast<uint32_t>(-1) && index < static_cast<uint32_t>(pollfds_.size()));
 			
 			auto back_fd = pollfds_.back().fd;
 
