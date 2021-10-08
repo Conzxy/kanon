@@ -4,6 +4,7 @@
 #include "kanon/time/TimeStamp.h"
 #include "kanon/thread/atomic.h"
 #include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
 
 #include <functional>
 
@@ -28,11 +29,11 @@ public:
         callback_();
     }
 
-    TimeStamp expiration() const noexcept { return expiration_; }
-    double interval() const noexcept { return interval_; }
-    bool repeat() const noexcept { return repeat_; }
-    int sequence() const noexcept { return sequence_; }
-
+    TimeStamp expiration() const KANON_NOEXCEPT { return expiration_; }
+    double interval() const KANON_NOEXCEPT { return interval_; }
+    bool repeat() const KANON_NOEXCEPT { return repeat_; }
+    int sequence() const KANON_NOEXCEPT { return sequence_; }
+	void restart(TimeStamp now) KANON_NOEXCEPT;
 private:
     TimerCallback callback_;
     TimeStamp expiration_; 

@@ -10,7 +10,7 @@ namespace kanon {
 
 namespace detail {
 
-static int createTimerfd() noexcept {
+static inline int createTimerfd() noexcept {
 	auto timerfd = ::timerfd_create(CLOCK_MONOTONIC, 
 								  TFD_NONBLOCK | TFD_CLOEXEC);
 
@@ -65,10 +65,10 @@ static void resetTimerfd(int timerfd, Timer const& timer) noexcept {
 	new_value.it_interval = getTimerInterval(timer.interval());
 	
 	print_itimerspec(new_value);
-	if (!! ::timerfd_settime(timerfd, 0, &new_value, NULL))
+	if (::timerfd_settime(timerfd, 0, &new_value, NULL))
 		LOG_SYSERROR << "timerfd_settime error occurred";
 
-	LOG_TRACE << "resetTimerfd() successfully";
+	LOG_TRACE << "reset successfully";
 }
 
 static void readTimerfd(int timerfd) noexcept {
@@ -78,7 +78,7 @@ static void readTimerfd(int timerfd) noexcept {
 	if ((n = ::read(timerfd, &dummy, sizeof dummy)) != sizeof dummy)
 		LOG_SYSERROR << "timerfd read error";
 
-	LOG_TRACE << "readTimerfd() read " << n << " bytes";
+	LOG_TRACE << "read " << n << " bytes";
 }
 
 } // namespace detail
@@ -89,11 +89,24 @@ TimerQueue::TimerQueue(EventLoop* loop)
 	, loop_{ loop }
 {
     timer_channel_->set_read_callback([this](){
-		kanon::detail::readTimerfd(timerfd_);
+		loop_->assertInThread();
+
+		TimeStamp now{ TimeStamp::now() };
+		detail::readTimerfd(timerfd_);	
+
+		auto expired_timers = this->getExpiredTimers(now);
+		
+		LOG_TRACE << "now expired timer: " << expired_timers.size();
+
+		for (auto const& timer : expired_timers) {
+			timer.second->run();
+		}
+	
+		this->reset(expired_timers);	
 	});
 
-	timer_channel_->set_error_callback([this](){
-		LOG_ERROR << "timer event handle error occurred" << " timerfd: " << timerfd_;
+	timer_channel_->set_error_callback([](){
+		LOG_ERROR << "timer event handle error occurred";
 	});
 
 	timer_channel_->enableReading();
@@ -107,7 +120,9 @@ TimerId TimerQueue::addTimer(Timer::TimerCallback cb,
 
 	loop_->runInLoop([this, ptimer]() {
 			loop_->assertInThread();
+			
 			bool earliest_update = this->emplace(ptimer);
+
 			if (earliest_update)
 				kanon::detail::resetTimerfd(timerfd_, *ptimer);
 	});
@@ -141,9 +156,52 @@ bool TimerQueue::emplace(Timer* ptimer) {
 					ptimer->sequence()));
 	}
 
+	LOG_TRACE << "now timer total num: " << timer_map_.size();	
 	return ret;
 }
 
+auto TimerQueue::getExpiredTimers(TimeStamp time) 
+	-> TimerVector {
+	assert(!timer_map_.empty());
+	
+	TimerVector expireds;
+
+	auto expired_end = timer_map_.lower_bound(time);
+
+	assert(expired_end == timer_map_.end() || time < expired_end->first);
+
+	std::copy(std::make_move_iterator(timer_map_.begin()), 
+			  std::make_move_iterator(expired_end), 
+			  std::back_inserter(expireds));
+
+	timer_map_.erase(timer_map_.begin(), expired_end);
+	
+	for (auto const& timer : expireds) {
+		active_timer_set_.erase(ActiveTimer{ 
+				timer.second.get(), 
+				timer.second.get()->sequence() 
+		});
+	}
+	
+	return expireds;		
+}
+
+void 
+TimerQueue::reset(TimerVector const& expireds) {
+	Timer* next_expire{ nullptr };
+	
+	for (auto const& expire : expireds) {
+		if (expire.second->repeat())
+				
+	}	
+	if (!timer_map_.empty()) {
+		next_expire = timer_map_.begin()->second.get();
+	}
+
+	if (next_expire) {
+		detail::resetTimerfd(timerfd_, *next_expire);
+	}
+}
 
 } // namespace kanon
 
