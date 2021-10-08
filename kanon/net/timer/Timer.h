@@ -29,6 +29,7 @@ public:
         callback_();
     }
 
+
     TimeStamp expiration() const KANON_NOEXCEPT { return expiration_; }
     double interval() const KANON_NOEXCEPT { return interval_; }
     bool repeat() const KANON_NOEXCEPT { return repeat_; }
