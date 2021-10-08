@@ -96,13 +96,16 @@ TimerQueue::TimerQueue(EventLoop* loop)
 
 		auto expired_timers = this->getExpiredTimers(now);
 		
-		LOG_TRACE << "now expired timer: " << expired_timers.size();
-
 		for (auto const& timer : expired_timers) {
 			timer.second->run();
 		}
-	
-		this->reset(expired_timers);	
+		
+		for (auto const& timer : expired_timers) {
+			if (!timer.second->repeat())
+				timer_map_.erase(timer.first);
+		}	
+
+		this->reset(expired_timers, now);
 	});
 
 	timer_channel_->set_error_callback([](){
@@ -169,31 +172,45 @@ auto TimerQueue::getExpiredTimers(TimeStamp time)
 	auto expired_end = timer_map_.lower_bound(time);
 
 	assert(expired_end == timer_map_.end() || time < expired_end->first);
-
-	std::copy(std::make_move_iterator(timer_map_.begin()), 
-			  std::make_move_iterator(expired_end), 
-			  std::back_inserter(expireds));
-
-	timer_map_.erase(timer_map_.begin(), expired_end);
 	
-	for (auto const& timer : expireds) {
-		active_timer_set_.erase(ActiveTimer{ 
-				timer.second.get(), 
-				timer.second.get()->sequence() 
-		});
+	for (auto timer = timer_map_.begin();
+		 timer != expired_end;
+		 ++timer) {
+		auto ptimer{ timer->second.get() };
+		if (ptimer->repeat()) {
+			ptimer->restart(time);
+		}
+		else {
+			//timer_map_.erase(timer);
+			active_timer_set_.erase(ActiveTimer{ 
+					ptimer,
+					ptimer->sequence() });
+		}
+		expireds.emplace_back(TimerEntry{ timer->first, timer->second.get() });
 	}
+
+	//std::copy(std::make_move_iterator(timer_map_.begin()), 
+			  //std::make_move_iterator(expired_end), 
+			  //std::back_inserter(expireds));
+
+	//for (auto const& timer : expireds) {
+		//if (!timer.second->repeat())
+			//active_timer_set_.erase(ActiveTimer{ 
+					//timer.second.get(), 
+					//timer.second.get()->sequence() 
+		//});
+	//}
 	
 	return expireds;		
 }
 
 void 
-TimerQueue::reset(TimerVector const& expireds) {
+TimerQueue::reset(TimerVector& expireds, TimeStamp now) {
+	KANON_UNUSED(expireds);
+	KANON_UNUSED(now);
+
 	Timer* next_expire{ nullptr };
-	
-	for (auto const& expire : expireds) {
-		if (expire.second->repeat())
-				
-	}	
+
 	if (!timer_map_.empty()) {
 		next_expire = timer_map_.begin()->second.get();
 	}
@@ -204,4 +221,3 @@ TimerQueue::reset(TimerVector const& expireds) {
 }
 
 } // namespace kanon
-

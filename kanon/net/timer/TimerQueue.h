@@ -25,13 +25,13 @@ public:
 
 private:
 	typedef std::pair<Timer*, int64_t> ActiveTimer;
-	typedef std::pair<TimeStamp, std::unique_ptr<Timer>> TimerEntry;
+	typedef std::pair<const TimeStamp, Timer*> TimerEntry;
 	typedef std::vector<TimerEntry> TimerVector;
 
 	bool emplace(Timer* ptimer);
 	TimerVector getExpiredTimers(TimeStamp time);
 
-	void reset(TimerVector const&);
+	void reset(TimerVector&, TimeStamp now);
 private:
 
 	int timerfd_;
