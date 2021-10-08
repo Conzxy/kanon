@@ -15,7 +15,6 @@
 namespace kanon {
 
 class TimerQueue : noncopyable {
-
 public:
 	typedef Timer::TimerCallback TimerCallback;
 	
@@ -25,11 +24,16 @@ public:
 					 double interval);
 
 private:
-	bool emplace(Timer* ptimer);
-
-private:
 	typedef std::pair<Timer*, int64_t> ActiveTimer;
-	
+	typedef std::pair<TimeStamp, std::unique_ptr<Timer>> TimerEntry;
+	typedef std::vector<TimerEntry> TimerVector;
+
+	bool emplace(Timer* ptimer);
+	TimerVector getExpiredTimers(TimeStamp time);
+
+	void reset(TimerVector const&);
+private:
+
 	int timerfd_;
 	std::unique_ptr<Channel> timer_channel_;
 
