@@ -11,5 +11,4 @@ Timer::restart(TimeStamp now) KANON_NOEXCEPT {
 	} else {
 		expiration_.
 	}
-}
 } // namespace kanon
