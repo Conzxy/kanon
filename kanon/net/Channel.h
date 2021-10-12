@@ -15,6 +15,13 @@
 #include <string>
 #include <poll.h>
 
+#ifdef KANON_ENABLE_EPOLL
+#include <sys/epoll.h>
+static_assert(EPOLLIN == POLLIN, "EPOLLIN should equal to POLLIN");
+static_assert(EPOLLOUT == POLLOUT, "EPOLLOUT should equal to POLLOUT");
+static_assert(EPOLLPRI == POLLPRI, "EPOLLPRI should equal to POLLRI");
+#endif
+
 namespace kanon {
 
 
@@ -40,7 +47,7 @@ public:
 		: fd_{ fd }
 		, events_{ 0 }
 		, revents_{ 0 }
-		, index_{ static_cast<uint32_t>(-1) }
+		, index_{ -1 }
 		, log_hup_{ true }
 		, events_handling_{ false }
 		, loop_{ loop }
@@ -91,14 +98,16 @@ public:
 		update();
 	}
 	
+	void remove() KANON_NOEXCEPT;	
+
 	// callback is used here only
 	void set_read_callback(EventCallback cb) { read_callback_ = std::move(cb); }
 	void set_write_callback(EventCallback cb) { write_callback_ = std::move(cb); }
 	void set_error_callback(EventCallback cb) { error_callback_ = std::move(cb); }
 	void close_callback(EventCallback cb) { close_callback_ = std::move(cb); }
 	
-	uint32_t index() noexcept { return index_; }
-	void set_index(uint32_t index) noexcept { index_ = index; }
+	int index() noexcept { return index_; }
+	void set_index(int index) noexcept { index_ = index; }
 	void set_revents(int event) noexcept { revents_ = event; }
 	
 	void setLogHup(bool flag) noexcept { log_hup_ = flag; }
@@ -112,8 +121,8 @@ private:
 	int fd_;
 	int events_;
 	int revents_;
-	
-	uint32_t index_;
+
+	int index_;
 	EventCallback read_callback_;
 	EventCallback write_callback_;
 	EventCallback close_callback_;

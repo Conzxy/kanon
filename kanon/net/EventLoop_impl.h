@@ -65,14 +65,14 @@ EventLoopT<T>::EventLoopT()
 	ev_channel_->enableReading();
 
 	LOG_TRACE << "EventLoop " << this 
-			  << " created at " << TimeStamp::now().toFormattedString(true);
+			  << " created";
 }
 
 template<typename T>
 void EventLoopT<T>::loop() {
 	assert(!looping_);
 	assert(!quit_);
-	assertInThread();
+	this->assertInThread();
 	
 	looping_ = true;
 	
@@ -84,6 +84,8 @@ void EventLoopT<T>::loop() {
 		for (auto& channel : activeChannels_) {
 			channel->handleEvents();
 		}
+	
+		callFunctors();
 
 		activeChannels_.clear();
 	}
@@ -98,7 +100,7 @@ void EventLoopT<T>::runInLoop(FunctorCallback cb) {
 	if (isLoopInThread()) {
 		cb();	
 	} else {
-		queueToLoop(std::move(cb));
+		this->queueToLoop(std::move(cb));
 	}
 }
 
@@ -136,7 +138,7 @@ inline TimerId EventLoopT<T>::runAt(TimerCallback cb, TimeStamp expiration) {
 }
 template<typename T>
 inline TimerId EventLoopT<T>::runAfter(TimerCallback cb, double delay) {
-	return runAt(std::move(cb), addTime(TimeStamp::now(), delay));
+	return this->runAt(std::move(cb), addTime(TimeStamp::now(), delay));
 }
 
 template<typename T>
@@ -146,7 +148,7 @@ inline TimerId EventLoopT<T>::runEvery(TimerCallback cb, TimeStamp expiration, d
 
 template<typename T>
 inline TimerId EventLoopT<T>::runEvery(TimerCallback cb, double interval) {
-	return runEvery(std::move(cb), addTime(TimeStamp::now(), interval), interval);
+	return this->runEvery(std::move(cb), addTime(TimeStamp::now(), interval), interval);
 }
 
 template<typename T>
@@ -179,8 +181,8 @@ inline void EventLoopT<T>::callFunctors() {
 
 template<typename T>
 inline void EventLoopT<T>::assertInThread() noexcept {
-	if (!isLoopInThread())
-		abortNotInThread();
+	if (!this->isLoopInThread())
+		this->abortNotInThread();
 }
 
 template<typename T>
@@ -209,11 +211,12 @@ inline void EventLoopT<T>::quit() noexcept {
 	quit_ = true;
 	
 	if (! this->isLoopInThread())
-		wakeup();
+		this->wakeup();
 }
 
 } // namespace kanon
 
 #include "kanon/net/poll/Poller.h"
+#include "kanon/net/poll/Epoller.h"
 
 #endif // KANON_NET_EVENTLOOP_IMPL_H

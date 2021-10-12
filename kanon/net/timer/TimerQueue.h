@@ -22,7 +22,8 @@ public:
 	TimerId addTimer(TimerCallback cb,
 					 TimeStamp time,
 					 double interval);
-
+	
+	void cancelTimer(TimerId const& id);
 private:
 	typedef std::pair<Timer*, int64_t> ActiveTimer;
 	typedef std::pair<const TimeStamp, Timer*> TimerEntry;
@@ -32,8 +33,8 @@ private:
 	TimerVector getExpiredTimers(TimeStamp time);
 
 	void reset(TimerVector&, TimeStamp now);
-private:
 
+private:
 	int timerfd_;
 	std::unique_ptr<Channel> timer_channel_;
 

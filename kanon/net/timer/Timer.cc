@@ -9,6 +9,8 @@ Timer::restart(TimeStamp now) KANON_NOEXCEPT {
 	if (repeat_) {
 		expiration_ = addTime(now, interval_);
 	} else {
-		expiration_.
+		expiration_.toInvalid();
 	}
+}
+
 } // namespace kanon

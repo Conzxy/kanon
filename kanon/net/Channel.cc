@@ -7,9 +7,8 @@ namespace kanon {
 
 std::string Channel::ev2String(int ev) {
 	std::string buf;
-	buf.reserve(64);
+	buf.reserve(32);
 
-	buf += " :";
 	if (ev & POLLIN)
 		buf += " IN";
 	if (ev & POLLPRI)
@@ -33,7 +32,7 @@ std::string Channel::ev2String(int ev) {
 void Channel::handleEvents() {
 	events_handling_ = true;
 	
-	LOG_TRACE << "channel fd: " << fd_ << revents2String();
+	LOG_TRACE << "fd: " << fd_ << " {" << revents2String() << "}";
 
 	if ((revents_ & POLLHUP) && (revents_ & POLLIN)) {
 		if (log_hup_) {
@@ -67,8 +66,11 @@ void Channel::handleEvents() {
 }
 
 void Channel::update() {
-	LOG_TRACE << "Channel fd: " << fd_ << this->events2String();
 	loop_->updateChannel(this);
+}
+
+void Channel::remove() KANON_NOEXCEPT {
+	loop_->removeChannel(this);
 }
 
 } // namespace kanon
