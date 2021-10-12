@@ -5,11 +5,15 @@
 
 namespace kanon {
 
+class TimerQueue;
+
 /**
  * @brief since this class is exposed to user,
  *        not just a struct and own value semantic
  */
 class TimerId /* : public copyable */ {
+	friend class TimerQueue;
+
 public:
     TimerId()
         : timer_{ NULL }

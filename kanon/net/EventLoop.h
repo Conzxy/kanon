@@ -5,6 +5,7 @@
 #include "kanon/thread/mutexlock.h"
 #include "kanon/util/unique_ptr.h"
 #include "kanon/net/timer/TimerQueue.h"
+#include "kanon/util/macro.h"
 
 #include <vector>
 #include <sys/types.h>
@@ -94,17 +95,18 @@ private:
 	 *		  to avoid poll block for long time
 	 *		  ((e)poll have to handle and return at once)
 	 */
-	void wakeup();
+	void wakeup() KANON_NOEXCEPT;
 
 	/*
 	 * @brief read callback of eventfd
 	 */
-	void evRead();
+	void evRead() KANON_NOEXCEPT;
 	
 	bool isLoopInThread() noexcept;
 	void abortNotInThread() noexcept;
 private:
 	const pid_t ownerThreadId_;
+	std::unique_ptr<PollerBase<T>> poller_;
 
 	// FIXME: atomic bool
 	bool looping_;
@@ -116,13 +118,10 @@ private:
 
 	MutexLock lock_;
 
-	TimerQueue timer_queue_;
-
 	std::vector<FunctorCallback> functors_;
 	std::vector<Channel*> activeChannels_;
-	std::unique_ptr<PollerBase<T>> poller_;
+	TimerQueue timer_queue_;
 };
-
 
 }
 

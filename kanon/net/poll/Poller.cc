@@ -32,7 +32,7 @@ TimeStamp Poller::poll(int ms, ChannelVec& activeChannels) noexcept {
 				assert(channel);
 				assert(channel->fd() == pollfd.fd);
 
-				channel->set_revents(pollfd.fd);
+				channel->set_revents(pollfd.revents);
 
 				activeChannels.emplace_back(channel);
 				
@@ -55,7 +55,7 @@ void Poller::updateChannel(Channel* ch) {
 	
 	if (it == channelMap_.end()) {
 		// not exist, to create a new channel in channelMap
-		assert(ch->index() == static_cast<uint32_t>(-1));
+		assert(ch->index() == -1);
 		channelMap_[ch->fd()] = ch;
 		struct pollfd new_pollfd;
 		new_pollfd.fd = ch->fd();
@@ -65,16 +65,20 @@ void Poller::updateChannel(Channel* ch) {
 		pollfds_.emplace_back(std::move(new_pollfd)); // although std::move is meaningless since pollfd is POD type
 	
 		// channel index <==> pollfds size
-		ch->set_index(static_cast<uint32_t>(pollfds_.size() - 1));
+		ch->set_index(pollfds_.size() - 1);
 	} else { 
 		// channel now exist, update it
 		assert(channelMap_[ch->fd()] == ch);
 		
 		auto index = ch->index();
-		assert(index != static_cast<uint32_t>(-1) && index <= static_cast<uint32_t>(pollfds_.size()));
+		assert(index != -1 && index <= static_cast<int>(pollfds_.size()));
 		auto& now_pollfd = pollfds_[index];
-
+		
 		assert(now_pollfd.fd == ch->fd());
+	
+		if (ch->isNoneEvent()) {
+			now_pollfd.fd = -now_pollfd.fd - 1;
+		}
 		now_pollfd.events = static_cast<short>(ch->events());
 		now_pollfd.revents = 0;
 	}
@@ -98,7 +102,7 @@ void Poller::removeChannel(Channel* ch) {
 			// ========================
 			// swap fd and back, then set back index to fd.index
 			auto index = ch->index();
-			assert(index != static_cast<uint32_t>(-1) && index < static_cast<uint32_t>(pollfds_.size()));
+			assert(index != -1 && index < static_cast<int>(pollfds_.size()));
 			
 			auto back_fd = pollfds_.back().fd;
 
@@ -108,7 +112,8 @@ void Poller::removeChannel(Channel* ch) {
 			
 			// iter_swap just swap content which iterator point to
 			std::iter_swap(remove_iter, std::prev(pollfds_.end()));
-		
+			pollfds_.pop_back();			
+				
 			// although back fd is negative
 			// also need fd to a opposite number
 			// channel.fd <==> pollfd.fd
@@ -121,6 +126,8 @@ void Poller::removeChannel(Channel* ch) {
 			
 			channelMap_[back_fd]->set_index(index);
 		}
+
+		channelMap_.erase(it);
 	}
 }
 

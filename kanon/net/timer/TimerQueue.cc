@@ -220,4 +220,23 @@ TimerQueue::reset(TimerVector& expireds, TimeStamp now) {
 	}
 }
 
+void
+TimerQueue::cancelTimer(TimerId const& id) {
+	assert(timer_map_.find(id.timer_->expiration()) == timer_map_.end());
+
+	loop_->runInLoop([this, &id]() {
+		loop_->assertInThread();
+
+		auto range = timer_map_.equal_range(id.timer_->expiration());
+
+		for (auto it = range.first; it != range.second; ++it) {
+			if (it->second.get() == id.timer_) {
+				timer_map_.erase(it);
+				break;
+			}
+		}
+	});
+
+}
+
 } // namespace kanon

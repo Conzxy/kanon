@@ -10,21 +10,20 @@ void print() noexcept {
 int main(int argc, char* argv[]) {
     EventLoop loop;
 
-    LogFile<> log_file(::basename(argv[0]), 20000000);
+    //LogFile<> log_file(::basename(argv[0]), 20000000);
 
-    Logger::setFlushCallback([&log_file](){
-        log_file.flush();
-    });
+    //Logger::setFlushCallback([&log_file](){
+        //log_file.flush();
+    //});
 
-    Logger::setOutputCallback([&log_file](char const* data, size_t num){
-        log_file.append(data, num);
-    });
+    //Logger::setOutputCallback([&log_file](char const* data, size_t num){
+        //log_file.append(data, num);
+    //});
 
-     auto id1 = loop.runAfter(&print, 1); KANON_UNUSED(id1);
-
-    // auto id2 = loop.runEvery([](){
-    //     puts("id2");
-    // }, 1); KANON_UNUSED(id2);
+    auto id1 = loop.runAfter(&print, 1); KANON_UNUSED(id1);
+    auto id2 = loop.runEvery([](){
+		LOG_INFO << "runEvery() 1 second";
+    }, 1); KANON_UNUSED(id2);
 
     loop.loop();
 

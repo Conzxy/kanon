@@ -15,8 +15,9 @@ namespace kanon {
 class Epoller final : public PollerBase<Epoller> {
 public:
 	typedef PollerBase<Epoller> Base;
-	
-	using Base::Base;
+    
+    explicit Epoller(EventLoopT<Epoller>* loop);
+	~Epoller() KANON_NOEXCEPT;
 
 	TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT;
 
@@ -24,8 +25,17 @@ public:
 	void removeChannel(Channel* ch);
 
 private:
-	typedef std::vector<struct epoll_event
+    void fillActiveChannels(int ev_nums, 
+                            ChannelVec& activeChannels) KANON_NOEXCEPT;
+
+    void updateEpollEvent(int op, Channel* ch) KANON_NOEXCEPT;
+
+private:
+    typedef struct epoll_event Event;
+	typedef std::vector<Event> EventList;
 	
+    int epoll_fd_;
+    EventList events_;
 };
 
 } // namespace kanon
