@@ -4,7 +4,7 @@
 using namespace kanon;
 
 Buffer::size_type
-Buffer::readFd(int fd) {
+Buffer::readFd(int fd, int& saved_errno) {
 	char extra_buf[65536]; // 64k
 
 	struct iovec vec[2];
@@ -24,8 +24,7 @@ Buffer::readFd(int fd) {
 	auto cache_writable_size = writable_size();
 
 	if (readen_bytes < 0) {
-		// FIXME: or better erro handling(readv)?
-		LOG_SYSERROR << "readv error";
+		saved_errno = errno;
 	} else if (static_cast<size_type>(readen_bytes) <= writable_size()) {
 		write_index_ += readen_bytes;	
 	} else {

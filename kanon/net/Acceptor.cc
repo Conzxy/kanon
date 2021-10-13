@@ -18,9 +18,8 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 	
 	// set listen channel read callback(accept peer end)
 	// and start observing the read event	
-	channel_.set_read_callback([this](TimeStamp stamp) {
+	channel_.setReadCallback([this](TimeStamp stamp) {
 		KANON_UNUSED(stamp);
-
 		loop_->assertInThread();
 		
 		InetAddr cli_addr;
@@ -28,6 +27,7 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 		
 		if (cli_fd >= 0) {
 			if (new_connection_callback_) {
+				// dispatching connection to IO thread
 				new_connection_callback_(cli_fd, cli_addr);
 			} else {
 				::close(cli_fd);

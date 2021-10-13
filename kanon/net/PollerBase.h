@@ -6,40 +6,42 @@
 #include "kanon/util/type.h"
 #include "kanon/net/Channel.h"
 #include "kanon/util/macro.h"
+#include "kanon/net/EventLoop.h"
 
 #include <vector>
 
 namespace kanon {
 
-template<typename T>
-class EventLoopT;
+class EventLoop;
 
 /*
  * @brief abstract base class of poll and epoll
  * @inherited by Poller and Epoller
  */
-template<typename Poller>
 class PollerBase : noncopyable {
 public:
 	typedef std::vector<Channel*> ChannelVec;
 
-	explicit PollerBase(EventLoopT<Poller>* loop)
+	explicit PollerBase(EventLoop* loop)
 		: loop_{ loop }
 	{ }
 
 	// IO thread
-	TimeStamp poll(int ms, ChannelVec& activeChannels) noexcept {
-		return static_cast<Poller*>(this)->poll(ms, activeChannels);
-	}
+	virtual TimeStamp poll(int ms, ChannelVec& activeChannels) = 0;
+	//TimeStamp poll(int ms, ChannelVec& activeChannels) noexcept {
+		//return static_cast<Poller*>(this)->poll(ms, activeChannels);
+	//}
 
 	// add, delelte, update, search
-	void updateChannel(Channel* ch) {
-		static_cast<Poller*>(this)->updateChannel(ch);
-	}
-
-	void removeChannel(Channel* ch) {
-		static_cast<Poller*>(this)->removeChannel(ch);
-	}
+	virtual void updateChannel(Channel* ch) = 0;
+	//void updateChannel(Channel* ch) {
+		//static_cast<Poller*>(this)->updateChannel(ch);
+	//}
+	
+	virtual void removeChannel(Channel* ch) = 0;
+	//void removeChannel(Channel* ch) {
+		//static_cast<Poller*>(this)->removeChannel(ch);
+	//}
 
 
 	bool hasChannel(Channel* ch) {
@@ -55,7 +57,7 @@ protected:
 	ChannelMap channelMap_;
 
 private:
-	EventLoopT<Poller>* loop_;
+	EventLoop* loop_;
 };
 
 } // namespace kanon

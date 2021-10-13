@@ -6,11 +6,12 @@
 #include "Socket.h"
 #include "Channel.h"
 #include "InetAddr.h"
-#include "type.h"
 
 #include <functional>
 
 namespace kanon {
+
+class EventLoop;
 
 class Acceptor : noncopyable {
 public:

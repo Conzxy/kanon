@@ -29,9 +29,10 @@ std::string Channel::ev2String(int ev) {
 	return buf; // RVO will use move semantic
 }
 
-void Channel::handleEvents() {
+void Channel::handleEvents(TimeStamp receive_time) {
 	events_handling_ = true;
 	
+	LOG_TRACE << "receive_time: " << receive_time.toFormattedString(true);	
 	LOG_TRACE << "fd: " << fd_ << " {" << revents2String() << "}";
 
 	if ((revents_ & POLLHUP) && (revents_ & POLLIN)) {
@@ -55,7 +56,7 @@ void Channel::handleEvents() {
 	// RDHUP indicate peer half-close
 	// since previous HUP
 	if (revents_ & (POLLIN | POLLPRI | POLLRDHUP)) {
-		if (read_callback_) read_callback_();
+		if (read_callback_) read_callback_(receive_time);
 	}
 
 	if (revents_ & POLLOUT) {

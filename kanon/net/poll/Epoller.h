@@ -12,17 +12,17 @@ namespace kanon {
  * @brief epoll wrapper 
  * @note take LT mode
  */
-class Epoller final : public PollerBase<Epoller> {
+class Epoller final : public PollerBase {
 public:
-	typedef PollerBase<Epoller> Base;
+	typedef PollerBase Base;
     
-    explicit Epoller(EventLoopT<Epoller>* loop);
+    explicit Epoller(EventLoop* loop);
 	~Epoller() KANON_NOEXCEPT;
 
-	TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT;
+	TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_OVERRIDE;
 
-	void updateChannel(Channel* ch);
-	void removeChannel(Channel* ch);
+	void updateChannel(Channel* ch) KANON_OVERRIDE;
+	void removeChannel(Channel* ch) KANON_OVERRIDE;
 
 private:
     void fillActiveChannels(int ev_nums, 
@@ -35,7 +35,7 @@ private:
 	typedef std::vector<Event> EventList;
 	
     int epoll_fd_;
-    EventList events_;
+    EventList events_; // reuse to fill
 };
 
 } // namespace kanon
