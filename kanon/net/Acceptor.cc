@@ -1,5 +1,6 @@
 #include "Acceptor.h"
 #include "EventLoop.h"
+#include "kanon/time/TimeStamp.h"
 
 using namespace kanon;
 
@@ -15,7 +16,11 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 	socket_.setNoDelay(true);
 	socket_.bindAddress(addr);
 	
-	channel_.set_read_callback([this]() {
+	// set listen channel read callback(accept peer end)
+	// and start observing the read event	
+	channel_.set_read_callback([this](TimeStamp stamp) {
+		KANON_UNUSED(stamp);
+
 		loop_->assertInThread();
 		
 		InetAddr cli_addr;
@@ -44,6 +49,8 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 			}
 		}
 	});
+
+	channel_.enableReading();
 }
 
 Acceptor::~Acceptor() KANON_NOEXCEPT {
@@ -56,7 +63,7 @@ Acceptor::~Acceptor() KANON_NOEXCEPT {
 
 void
 Acceptor::listen() KANON_NOEXCEPT {
-	assert(!listening);
+	assert(!listening_);
 
 	sock::listen(socket_.fd());
 
