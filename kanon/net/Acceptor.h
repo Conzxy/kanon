@@ -16,7 +16,7 @@ class Acceptor : noncopyable {
 public:
 	typedef std::function<void(int cli_fd, InetAddr const& cli_addr)> NewConnectionCallback;
 
-	Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport);
+	Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport=false);
 	~Acceptor() KANON_NOEXCEPT;
 	
 	bool listening() const KANON_NOEXCEPT
