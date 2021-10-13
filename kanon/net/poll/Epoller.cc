@@ -6,17 +6,17 @@
 namespace kanon {
 
 // since no need to maintain event table
-// we can reuse Channe::index_ to indicate event status
+// we can reuse Channe::index_ to indicate event status in kerner events table
 enum EventStatus {
-    kNew = -1,
-    kAdded = 1,
-    kDeleted = 2,
+    kNew = -1, // event is never added to events table
+    kAdded = 1, // event has added
+    kDeleted = 2, // event has been added before but deleted now
 };
 
 namespace detail {
     static inline int createEpollfd() KANON_NOEXCEPT {
-        // since linux 2.6.8, size argument is ignored
-        // on the contrary, epoll_create1 accept a flag argument
+        // since linux 2.6.8, size argument is ignored for epoll_create()
+        // on the contrary, epoll_create1() accept a flag argument
         // only one flag: EPOLL_CLOEXEC
         int ret = ::epoll_create1(EPOLL_CLOEXEC);
 
@@ -31,7 +31,7 @@ namespace detail {
 
 #define EV_INIT_NUMS 16
 
-Epoller::Epoller(EventLoopT<Epoller>* loop)
+Epoller::Epoller(EventLoop* loop)
     : Base{ loop }
     , epoll_fd_{ detail::createEpollfd() }
     , events_{ EV_INIT_NUMS }
@@ -44,7 +44,7 @@ Epoller::~Epoller() KANON_NOEXCEPT {
 }
 
 TimeStamp 
-Epoller::poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
+Epoller::poll(int ms, ChannelVec& activeChannels) {
     Base::assertInThread();
 
     int ev_nums = ::epoll_wait(epoll_fd_, 
@@ -64,7 +64,7 @@ Epoller::poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
         // so size is not modified automacally
         // ==> should use resize() instead of reserve()
         if (static_cast<int>(events_.size()) == ev_nums) {
-            events_.resize(ev_nums*2);
+            events_.resize(ev_nums << 1);
         }
     } else if (ev_nums == 0) {
         LOG_TRACE << "none events ready";
@@ -79,12 +79,24 @@ Epoller::poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
     return now;
 }
 
+// typedef union epoll_data {
+//	void *ptr;
+//	int fd;
+//	uint32_t u32;
+//	uint64_t u64;
+// } epoll_data_t;
+//
+// struct epoll_event {
+// 	uint32_t events; // Epoll events
+// 	epoll_data_t data; // user data variable
+// };
 void 
 Epoller::fillActiveChannels(int ev_nums, 
                             ChannelVec& activeChannels) KANON_NOEXCEPT {  
     assert(ev_nums <= static_cast<int>(events_.size()));
     
     for (int i = 0; i < ev_nums; ++i) {
+		// we use the data.ptr so that no need to look up in channelMap_
         auto channel = reinterpret_cast<Channel*>(events_[i].data.ptr);
         assert(!channel->isNoneEvent());
 
@@ -92,7 +104,7 @@ Epoller::fillActiveChannels(int ev_nums,
         assert(channelMap_.find(fd) != channelMap_.end()); 
         assert(channelMap_[fd] == channel);
 
-        channel->set_revents(events_[i].events);
+        channel->setRevents(events_[i].events);
         activeChannels.emplace_back(channel);
     }
 }
@@ -113,7 +125,7 @@ Epoller::updateChannel(Channel* ch) {
             assert(channelMap_[fd] == ch);
         } 
 
-        ch->set_index(kAdded);
+        ch->setIndex(kAdded);
         updateEpollEvent(EPOLL_CTL_ADD, ch);
     } else { // ch->index() = kAdded
         assert(channelMap_.find(fd) != channelMap_.end());
@@ -121,7 +133,7 @@ Epoller::updateChannel(Channel* ch) {
     
         if (ch->isNoneEvent()) {
             updateEpollEvent(EPOLL_CTL_DEL, ch);
-            ch->set_index(kDeleted);
+            ch->setIndex(kDeleted);
         } else { 
             updateEpollEvent(EPOLL_CTL_MOD, ch);
         }
@@ -191,7 +203,7 @@ Epoller::removeChannel(Channel* ch) {
     KANON_UNUSED(n); 
 
     // ch is a new channel which don't add to channelMap_ 
-    ch->set_index(kNew);
+    ch->setIndex(kNew);
 }
 
 } // namespace kanon

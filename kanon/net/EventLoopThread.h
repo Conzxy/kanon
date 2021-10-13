@@ -7,11 +7,15 @@
 #include "kanon/thread/condition.h"
 
 namespace kanon {
-	
+
+/*
+ * @brief used for IO thread
+ */
 class EventLoopThread : noncopyable {
 public:
 	EventLoopThread();
 	
+	// should be called by main thread	
 	EventLoop* start();
 
 	~EventLoopThread() = default;

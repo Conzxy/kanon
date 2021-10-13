@@ -6,6 +6,7 @@ EventLoopThread::EventLoopThread()
 	: lock_{}
 	, cond_{ lock_ } 
 	, thr_{ [this]() {
+		// called in main thread
 		EventLoop loop;
 
 		{
@@ -20,6 +21,7 @@ EventLoopThread::EventLoopThread()
 
 EventLoop*
 EventLoopThread::start() {
+	// called in IO thread
 	thr_.start();
 
 	{

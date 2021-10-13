@@ -14,8 +14,7 @@ int main() {
 		g_loop->runEvery([]() {
 				LOG_INFO << "other thread call g_loop::runEvery()";
 		}, 1);
-
-		
+			
 	});
 
 	thr.start();

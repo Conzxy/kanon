@@ -32,7 +32,7 @@ TimeStamp Poller::poll(int ms, ChannelVec& activeChannels) noexcept {
 				assert(channel);
 				assert(channel->fd() == pollfd.fd);
 
-				channel->set_revents(pollfd.revents);
+				channel->setRevents(pollfd.revents);
 
 				activeChannels.emplace_back(channel);
 				
@@ -65,7 +65,7 @@ void Poller::updateChannel(Channel* ch) {
 		pollfds_.emplace_back(std::move(new_pollfd)); // although std::move is meaningless since pollfd is POD type
 	
 		// channel index <==> pollfds size
-		ch->set_index(pollfds_.size() - 1);
+		ch->setIndex(pollfds_.size() - 1);
 	} else { 
 		// channel now exist, update it
 		assert(channelMap_[ch->fd()] == ch);
@@ -124,7 +124,7 @@ void Poller::removeChannel(Channel* ch) {
 				back_fd = -back_fd - 1;
 			}
 			
-			channelMap_[back_fd]->set_index(index);
+			channelMap_[back_fd]->setIndex(index);
 		}
 
 		channelMap_.erase(it);

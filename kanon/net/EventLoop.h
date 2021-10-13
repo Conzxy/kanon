@@ -15,22 +15,23 @@
 namespace kanon {
 
 class Channel;
-
-template<typename T>
 class PollerBase;
 
-#define POLLTIME 1000
+#define POLLTIME 10000 // 10 seconds
 
 /*
+ * @brief as follows:
+ *		select/poll/epoll(event dispatching)
+ *		   ↗	↘
+ *	functors ← handle events(including timerfd)
  */
-template<typename T>
-class EventLoopT : noncopyable {
+class EventLoop : noncopyable {
 public:
 	typedef std::function<void()> FunctorCallback;	
 	typedef TimerQueue::TimerCallback TimerCallback;
 
-	EventLoopT();
-	~EventLoopT() = default;
+	EventLoop();
+	~EventLoop() = default;
 	
 	/**
 	 * @brief quit loop
@@ -40,9 +41,6 @@ public:
 
 	/**
 	 * @brief start a event loop
-	 *		select/poll/epoll(event dispatching)
-	 *		   ↗	↘
-	 *	functors ← handle events(including timerfd)
 	 */
 	void loop();
 
@@ -106,7 +104,7 @@ private:
 	void abortNotInThread() noexcept;
 private:
 	const pid_t ownerThreadId_;
-	std::unique_ptr<PollerBase<T>> poller_;
+	std::unique_ptr<PollerBase> poller_;
 
 	// FIXME: atomic bool
 	bool looping_;
@@ -125,7 +123,5 @@ private:
 
 }
 
-#include "EventLoop_impl.h"
-#include "type.h"
 
 #endif // KANON_NET_EVENTLOOP_H

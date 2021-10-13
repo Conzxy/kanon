@@ -118,7 +118,6 @@ inline void connect(int fd, SA const* addr) KANON_NOEXCEPT {
 // if it is ipv4 in fact, just plain convert it to sockaddr_in by reinterpret_cast
 int accept(int fd, struct sockaddr_in6* addr) KANON_NOEXCEPT;
 
-
 // socket option
 void setReuseAddr(int fd, int flag) KANON_NOEXCEPT;
 
@@ -126,9 +125,21 @@ void setReusePort(int fd, int flag) KANON_NOEXCEPT;
 
 void setNoDelay(int fd, int flag) KANON_NOEXCEPT;
 
+int getsocketError(int fd) KANON_NOEXCEPT;
+
 // get local and peer address
 struct sockaddr_in6 getLocalAddr(int fd) KANON_NOEXCEPT;
 struct sockaddr_in6 getPeerAddr(int fd) KANON_NOEXCEPT;
+
+
+// io
+ssize_t inline write(int fd, void const* data, size_t len) KANON_NOEXCEPT {
+	return ::write(fd, data, len);
+}
+
+ssize_t inline read(int fd, void* data, size_t len) KANON_NOEXCEPT {
+	return ::read(fd, data, len);
+}
 
 } // namespace sock
 } // namespace sock

@@ -50,7 +50,9 @@ public:
 	const_pointer peek() const KANON_NOEXCEPT
 	{ return data_.data() + readable_size(); }
 	
-		
+	pointer peek() KANON_NOEXCEPT
+	{ return data_.data() + readable_size(); }
+
 	// append operation:
 	void append(StringView str) {
 		if (str.size() < writable_size())
@@ -208,7 +210,8 @@ public:
 		std::swap(data_, other.data_);
 	}
 	
-	size_type readFd(int fd);	
+	// set saved_errno to avoid import Logger.h to Buffer.cc	
+	size_type readFd(int fd, int& saved_errno);	
 private:
 	typedef data_type::const_iterator const_iterator;
 	typedef data_type::iterator iterator;

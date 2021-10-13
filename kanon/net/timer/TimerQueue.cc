@@ -88,10 +88,15 @@ TimerQueue::TimerQueue(EventLoop* loop)
 	, timer_channel_{ kanon::make_unique<Channel>(loop, timerfd_) }
 	, loop_{ loop }
 {
-    timer_channel_->set_read_callback([this](){
+    timer_channel_->setReadCallback([this](TimeStamp receive_time) {
 		loop_->assertInThread();
 
 		TimeStamp now{ TimeStamp::now() };
+
+		auto diff = timeDifference(now, receive_time);
+
+		LOG_TRACE << "timer diff: " << diff;
+
 		detail::readTimerfd(timerfd_);	
 
 		auto expired_timers = this->getExpiredTimers(now);
@@ -108,7 +113,7 @@ TimerQueue::TimerQueue(EventLoop* loop)
 		this->reset(expired_timers, now);
 	});
 
-	timer_channel_->set_error_callback([](){
+	timer_channel_->setErrorCallback([](){
 		LOG_ERROR << "timer event handle error occurred";
 	});
 

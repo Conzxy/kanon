@@ -1,10 +1,11 @@
-#ifndef KANON_NET_EVENTLOOP_IMPL_H
-#define KANON_NET_EVENTLOOP_IMPL_H
-
+#include "kanon/net/EventLoop.h"
 #include "kanon/thread/current-thread.h"
 #include "kanon/log/Logger.h"
 #include "kanon/net/Channel.h"
+#include "kanon/time/TimeStamp.h"
 #include "kanon/util/macro.h"
+#include "kanon/net/poll/Poller.h"
+#include "kanon/net/poll/Epoller.h"
 
 #include <assert.h>
 #include <sys/eventfd.h>
@@ -17,7 +18,7 @@ namespace detail {
 /**
  * @brief event fd API
  */
-inline int createEventfd() noexcept {
+static inline int createEventfd() noexcept {
 	int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
 	LOG_TRACE << "eventfd " << evfd << " created";
@@ -29,13 +30,13 @@ inline int createEventfd() noexcept {
 	return evfd;
 }
 
-inline void readEventfd(int evfd) noexcept {
+static inline void readEventfd(int evfd) noexcept {
 	uint64_t dummy;
 	if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "readEventfd() error occurred";
 }
 
-inline void writeEventfd(int evfd) noexcept {
+static inline void writeEventfd(int evfd) noexcept {
 	uint64_t dummy = 0;
 	if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "writeEventfd() error occurred";
@@ -43,10 +44,10 @@ inline void writeEventfd(int evfd) noexcept {
 
 } // namespace detail
 
-template<typename T>
-EventLoopT<T>::EventLoopT()
+EventLoop::EventLoop()
 	: ownerThreadId_{ CurrentThread::t_tid }
-	, poller_{ kanon::make_unique<T>(this) }
+#ifdef 
+	, poller_{ kanon::make_unique<>(this) }
 	, looping_{ false }
 	, quit_{ false }
 	, callingFunctors_{ false }
@@ -54,11 +55,12 @@ EventLoopT<T>::EventLoopT()
 	, ev_channel_{ kanon::make_unique<Channel>(this, evfd_) }
 	, timer_queue_{ this }
 { 
-	ev_channel_->set_read_callback([this](){
+	ev_channel_->setReadCallback([this](TimeStamp receive_time){
+		LOG_TRACE << "event receive_time: " << receive_time.toFormattedString(true);
 		this->evRead();
 	});
 
-	ev_channel_->set_write_callback([this](){
+	ev_channel_->setWriteCallback([this](){
 		this->wakeup();
 	});
 
@@ -79,10 +81,10 @@ void EventLoopT<T>::loop() {
 	LOG_TRACE << "EventLoop " << this << " loop start";
 	
 	while (!quit_) {
-		poller_->poll(POLLTIME, activeChannels_);
+		auto receive_time = poller_->poll(POLLTIME, activeChannels_);
 
 		for (auto& channel : activeChannels_) {
-			channel->handleEvents();
+			channel->handleEvents(receive_time);
 		}
 	
 		callFunctors();
@@ -216,7 +218,3 @@ inline void EventLoopT<T>::quit() noexcept {
 
 } // namespace kanon
 
-#include "kanon/net/poll/Poller.h"
-#include "kanon/net/poll/Epoller.h"
-
-#endif // KANON_NET_EVENTLOOP_IMPL_H

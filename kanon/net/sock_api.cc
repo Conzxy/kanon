@@ -17,7 +17,7 @@ sock::toIp(char* buf, size_t size, SA const* addr) {
 	} else {
 		assert(size >= INET6_ADDRSTRLEN);
 		auto addr6 = sockaddr_cast<sockaddr_in6 const>(addr);
-		::inet_ntop(AF_INET, &addr6->sin6_addr, buf, static_cast<socklen_t>(size));
+		::inet_ntop(AF_INET6, &addr6->sin6_addr, buf, static_cast<socklen_t>(size));
 	}
 }
 
@@ -130,7 +130,7 @@ sock::setReuseAddr(int fd, int flag) KANON_NOEXCEPT {
 
 
 void
-setReusePort(int fd, int flag) KANON_NOEXCEPT {
+sock::setReusePort(int fd, int flag) KANON_NOEXCEPT {
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 9, 0)
 	auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
 
@@ -150,6 +150,17 @@ sock::setNoDelay(int fd, int flag) KANON_NOEXCEPT {
 
 }
 
+int
+sock::getsocketError(int fd) KANON_NOEXCEPT {
+	int optval;
+	auto len = static_cast<socklen_t>(sizeof optval);
+
+	if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, &optval, &len)) {
+		return errno;
+	} else {
+		return optval;
+	}
+}
 struct sockaddr_in6
 sock::getLocalAddr(int fd) KANON_NOEXCEPT {
 	struct sockaddr_in6 addr;

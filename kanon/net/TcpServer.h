@@ -4,16 +4,16 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/string/string-view.h"
-#include "type.h"
-#include "kanon/util/type.h"
 #include "kanon/net/callback.h"
 #include "kanon/net/Acceptor.h"
+#include "kanon/util/type.h"
 
 #include <string>
 
 namespace kanon {
 
 class InetAddr;
+class EventLoop;
 
 class TcpServer : noncopyable {
 public:
@@ -35,9 +35,6 @@ public:
 	{ write_complete_callback_ = std::move(cb); }
 private:
 	typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
-	
-	// Must be called 	
-	void newConnection(int cli_sock, InetAddr const& cli_addr);
 
 	EventLoop* loop_;
 	std::string const ip_port_;

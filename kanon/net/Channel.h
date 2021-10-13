@@ -8,7 +8,7 @@
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/log/Logger.h"
-#include "kanon/net/type.h"
+#include "kanon/time/TimeStamp.h"
 //#include "kanon/net/EventLoop.h"
 
 #include <functional>
@@ -24,6 +24,7 @@ static_assert(EPOLLPRI == POLLPRI, "EPOLLPRI should equal to POLLRI");
 
 namespace kanon {
 
+class EventLoop;
 
 /**
  * @brief events dispatching
@@ -40,8 +41,9 @@ class Channel {
 	};
 	
 public:
+	typedef std::function<void(TimeStamp)> ReadEventCallback;
 	typedef std::function<void()> EventCallback;
-	
+		
 public:
 	Channel(EventLoop* loop, int fd)
 		: fd_{ fd }
@@ -101,17 +103,17 @@ public:
 	void remove() KANON_NOEXCEPT;	
 
 	// callback is used here only
-	void set_read_callback(EventCallback cb) { read_callback_ = std::move(cb); }
-	void set_write_callback(EventCallback cb) { write_callback_ = std::move(cb); }
-	void set_error_callback(EventCallback cb) { error_callback_ = std::move(cb); }
-	void close_callback(EventCallback cb) { close_callback_ = std::move(cb); }
+	void setReadCallback(ReadEventCallback cb) { read_callback_ = std::move(cb); }
+	void setWriteCallback(EventCallback cb) { write_callback_ = std::move(cb); }
+	void setErrorCallback(EventCallback cb) { error_callback_ = std::move(cb); }
+	void setCloseCallback(EventCallback cb) { close_callback_ = std::move(cb); }
 	
 	int index() noexcept { return index_; }
-	void set_index(int index) noexcept { index_ = index; }
-	void set_revents(int event) noexcept { revents_ = event; }
+	void setIndex(int index) noexcept { index_ = index; }
+	void setRevents(int event) noexcept { revents_ = event; }
 	
 	void setLogHup(bool flag) noexcept { log_hup_ = flag; }
-	void handleEvents();
+	void handleEvents(TimeStamp receive_time);
 
 private:
 	static std::string ev2String(int ev);
@@ -123,7 +125,7 @@ private:
 	int revents_;
 
 	int index_;
-	EventCallback read_callback_;
+	ReadEventCallback read_callback_;
 	EventCallback write_callback_;
 	EventCallback close_callback_;
 	EventCallback error_callback_;
