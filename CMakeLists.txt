@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 # never set compiler in CMakeLists.txt
 # beacuse it need set before project and enable_language
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 #set(CMAKE_C_COMPILER "/usr/local/bin/clang")
 #set(CMAKE_CXX_COMPILER "/usr/local/bin/clang++")
 project(zxy)
@@ -25,7 +26,7 @@ set(CXX_FLAGS
  -Wno-unused-parameter
  -Werror
  #-Wconversion
- -Wshadow
+ #-Wshadow
  -Wwrite-strings # in fact, this is default specified
  #cxx standard 
  -std=c++11
@@ -48,7 +49,7 @@ string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}; BUILD_TYPE: ${CAMKE_BUILD_TYPE}")
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/)
 
 #link_libraries("/usr/local/lib/libgtest.a")
 
