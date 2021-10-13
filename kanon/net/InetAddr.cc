@@ -16,13 +16,12 @@ static_assert(sizeof(InetAddr) == sizeof(struct sockaddr_in6),
 
 InetAddr::InetAddr(Port port, bool loopback, bool v6) {
 	if (v6) {
-		addr6_.sin6_port = port;
+		addr6_.sin6_port = sock::toNetworkByteOrder16(port);
 		addr6_.sin6_addr = loopback ? in6addr_loopback : in6addr_any;
 		addr6_.sin6_family = AF_INET6;
 	} else {
-		addr_.sin_port = port;
-		// FIXME: use network byte order
-		addr_.sin_addr.s_addr = loopback ? INADDR_ANY : INADDR_LOOPBACK;
+		addr_.sin_port = sock::toNetworkByteOrder16(port);
+		addr_.sin_addr.s_addr = sock::toNetworkByteOrder32(loopback ? INADDR_ANY : INADDR_LOOPBACK);
 		addr_.sin_family = AF_INET;
 	}
 }
