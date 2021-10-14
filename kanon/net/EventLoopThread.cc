@@ -1,4 +1,5 @@
 #include "EventLoopThread.h"
+#include "kanon/net/EventLoop.h"
 
 using namespace kanon;
 
@@ -6,12 +7,13 @@ EventLoopThread::EventLoopThread()
 	: lock_{}
 	, cond_{ lock_ } 
 	, thr_{ [this]() {
-		// called in main thread
-		EventLoop loop;
+		// called in IO thread
 
 		{
 			MutexGuard guard{ lock_ };
-			loop_ = &loop;
+			// must allocate pointer in heap,
+			// because stack of thread is private
+			loop_ = kanon::make_unique<EventLoop>();
 			cond_.notify();
 		}
 
@@ -19,19 +21,24 @@ EventLoopThread::EventLoopThread()
 	} }
 { }
 
+EventLoopThread::~EventLoopThread() KANON_NOEXCEPT {
+	assert(loop_);
+
+	thr_.join();
+}
+
 EventLoop*
 EventLoopThread::start() {
-	// called in IO thread
 	thr_.start();
 
 	{
-		MutexGuard{ lock_ };
+		MutexGuard guard{ lock_ };
 		while (loop_ == nullptr) {
 			cond_.wait();
 		}	
 	}
-
-	return loop_;
+	
+	return getPointer(loop_);
 }
 
 
