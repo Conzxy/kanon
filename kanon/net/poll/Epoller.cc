@@ -125,8 +125,8 @@ Epoller::updateChannel(Channel* ch) {
             assert(channelMap_[fd] == ch);
         } 
 
-        ch->setIndex(kAdded);
         updateEpollEvent(EPOLL_CTL_ADD, ch);
+        ch->setIndex(kAdded);
     } else { // ch->index() = kAdded
         assert(channelMap_.find(fd) != channelMap_.end());
         assert(channelMap_[fd] == ch);
@@ -159,8 +159,6 @@ static inline char const* op2Str(int op) KANON_NOEXCEPT {
 
 void
 Epoller::updateEpollEvent(int op, Channel* ch) KANON_NOEXCEPT {
-    assert(ch->index() == kAdded);
-    
     int fd = ch->fd();
 
     LOG_TRACE << "epoll_ctl op =" << detail::op2Str(op) 
@@ -171,11 +169,11 @@ Epoller::updateEpollEvent(int op, Channel* ch) KANON_NOEXCEPT {
     ev.data.ptr = static_cast<void*>(ch);
 
     if (::epoll_ctl(epoll_fd_, op, ch->fd(), &ev)) {
-        if (op == EPOLL_CTL_ADD || op == EPOLL_CTL_MOD) {
-            LOG_SYSFATAL << "epoll_ctl() op =" << detail::op2Str(op) 
+        if (op == EPOLL_CTL_DEL) {
+            LOG_SYSERROR << "epoll_ctl() op =" << detail::op2Str(op)
                 << " fd = " << fd;
         } else {
-            LOG_SYSERROR << "epoll_ctl() op =" << detail::op2Str(op)
+            LOG_SYSFATAL << "epoll_ctl() op =" << detail::op2Str(op) 
                 << " fd = " << fd;
         }
     }
@@ -200,9 +198,11 @@ Epoller::removeChannel(Channel* ch) {
     }
 
     auto n = channelMap_.erase(fd);
+	assert(n == 1);
     KANON_UNUSED(n); 
 
-    // ch is a new channel which don't add to channelMap_ 
+    // ch is a new channel which not in channelMap_ 
+	// set status to kNew, then we can readd it
     ch->setIndex(kNew);
 }
 
