@@ -1,12 +1,14 @@
 #ifndef KANON_EVENTLOOP_THREAD_H
 #define KANON_EVENTLOOP_THREAD_H
 
-#include "EventLoop.h"
+#include "kanon/util/unique_ptr.h"
 #include "kanon/thread/thread.h"
 #include "kanon/thread/mutexlock.h"
 #include "kanon/thread/condition.h"
 
 namespace kanon {
+
+class EventLoop;
 
 /*
  * @brief used for IO thread
@@ -18,9 +20,9 @@ public:
 	// should be called by main thread	
 	EventLoop* start();
 
-	~EventLoopThread() = default;
+	~EventLoopThread() KANON_NOEXCEPT;
 private:
-	EventLoop* loop_;
+	std::unique_ptr<EventLoop> loop_;
 	
 	MutexLock lock_;
 	Condition cond_;
