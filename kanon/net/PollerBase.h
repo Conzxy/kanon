@@ -25,6 +25,8 @@ public:
 	explicit PollerBase(EventLoop* loop)
 		: loop_{ loop }
 	{ }
+	
+	virtual ~PollerBase() KANON_NOEXCEPT = default;
 
 	// IO thread
 	virtual TimeStamp poll(int ms, ChannelVec& activeChannels) = 0;
