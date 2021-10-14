@@ -6,6 +6,7 @@
 #include "kanon/util/macro.h"
 #include "kanon/net/poll/Poller.h"
 #include "kanon/net/poll/Epoller.h"
+#include "kanon/net/macro.h"
 
 #include <assert.h>
 #include <sys/eventfd.h>
@@ -18,7 +19,7 @@ namespace detail {
 /**
  * @brief event fd API
  */
-static inline int createEventfd() noexcept {
+static int createEventfd() noexcept {
 	int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
 	LOG_TRACE << "eventfd " << evfd << " created";
@@ -30,13 +31,13 @@ static inline int createEventfd() noexcept {
 	return evfd;
 }
 
-static inline void readEventfd(int evfd) noexcept {
+static void readEventfd(int evfd) noexcept {
 	uint64_t dummy;
 	if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "readEventfd() error occurred";
 }
 
-static inline void writeEventfd(int evfd) noexcept {
+static void writeEventfd(int evfd) noexcept {
 	uint64_t dummy = 0;
 	if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "writeEventfd() error occurred";
@@ -46,8 +47,11 @@ static inline void writeEventfd(int evfd) noexcept {
 
 EventLoop::EventLoop()
 	: ownerThreadId_{ CurrentThread::t_tid }
-#ifdef 
-	, poller_{ kanon::make_unique<>(this) }
+#ifdef ENABLE_EPOLL
+	, poller_{ kanon::make_unique<Epoller>(this) }
+#else
+	, poller_{ kanon::make_unique<Poller>(this) }
+#endif
 	, looping_{ false }
 	, quit_{ false }
 	, callingFunctors_{ false }
@@ -70,8 +74,10 @@ EventLoop::EventLoop()
 			  << " created";
 }
 
-template<typename T>
-void EventLoopT<T>::loop() {
+EventLoop::~EventLoop()
+{ }
+
+void EventLoop::loop() {
 	assert(!looping_);
 	assert(!quit_);
 	this->assertInThread();
@@ -97,8 +103,7 @@ void EventLoopT<T>::loop() {
 	looping_ = false;
 }
 
-template<typename T>
-void EventLoopT<T>::runInLoop(FunctorCallback cb) {
+void EventLoop::runInLoop(FunctorCallback cb) {
 	if (isLoopInThread()) {
 		cb();	
 	} else {
@@ -106,8 +111,7 @@ void EventLoopT<T>::runInLoop(FunctorCallback cb) {
 	}
 }
 
-template<typename T>
-void EventLoopT<T>::queueToLoop(FunctorCallback cb) {
+void EventLoop::queueToLoop(FunctorCallback cb) {
 	{
 		MutexGuard dummy(lock_);
 		functors_.emplace_back(std::move(cb));
@@ -119,42 +123,35 @@ void EventLoopT<T>::queueToLoop(FunctorCallback cb) {
 	}
 }
 
-template<typename T>
-inline void EventLoopT<T>::updateChannel(Channel* ch) {
+void EventLoop::updateChannel(Channel* ch) {
 	poller_->updateChannel(ch);
 }
 
-template<typename T>
-inline void EventLoopT<T>::removeChannel(Channel* ch) {
+void EventLoop::removeChannel(Channel* ch) {
 	poller_->removeChannel(ch);
 }
 
-template<typename T>
-inline void EventLoopT<T>::hasChannel(Channel* ch) {
+void EventLoop::hasChannel(Channel* ch) {
 	poller_->hasChannel(ch);
 }
 
-template<typename T>
-inline TimerId EventLoopT<T>::runAt(TimerCallback cb, TimeStamp expiration) {
+TimerId EventLoop::runAt(TimerCallback cb, TimeStamp expiration) {
 	return timer_queue_.addTimer(std::move(cb), expiration, 0.0);
 }
-template<typename T>
-inline TimerId EventLoopT<T>::runAfter(TimerCallback cb, double delay) {
+
+TimerId EventLoop::runAfter(TimerCallback cb, double delay) {
 	return this->runAt(std::move(cb), addTime(TimeStamp::now(), delay));
 }
 
-template<typename T>
-inline TimerId EventLoopT<T>::runEvery(TimerCallback cb, TimeStamp expiration, double interval) {
+TimerId EventLoop::runEvery(TimerCallback cb, TimeStamp expiration, double interval) {
 	return timer_queue_.addTimer(std::move(cb), expiration, interval);
 }
 
-template<typename T>
-inline TimerId EventLoopT<T>::runEvery(TimerCallback cb, double interval) {
+TimerId EventLoop::runEvery(TimerCallback cb, double interval) {
 	return this->runEvery(std::move(cb), addTime(TimeStamp::now(), interval), interval);
 }
 
-template<typename T>
-inline void EventLoopT<T>::callFunctors() {
+void EventLoop::callFunctors() {
 	decltype(functors_) functors;
 	{
 		MutexGuard dummy{ lock_ };
@@ -181,35 +178,29 @@ inline void EventLoopT<T>::callFunctors() {
 	callingFunctors_ = false;
 }
 
-template<typename T>
-inline void EventLoopT<T>::assertInThread() noexcept {
+void EventLoop::assertInThread() noexcept {
 	if (!this->isLoopInThread())
 		this->abortNotInThread();
 }
 
-template<typename T>
-inline bool EventLoopT<T>::isLoopInThread() noexcept {
+bool EventLoop::isLoopInThread() noexcept {
 	return CurrentThread::t_tid == ownerThreadId_;
 
 }
 
-template<typename T>
-inline void EventLoopT<T>::abortNotInThread() noexcept {
-	LOG_ERROR << "You Should obey one loop per thread policy";
+void EventLoop::abortNotInThread() noexcept {
+	LOG_FATAL << "You Should obey one loop per thread policy";
 }
 
-template<typename T>
-inline void EventLoopT<T>::evRead() KANON_NOEXCEPT {
+void EventLoop::evRead() KANON_NOEXCEPT {
 	detail::readEventfd(evfd_);
 }
 
-template<typename T>
-inline void EventLoopT<T>::wakeup() KANON_NOEXCEPT {
+void EventLoop::wakeup() KANON_NOEXCEPT {
 	detail::writeEventfd(evfd_);
 }
 
-template<typename T>
-inline void EventLoopT<T>::quit() noexcept {
+void EventLoop::quit() noexcept {
 	quit_ = true;
 	
 	if (! this->isLoopInThread())

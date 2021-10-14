@@ -31,7 +31,9 @@ public:
 	typedef TimerQueue::TimerCallback TimerCallback;
 
 	EventLoop();
-	~EventLoop() = default;
+	// note: since PollerBase is not exposed here
+	// we should force out-of-line definition
+	~EventLoop();
 	
 	/**
 	 * @brief quit loop
