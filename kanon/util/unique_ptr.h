@@ -2,6 +2,7 @@
 #define KANON_UTIL_UNIQUE_PTR_H
 
 #include <memory>
+#include "kanon/util/macro.h"
 
 namespace kanon {
 	
@@ -18,6 +19,22 @@ inline auto make_unique(Args&&... args)
 }
 #endif
 
+// compatible with smart_pointer and raw pointer
+template<typename T>
+inline T* getPointer(std::unique_ptr<T>& ptr) KANON_NOEXCEPT {
+	return ptr.get();
 }
+
+template<typename T>
+inline T* getPointer(std::shared_ptr<T>&  ptr) KANON_NOEXCEPT {
+	return ptr.get();
+}
+
+template<typename T>
+inline T* getPointer(T* ptr) KANON_NOEXCEPT {
+	return ptr;
+}
+
+} // namespace kanon
 
 #endif
