@@ -5,7 +5,6 @@
 #include "kanon/time/TimeStamp.h"
 #include "kanon/net/timer/Timer.h"
 #include "kanon/net/timer/TimerId.h"
-#include "kanon/net/type.h"
 #include "kanon/net/Channel.h"
 #include "kanon/util/unique_ptr.h"
 
@@ -13,6 +12,7 @@
 #include <set>
 
 namespace kanon {
+class EventLoop;
 
 class TimerQueue : noncopyable {
 public:
