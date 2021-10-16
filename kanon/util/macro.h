@@ -34,4 +34,7 @@
 #define KANON_CONSTEXPR inline
 #endif
 
+#define BZERO(dst, num) \
+	memset(dst, 0, num)
+
 #endif // KANON_UTIL_MACRO_H
