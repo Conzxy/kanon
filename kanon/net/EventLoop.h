@@ -76,11 +76,25 @@ public:
 	/**
 	 * @brief timer API
 	 */
-	TimerId runAt(TimerCallback cb, TimeStamp expiration);
-	TimerId runAfter(TimerCallback cb, double delay);
-	TimerId runEvery(TimerCallback cb, TimeStamp expiration, double interval);
-	TimerId runEvery(TimerCallback cb, double interval);
+	TimerId runAt(TimerCallback cb, TimeStamp expiration) {
+		return timer_queue_.addTimer(std::move(cb), expiration, 0.0);
+	}
 
+	TimerId runAfter(TimerCallback cb, double delay) {
+		return this->runAt(std::move(cb), addTime(TimeStamp::now(), delay));
+	}
+
+	TimerId runEvery(TimerCallback cb, TimeStamp expiration, double interval) {
+		return timer_queue_.addTimer(std::move(cb), expiration, interval);
+	}
+
+	TimerId runEvery(TimerCallback cb, double interval) {
+		return this->runEvery(std::move(cb), addTime(TimeStamp::now(), interval), interval);
+	}
+
+	void cancelTimer(TimerId const& timer_id) {
+		timer_queue_.cancelTimer(timer_id);
+	}
 	//void cancelTimer(TimerId id);
 
 	/**
