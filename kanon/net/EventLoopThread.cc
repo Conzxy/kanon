@@ -3,34 +3,43 @@
 
 using namespace kanon;
 
-EventLoopThread::EventLoopThread()
-	: lock_{}
+EventLoopThread::EventLoopThread(std::string const& name)
+	: loop_{ nullptr }
+	, lock_{}
 	, cond_{ lock_ } 
 	, thr_{ [this]() {
 		// called in IO thread
-
+	
+		EventLoop loop{};
 		{
 			MutexGuard guard{ lock_ };
 			// must allocate pointer in heap,
 			// because stack of thread is private
-			loop_ = kanon::make_unique<EventLoop>();
+			loop_ = &loop;
 			cond_.notify();
 		}
-
+		
+		// may quit before loop() be called
 		loop_->loop();
-	} }
+		// FIXME: need mutex?
+		//MutexGuard guard{ lock_ };
+		loop_ = nullptr;
+	}, name}
 { }
 
 EventLoopThread::~EventLoopThread() KANON_NOEXCEPT {
-	assert(loop_);
-
-	thr_.join();
+	// if quit() is not called through pointer return from start
+	// we should call quit explicitly	
+	if (loop_ != nullptr) {
+		loop_->quit();
+		thr_.join(); // wait loop quiting
+	}
 }
 
 EventLoop*
 EventLoopThread::start() {
 	thr_.start();
-
+	
 	{
 		MutexGuard guard{ lock_ };
 		while (loop_ == nullptr) {
@@ -38,7 +47,7 @@ EventLoopThread::start() {
 		}	
 	}
 	
-	return getPointer(loop_);
+	return loop_;
 }
 
 

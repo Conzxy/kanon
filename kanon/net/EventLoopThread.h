@@ -1,10 +1,12 @@
 #ifndef KANON_EVENTLOOP_THREAD_H
 #define KANON_EVENTLOOP_THREAD_H
 
-#include "kanon/util/unique_ptr.h"
 #include "kanon/thread/thread.h"
 #include "kanon/thread/mutexlock.h"
 #include "kanon/thread/condition.h"
+#include "kanon/util/macro.h"
+
+#include <string>
 
 namespace kanon {
 
@@ -15,14 +17,14 @@ class EventLoop;
  */
 class EventLoopThread : noncopyable {
 public:
-	EventLoopThread();
+	EventLoopThread(std::string const& = std::string{});
 	
 	// should be called by main thread	
 	EventLoop* start();
 
 	~EventLoopThread() KANON_NOEXCEPT;
 private:
-	std::unique_ptr<EventLoop> loop_;
+	EventLoop* loop_;
 	
 	MutexLock lock_;
 	Condition cond_;
