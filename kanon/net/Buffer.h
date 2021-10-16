@@ -33,11 +33,14 @@ public:
 	typedef data_type::const_pointer const_pointer;
 
 	explicit Buffer(size_type init_size = BUFFER_INITSIZE)
-		: read_index_{ init_size }
-		, write_index_{ init_size }
+		: read_index_{ BUFFER_PREFIX_SIZE }
+		, write_index_{ BUFFER_PREFIX_SIZE }
 	{
-		static_assert(BUFFER_PREFIX_SIZE == 8, "buffer prefix size must be 8");
 		data_.resize(BUFFER_PREFIX_SIZE + init_size);
+
+		static_assert(BUFFER_PREFIX_SIZE == 8, "Buffer prefix size must be 8");
+		assert(readable_size() == 0 && "Buffer init readable_size must be 0");
+		assert(writable_size() == init_size && "Buffer init writable_size must be init_size");		
 	}
 
 	~Buffer() = default;
@@ -48,19 +51,18 @@ public:
 	// peek: you can understand just read but don't remove it
 	// normally, this word is understanded to "secret look"
 	const_pointer peek() const KANON_NOEXCEPT
-	{ return data_.data() + readable_size(); }
+	{ return data_.data() + read_index_; }
 	
 	pointer peek() KANON_NOEXCEPT
-	{ return data_.data() + readable_size(); }
+	{ return data_.data() + read_index_; }
 
 	// append operation:
 	void append(StringView str) {
-		if (str.size() < writable_size())
+		if (str.size() > writable_size())
 			make_space(str.size());
-		else {
-			std::copy(str.begin(), str.end(), peek());
-			write_index_ += str.size();
-		}
+		
+		std::copy(str.begin(), str.end(), peek());
+		write_index_ += str.size();
 	}
 	
 	void append(char const* str, size_t len) {
