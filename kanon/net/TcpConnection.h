@@ -15,12 +15,12 @@ class Channel;
 class EventLoop;
 
 class TcpConnection : noncopyable
-					, std::enable_shared_from_this<TcpConnection> {
+					, public std::enable_shared_from_this<TcpConnection> {
 	enum State {
-		connecting = 0,
-		connected,
-		disconnecting,
-		disconnected,
+		kConnecting = 0,
+		kConnected,
+		kDisconnecting,
+		kDisconnected,
 		STATE_NUM,
 	};
 	
@@ -31,7 +31,7 @@ public:
 				  int sockfd,
 				  InetAddr const& local_addr,
 				  InetAddr const& peer_addr);
-
+	
 	~TcpConnection() KANON_NOEXCEPT;
 	
 	// since server thread will dispatch connection to IO thread,
@@ -58,7 +58,7 @@ public:
 
 	// field infomation
 	bool isConnected() const KANON_NOEXCEPT
-	{ return state_ == connected; }
+	{ return state_ == kConnected; }
 
 	char const* state2String() const KANON_NOEXCEPT
 	{ return state_str_[state_]; }
@@ -79,11 +79,13 @@ public:
 	Buffer* outputBuffer() KANON_NOEXCEPT
 	{ return &output_buffer_; }
 	
-	// when TcpServer accept a new connection
+	// when TcpServer accept a new connection in newConnectionCallback
 	void connectionEstablished();
 	// when TcpServer has removed connection from its connections_
 	void connectionDestroyed();
 private:
+	void handleRead(TimeStamp receive_time);
+	void handleWrite();
 	void handleError();
 	void handleClose();
 

@@ -13,12 +13,6 @@ TcpConnection::state_str_[STATE_NUM] = {
 	"disconnected"
 };
 
-void defaultConnectionCallaback(TcpConnectionPtr const& conn) {
-	LOG_TRACE << conn->localAddr().toIpPort() << "->"
-		<< conn->peerAddr().toIpPort() << " "
-		<< (conn->isConnected() ? "UP" : "DOWN");
-}
-
 TcpConnection::TcpConnection(EventLoop*  loop,
 							 std::string const& name,
 							 int sockfd,
@@ -30,46 +24,14 @@ TcpConnection::TcpConnection(EventLoop*  loop,
 	, channel_{ kanon::make_unique<Channel>(loop, sockfd) }
 	, local_addr_{ local_addr }
 	, peer_addr_{ peer_addr }
-	, state_{ connecting }
+	, state_{ kConnecting }
 {
 	channel_->setReadCallback([this](TimeStamp receive_time) {
-		loop_->assertInThread();
-		int saved_errno;
-		auto n = input_buffer_.readFd(socket_->fd(), saved_errno);
-		
-		if (n > 0) {
-			message_callback_(shared_from_this(), &input_buffer_, receive_time);
-		} else if (n == 0) {
-			// peer close the connection
-			handleClose();
-		} else {
-			errno = saved_errno;
-			LOG_SYSERROR << "read event handle error";
-			handleError();
-		}
+		this->handleRead(receive_time);
 	});
 
 	channel_->setWriteCallback([this]() {
-		loop_->assertInThread();
-		assert(channel_->isWriting());	
-		
-		auto n = sock::write(socket_->fd(),
-							 output_buffer_.peek(),
-							 output_buffer_.readable_size());
-		
-		if (n > 0) {
-			output_buffer_.advance(n);
-
-			if (output_buffer_.readable_size() == 0) {
-				channel_->disableWriting();
-				if (write_complete_callback_) {
-					write_complete_callback_(shared_from_this());
-				}
-			}
-		} else {
-			LOG_SYSERROR << "write event handle error";
-			handleError();
-		}
+		this->handleWrite();
 	});
 
 	channel_->setErrorCallback([this]() {
@@ -79,8 +41,6 @@ TcpConnection::TcpConnection(EventLoop*  loop,
 	channel_->setCloseCallback([this]() {
 		this->handleClose();
 	});
-	
-	setConnectionCallback(&defaultConnectionCallaback);
 
 	// FIXME: keepalive
 	//
@@ -89,7 +49,7 @@ TcpConnection::TcpConnection(EventLoop*  loop,
 }
 
 TcpConnection::~TcpConnection() KANON_NOEXCEPT {
-	assert(state_ == disconnected);
+	assert(state_ == kDisconnected);
 	LOG_TRACE << "TcpConnection::dtor [" << name_ << "] destroyed";
 }
 
@@ -97,10 +57,10 @@ void
 TcpConnection::connectionEstablished() {
 	loop_->assertInThread();
 
-	assert(state_ == connecting);
-	state_ = connected;
+	assert(state_ == kConnecting);
+	state_ = kConnected;
 	
-	// start interest in read event on this socket	
+	// start observing read event on this socket	
 	channel_->enableReading();	
 	connection_callback_(shared_from_this());
 }
@@ -110,13 +70,60 @@ TcpConnection::connectionDestroyed() {
 	loop_->assertInThread();
 	
 	// if close_callback_ has be called, just remove channel;	
-	if (state_ == connected) {
+	if (state_ == kConnected) {
 		channel_->disableAll();
-		state_ = disconnected;
+		channel_->remove();
+
+		state_ = kDisconnected;
 		connection_callback_(shared_from_this());	
 	}	
 	
-	channel_->remove();
+}
+
+void
+TcpConnection::handleRead(TimeStamp receive_time) {
+	loop_->assertInThread();
+	int saved_errno;
+	auto n = input_buffer_.readFd(socket_->fd(), saved_errno);
+	
+	LOG_DEBUG << "readFd return: " << n;	
+
+	if (n > 0) {
+		message_callback_(shared_from_this(), &input_buffer_, receive_time);
+	} else if (n == 0) {
+		// peer close the connection
+		handleClose();
+	} else {
+		errno = saved_errno;
+		LOG_SYSERROR << "read event handle error";
+		handleError();
+	}
+
+}
+
+void
+TcpConnection::handleWrite() {
+	loop_->assertInThread();
+	assert(channel_->isWriting());	
+	
+	auto n = sock::write(socket_->fd(),
+						 output_buffer_.peek(),
+						 output_buffer_.readable_size());
+	
+	if (n > 0) {
+		output_buffer_.advance(n);
+
+		if (output_buffer_.readable_size() == 0) {
+			channel_->disableWriting();
+			if (write_complete_callback_) {
+				write_complete_callback_(shared_from_this());
+			}
+		}
+	} else {
+		LOG_SYSERROR << "write event handle error";
+		handleError();
+	}
+
 }
 
 void
@@ -125,20 +132,22 @@ TcpConnection::handleError() {
 	//loop_->assertInThread();
 	int err = sock::getsocketError(socket_->fd());
 	LOG_SYSERROR << "TcpConnection [" << name_
-		<< "] - [errno: " << err << "; errmsg: " << strerror_tl(err);
+		<< "] - [errno: " << err << "; errmsg: " << strerror_tl(err) << "]";
 }
 
 void
 TcpConnection::handleClose() {
 	loop_->assertInThread();
-	assert(state_ == connected || state_ == disconnecting);
+	assert(state_ == kConnected || state_ == kDisconnecting);
 	
-	state_ = disconnected;
+	state_ = kDisconnected;
 	channel_->disableAll();
 	channel_->remove();
-
-	connection_callback_(shared_from_this());
+	
+	// prevent connection to be removed from TcpServer immediately	
+	auto guard = shared_from_this();	
+	connection_callback_(guard);
 	
 	// TcpServer remove connection from its connections_
-	close_callback_(shared_from_this());
+	close_callback_(guard);
 }
