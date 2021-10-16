@@ -75,11 +75,13 @@ EventLoop::EventLoop()
 }
 
 EventLoop::~EventLoop()
-{ }
+{ 
+	LOG_TRACE << "EventLoop: " << this << " destroyed";
+}
 
 void EventLoop::loop() {
 	assert(!looping_);
-	assert(!quit_);
+	//assert(!quit_);
 	this->assertInThread();
 	
 	looping_ = true;
@@ -133,22 +135,6 @@ void EventLoop::removeChannel(Channel* ch) {
 
 void EventLoop::hasChannel(Channel* ch) {
 	poller_->hasChannel(ch);
-}
-
-TimerId EventLoop::runAt(TimerCallback cb, TimeStamp expiration) {
-	return timer_queue_.addTimer(std::move(cb), expiration, 0.0);
-}
-
-TimerId EventLoop::runAfter(TimerCallback cb, double delay) {
-	return this->runAt(std::move(cb), addTime(TimeStamp::now(), delay));
-}
-
-TimerId EventLoop::runEvery(TimerCallback cb, TimeStamp expiration, double interval) {
-	return timer_queue_.addTimer(std::move(cb), expiration, interval);
-}
-
-TimerId EventLoop::runEvery(TimerCallback cb, double interval) {
-	return this->runEvery(std::move(cb), addTime(TimeStamp::now(), interval), interval);
 }
 
 void EventLoop::callFunctors() {
