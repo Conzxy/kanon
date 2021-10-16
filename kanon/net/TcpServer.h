@@ -20,10 +20,15 @@ public:
 	TcpServer(EventLoop* loop,
 			  InetAddr const& listen_addr,
 			  StringArg name,
-			  bool reuseport);
+			  bool reuseport=false);
 	
 	~TcpServer() KANON_NOEXCEPT;	
+		
+	void listen() KANON_NOEXCEPT {
+		acceptor_.listen();
+	}
 	
+	void removeConnection(TcpConnectionPtr const& conn);	
 	// set callback
 	void setConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
 	{ connection_callback_ = std::move(cb); }
