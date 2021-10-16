@@ -20,12 +20,13 @@ Buffer::readFd(int fd, int& saved_errno) {
 	// In fact, I think we shouldn't need so big block to read data.
 	size_t vec_count = writable_size() < sizeof extra_buf ? 2 : 1;
 
-	auto readen_bytes = ::readv(fd, vec, vec_count);
 	auto cache_writable_size = writable_size();
+
+	auto readen_bytes = ::readv(fd, vec, vec_count);
 
 	if (readen_bytes < 0) {
 		saved_errno = errno;
-	} else if (static_cast<size_type>(readen_bytes) <= writable_size()) {
+	} else if (static_cast<size_type>(readen_bytes) <= cache_writable_size) {
 		write_index_ += readen_bytes;	
 	} else {
 		write_index_ = data_.size();
