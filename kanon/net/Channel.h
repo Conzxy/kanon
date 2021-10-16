@@ -17,7 +17,7 @@
 
 #ifdef KANON_ENABLE_EPOLL
 #include <sys/epoll.h>
-static_assert(EPOLLIN == POLLIN, "EPOLLIN should equal to POLLIN");
+static_assert(EPOLLIN  == POLLIN,  "EPOLLIN should equal to POLLIN");
 static_assert(EPOLLOUT == POLLOUT, "EPOLLOUT should equal to POLLOUT");
 static_assert(EPOLLPRI == POLLPRI, "EPOLLPRI should equal to POLLRI");
 #endif
@@ -54,7 +54,7 @@ public:
 		, events_handling_{ false }
 		, loop_{ loop }
 	{ 
-		LOG_TRACE << "Channle: fd = " << fd_ << " created";
+		LOG_TRACE << "Channel fd = " << fd_ << " created";
 	}
 	
 	int fd() const noexcept { return fd_; }
