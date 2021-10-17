@@ -5,13 +5,14 @@
 #include "kanon/util/macro.h"
 #include "kanon/string/string-view.h"
 #include "kanon/net/callback.h"
-#include "kanon/net/Acceptor.h"
 #include "kanon/util/type.h"
 
 #include <string>
 
 namespace kanon {
 
+// set Acceptor to std::unique_ptr to avoid expose Socket and Channel to user
+class Acceptor;
 class InetAddr;
 class EventLoop;
 
@@ -24,9 +25,7 @@ public:
 	
 	~TcpServer() KANON_NOEXCEPT;	
 		
-	void listen() KANON_NOEXCEPT {
-		acceptor_.listen();
-	}
+	void listen() KANON_NOEXCEPT;
 	
 	void removeConnection(TcpConnectionPtr const& conn);	
 	// set callback
@@ -45,7 +44,7 @@ private:
 	std::string const ip_port_;
 	std::string const name_;
 	
-	Acceptor acceptor_;	
+	std::unique_ptr<Acceptor> acceptor_;	
 
 	ConnectionCallback connection_callback_;
 	MessageCallback message_callback_;
