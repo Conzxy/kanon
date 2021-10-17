@@ -3,9 +3,10 @@
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
+#include "kanon/util/unique_ptr.h"
+
 #include "kanon/net/callback.h"
 #include "kanon/net/InetAddr.h"
-#include "kanon/util/unique_ptr.h"
 #include "kanon/net/Buffer.h"
 
 namespace kanon {
@@ -24,7 +25,7 @@ class TcpConnection : noncopyable
 		STATE_NUM,
 	};
 	
-	static char const* state_str_[STATE_NUM];
+	static char const* const state_str_[STATE_NUM];
 public:
 	TcpConnection(EventLoop* loop,
 				  std::string const& name,
@@ -34,7 +35,12 @@ public:
 	
 	~TcpConnection() KANON_NOEXCEPT;
 	
-	// since server thread will dispatch connection to IO thread,
+	// Must be thread safe	
+	void send(Buffer& buf);		
+	void send(void const* data, size_t len);
+	void send(StringView data);
+
+	// Since server thread will dispatch connection to IO thread,
 	// need run some function in loop to ensure thread safe	
 	EventLoop* loop() const KANON_NOEXCEPT
 	{ return loop_; }	
@@ -72,6 +78,10 @@ public:
 	InetAddr const& peerAddr() const KANON_NOEXCEPT
 	{ return peer_addr_; }
 	
+	// set option(optional)
+	void setNoDelay(bool flag) KANON_NOEXCEPT;
+	void setKeepAlive(bool flag) KANON_NOEXCEPT;
+	
 	// interface for user to consume(read)
 	Buffer* inputBuffer() KANON_NOEXCEPT
 	{ return &input_buffer_; }
@@ -79,15 +89,18 @@ public:
 	Buffer* outputBuffer() KANON_NOEXCEPT
 	{ return &output_buffer_; }
 	
-	// when TcpServer accept a new connection in newConnectionCallback
+	// When TcpServer accept a new connection in newConnectionCallback
 	void connectionEstablished();
-	// when TcpServer has removed connection from its connections_
+	// When TcpServer has removed connection from its connections_
 	void connectionDestroyed();
 private:
 	void handleRead(TimeStamp receive_time);
 	void handleWrite();
 	void handleError();
 	void handleClose();
+	
+	void sendInLoop(void const* data, size_t len);
+	void sendInLoop(StringView const& data);
 
 	EventLoop* loop_;
 	std::string const name_;
@@ -101,12 +114,24 @@ private:
 
 	Buffer input_buffer_;
 	Buffer output_buffer_;
-	
+
+	// Process message from @var input_buffer_	
 	MessageCallback message_callback_;
+	// Dispatch connnection to acceptor or connector
 	ConnectionCallback connection_callback_;
-	WriteCompleteCallback write_complete_callback_;
+
+
+	// Called when write event is completed
+	// or you can say this is low_water_mark_callback_
+	WriteCompleteCallback write_complete_callback_;	
+	
+	// avoid so much data filling the kernel input/output buffer
+	// note: the callback only be called in rising edge
 	HighWaterMarkCallback high_water_mark_callback_;
-	CloseCallback close_callback_; // only be called by server
+	size_t high_water_mark_;
+
+	// only be called by server
+	CloseCallback close_callback_; 
 };
 
 } // namespace kanon
