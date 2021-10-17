@@ -1,7 +1,10 @@
-#include "TcpServer.h"
+#include "kanon/net/TcpServer.h"
 #include "kanon/net/InetAddr.h"
 #include "kanon/net/TcpConnection.h"
 #include "kanon/net/EventLoop.h"
+#include "kanon/net/Acceptor.h"
+
+#include "kanon/util/unique_ptr.h"
 
 using namespace kanon;
 
@@ -18,13 +21,13 @@ TcpServer::TcpServer(EventLoop* loop,
 	: loop_{ loop }
 	, ip_port_{ listen_addr.toIpPort() }
 	, name_{ name }
-	, acceptor_{ loop_, listen_addr, reuseport }
+	, acceptor_{ kanon::make_unique<Acceptor>(loop_, listen_addr, reuseport) }
 	, next_conn_id{ 1 }
 
 {
 	setConnectionCallback(&defaultConnectionCallaback);
 
-	acceptor_.setNewConnectionCallback([this](int cli_sock, InetAddr const& cli_addr) {
+	acceptor_->setNewConnectionCallback([this](int cli_sock, InetAddr const& cli_addr) {
 		// ensure in main thread
 		loop_->assertInThread();
 		
@@ -54,13 +57,13 @@ TcpServer::TcpServer(EventLoop* loop,
 				this->removeConnection(conn);
 		});
 		
-		// io loop
-		io_loop->queueToLoop([&conn]() {
+		// io loop or main loop
+		io_loop->runInLoop([&conn]() {
 			conn->connectionEstablished();
 		});
 
 	});
-
+	
 	//acceptor_.listen();
 }
 
@@ -71,10 +74,15 @@ TcpServer::~TcpServer() KANON_NOEXCEPT
 		conn_pair.second.reset();
 
 		auto io_loop = conn->loop();
-		io_loop->queueToLoop([&conn]() {
+		io_loop->runInLoop([&conn]() {
 				conn->connectionDestroyed();
 		});
 	}
+}
+
+void
+TcpServer::listen() KANON_NOEXCEPT {
+	acceptor_->listen();
 }
 
 void
