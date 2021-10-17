@@ -3,9 +3,13 @@
 #include "kanon/net/Channel.h"
 #include "kanon/net/EventLoop.h"
 
+#include <signal.h> // SIGPIPE, signal()
+
 using namespace kanon;
 
-char const* 
+#define DEFAULT_HIGH_WATER_MARK 64 * 1024
+
+char const* const
 TcpConnection::state_str_[STATE_NUM] = {
 	"connecting",
 	"connected",
@@ -25,6 +29,7 @@ TcpConnection::TcpConnection(EventLoop*  loop,
 	, local_addr_{ local_addr }
 	, peer_addr_{ peer_addr }
 	, state_{ kConnecting }
+	, high_water_mark_{ DEFAULT_HIGH_WATER_MARK }
 {
 	channel_->setReadCallback([this](TimeStamp receive_time) {
 		this->handleRead(receive_time);
@@ -42,8 +47,6 @@ TcpConnection::TcpConnection(EventLoop*  loop,
 		this->handleClose();
 	});
 
-	// FIXME: keepalive
-	//
 	LOG_TRACE << "TcpConnection::ctor [" << name_ << "] created";
 	
 }
@@ -84,12 +87,17 @@ void
 TcpConnection::handleRead(TimeStamp receive_time) {
 	loop_->assertInThread();
 	int saved_errno;
-	auto n = input_buffer_.readFd(socket_->fd(), saved_errno);
+	auto n = input_buffer_.readFd(channel_->fd(), saved_errno);
 	
 	LOG_DEBUG << "readFd return: " << n;	
 
 	if (n > 0) {
-		message_callback_(shared_from_this(), &input_buffer_, receive_time);
+		if (message_callback_) {
+			message_callback_(shared_from_this(), &input_buffer_, receive_time);
+		} else {
+			LOG_WARN << "If user want to process message from peer, should set "
+				"proper message_callback_";
+		}
 	} else if (n == 0) {
 		// peer close the connection
 		handleClose();
@@ -106,7 +114,9 @@ TcpConnection::handleWrite() {
 	loop_->assertInThread();
 	assert(channel_->isWriting());	
 	
-	auto n = sock::write(socket_->fd(),
+	// Here shouldn't use socket_->fd(),
+	// because socket maybe has destroyed when peer close early
+	auto n = sock::write(channel_->fd(),
 						 output_buffer_.peek(),
 						 output_buffer_.readable_size());
 	
@@ -130,7 +140,7 @@ void
 TcpConnection::handleError() {
 	// unsafe also ok
 	//loop_->assertInThread();
-	int err = sock::getsocketError(socket_->fd());
+	int err = sock::getsocketError(channel_->fd());
 	LOG_SYSERROR << "TcpConnection [" << name_
 		<< "] - [errno: " << err << "; errmsg: " << strerror_tl(err) << "]";
 }
@@ -151,3 +161,118 @@ TcpConnection::handleClose() {
 	// TcpServer remove connection from its connections_
 	close_callback_(guard);
 }
+
+void
+TcpConnection::send(void const* data, size_t len) {
+	send(StringView{ 
+			static_cast<char const*>(data), 
+			static_cast<StringView::size_type>(len) });
+}
+
+void
+TcpConnection::send(StringView data) {
+	if (state_ == kConnected) {
+		if (loop_->isLoopInThread()) {
+			sendInLoop(data);
+		} else {
+			loop_->queueToLoop([=]() {
+				this->sendInLoop(std::string(data.data(), data.size()));
+			});
+		}
+	}
+}
+
+void
+TcpConnection::send(Buffer& buf) {
+	// user provide buf
+	// use swap to avoid copy
+	if (state_ == kConnected) {
+		if (loop_->isLoopInThread()) {
+			sendInLoop(buf.peek(), buf.readable_size());
+			buf.advance(buf.readable_size());
+		} else {
+			output_buffer_.swap(buf);
+			loop_->queueToLoop([=](){
+				auto readable =output_buffer_.readable_size();
+				if (readable >= high_water_mark_ &&
+					high_water_mark_callback_) {
+					high_water_mark_callback_(shared_from_this(), readable);
+				}
+				
+				if (!channel_->isWriting())
+					channel_->enableWriting();
+			});
+		}
+	}
+}
+
+void
+TcpConnection::sendInLoop(StringView const& data) {
+	sendInLoop(data.data(), data.size());
+}
+
+void
+TcpConnection::sendInLoop(void const* data, size_t len) {
+	// if is not writing state, indicate @var output_buffer_ maybe is empty,
+	// but also @var output_buffer_ is filled by user throught @f outputBuffer().
+
+	ssize_t n;
+	size_t remaining = len;
+	if (!channel_->isWriting() && output_buffer_.readable_size() == 0) {
+		LOG_DEBUG << "sendInLoop called";
+		// At this case, we can write directly
+		n = sock::write(socket_->fd(), data, len);
+		if (n >= 0) {
+			if (static_cast<size_t>(n) != len) {
+				remaining -= n;	
+			} else {
+				if (write_complete_callback_) {
+					write_complete_callback_(shared_from_this());
+				}
+				
+				return ;
+			}
+		} else {
+			if (errno != EAGAIN) // EWOULDBLOCK
+				LOG_SYSERROR << "write unexpected error occurred";
+			return ;
+		}
+	}
+
+	if (remaining > 0) {
+		// short write happened
+		auto readable_len = output_buffer_.readable_size();
+		// we will handle write complete event in @f handleWrite()
+		if (readable_len + remaining >= high_water_mark_ &&
+			readable_len < high_water_mark_ &&
+			high_water_mark_callback_) {
+			high_water_mark_callback_(shared_from_this(), readable_len + remaining);
+		}
+		
+		output_buffer_.append(static_cast<char const*>(data)+n, remaining);
+		if (!channel_->isWriting()) {
+			channel_->enableWriting();
+		}
+	}
+}
+
+void
+TcpConnection::setNoDelay(bool flag) KANON_NOEXCEPT
+{ socket_->setNoDelay(flag); }
+
+void
+TcpConnection::setKeepAlive(bool flag) KANON_NOEXCEPT
+{ socket_->setKeepAlive(flag); }
+
+// When peer close connection, if you continue write the closed fd which
+// will receive SIGPIPE but this signal default handler is terminal the process
+// so we should ignore it
+//
+// @see test/SIGPIPE_test
+struct IgnoreSignalPipe {
+	IgnoreSignalPipe() {
+		::signal(SIGPIPE, SIG_IGN);
+	}
+};
+
+IgnoreSignalPipe dummy{};
