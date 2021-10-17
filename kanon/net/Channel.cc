@@ -34,8 +34,10 @@ void Channel::handleEvents(TimeStamp receive_time) {
 	
 	LOG_TRACE << "receive_time: " << receive_time.toFormattedString(true);	
 	LOG_TRACE << "fd: " << fd_ << " {" << revents2String() << "}";
-
-	if ((revents_ & POLLHUP) && (revents_ & POLLIN)) {
+	
+	// if revents_ == POLLIN
+	// we should process message except EOF(FIN or RESET)
+	if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
 		if (log_hup_) {
 			LOG_WARN << "fd: " << fd_ << " POLLHUP happened";
 		}
