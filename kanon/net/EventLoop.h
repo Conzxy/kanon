@@ -102,6 +102,7 @@ public:
 	 * @note although release version, it also work
 	 */
 	void assertInThread() noexcept;
+	bool isLoopInThread() noexcept;
 
 private:
 	/**
@@ -116,7 +117,6 @@ private:
 	 */
 	void evRead() KANON_NOEXCEPT;
 	
-	bool isLoopInThread() noexcept;
 	void abortNotInThread() noexcept;
 private:
 	const pid_t ownerThreadId_;
