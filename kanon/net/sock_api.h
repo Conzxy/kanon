@@ -125,6 +125,8 @@ void setReusePort(int fd, int flag) KANON_NOEXCEPT;
 
 void setNoDelay(int fd, int flag) KANON_NOEXCEPT;
 
+void setKeepAlive(int fd, int flag) KANON_NOEXCEPT;
+
 int getsocketError(int fd) KANON_NOEXCEPT;
 
 // get local and peer address
