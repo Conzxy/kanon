@@ -150,6 +150,15 @@ sock::setNoDelay(int fd, int flag) KANON_NOEXCEPT {
 
 }
 
+void
+sock::setKeepAlive(int fd, int flag) KANON_NOEXCEPT {
+	auto ret = ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &flag, static_cast<socklen_t>(sizeof flag));
+
+	if (ret < 0) {
+		LOG_SYSERROR << "set sockeopt error(socket: keepalive)";
+	}
+}
+
 int
 sock::getsocketError(int fd) KANON_NOEXCEPT {
 	int optval;
@@ -161,6 +170,7 @@ sock::getsocketError(int fd) KANON_NOEXCEPT {
 		return optval;
 	}
 }
+
 struct sockaddr_in6
 sock::getLocalAddr(int fd) KANON_NOEXCEPT {
 	struct sockaddr_in6 addr;
