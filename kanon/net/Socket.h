@@ -27,6 +27,8 @@ public:
 	{ sock::setReusePort(fd_, flag); }
 	void setNoDelay(bool flag) KANON_NOEXCEPT
 	{ sock::setNoDelay(fd_, flag); }
+	void setKeepAlive(bool flag) KANON_NOEXCEPT
+	{ sock::setKeepAlive(fd_, flag); }
 
 	// Must be called by client
 	
