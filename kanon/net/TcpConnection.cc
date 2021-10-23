@@ -87,6 +87,8 @@ void
 TcpConnection::handleRead(TimeStamp receive_time) {
 	loop_->assertInThread();
 	int saved_errno;
+	// Here shouldn't use socket_->fd(),
+	// because socket maybe has destroyed when peer close early
 	auto n = input_buffer_.readFd(channel_->fd(), saved_errno);
 	
 	LOG_DEBUG << "readFd return: " << n;	
@@ -114,8 +116,6 @@ TcpConnection::handleWrite() {
 	loop_->assertInThread();
 	assert(channel_->isWriting());	
 	
-	// Here shouldn't use socket_->fd(),
-	// because socket maybe has destroyed when peer close early
 	auto n = sock::write(channel_->fd(),
 						 output_buffer_.peek(),
 						 output_buffer_.readable_size());
@@ -160,6 +160,13 @@ TcpConnection::handleClose() {
 	
 	// TcpServer remove connection from its connections_
 	close_callback_(guard);
+}
+
+void
+TcpConnection::shutdownWrite() KANON_NOEXCEPT {
+	loop_->runInLoop([=]() {
+		socket_->shutdownWrite();
+	});
 }
 
 void
