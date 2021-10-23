@@ -118,6 +118,11 @@ inline void connect(int fd, SA const* addr) KANON_NOEXCEPT {
 // if it is ipv4 in fact, just plain convert it to sockaddr_in by reinterpret_cast
 int accept(int fd, struct sockaddr_in6* addr) KANON_NOEXCEPT;
 
+// shutdown write direction of a specified connection
+inline int shutdownWrite(int fd) KANON_NOEXCEPT {
+	return ::shutdown(fd, SHUT_WR);
+}
+
 // socket option
 void setReuseAddr(int fd, int flag) KANON_NOEXCEPT;
 

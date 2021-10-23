@@ -20,6 +20,7 @@ public:
 	// Must be called by server	
 	void bindAddress(InetAddr const& addr) KANON_NOEXCEPT;
 	int accept(InetAddr& addr) KANON_NOEXCEPT;
+	void shutdownWrite() KANON_NOEXCEPT;
 
 	void setReuseAddr(bool flag) KANON_NOEXCEPT
 	{ sock::setReuseAddr(fd_, flag); }
