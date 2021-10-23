@@ -4,6 +4,7 @@
 #include "kanon/util/macro.h"
 #include "kanon/string/string-view.h"
 
+#include <vector>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdint.h>
@@ -36,12 +37,33 @@
  * obviously, the offset of family and port field is same,
  * so in union, we use these field which no need to distinguish.
  */
+
+/*
+ * struct addrinfo {
+ *   int				ai_flags; // Hints argument flags
+ *   int				ai_family; // specified ip family(1st arg)
+ *   int				ai_socktype; // specified socket type(2nd arg)
+ *   int 				ai_protocol; // specified protocol(3rd arg)
+ *   socklen_t			ai_addrlen; // address length
+ *   struct	sockaddr*	ai_addr; // point to the sockaddr structure
+ *   char*				ai_canonname; // official name
+ *   struct addrinfo*	ai_next; // point to next item in linked list
+ * };
+ */
+struct addrinfo;
+
 namespace kanon {
 
 
 class InetAddr {
 public:
 	typedef uint16_t Port;
+
+	enum class HintType {
+		kNoneHint,
+		kServer,
+		kClient,
+	};
 
 	// Must be used by server
 	explicit InetAddr(Port port=0, bool loopback=false, bool v6=false);
@@ -76,7 +98,13 @@ public:
 
 	struct sockaddr_in6 const* toIpv6() const KANON_NOEXCEPT
 	{ return addr_.sin_family == AF_INET6 ? &addr6_ : nullptr; }
+	
+	// resolve hostname(no service)
+	static void resolve(StringArg hostname, std::vector<InetAddr>& addrs,
+						HintType type = HintType::kNoneHint);
 
+	static void resolve(StringArg hostname, std::vector<InetAddr>& addrs,
+						struct addrinfo* hint);
 private:
 	union {
 		sockaddr_in addr_;
