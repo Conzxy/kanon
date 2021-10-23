@@ -37,3 +37,10 @@ Socket::accept(InetAddr& addr) KANON_NOEXCEPT {
 
 	return cli_fd;
 }
+
+void
+Socket::shutdownWrite() KANON_NOEXCEPT {
+	if (sock::shutdownWrite(fd_)) {
+		LOG_SYSERROR << "shutdown write error";
+	}
+}

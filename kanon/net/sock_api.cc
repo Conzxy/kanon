@@ -31,7 +31,7 @@ sock::toIpPort(char* buf, size_t size, SA const* addr) {
 }
 
 void
-setNonBlockAndCloExec(int fd) KANON_NOEXCEPT {
+sock::setNonBlockAndCloExec(int fd) KANON_NOEXCEPT {
 	auto ret = ::fcntl(fd, F_GETFL, 0);
 	if (ret < 0)
 		LOG_SYSFATAL << "fail to get file status flag(nonblock)";
