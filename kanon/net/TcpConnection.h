@@ -39,6 +39,9 @@ public:
 	void send(Buffer& buf);		
 	void send(void const* data, size_t len);
 	void send(StringView data);
+	
+	// half-close
+	void shutdownWrite() KANON_NOEXCEPT;
 
 	// Since server thread will dispatch connection to IO thread,
 	// need run some function in loop to ensure thread safe	
