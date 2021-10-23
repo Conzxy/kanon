@@ -1,7 +1,7 @@
-#include "../thread.h"
+#include "../Thread.h"
 #include <iostream>
 
-using namespace zxy;
+using namespace kanon;
 
 int main(int argc, char* argv[])
 {

@@ -2,7 +2,7 @@
 #define KANON_NET_EVENTLOOP_H
 
 #include "kanon/util/noncopyable.h"
-#include "kanon/thread/mutexlock.h"
+#include "kanon/thread/MutexLock.h"
 #include "kanon/util/unique_ptr.h"
 #include "kanon/net/timer/TimerQueue.h"
 #include "kanon/util/macro.h"
@@ -39,7 +39,7 @@ public:
 	 * @brief quit loop
 	 * @note if not in thread, should call wakeup()
 	 */
-	void quit() noexcept;
+	void quit() KANON_NOEXCEPT;
 
 	/**
 	 * @brief start a event loop
@@ -101,8 +101,8 @@ public:
 	 * @brief maintain invariant for "one loop per thread" policy
 	 * @note although release version, it also work
 	 */
-	void assertInThread() noexcept;
-	bool isLoopInThread() noexcept;
+	void assertInThread() KANON_NOEXCEPT;
+	bool isLoopInThread() KANON_NOEXCEPT;
 
 private:
 	/**
@@ -117,7 +117,7 @@ private:
 	 */
 	void evRead() KANON_NOEXCEPT;
 	
-	void abortNotInThread() noexcept;
+	void abortNotInThread() KANON_NOEXCEPT;
 private:
 	const pid_t ownerThreadId_;
 	std::unique_ptr<PollerBase> poller_;

@@ -2,7 +2,7 @@
 #define KANON_TIMER_TIMER_H
 
 #include "kanon/time/TimeStamp.h"
-#include "kanon/thread/atomic.h"
+#include "kanon/thread/Atomic.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 

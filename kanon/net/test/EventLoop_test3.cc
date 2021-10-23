@@ -3,7 +3,7 @@
 
 using namespace kanon;
 
-void print() noexcept {
+void print() KANON_NOEXCEPT {
     puts("print");
 }
 

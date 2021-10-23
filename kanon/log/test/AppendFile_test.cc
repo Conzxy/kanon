@@ -1,6 +1,6 @@
 #include "log/AppendFile.h"
 
-using namespace zxy;
+using namespace kanon;
 
 int main() {
 	AppendFile file("a.txt");

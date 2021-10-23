@@ -6,11 +6,11 @@ using namespace kanon;
 
 std::unique_ptr<LogFile<>> g_logFile;
 
-void output(char const* data, size_t num) noexcept {
+void output(char const* data, size_t num) KANON_NOEXCEPT {
 	g_logFile->append(data, num);
 }
 
-void flush() noexcept {
+void flush() KANON_NOEXCEPT {
 	g_logFile->flush();	
 }
 

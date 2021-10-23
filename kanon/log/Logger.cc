@@ -1,6 +1,6 @@
 #include "Logger.h"
 #include "TerminalColor.h"
-#include "kanon/thread/current-thread.h"
+#include "kanon/thread/current_thread.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -114,7 +114,7 @@ Logger::~Logger() {
 	}
 }
 
-void Logger::formatTime() noexcept {
+void Logger::formatTime() KANON_NOEXCEPT {
 	// don't consider time zone
 	struct timeval tv;
 	::gettimeofday(&tv, NULL);

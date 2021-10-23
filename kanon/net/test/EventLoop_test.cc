@@ -1,6 +1,6 @@
 #include "../EventLoop.h"
-#include "kanon/thread/thread.h"
-#include "kanon/thread/current-thread.h"
+#include "kanon/thread/Thread.h"
+#include "kanon/thread/current_thread.h"
 #include <stdio.h>
 
 

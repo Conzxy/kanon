@@ -2,10 +2,10 @@
 #include <memory>
 #include <string>
 #include <string/string-view.h>
-#include "../thread.h"
+#include "../Thread.h"
 #include <unistd.h>
 
-using namespace zxy;
+using namespace kanon;
 
 class Stock : public Object<std::string, Stock>
 {

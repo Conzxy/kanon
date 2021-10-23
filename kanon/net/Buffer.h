@@ -13,7 +13,7 @@ namespace kanon {
 #define BUFFER_INITSIZE 1024
 #define BUFFER_PREFIX_SIZE 8
 
-/*
+/**
  * @brief simple continuous buffer
  * it provide for byte stream with operation sucha as append and prepend
  * buffer layout:
@@ -27,6 +27,7 @@ namespace kanon {
 class Buffer {
 	typedef std::vector<char> data_type;
 public:
+
 	typedef data_type::size_type size_type;
 	typedef data_type::value_type value_type;
 	typedef data_type::pointer pointer;

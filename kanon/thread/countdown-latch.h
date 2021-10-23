@@ -1,9 +1,11 @@
 #ifndef KANON_COUNTDOWN_LATCH_H
 #define KANON_COUNTDOWN_LATCH_H
 
-#include "mutexlock.h"
-#include "condition.h"
 #include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
+
+#include "MutexLock.h"
+#include "kanon/thread/Condition.h"
 
 // simple facility instead of pthread_barrier
 // common usage:
@@ -24,7 +26,7 @@ public:
 			cond_.wait();
 	}
 
-	void countdown() noexcept
+	void countdown() KANON_NOEXCEPT
 	{
 		MutexGuard guard(mutex_);
 		if(--count_ == 0)

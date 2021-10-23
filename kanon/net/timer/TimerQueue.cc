@@ -11,7 +11,7 @@ namespace kanon {
 
 namespace detail {
 
-static inline int createTimerfd() noexcept {
+static inline int createTimerfd() KANON_NOEXCEPT {
 	auto timerfd = ::timerfd_create(CLOCK_MONOTONIC, 
 								  TFD_NONBLOCK | TFD_CLOEXEC);
 
@@ -23,7 +23,7 @@ static inline int createTimerfd() noexcept {
 	return timerfd;
 }
 
-static struct timespec getTimeFromNow(TimeStamp time) noexcept {
+static struct timespec getTimeFromNow(TimeStamp time) KANON_NOEXCEPT {
 	int interval = time.microsecondsSinceEpoch() - TimeStamp::now().microsecondsSinceEpoch();
 	if (interval < 100) interval = 100;
 
@@ -34,7 +34,7 @@ static struct timespec getTimeFromNow(TimeStamp time) noexcept {
 	return expire;	
 }
 
-//static struct timespec getTimerInterval(double time) noexcept {
+//static struct timespec getTimerInterval(double time) KANON_NOEXCEPT {
 	//static constexpr int kNanoSecondPerSecond = 1000000000;
 
 	//int64_t diff = static_cast<int64_t>(time * kNanoSecondPerSecond);
@@ -46,10 +46,10 @@ static struct timespec getTimeFromNow(TimeStamp time) noexcept {
 	//return interval;
 //}
 
-static inline void print_timespec(struct timespec const& spec) KANON_NOEXCEPT {
-	LOG_DEBUG << "second: " << spec.tv_sec
-			  << ";nanosecond: " << spec.tv_nsec;
-}
+// static inline void print_timespec(struct timespec const& spec) KANON_NOEXCEPT {
+// 	LOG_DEBUG << "second: " << spec.tv_sec
+// 			  << ";nanosecond: " << spec.tv_nsec;
+// }
 
 static inline void print_itimerspec(struct itimerspec const& spec) {
 	LOG_DEBUG << "reset: expiration: " 
@@ -60,7 +60,7 @@ static inline void print_itimerspec(struct itimerspec const& spec) {
 			  << ",nanosecond: " << spec.it_interval.tv_nsec;
 }
 
-static void resetTimerfd(int timerfd, Timer const& timer) noexcept {
+static void resetTimerfd(int timerfd, Timer const& timer) KANON_NOEXCEPT {
 	struct itimerspec new_value;
 	BZERO(&new_value.it_interval, sizeof(struct timespec));			
 
@@ -77,7 +77,7 @@ static void resetTimerfd(int timerfd, Timer const& timer) noexcept {
 	LOG_TRACE << "reset successfully";
 }
 
-static void readTimerfd(int timerfd) noexcept {
+static void readTimerfd(int timerfd) KANON_NOEXCEPT {
 	uint64_t dummy = 0;
 	uint64_t n;
 

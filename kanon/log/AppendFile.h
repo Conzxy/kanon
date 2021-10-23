@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "kanon/util/noncopyable.h"
 #include "kanon/string/string-view.h"
+#include "kanon/util/macro.h"
 
 
 namespace kanon {
@@ -12,18 +13,18 @@ class AppendFile : noncopyable
 {
 public:
 	explicit AppendFile(StringArg filename);
-	~AppendFile() noexcept;
+	~AppendFile() KANON_NOEXCEPT;
 	
-	void append(char const* data, size_t num) noexcept;
+	void append(char const* data, size_t num) KANON_NOEXCEPT;
 
-	void flush() noexcept
+	void flush() KANON_NOEXCEPT
 	{ ::fflush_unlocked(fp_); }
 
-	size_t writtenBytes() const noexcept
+	size_t writtenBytes() const KANON_NOEXCEPT
 	{ return writtenBytes_; }
 
 private:
-	size_t write(char const* data, size_t num) noexcept
+	size_t write(char const* data, size_t num) KANON_NOEXCEPT
 	{ return ::fwrite(data, 1, num, fp_); }
 
 protected:

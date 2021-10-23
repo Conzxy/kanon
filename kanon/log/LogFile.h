@@ -4,7 +4,8 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/string/string-view.h"
 #include "kanon/thread/DummyMutexLock.h"
-#include "kanon/thread/mutexlock.h"
+#include "kanon/thread/MutexLock.h"
+#include "kanon/util/macro.h"
 #include "AppendFile.h"
 
 #include <memory>
@@ -28,13 +29,13 @@ public:
 			size_t flushInterval = 3,
 			size_t rollLine = 1024);
 
-	~LogFile() noexcept;
+	~LogFile() KANON_NOEXCEPT;
 
-	void append(char const* data, size_t num) noexcept;
-	void flush() noexcept;
+	void append(char const* data, size_t num) KANON_NOEXCEPT;
+	void flush() KANON_NOEXCEPT;
 private:
 	void rollFile();
-	static std::string formatTime() noexcept;
+	static std::string formatTime() KANON_NOEXCEPT;
 	std::string getLogFileName(time_t& now);	
 private:
 	StringView basename_;
@@ -74,10 +75,10 @@ LogFile<T>::LogFile(StringView basename,
 }
 
 template<typename T>
-inline LogFile<T>::~LogFile() noexcept = default;
+inline LogFile<T>::~LogFile() KANON_NOEXCEPT = default;
 
 template<typename T>
-void LogFile<T>::append(char const* data, size_t num) noexcept {
+void LogFile<T>::append(char const* data, size_t num) KANON_NOEXCEPT {
 	MutexGuardT<T> guard(lock_);
 	
 	file_->append(data, num);
@@ -104,7 +105,7 @@ void LogFile<T>::append(char const* data, size_t num) noexcept {
 }
 
 template<typename T>
-void LogFile<T>::flush() noexcept {
+void LogFile<T>::flush() KANON_NOEXCEPT {
 	MutexGuardT<T> guard(lock_);
 	file_->flush();
 }

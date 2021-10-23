@@ -1,7 +1,7 @@
 #include "../string-view.h"
 #include <iostream>
 
-using namespace zxy;
+using namespace kanon;
 
 StringView RmSlash(StringView fullname)
 {

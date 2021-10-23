@@ -7,6 +7,7 @@
 #endif 
 
 #include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
 #include "kanon/log/Logger.h"
 #include "kanon/time/TimeStamp.h"
 //#include "kanon/net/EventLoop.h"
@@ -57,45 +58,45 @@ public:
 		LOG_TRACE << "Channel fd = " << fd_ << " created";
 	}
 	
-	int fd() const noexcept { return fd_; }
-	int events() const noexcept { return events_; }
+	int fd() const KANON_NOEXCEPT { return fd_; }
+	int events() const KANON_NOEXCEPT { return events_; }
 
-	std::string events2String() const noexcept { return ev2String(events_); }
-	std::string revents2String() const noexcept { return ev2String(revents_); }
+	std::string events2String() const KANON_NOEXCEPT { return ev2String(events_); }
+	std::string revents2String() const KANON_NOEXCEPT { return ev2String(revents_); }
 
-	void enableReading() noexcept {
+	void enableReading() KANON_NOEXCEPT {
 		events_ |= Event::ReadEvent;
 		update();
 	}
 	
-	void enableWriting() noexcept {
+	void enableWriting() KANON_NOEXCEPT {
 		events_ |= Event::WriteEvent;
 		update();
 	}
 	
-	void disableReading() noexcept {
+	void disableReading() KANON_NOEXCEPT {
 		events_ |= ~Event::ReadEvent;
 		update();
 	}
 
-	void disableWriting() noexcept {
+	void disableWriting() KANON_NOEXCEPT {
 		events_ |= ~Event::WriteEvent;
 		update();
 	}
 	
-	bool isReading() const noexcept {
+	bool isReading() const KANON_NOEXCEPT {
 		return events_ & Event::ReadEvent;
 	}
 
-	bool isWriting() const noexcept {
+	bool isWriting() const KANON_NOEXCEPT {
 		return events_ & Event::WriteEvent;
 	}
 	
-	bool isNoneEvent() const noexcept {
+	bool isNoneEvent() const KANON_NOEXCEPT {
 		return events_ == 0;
 	}
 
-	void disableAll() noexcept {
+	void disableAll() KANON_NOEXCEPT {
 		events_ = Event::NoneEvent;
 		update();
 	}
@@ -108,11 +109,11 @@ public:
 	void setErrorCallback(EventCallback cb) { error_callback_ = std::move(cb); }
 	void setCloseCallback(EventCallback cb) { close_callback_ = std::move(cb); }
 	
-	int index() noexcept { return index_; }
-	void setIndex(int index) noexcept { index_ = index; }
-	void setRevents(int event) noexcept { revents_ = event; }
+	int index() KANON_NOEXCEPT { return index_; }
+	void setIndex(int index) KANON_NOEXCEPT { index_ = index; }
+	void setRevents(int event) KANON_NOEXCEPT { revents_ = event; }
 	
-	void setLogHup(bool flag) noexcept { log_hup_ = flag; }
+	void setLogHup(bool flag) KANON_NOEXCEPT { log_hup_ = flag; }
 	void handleEvents(TimeStamp receive_time);
 
 private:

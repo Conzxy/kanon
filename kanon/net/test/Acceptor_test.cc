@@ -4,12 +4,14 @@
 using namespace kanon;
 
 int main() {
-	EventLoop loop;
+	EventLoopThread loop_thread;
 
 	InetAddr listen_addr{ 9999 };
 	
 	LOG_DEBUG << "listen_addr: " << listen_addr.toIpPort();	
-	Acceptor acceptor(&loop, listen_addr);
+	auto loop = loop_thread.start();
+
+	Acceptor acceptor(loop, listen_addr);
 
 	acceptor.setNewConnectionCallback([](int sockfd, InetAddr const& cli_addr) {
 		LOG_INFO << "accept a new connection from " << cli_addr.toIpPort();
@@ -26,8 +28,5 @@ int main() {
 	});
 
 	acceptor.listen();
-
-	loop.loop();
-
 
 }

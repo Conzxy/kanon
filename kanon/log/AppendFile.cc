@@ -12,13 +12,13 @@ AppendFile::AppendFile(StringArg filename)
 	::setbuffer(fp_, buf_, sizeof buf_);
 }
 
-AppendFile::~AppendFile() noexcept {
+AppendFile::~AppendFile() KANON_NOEXCEPT {
 	flush();
 	if (fp_)
 		::fclose(fp_);
 }
 
-void AppendFile::append(char const* data, size_t num) noexcept {
+void AppendFile::append(char const* data, size_t num) KANON_NOEXCEPT {
 	size_t written = 0;
 
 	do {

@@ -7,7 +7,7 @@
 
 namespace kanon {
 
-TimeStamp Poller::poll(int ms, ChannelVec& activeChannels) noexcept {
+TimeStamp Poller::poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
 	Base::assertInThread();
 
 	auto ret = ::poll(pollfds_.data(), 

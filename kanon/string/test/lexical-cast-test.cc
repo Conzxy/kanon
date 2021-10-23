@@ -1,7 +1,7 @@
 #include "../lexical-cast.h"
 #include <gtest/gtest.h>
 
-using namespace zxy;
+using namespace kanon;
 
 TEST(LexicalCastTest, Int) {
 	char buf[32];

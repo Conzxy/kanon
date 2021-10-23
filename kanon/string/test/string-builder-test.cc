@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-using namespace zxy;
+using namespace kanon;
 using namespace std;
 
 #define N 1000000

@@ -1,5 +1,5 @@
 #include "kanon/net/EventLoop.h"
-#include "kanon/thread/current-thread.h"
+#include "kanon/thread/current_thread.h"
 #include "kanon/log/Logger.h"
 #include "kanon/net/Channel.h"
 #include "kanon/time/TimeStamp.h"
@@ -19,7 +19,7 @@ namespace detail {
 /**
  * @brief event fd API
  */
-static int createEventfd() noexcept {
+static int createEventfd() KANON_NOEXCEPT {
 	int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
 	LOG_TRACE << "eventfd " << evfd << " created";
@@ -31,13 +31,13 @@ static int createEventfd() noexcept {
 	return evfd;
 }
 
-static void readEventfd(int evfd) noexcept {
+static void readEventfd(int evfd) KANON_NOEXCEPT {
 	uint64_t dummy;
 	if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "readEventfd() error occurred";
 }
 
-static void writeEventfd(int evfd) noexcept {
+static void writeEventfd(int evfd) KANON_NOEXCEPT {
 	uint64_t dummy = 0;
 	if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
 		LOG_SYSERROR << "writeEventfd() error occurred";
@@ -164,17 +164,17 @@ void EventLoop::callFunctors() {
 	callingFunctors_ = false;
 }
 
-void EventLoop::assertInThread() noexcept {
+void EventLoop::assertInThread() KANON_NOEXCEPT {
 	if (!this->isLoopInThread())
 		this->abortNotInThread();
 }
 
-bool EventLoop::isLoopInThread() noexcept {
+bool EventLoop::isLoopInThread() KANON_NOEXCEPT {
 	return CurrentThread::t_tid == ownerThreadId_;
 
 }
 
-void EventLoop::abortNotInThread() noexcept {
+void EventLoop::abortNotInThread() KANON_NOEXCEPT {
 	LOG_FATAL << "You Should obey one loop per thread policy";
 }
 
@@ -186,7 +186,7 @@ void EventLoop::wakeup() KANON_NOEXCEPT {
 	detail::writeEventfd(evfd_);
 }
 
-void EventLoop::quit() noexcept {
+void EventLoop::quit() KANON_NOEXCEPT {
 	quit_ = true;
 	
 	if (! this->isLoopInThread())
