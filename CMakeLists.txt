@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 #set(CMAKE_C_COMPILER "/usr/local/bin/clang")
 #set(CMAKE_CXX_COMPILER "/usr/local/bin/clang++")
-project(zxy)
+project(kanon)
 
-enable_testing()
+#enable_testing()
 
 #if (NOT CMAKE_BUILD_TYPE)
 #	set(CMAKE_BUILD_TYPE "Release")
@@ -49,9 +49,9 @@ string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}; BUILD_TYPE: ${CAMKE_BUILD_TYPE}")
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
 
-#link_libraries("/usr/local/lib/libgtest.a")
+link_libraries("/usr/local/lib/libgtest.a")
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -61,6 +61,7 @@ aux_source_directory(${KANON_SOURCE_DIR}/string STRING_SRC)
 aux_source_directory(${KANON_SOURCE_DIR}/log LOG_SRC)
 aux_source_directory(${KANON_SOURCE_DIR}/thread THREAD_SRC)
 aux_source_directory(${KANON_SOURCE_DIR}/net NET_SRC)
+
 
 file(GLOB_RECURSE KANON_SRC ${KANON_SOURCE_DIR}/*.cc)
 
@@ -73,10 +74,10 @@ message(STATUS "log src: ${LOG_SRC}")
 message(STATUS "thread src: ${THREAD_SRC}")
 message(STATUS "KANON_SRC: ${KANON_SRC}")
 
-set(SRC 
-	${LOG_SRC} ${STRING_SRC} ${THREAD_SRC})
+set(ALL_SRC 
+	${LOG_SRC} ${STRING_SRC} ${THREAD_SRC} ${NET_SRC})
 
 add_subdirectory(${KANON_SOURCE_DIR}/net)
 #add_subdirectory(string)
-#add_subdirectory(thread)
+add_subdirectory(${KANON_SOURCE_DIR}/thread)
 #add_subdirectory(log)
