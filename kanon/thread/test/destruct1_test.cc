@@ -1,6 +1,6 @@
 //#define NDEBUG
-#include "../thread.h"
-#include "../mutexlock.h"
+#include "../Thread.h"
+#include "../MutexLock.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -24,7 +24,7 @@ private:
 
 A* a = new A{};
 
-using namespace zxy;
+using namespace kanon;
 
 int main()
 {

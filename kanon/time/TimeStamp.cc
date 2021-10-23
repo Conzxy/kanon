@@ -4,7 +4,7 @@
 
 namespace kanon {
 	
-TimeStamp TimeStamp::now() noexcept {
+TimeStamp TimeStamp::now() KANON_NOEXCEPT {
 	struct timeval time;
 	::gettimeofday(&time, NULL);
 	return TimeStamp(static_cast<int64_t>(time.tv_sec * kMicrosecondsPerSeconds_ + time.tv_usec));

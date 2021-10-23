@@ -4,7 +4,7 @@
 #include <string.h>
 
 using namespace std;
-using namespace zxy;
+using namespace kanon;
 
 #define N 1000000
 

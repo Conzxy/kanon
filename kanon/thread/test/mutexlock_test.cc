@@ -1,7 +1,7 @@
-#include "mutexlock.h"
+#include "MutexLock.h"
 #include "DummyMutexLock.h"
 
-using namespace zxy;
+using namespace kanon;
 
 int main() {
 	{

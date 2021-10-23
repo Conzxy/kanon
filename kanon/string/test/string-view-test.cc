@@ -3,9 +3,9 @@
 #include <iostream>
 #include <iterator>
 
-using namespace zxy;
+using namespace kanon;
 using namespace std;
-using namespace zxy::literal;
+using namespace kanon::literal;
 
 StringView sv = "B AB AB B ";
 StringView empty_sv = "";

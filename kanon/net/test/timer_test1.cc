@@ -1,5 +1,5 @@
 #include "kanon/net/EventLoop.h"
-#include "kanon/thread/thread.h"
+#include "kanon/thread/Thread.h"
 
 using namespace kanon;
 

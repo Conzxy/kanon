@@ -1,11 +1,11 @@
-#include "thread/mutexlock.h"
+#include "thread/MutexLock.h"
 #include "util/noncopyable.h"
 #include <memory>
 #include <unordered_map>
 #include <utility>
-#include "thread/weak-callback.h"
+#include "thread/weak_callback.h"
 
-namespace zxy {
+namespace kanon {
 
 #define HashMap std::unordered_map
 
@@ -95,7 +95,7 @@ public:
 	void setKey(K const& key)
 	{ key_ = key; }
 
-	K const& getKey() const noexcept
+	K const& getKey() const KANON_NOEXCEPT
 	{ return key_; }
 
 	~Object()
@@ -153,5 +153,5 @@ private:
 template<typename K, typename Derived>
 typename Object<K, Derived>::ObjectPoolPtr Object<K, Derived>::pool_ {};
 
-} // namespace zxy
+} // namespace kanon
 

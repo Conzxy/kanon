@@ -30,7 +30,7 @@ public:
 
 	// IO thread
 	virtual TimeStamp poll(int ms, ChannelVec& activeChannels) = 0;
-	//TimeStamp poll(int ms, ChannelVec& activeChannels) noexcept {
+	//TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
 		//return static_cast<Poller*>(this)->poll(ms, activeChannels);
 	//}
 
@@ -51,7 +51,7 @@ public:
 	}
 
 protected:
-	void assertInThread() noexcept {
+	void assertInThread() KANON_NOEXCEPT {
 		loop_->assertInThread();
 	}
 

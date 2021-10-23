@@ -1,7 +1,7 @@
 #include "../check.h"
 #include <assert.h>
 
-using namespace zxy;
+using namespace kanon;
 
 int main()
 {

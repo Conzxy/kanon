@@ -1,14 +1,16 @@
 #ifndef KANON_LEXICAL_STREAM_H
 #define KANON_LEXICAL_STREAM_H
 
+#include "kanon/string/string-view.h"
+#include "kanon/util/macro.h"
+#include "kanon/util/noncopyable.h"
+
 #include <string.h>
 #include <string>
 #include <stdint.h>
 #include <type_traits>
 #include <algorithm>
 #include <assert.h>
-#include "string-view.h"
-#include "kanon/util/noncopyable.h"
 
 namespace kanon{
 
@@ -28,20 +30,20 @@ public:
 	{ }
 	
 	//prohibit modify througt data()
-	char const* data() const noexcept { return data_; }
+	char const* data() const KANON_NOEXCEPT { return data_; }
 	
 	// length, avaliable space
-	unsigned len() const noexcept 
+	unsigned len() const KANON_NOEXCEPT 
 	{ return len_; }
 
-	unsigned avali() const noexcept 
+	unsigned avali() const KANON_NOEXCEPT 
 	{ return SZ - len_; }
 	
-	char const* end() const noexcept 
+	char const* end() const KANON_NOEXCEPT 
 	{ return data_ + SZ; }
 
 	// append
-	void append(char const* str, unsigned len) noexcept {
+	void append(char const* str, unsigned len) KANON_NOEXCEPT {
 		if(len < avali()) {
 			memcpy(cur(), str, len);
 			len_ += len;
@@ -51,24 +53,24 @@ public:
 	
 	// inplace modify
 	// cur() -> set()
-	char* cur() noexcept
+	char* cur() KANON_NOEXCEPT
 	{ return data_ + len_; }
 
-	void reset() noexcept
+	void reset() KANON_NOEXCEPT
 	{ len_ = 0; }
 
-	void add(unsigned diff) noexcept
+	void add(unsigned diff) KANON_NOEXCEPT
 	{ 
 		len_ += diff; 
 		assert(len_ < SZ);
 	}
 	
-	void swap(Self& other) noexcept{
+	void swap(Self& other) KANON_NOEXCEPT{
 		std::swap(data_, other.data_);
 		std::swap(len_, other.len_);
 	}
 
-	void zero() noexcept
+	void zero() KANON_NOEXCEPT
 	{ memset(data_, 0, SZ); }
 private:
 	char data_[SZ];
@@ -76,7 +78,7 @@ private:
 };
 
 template<unsigned SZ>
-void swap(FixedBuffer<SZ> const& lhs, FixedBuffer<SZ> const& rhs) noexcept(noexcept(lhs.swap(rhs)))
+void swap(FixedBuffer<SZ> const& lhs, FixedBuffer<SZ> const& rhs) KANON_NOEXCEPT(KANON_NOEXCEPT(lhs.swap(rhs)))
 { lhs.swap(rhs); }
 
 } // namespace detail
@@ -89,25 +91,25 @@ class LexicalStream : noncopyable
 public:
 
 	LexicalStream() = default;
-	LexicalStream(LexicalStream&&) noexcept;
-	LexicalStream& operator=(LexicalStream&&) noexcept;	
+	LexicalStream(LexicalStream&&) KANON_NOEXCEPT;
+	LexicalStream& operator=(LexicalStream&&) KANON_NOEXCEPT;	
 
-	void append(char const* buf, unsigned len) noexcept 
+	void append(char const* buf, unsigned len) KANON_NOEXCEPT 
 	{ buffer_.append(buf, len); }
 	
-	void reset() noexcept
+	void reset() KANON_NOEXCEPT
 	{ buffer_.reset(); }
 
-	char const* data() const noexcept
+	char const* data() const KANON_NOEXCEPT
 	{ return buffer_.data(); }
 	
-	Buffer& buffer() noexcept
+	Buffer& buffer() KANON_NOEXCEPT
 	{ return buffer_; }
 	
-	unsigned size() const noexcept
+	unsigned size() const KANON_NOEXCEPT
 	{ return buffer_.len(); }
 	
-	unsigned maxsize() const noexcept
+	unsigned maxsize() const KANON_NOEXCEPT
 	{ return SZ; }
 
 	Self& operator<<(bool);
@@ -146,12 +148,12 @@ template<unsigned SZ>
 constexpr unsigned LexicalStream<SZ>::kMaxFloatingSize;
 
 template<unsigned SZ>
-LexicalStream<SZ>::LexicalStream(LexicalStream&& other) noexcept
+LexicalStream<SZ>::LexicalStream(LexicalStream&& other) KANON_NOEXCEPT
 	: buffer_(other.buffer())
 { }
 
 template<unsigned SZ>
-LexicalStream<SZ>& LexicalStream<SZ>::operator=(LexicalStream&& other) noexcept
+LexicalStream<SZ>& LexicalStream<SZ>::operator=(LexicalStream&& other) KANON_NOEXCEPT
 {
 	buffer_.swap(other.buffer_);	
 	return *this;
@@ -332,10 +334,10 @@ public:
 		: Fmt(str.c_str(), str.size()) 
 	{ }
 	
-	char const* buf() const noexcept
+	char const* buf() const KANON_NOEXCEPT
 	{ return buf_; }
 
-	unsigned len() const noexcept
+	unsigned len() const KANON_NOEXCEPT
 	{ return len_; }
 
 private:

@@ -3,6 +3,7 @@
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/string/string-view.h"
+#include "kanon/util/macro.h"
 #include "LogStream.h"
 #include <functional>
 
@@ -72,14 +73,14 @@ public:
 	// do output and flush
 	~Logger();
 	
-	LogStream& stream() noexcept { return stream_; }
+	LogStream& stream() KANON_NOEXCEPT { return stream_; }
 
-	static LogLevel logLevel() noexcept { return logLevel_; }
-	static void setLogLevel(LogLevel logLevel) noexcept { logLevel_ = logLevel; }
-	static OutputCallback outputCallback() noexcept { return outputCallback_; }
-	static void setOutputCallback(OutputCallback output) noexcept { outputCallback_ = output; }
-	static FlushCallback flushCallback() noexcept { return flushCallback_; }
-	static void setFlushCallback(FlushCallback flush) noexcept { flushCallback_ = flush; }
+	static LogLevel logLevel() KANON_NOEXCEPT { return logLevel_; }
+	static void setLogLevel(LogLevel logLevel) KANON_NOEXCEPT { logLevel_ = logLevel; }
+	static OutputCallback outputCallback() KANON_NOEXCEPT { return outputCallback_; }
+	static void setOutputCallback(OutputCallback output) KANON_NOEXCEPT { outputCallback_ = output; }
+	static FlushCallback flushCallback() KANON_NOEXCEPT { return flushCallback_; }
+	static void setFlushCallback(FlushCallback flush) KANON_NOEXCEPT { flushCallback_ = flush; }
 
 private:
 	StringView basename_;
@@ -89,7 +90,7 @@ private:
 
 	LogStream stream_;
 	
-	void formatTime() noexcept;
+	void formatTime() KANON_NOEXCEPT;
 	static char const* logLevelName[static_cast<size_t>(LogLevel::NUM_LOG_LEVEL)];
 	static LogLevel logLevel_;
 	static OutputCallback outputCallback_;
