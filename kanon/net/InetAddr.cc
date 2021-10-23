@@ -1,6 +1,9 @@
 #include "InetAddr.h"
 #include "sock_api.h"
 
+#include <string.h>
+#include <netdb.h>
+
 using namespace kanon;
 
 // make memory layout be same, so as get same offset member in union be right
@@ -51,3 +54,52 @@ InetAddr::toIp() const {
 
 	return buf;
 }
+
+void
+InetAddr::resolve(StringArg hostname, std::vector<InetAddr>& addrs,
+				  HintType type) {
+	struct addrinfo hint;
+	BZERO(&hint, sizeof hint);
+
+	switch (type) {
+		case HintType::kClient:
+			hint.ai_socktype = SOCK_STREAM;
+			hint.ai_flags |= AI_NUMERICSERV | AI_ADDRCONFIG;
+			break;
+		case HintType::kServer:
+			hint.ai_socktype = SOCK_STREAM;
+			hint.ai_flags |= AI_NUMERICSERV | AI_PASSIVE | AI_ADDRCONFIG;
+		break;
+		case HintType::kNoneHint:
+			hint.ai_socktype = SOCK_STREAM;
+		default:
+			break;
+	}
+	
+	resolve(hostname, addrs, &hint);	
+}
+
+void
+InetAddr::resolve(StringArg hostname, std::vector<InetAddr>& addrs,
+				  struct addrinfo* hint) {
+	assert(addrs.size() == 0);
+	
+	struct addrinfo* addr_list;
+	auto ret = ::getaddrinfo(hostname, NULL, hint, &addr_list);
+
+	if (!ret) {
+		for (; addr_list; addr_list = addr_list->ai_next) {
+			if (addr_list->ai_family == AF_INET)
+				addrs.emplace_back(
+						*sock::sockaddr_cast<struct sockaddr_in>(addr_list->ai_addr));
+			else
+				addrs.emplace_back(
+						*sock::sockaddr_cast<struct sockaddr_in6>(addr_list->ai_addr));
+		}
+
+		::freeaddrinfo(addr_list);
+	} else {
+		LOG_SYSERROR << "resolve the hostname to address error: " << ::gai_strerror(ret);
+	}
+}
+
