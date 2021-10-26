@@ -23,7 +23,7 @@ public:
 	~TimeStamp() = default;
 	
 	std::string toString() const;
-	std::string toFormattedString(bool isShowMicroseconds) const;
+	std::string toFormattedString(bool isShowMicroseconds = true) const;
 
 	bool valid() const KANON_NOEXCEPT
 	{ return microseconds_ > 0; }

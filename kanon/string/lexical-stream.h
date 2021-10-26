@@ -36,6 +36,9 @@ public:
 	unsigned len() const KANON_NOEXCEPT 
 	{ return len_; }
 
+	bool empty() const KANON_NOEXCEPT
+	{ return len() == 0; }
+
 	unsigned avali() const KANON_NOEXCEPT 
 	{ return SZ - len_; }
 	
@@ -48,7 +51,7 @@ public:
 			memcpy(cur(), str, len);
 			len_ += len;
 			*cur() = 0;
-		}
+		} 
 	}
 	
 	// inplace modify
@@ -354,6 +357,9 @@ LexicalStream<SZ>& operator<<(LexicalStream<SZ>& stream, Fmt const& fmt)
 
 constexpr int64_t kSmallStreamSize = 4000;
 constexpr int64_t kLargeStreamSize = 4000 * 1000;
+
+#define SMALL_FIXEDBUFFER_SIZE 4000
+#define LARGE_FIXEDBUFFER_SIZE 4000 * 1000
 
 using SmallLexicalStream = LexicalStream<kSmallStreamSize>;
 using LargeLexicalStream = LexicalStream<kLargeStreamSize>;
