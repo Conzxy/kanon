@@ -53,6 +53,12 @@ public:
 	// constructor
 	StringView() = default;
 
+	template<uint64_t N>
+	StringView(char const(&str)[N])
+		: data_(static_cast<char const*>(str))
+		, len_(sizeof str)
+	{ }
+
 	StringView(char const* str)
 		: data_(str), len_(strlen(str))
 	{ }
