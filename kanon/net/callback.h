@@ -18,7 +18,7 @@ typedef std::function<void(TcpConnectionPtr const&)> WriteCompleteCallback;
 typedef std::function<void(TcpConnectionPtr const&, size_t)> HighWaterMarkCallback;
 typedef std::function<void(TcpConnectionPtr const&)> CloseCallback;
 
-typedef std::function<void(TcpConnectionPtr const&, Buffer*, TimeStamp stamp)> MessageCallback;
+typedef std::function<void(TcpConnectionPtr const&, Buffer&, TimeStamp stamp)> MessageCallback;
 
 
 } // namespace kanon
