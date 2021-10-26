@@ -95,7 +95,7 @@ TcpConnection::handleRead(TimeStamp receive_time) {
 
 	if (n > 0) {
 		if (message_callback_) {
-			message_callback_(shared_from_this(), &input_buffer_, receive_time);
+			message_callback_(shared_from_this(), input_buffer_, receive_time);
 		} else {
 			LOG_WARN << "If user want to process message from peer, should set "
 				"proper message_callback_";
