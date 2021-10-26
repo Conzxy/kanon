@@ -51,7 +51,7 @@ message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}; BUILD_TYPE: ${CAMKE_BUILD_T
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
 
-link_libraries("/usr/local/lib/libgtest.a")
+#link_libraries("/usr/local/lib/libgtest.a")
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -80,4 +80,7 @@ set(ALL_SRC
 add_subdirectory(${KANON_SOURCE_DIR}/net)
 #add_subdirectory(string)
 add_subdirectory(${KANON_SOURCE_DIR}/thread)
-#add_subdirectory(log)
+add_subdirectory(example)
+add_subdirectory(${KANON_SOURCE_DIR}/log)
+
+
