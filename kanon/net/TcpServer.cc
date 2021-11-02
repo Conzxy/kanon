@@ -2,17 +2,11 @@
 #include "kanon/net/InetAddr.h"
 #include "kanon/net/TcpConnection.h"
 #include "kanon/net/EventLoop.h"
+#include "kanon/net/EventLoopPool.h"
 #include "kanon/net/Acceptor.h"
-
 #include "kanon/util/unique_ptr.h"
 
 using namespace kanon;
-
-void defaultConnectionCallaback(TcpConnectionPtr const& conn) {
-	LOG_TRACE << conn->localAddr().toIpPort() << "->"
-		<< conn->peerAddr().toIpPort() << " "
-		<< (conn->isConnected() ? "UP" : "DOWN");
-}
 
 TcpServer::TcpServer(EventLoop* loop,
 					 InetAddr const& listen_addr,
@@ -23,7 +17,8 @@ TcpServer::TcpServer(EventLoop* loop,
 	, name_{ name }
 	, acceptor_{ kanon::make_unique<Acceptor>(loop_, listen_addr, reuseport) }
 	, next_conn_id{ 1 }
-
+	, pool_{ kanon::make_unique<EventLoopPool>(
+			 loop, static_cast<char const*>(name)) }
 {
 	setConnectionCallback(&defaultConnectionCallaback);
 
@@ -38,8 +33,7 @@ TcpServer::TcpServer(EventLoop* loop,
 		++next_conn_id;
 		auto conn_name = name_ + buf;
 		
-		// FIXME: add EventLoopThreadPool
-		auto io_loop = loop_;	
+		auto io_loop = pool_->getNextLoop();
 
 		auto local_addr = sock::getLocalAddr(cli_sock);
 		auto conn = std::make_shared<TcpConnection>(io_loop,
@@ -58,7 +52,7 @@ TcpServer::TcpServer(EventLoop* loop,
 		});
 		
 		// io loop or main loop
-		io_loop->runInLoop([&conn]() {
+		io_loop->runInLoop([conn]() {
 			conn->connectionEstablished();
 		});
 
@@ -81,14 +75,31 @@ TcpServer::~TcpServer() KANON_NOEXCEPT
 }
 
 void
-TcpServer::listen() KANON_NOEXCEPT {
-	acceptor_->listen();
+TcpServer::setLoopNum(int num) KANON_NOEXCEPT {
+	pool_->setLoopNum(num);
+}
+
+void
+TcpServer::start() KANON_NOEXCEPT {
+	// !Use count_ instead of atomic variable
+	// if (! atomic_bool) {
+	//	 atomic_bool = true;
+	//	 // do something
+	// }
+	// If there is a thread trigger an interrput
+	// atomic_bool is false still, so other thread also enter if block
+	if (count_.getAndSet(1) == 0) {
+		// start IO loop
+		pool_->start();
+
+		acceptor_->listen();
+	}
 }
 
 void
 TcpServer::removeConnection(TcpConnectionPtr const& conn) {
 	// remove connection in server thread
-	loop_->runInLoop([&conn, this]() {
+	loop_->runInLoop([conn, this]() {
 		loop_->assertInThread();
 
 		auto n = connections_.erase(conn->name());
@@ -96,7 +107,7 @@ TcpServer::removeConnection(TcpConnectionPtr const& conn) {
 		KANON_UNUSED(n);
 		
 		auto io_loop = conn->loop();
-		io_loop->runInLoop([&conn]() {
+		io_loop->runInLoop([conn]() {
 				conn->connectionDestroyed();
 		});
 	});

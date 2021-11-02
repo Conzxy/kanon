@@ -3,9 +3,11 @@
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
+#include "kanon/util/type.h"
 #include "kanon/string/string-view.h"
 #include "kanon/net/callback.h"
-#include "kanon/util/type.h"
+#include "kanon/thread/Atomic.h"
+
 
 #include <string>
 
@@ -15,6 +17,7 @@ namespace kanon {
 class Acceptor;
 class InetAddr;
 class EventLoop;
+class EventLoopPool;
 
 class TcpServer : noncopyable {
 public:
@@ -24,10 +27,17 @@ public:
 			  bool reuseport=false);
 	
 	~TcpServer() KANON_NOEXCEPT;	
-		
-	void listen() KANON_NOEXCEPT;
-	
-	void removeConnection(TcpConnectionPtr const& conn);	
+
+	// Set the number of IO loop
+	void setLoopNum(int num) KANON_NOEXCEPT;
+
+	// Start all IO thread to loop
+	// then listen and accept connection to IO loop
+	// 
+	// It is harmless although this is called many times.
+	// thread-safe
+	void start() KANON_NOEXCEPT;
+
 	// set callback
 	void setConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
 	{ connection_callback_ = std::move(cb); }
@@ -39,6 +49,8 @@ public:
 	{ write_complete_callback_ = std::move(cb); }
 private:
 	typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
+
+	void removeConnection(TcpConnectionPtr const& conn);	
 
 	EventLoop* loop_;
 	std::string const ip_port_;
@@ -53,6 +65,9 @@ private:
 	uint32_t next_conn_id;
 	ConnectionMap connections_;
 
+	std::unique_ptr<EventLoopPool> pool_;
+
+  AtomicInt32 count_;
 }; 
 
 } // namespace kanon
