@@ -14,7 +14,7 @@
 namespace kanon {
 namespace sock {
 
-typedef sockaddr SA;
+typedef struct sockaddr SA;
 
 namespace detail {
 // FIXME: or better check method exists?
@@ -22,10 +22,13 @@ template<typename T>
 struct is_sockaddr : std::false_type {};
 
 template<>
-struct is_sockaddr<sockaddr_in> : std::true_type {};
+struct is_sockaddr<struct sockaddr_in> : std::true_type {};
 
 template<>
-struct is_sockaddr<sockaddr_in6> : std::true_type {};
+struct is_sockaddr<struct sockaddr_in6> : std::true_type {};
+
+template<>
+struct is_sockaddr<SA> : std::true_type {};
 
 } // namespace detail
 
@@ -33,7 +36,7 @@ template<typename T>
 struct is_sockaddr : detail::is_sockaddr<typename std::remove_cv<T>::type> {};
 
 template<typename S, typename T, typename = typename std::enable_if<
-		is_sockaddr<S>::value>::type>
+		is_sockaddr<S>::value && is_sockaddr<T>::value>::type>
 KANON_CONSTEXPR S* sockaddr_cast(T* addr) KANON_NOEXCEPT
 { return reinterpret_cast<S*>(addr); }
 
@@ -82,7 +85,14 @@ inline void fromIpPort(StringArg ip,
 
 void setNonBlockAndCloExec(int fd) KANON_NOEXCEPT;
 
-int createNonBlockAndCloExec(bool ipv6) KANON_NOEXCEPT;
+int createSocket(bool ipv6) KANON_NOEXCEPT;
+int createNonBlockAndCloExecSocket(bool ipv6) KANON_NOEXCEPT;
+
+inline void close(int fd) KANON_NOEXCEPT {
+	if (::close(fd) < 0) {
+		LOG_SYSFATAL << "close socket error";
+	}
+}
 
 inline void bind(int fd, SA const* addr) KANON_NOEXCEPT {
 	auto ret = ::bind(fd, addr, 
@@ -103,15 +113,13 @@ inline void listen(int fd) KANON_NOEXCEPT {
 	}
 }
 
-inline void connect(int fd, SA const* addr) KANON_NOEXCEPT {
+inline int connect(int fd, SA const* addr) KANON_NOEXCEPT {
 	auto ret = ::connect(fd, addr,
 						 addr->sa_family == AF_INET ?
 						 sizeof(struct sockaddr_in) :
 						 sizeof(struct sockaddr_in6));
 
-	if (ret < 0) {
-		LOG_SYSFATAL << "connect error";
-	}
+	return ret;
 }
 
 // use ipv6 is better
@@ -134,6 +142,8 @@ void setKeepAlive(int fd, int flag) KANON_NOEXCEPT;
 
 int getsocketError(int fd) KANON_NOEXCEPT;
 
+
+
 // get local and peer address
 struct sockaddr_in6 getLocalAddr(int fd) KANON_NOEXCEPT;
 struct sockaddr_in6 getPeerAddr(int fd) KANON_NOEXCEPT;
@@ -147,6 +157,9 @@ ssize_t inline write(int fd, void const* data, size_t len) KANON_NOEXCEPT {
 ssize_t inline read(int fd, void* data, size_t len) KANON_NOEXCEPT {
 	return ::read(fd, data, len);
 }
+
+// check if self-connection
+bool isSelfConnect(int sockfd) KANON_NOEXCEPT;
 
 } // namespace sock
 } // namespace sock
