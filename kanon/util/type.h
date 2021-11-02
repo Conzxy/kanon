@@ -14,6 +14,7 @@ namespace kanon {
 	template<typename K, typename V, typename Compare = std::less<K>>
 	using map = std::map<K, V, Compare>;
 
+
 } // namespace kanon
 
 #endif // KANON_UTIL_TYPE_H

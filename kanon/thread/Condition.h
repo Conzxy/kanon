@@ -8,8 +8,7 @@
 
 namespace kanon{
 
-class Condition : noncopyable 
-{
+class Condition : noncopyable {
 public:
 	explicit Condition(MutexLock& mutex)
 		: mutex_{mutex}
