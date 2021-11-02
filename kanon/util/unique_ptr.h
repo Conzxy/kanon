@@ -6,17 +6,30 @@
 
 namespace kanon {
 	
-#if __cplusplus < 201402L && __cplusplus >= 201103L
+#if defined(CXX_STANDARD_11) && !defined(CXX_STANDARD_14)
+namespace detail {
+	template<typename T, typename... Args>
+	struct MakeUnique {
+		std::unique_ptr<T> operator()(Args&&... args) {
+			return std::unique_ptr<T>{ new T{ std::forward<Args>(args)... } };
+		}
+	};
+
+	template<typename T, typename... Args> 
+	struct MakeUnique<T[], Args...> {
+		std::unique_ptr<T> operator()(size_t num) {
+			return std::unique_ptr<T>{ new T[num] };
+		}
+	};
+}
+
 template<typename T, typename... Args>
 inline std::unique_ptr<T> make_unique(Args&&... args) {
-	return std::unique_ptr<T>{ new T{ std::forward<Args>(args)... } };
+	return detail::MakeUnique<T, Args...>{}(std::forward<Args>(args)...);
 }
-#elif __cplusplus >= 201402L
-template<typename T, typename ...Args>
-inline auto make_unique(Args&&... args) 
-	-> decltype(std::make_unique<T>(new T{ std::forward<Args>(args)... })) {
-	return std::make_unique<T>(new T{ std::forward<Args>(args)... });
-}
+
+#elif defined(CXX_STANDARD_14)
+using std::make_unique;
 #endif
 
 // compatible with smart_pointer and raw pointer
