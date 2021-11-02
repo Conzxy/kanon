@@ -56,7 +56,18 @@ sock::setNonBlockAndCloExec(int fd) KANON_NOEXCEPT {
 #endif
 
 int
-sock::createNonBlockAndCloExec(bool ipv6) KANON_NOEXCEPT {
+sock::createSocket(bool ipv6) KANON_NOEXCEPT {
+	int sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sockfd < 0) {
+		LOG_SYSFATAL << "create new socket fd error";
+		return -1;
+	}
+
+	return sockfd;
+}
+
+int
+sock::createNonBlockAndCloExecSocket(bool ipv6) KANON_NOEXCEPT {
 	int sockfd;
 #ifdef NO_SOCKTYPE
 	sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -77,6 +88,7 @@ error_handle:
 	return -1;
 	
 }
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 28) 
 #define NO_ACCEPT4
 #endif
@@ -122,6 +134,7 @@ sock::accept(int fd, sockaddr_in6* addr) KANON_NOEXCEPT {
 
 void
 sock::setReuseAddr(int fd, int flag) KANON_NOEXCEPT {
+	LOG_INFO << "reuseaddr flag " << flag;
 	auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
 
 	if (ret < 0)
@@ -195,4 +208,22 @@ sock::getPeerAddr(int fd) KANON_NOEXCEPT {
 	}
 
 	return addr;
+}
+
+bool
+sock::isSelfConnect(int sockfd) KANON_NOEXCEPT {
+	const auto local = getLocalAddr(sockfd);
+	const auto peer = getPeerAddr(sockfd);
+
+	if (local.sin6_family == AF_INET) {
+		auto local4 = sockaddr_cast<struct sockaddr_in const>(&local);
+		auto peer4 = sockaddr_cast<struct sockaddr_in const>(&peer);
+
+		return local4->sin_port == peer4->sin_port && 
+			local4->sin_addr.s_addr == peer4->sin_addr.s_addr;
+	} else {
+		// sin6_addr not a simple 32bit unsigned integer
+		return local.sin6_port == peer.sin6_port &&
+			!memcmp(&local.sin6_addr, &peer.sin6_addr, sizeof local);
+	}
 }
