@@ -170,6 +170,18 @@ TcpConnection::shutdownWrite() KANON_NOEXCEPT {
 }
 
 void
+TcpConnection::forceClose() KANON_NOEXCEPT {
+  loop_->runInLoop([=]() {
+      loop_->assertInThread();
+      
+      if (state_ & (kConnected | kDisconnecting)) {
+        state_ = kDisconnecting;
+        handleClose(); 
+      }
+  });
+}
+
+void
 TcpConnection::send(void const* data, size_t len) {
 	send(StringView{ 
 			static_cast<char const*>(data), 

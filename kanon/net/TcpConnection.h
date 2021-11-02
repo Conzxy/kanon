@@ -4,7 +4,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/unique_ptr.h"
-
+#include "kanon/log/Logger.h"
 #include "kanon/net/callback.h"
 #include "kanon/net/InetAddr.h"
 #include "kanon/net/Buffer.h"
@@ -18,11 +18,11 @@ class EventLoop;
 class TcpConnection : noncopyable
 					, public std::enable_shared_from_this<TcpConnection> {
 	enum State {
-		kConnecting = 0,
-		kConnected,
-		kDisconnecting,
-		kDisconnected,
-		STATE_NUM,
+		kConnecting = 0x1,
+		kConnected = 0x2,
+		kDisconnecting = 0x4,
+		kDisconnected = 0x8,
+		STATE_NUM = 4,
 	};
 	
 	static char const* const state_str_[STATE_NUM];
@@ -42,6 +42,7 @@ public:
 	
 	// half-close
 	void shutdownWrite() KANON_NOEXCEPT;
+  void forceClose() KANON_NOEXCEPT;
 
 	// Since server thread will dispatch connection to IO thread,
 	// need run some function in loop to ensure thread safe	
@@ -116,6 +117,7 @@ private:
 	State state_;
 
 	Buffer input_buffer_;
+  // FIXME Use RingBuffer better?
 	Buffer output_buffer_;
 
 	// Process message from @var input_buffer_	
@@ -134,8 +136,17 @@ private:
 	size_t high_water_mark_;
 
 	// only be called by server
-	CloseCallback close_callback_; 
+	CloseCallback close_callback_;
 };
+
+// Default connection callback.
+// It is called when connection established and closed.
+// Log message abont peer and local simply(trace level only)
+inline void defaultConnectionCallaback(TcpConnectionPtr const& conn) {
+	LOG_TRACE << conn->localAddr().toIpPort() << "->"
+		<< conn->peerAddr().toIpPort() << " "
+		<< (conn->isConnected() ? "UP" : "DOWN");
+}
 
 } // namespace kanon
 
