@@ -22,7 +22,7 @@ namespace detail {
 static int createEventfd() KANON_NOEXCEPT {
 	int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
-	LOG_TRACE << "eventfd " << evfd << " created";
+	LOG_TRACE << "eventfd: " << evfd << " created";
 
 	if (evfd < 0) {
 		LOG_SYSERROR << "eventfd() error occurred";
@@ -148,7 +148,8 @@ void EventLoop::callFunctors() {
 	// FIXME: auto& better?
 	for (auto const& func : functors) {
 		try {
-			func();
+			if (func)
+				func();
 		} catch(std::exception const& ex) {
 			LOG_ERROR << "std::exception caught in callFunctors()"
 					  << "what(): " << ex.what();	
@@ -172,10 +173,6 @@ void EventLoop::assertInThread() KANON_NOEXCEPT {
 bool EventLoop::isLoopInThread() KANON_NOEXCEPT {
 	return CurrentThread::t_tid == ownerThreadId_;
 
-}
-
-void EventLoop::abortNotInThread() KANON_NOEXCEPT {
-	LOG_FATAL << "You Should obey one loop per thread policy";
 }
 
 void EventLoop::evRead() KANON_NOEXCEPT {

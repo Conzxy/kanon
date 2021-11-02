@@ -6,7 +6,7 @@ using namespace kanon;
 
 Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 	: loop_{ loop }
-	, socket_{ sock::createNonBlockAndCloExec(!addr.isIpv4()) }
+	, socket_{ sock::createNonBlockAndCloExecSocket(!addr.isIpv4()) }
 	, channel_{ loop_, socket_.fd() }
 	, listening_{ false }
 	, dummyfd_{ ::open("/dev/null", O_RDONLY | O_CLOEXEC) }

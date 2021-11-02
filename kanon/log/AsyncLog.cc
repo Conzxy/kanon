@@ -16,15 +16,15 @@ AsyncLog::AsyncLog(
     , rollSize_{ rollSize }
     , flushInterval_{ flushInterval }
     , rollLine_{ rollLine }
-	, running_{ false }
-	, currentBuffer_{ kanon::make_unique<Buffer>() }
-	, nextBuffer_{ kanon::make_unique<Buffer>() }
+		, running_{ false }
+		, currentBuffer_{ kanon::make_unique<Buffer>() }
+		, nextBuffer_{ kanon::make_unique<Buffer>() }
     , mutex_{ }
     , notEmpty_{ mutex_ }
     , backThread_{ [this]() {
         this->threadFunc();
-    } }
-	, latch_{ 1 }
+    	} }
+		, latch_{ 1 }
 {
 	// warm up
 	currentBuffer_->zero();
@@ -63,22 +63,21 @@ void
 AsyncLog::append(char const* data, size_t len) KANON_NOEXCEPT {
     MutexGuard guard{ mutex_ };
 	
-	// If there are no space for data in @var currentBuffer_,
-	// swap with @var nextBuffer_, and append new buffer
-	// then notify @var backThread_ to log message
+		// If there are no space for data in @var currentBuffer_,
+		// swap with @var nextBuffer_, and append new buffer
+		// then notify @var backThread_ to log message
     if (len < currentBuffer_->avali()) {
-		currentBuffer_->append(data, len);
+			currentBuffer_->append(data, len);
     } else {
-		buffers_.emplace_back(std::move(currentBuffer_));
+			buffers_.emplace_back(std::move(currentBuffer_));
 
-        if (!nextBuffer_) {
+      if (!nextBuffer_) {
 			nextBuffer_.reset(new Buffer{});
-		}
+			}
 
-		currentBuffer_ = std::move(nextBuffer_);
-
-		currentBuffer_->append(data, len);
-		notEmpty_.notify();
+			currentBuffer_ = std::move(nextBuffer_);
+			currentBuffer_->append(data, len);
+			notEmpty_.notify();
     }
 }
 

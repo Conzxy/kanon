@@ -93,12 +93,15 @@ public:
 	bool isIpv4() const KANON_NOEXCEPT
 	{ return addr_.sin_family == AF_INET; }
 
+	// @warning 
+	// check if ip address is ipv4 by call isIpv4().
+	// toIpvX() don't check, just to convert trivially.
 	struct sockaddr_in const* toIpv4() const KANON_NOEXCEPT
-	{ return addr_.sin_family == AF_INET ? &addr_ : nullptr; }
+	{ return &addr_; }
 
 	struct sockaddr_in6 const* toIpv6() const KANON_NOEXCEPT
-	{ return addr_.sin_family == AF_INET6 ? &addr6_ : nullptr; }
-	
+	{ return &addr6_; }
+
 	// resolve hostname(no service)
 	static void resolve(StringArg hostname, std::vector<InetAddr>& addrs,
 						HintType type = HintType::kNoneHint);

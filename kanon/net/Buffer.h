@@ -14,20 +14,20 @@ namespace kanon {
 #define BUFFER_PREFIX_SIZE 8
 
 /**
- * @brief simple continuous buffer
- * it provide for byte stream with operation sucha as append and prepend
- * buffer layout:
- * | prepend region | readable region | writable region |
- * * prepend region ensure 8 byte at least to let user fill packet size but no need to move space
- * * readable region is where the data is stored
- * * writable region is where data to append
- *
- * @note the buffer don't actively shrink capacity
- */ 
+ * @class Buffer
+ * @brief 
+ * Simple continuous buffer. \n
+ * It provide for byte stream with operation sucha as append and prepend. \n
+ * Buffer layout:  \n
+ * | prepend region | readable region | writable region | \n
+ * 	- prepend region ensure 8 byte at least to let user fill packet size but no need to move space. \n
+ * 	- readable region is where the data is stored. \n
+ * 	- writable region is where data to append. \n
+ * @warning the buffer don't actively shrink capacity.
+ */
 class Buffer {
 	typedef std::vector<char> data_type;
 public:
-
 	typedef data_type::size_type size_type;
 	typedef data_type::value_type value_type;
 	typedef data_type::pointer pointer;
@@ -56,6 +56,16 @@ public:
 	
 	pointer peek() KANON_NOEXCEPT
 	{ return data_.data() + read_index_; }
+
+	// You can use it in resolving HTTP request or other case
+	StringView findCRLF() KANON_NOEXCEPT {
+		auto tmp = toStringView();
+
+		return tmp.substr(0, tmp.find("\r\n"));
+	}
+
+	// StringView findLF() KANON_NOEXCEPT {
+	// }
 
 	// append operation:
 	void append(StringView str) {

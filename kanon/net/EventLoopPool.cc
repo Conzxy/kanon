@@ -26,13 +26,14 @@ EventLoopPool::start() {
   // If the function is called not once, warning user
   assert(!started_); 
   started_ = true;
-  
-  std::string buf;
-  buf.reserve(name_.size() + 32);
+
+  const size_t len = name_.size() + 32;  
+  std::vector<char> buf;
+  buf.reserve(len);
 
   for (int i = 0; i != loopNum_; ++i) {
-    ::snprintf(&buf[0], buf.capacity(), "%s[%d]", name_.c_str(), i);
-    auto loopThread = new EventLoopThread{ buf };
+    ::snprintf(buf.data(), len, "%s[%d]", name_.c_str(), i);
+    auto loopThread = new EventLoopThread{ buf.data() };
     threads_.emplace_back(std::unique_ptr<EventLoopThread>(loopThread));
     loops_.emplace_back(loopThread->start());
   }
@@ -42,14 +43,15 @@ EventLoopPool::start() {
 EventLoop*
 EventLoopPool::getNextLoop() {
   baseLoop_->assertInThread();
-  assert(statred_); 
+  assert(started_); 
 
   EventLoop* loop = nullptr;
 
   if (!loops_.empty()) {
     loop = loops_[next_];
     ++next_;
-    if (next_ == 0)
+    LOG_INFO << "next_: " << next_;
+    if (next_ >= loopNum_)
       next_ = 0;
   } else {
     loop = baseLoop_;

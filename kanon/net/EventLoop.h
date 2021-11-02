@@ -104,6 +104,8 @@ public:
 	void assertInThread() KANON_NOEXCEPT;
 	bool isLoopInThread() KANON_NOEXCEPT;
 
+	int ownerThreadId() const KANON_NOEXCEPT
+	{ return ownerThreadId_; }
 private:
 	/**
 	 * @brief write some data to kernel buffer of eventfd,
@@ -117,7 +119,8 @@ private:
 	 */
 	void evRead() KANON_NOEXCEPT;
 	
-	void abortNotInThread() KANON_NOEXCEPT;
+	void abortNotInThread() KANON_NOEXCEPT
+	{ LOG_FATAL << "You Should obey one loop per thread policy"; }
 private:
 	const pid_t ownerThreadId_;
 	std::unique_ptr<PollerBase> poller_;
