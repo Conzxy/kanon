@@ -56,6 +56,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(KANON_SOURCE_DIR ${CMAKE_SOURCE_DIR}/kanon)
+set(KANON_LOG_DIR ${KANON_SOURCE_DIR}/log)
 
 aux_source_directory(${KANON_SOURCE_DIR}/string STRING_SRC)
 aux_source_directory(${KANON_SOURCE_DIR}/log LOG_SRC)
@@ -80,7 +81,6 @@ set(ALL_SRC
 add_subdirectory(${KANON_SOURCE_DIR}/net)
 #add_subdirectory(string)
 add_subdirectory(${KANON_SOURCE_DIR}/thread)
-add_subdirectory(example)
+add_subdirectory(${CMAKE_SOURCE_DIR}/example)
 add_subdirectory(${KANON_SOURCE_DIR}/log)
-
-
+add_subdirectory(${KANON_SOURCE_DIR}/algo)

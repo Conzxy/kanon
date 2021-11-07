@@ -33,7 +33,7 @@ TcpClient::TcpClient(
     new_conn->setWriteCompleteCallback(write_complete_callback_);
     new_conn->setConnectionCallback(connection_callback_);
   
-    // Since stack is private, it we directly contruct and set new connection,
+    // Since stack is private, if we directly contruct and set new connection,
     // that is dangerous! we may be get a half-completed connection.
     {
       MutexGuard guard{ mutex_ };

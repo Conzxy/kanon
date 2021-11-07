@@ -52,11 +52,13 @@ void Poller::updateChannel(Channel* ch) {
 	Base::assertInThread();
 
 	auto it = channelMap_.find(ch->fd());
-	
+ 
 	if (it == channelMap_.end()) {
 		// not exist, to create a new channel in channelMap
 		assert(ch->index() == -1);
-		channelMap_[ch->fd()] = ch;
+    // use hint version of insert is better
+    // because new fd is more than or equal all fd in channelMap_
+		channelMap_.insert(channelMap_.end(), std::make_pair(ch->fd(), ch));
 		struct pollfd new_pollfd;
 		new_pollfd.fd = ch->fd();
 		new_pollfd.events = static_cast<short>(ch->events());
