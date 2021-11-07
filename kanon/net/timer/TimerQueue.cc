@@ -157,13 +157,13 @@ bool TimerQueue::emplace(std::unique_ptr<Timer> uptimer) {
 	}
 
 	{
-		active_timer_set_.emplace(
+		active_timer_set_.insert(
 				std::make_pair(
 					getPointer(uptimer),
 					uptimer->sequence()));
 	}
 	{
-		timer_map_.emplace(
+		timer_map_.insert(
 				std::make_pair(
 					uptimer->expiration(),
 					std::move(uptimer)));
@@ -272,7 +272,7 @@ TimerQueue::cancelTimer(TimerId const& id) {
 			timer_map_.erase(active_timer->first->expiration());
 		} else if (calling_timer_) {
 			// this case is self-cancel
-			canceling_timers_.emplace(ActiveTimer { id.timer_, id.seq_ });
+			canceling_timers_.insert(ActiveTimer { id.timer_, id.seq_ });
 		}
 		
 	});

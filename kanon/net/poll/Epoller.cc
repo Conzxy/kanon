@@ -119,7 +119,7 @@ Epoller::updateChannel(Channel* ch) {
     if (index == kNew || index == kDeleted) {
         if (index == kNew) {
             assert(channelMap_.find(fd) == channelMap_.end());
-            channelMap_[fd] = ch; // default initialization
+            channelMap_.insert(channelMap_.end(), std::make_pair(fd, ch));
         } else {
             assert(channelMap_.find(fd) != channelMap_.end());
             assert(channelMap_[fd] == ch);
