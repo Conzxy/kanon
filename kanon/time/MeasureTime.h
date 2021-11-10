@@ -1,7 +1,7 @@
 #ifndef MEASURE_TIME_H
 #define MEASURE_TIME_H
 
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 #include "kanon/util/macro.h"
 
 #include <chrono>

@@ -21,16 +21,17 @@ ThreadPool::~ThreadPool() KANON_NOEXCEPT {
 
 void
 ThreadPool::start(int threadNum) {
-    MutexGuard guard{ mutex_ };
+  MutexGuard guard{ mutex_ };
 
-    for (int i = 0; i != threadNum; ++i) {
-        auto up_thr = kanon::make_unique<Thread>([this]() {
-                this->runOfThread();
-            });
-
-        threads_.emplace_back(std::move(up_thr));        
-        threads_[i]->start();
-    }
+  for (int i = 0; i != threadNum; ++i) {
+    auto up_thr = kanon::make_unique<Thread>([this]() {
+      this->runOfThread();
+    });
+    
+    auto p_thr = getPointer(up_thr);
+    threads_.emplace_back(std::move(up_thr));        
+    p_thr->start();
+  }
 }
 
 void

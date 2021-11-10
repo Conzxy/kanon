@@ -24,6 +24,10 @@ public:
 
     return ret;
   }
+
+  AsyncLog& log() KANON_NOEXCEPT
+  { return log_; }
+
 private:
   AsyncLogTrigger(StringView basename,
                   size_t rollSize,
