@@ -31,6 +31,7 @@ public:
             LOG_INFO << "But this content will be discarded";
             conn->send("discard");    
         });
+
     }
 
     void start() {

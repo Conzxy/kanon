@@ -13,7 +13,7 @@ void frontThreadFunc() {
 		LOG_INFO << "Async Test";
 }
 
-int main(int argc, char** argv) {
+int main(int , char** argv) {
 	AsyncLog asyncLog{ ::basename(argv[0]), 20000 };
 	
 	Logger::setFlushCallback([&asyncLog]() {
