@@ -24,6 +24,7 @@ set(CXX_FLAGS
  -Wextra
  -Wno-return-local-addr
  -Wno-unused-parameter
+ -Wno-unused-function
  -Werror
  #-Wconversion
  #-Wshadow
@@ -56,11 +57,16 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(KANON_SOURCE_DIR ${CMAKE_SOURCE_DIR}/kanon)
-set(KANON_LOG_DIR ${KANON_SOURCE_DIR}/log)
 
 aux_source_directory(${KANON_SOURCE_DIR}/string STRING_SRC)
 aux_source_directory(${KANON_SOURCE_DIR}/log LOG_SRC)
 aux_source_directory(${KANON_SOURCE_DIR}/thread THREAD_SRC)
+aux_source_directory(${KANON_SOURCE_DIR}/process PROCESS_SRC)
+aux_source_directory(${KANON_SOURCE_DIR}/time TIME_SRC)
+
+set(KANON_BASE_SRC
+${STRING_SRC} ${LOG_SRC} ${THREAD_SRC} ${PROCESS_SRC} ${TIME_SRC})
+
 aux_source_directory(${KANON_SOURCE_DIR}/net NET_SRC)
 
 
@@ -84,3 +90,5 @@ add_subdirectory(${KANON_SOURCE_DIR}/thread)
 add_subdirectory(${CMAKE_SOURCE_DIR}/example)
 add_subdirectory(${KANON_SOURCE_DIR}/log)
 add_subdirectory(${KANON_SOURCE_DIR}/algo)
+add_subdirectory(${KANON_SOURCE_DIR}/process)
+add_subdirectory(${KANON_SOURCE_DIR}/time)
