@@ -5,8 +5,10 @@
 #add_executable(Acceptor_test Acceptor_test.cc ${KANON_SRC})
 #add_executable(timer_test2 timer_test2.cc ${KANON_SRC})
 #add_executable(TcpServer_test TcpServer_test.cc ${KANON_SRC})
-add_executable(SIGPIPE_test SIGPIPE_test.cc ${KANON_SRC})
 
+add_executable(EventLoopThread_test EventLoopThread_test.cc ${KANON_SRC})
+
+add_executable(SIGPIPE_test SIGPIPE_test.cc ${KANON_SRC})
 add_executable(InetAddr_test InetAddr_test.cc ${KANON_SRC})
 target_link_libraries(InetAddr_test gtest)
 
