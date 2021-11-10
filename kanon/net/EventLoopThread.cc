@@ -8,19 +8,18 @@ EventLoopThread::EventLoopThread(std::string const& name)
 	, lock_{}
 	, cond_{ lock_ } 
 	, thr_{ [this]() {
-		// called in IO thread
+		// !Called in IO thread
 	
 		EventLoop loop{};
 		{
 			MutexGuard guard{ lock_ };
-			// must allocate pointer in heap,
-			// because stack of thread is private
 			loop_ = &loop;
 			cond_.notify();
 		}
 		
 		// may quit before loop() be called
 		loop_->loop();
+
 		// FIXME: need mutex?
 		//MutexGuard guard{ lock_ };
 		loop_ = nullptr;
@@ -28,7 +27,7 @@ EventLoopThread::EventLoopThread(std::string const& name)
 { }
 
 EventLoopThread::~EventLoopThread() KANON_NOEXCEPT {
-	// if quit() is not called through pointer return from start
+	// if quit() is not called through pointer return from start()
 	// we should call quit explicitly	
 	if (loop_ != nullptr) {
 		loop_->quit();
@@ -38,6 +37,8 @@ EventLoopThread::~EventLoopThread() KANON_NOEXCEPT {
 
 EventLoop*
 EventLoopThread::start() {
+  // !Called in caller thread(instead the member thread), normally,
+  // !it is very likely the main thread
 	thr_.start();
 	
 	{

@@ -87,8 +87,6 @@ void
 TcpConnection::handleRead(TimeStamp receive_time) {
 	loop_->assertInThread();
 	int saved_errno;
-	// Here shouldn't use socket_->fd(),
-	// because socket maybe has destroyed when peer close early
 	auto n = input_buffer_.readFd(channel_->fd(), saved_errno);
 	
 	LOG_DEBUG << "readFd return: " << n;	
@@ -116,6 +114,8 @@ TcpConnection::handleWrite() {
 	loop_->assertInThread();
 	assert(channel_->isWriting());	
 	
+	// Here shouldn't use socket_->fd(),
+	// because socket maybe has destroyed when peer close early
 	auto n = sock::write(channel_->fd(),
 						 output_buffer_.peek(),
 						 output_buffer_.readable_size());
@@ -234,6 +234,8 @@ void
 TcpConnection::sendInLoop(void const* data, size_t len) {
 	// if is not writing state, indicate @var output_buffer_ maybe is empty,
 	// but also @var output_buffer_ is filled by user throught @f outputBuffer().
+  
+  LOG_DEBUG << "data len = " << len;
 
 	ssize_t n;
 	size_t remaining = len;

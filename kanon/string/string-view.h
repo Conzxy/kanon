@@ -51,7 +51,10 @@ public:
 	using const_iterator = const_pointer;
 	
 	// constructor
-	StringView() = default;
+	StringView()
+    : data_("")
+    , len_(0)
+  { }
 
 	template<uint64_t N>
 	StringView(char const(&str)[N])
