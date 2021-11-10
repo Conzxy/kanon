@@ -10,12 +10,14 @@ using namespace kanon;
 AsyncLog::AsyncLog(
     StringView basename,
     size_t rollSize,
+    StringView prefix,
     size_t flushInterval,
     size_t rollLine)
     : basename_{ basename }
     , rollSize_{ rollSize }
     , flushInterval_{ flushInterval }
     , rollLine_{ rollLine }
+    , prefix_{ prefix }
 		, running_{ false }
 		, currentBuffer_{ kanon::make_unique<Buffer>() }
 		, nextBuffer_{ kanon::make_unique<Buffer>() }
@@ -100,8 +102,8 @@ AsyncLog::threadFunc() {
 	buffer2->zero();	
 
 	// write to disk
-	LogFile<> output{ basename_, rollSize_, flushInterval_, rollLine_ };
-	
+	LogFile<> output{ basename_, rollSize_, prefix_, flushInterval_, rollLine_ };
+
 	Buffers tmpBuffers;
 
 	// back thread do infinite loop
