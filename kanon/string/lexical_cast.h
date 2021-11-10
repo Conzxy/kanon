@@ -1,7 +1,7 @@
 #ifndef KANON_LEXICAL_CAST_H
 #define KANON_LEXICAL_CAST_H
 
-#include "lexical-stream.h"
+#include "lexical_stream.h"
 #include <string>
 
 namespace kanon{

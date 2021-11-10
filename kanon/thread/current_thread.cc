@@ -1,5 +1,5 @@
 #include "current_thread.h"
-#include "kanon/string/lexical-cast.h"
+#include "kanon/string/lexical_cast.h"
 
 #include <cstring>
 #include <sys/types.h>

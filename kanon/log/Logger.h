@@ -2,7 +2,7 @@
 #define KANON_LOGGER_H
 
 #include "kanon/util/noncopyable.h"
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 #include "kanon/util/macro.h"
 #include "LogStream.h"
 #include <functional>
