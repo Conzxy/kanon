@@ -1,7 +1,7 @@
 #ifndef KANON_LEXICAL_STREAM_H
 #define KANON_LEXICAL_STREAM_H
 
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
 

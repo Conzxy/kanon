@@ -1,4 +1,4 @@
-#include "../lexical-stream.h"
+#include "../lexical_stream.h"
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string.h>

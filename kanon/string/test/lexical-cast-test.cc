@@ -1,4 +1,4 @@
-#include "../lexical-cast.h"
+#include "../lexical_cast.h"
 #include <gtest/gtest.h>
 
 using namespace kanon;

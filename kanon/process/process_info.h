@@ -2,7 +2,7 @@
 #define KANON_PROCESS_PROCESS_INFO_H
 
 #include "kanon/util/macro.h"
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 
 #include <unistd.h>
 

@@ -1,7 +1,7 @@
 #ifndef KANON_LOGSTREAM_H
 #define KANON_LOGSTREAM_H
 
-#include "kanon/string/lexical-stream.h"
+#include "kanon/string/lexical_stream.h"
 
 namespace kanon {
 

@@ -2,7 +2,7 @@
 #define KANON_INET_ADDR_H
 
 #include "kanon/util/macro.h"
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 
 #include <vector>
 #include <arpa/inet.h>

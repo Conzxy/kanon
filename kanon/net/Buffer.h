@@ -2,7 +2,7 @@
 #define KANON_NET_BUFFER_H
 
 #include "kanon/util/macro.h"
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 #include "kanon/net/endian_api.h"
 
 #include <stdint.h>
