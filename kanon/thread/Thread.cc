@@ -1,9 +1,14 @@
-#include "Thread.h"
-#include "Atomic.h"
+#include "kanon/thread/Thread.h"
+#include "kanon/thread/Atomic.h"
+#include "kanon/thread/current_thread.h"
+
 #include "kanon/util/noncopyable.h"
-#include "kanon/util/check.h"
-#include "current_thread.h"
+#include "kanon/util/macro.h"
+#include "kanon/util/unique_ptr.h"
+
 #include <stdio.h>
+#include <string.h>
+#include <assert.h>
 #include <sys/prctl.h>
 
 using namespace std;
@@ -12,13 +17,14 @@ namespace kanon{
 
 namespace detail{
 
+// thread entry function(i.e. void*(void*)) wrapper
 class ThreadData : noncopyable
 {
 public:
 	using Threadfunc = Thread::Threadfunc;
 
 	ThreadData(Threadfunc func, string const& name);
-	~ThreadData(){}
+	~ThreadData() = default;
 
 	void run() const;
 private:
@@ -32,36 +38,33 @@ ThreadData::ThreadData(Threadfunc func, string const& name)
 {}
 
 void ThreadData::run() const{
-	(void)CurrentThread::tid();
-	CurrentThread::t_name = name_.empty() ? "zxyThread" : name_.c_str();
+	KANON_UNUSED(CurrentThread::tid());
+	CurrentThread::t_name = name_.empty() ? "KanonThread" : name_.c_str();
+
 	// process control
 	// set calling thread name
-	// note: the second argument just up to 16 bytes(including terminating null byte)
+	// @note: the second argument just up to 16 bytes(including terminating null byte)
 	::prctl(PR_SET_NAME, CurrentThread::t_name);
 	
-	try
-	{
+	try {
 		func_();
 		CurrentThread::t_name = "finished";
-
-	}
-	catch(std::exception const& ex){
+	} catch(std::exception const& ex) {
 		::fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
 		::fprintf(stderr, "reason: %s", ex.what());
 		::fflush(stderr);
-		abort();
-	}
-	catch(...){
-		::fprintf(stderr, "exception caught in Thread %s", name_.c_str());
-		throw;	//rethrow
+		abort(); // don't throw or return just terminate
+	} catch(...) {
+		::fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
+		KANON_RETHROW;
 	}
 }
 
 void* startThread(void* arg){
-	ThreadData* data = static_cast<ThreadData*>(arg);
+	// use uniq
+	auto data = std::unique_ptr<ThreadData>{ static_cast<ThreadData*>(arg) };
 	data->run();
-	delete data;
-	
+
 	return nullptr;
 }
 
@@ -87,10 +90,10 @@ Thread::~Thread(){
 }
 
 void Thread::start(){
-	ASSERT(!is_started_);
+	assert(!is_started_);
 	is_started_ = true;
 	
-	auto data = new detail::ThreadData{func_, name_};
+	auto data = new detail::ThreadData{ func_, name_ };
 	int err;
 	if((err = pthread_create(&pthreadId_, NULL, &detail::startThread, data)) != 0){
 		is_started_ = false;
@@ -99,12 +102,11 @@ void Thread::start(){
 		perror("Failed in pthread_create");
 		exit(1);
 	}
-		
 }
 
 void Thread::join(){
-	ASSERT(is_started_);
-	ASSERT(!is_joined_);
+	assert(is_started_);
+	assert(!is_joined_);
 
 	is_joined_ = true;
 
@@ -115,9 +117,9 @@ void Thread::setDefaultname(){
 	if(!name_.empty()) return ;
 	
 	char buf[64];
-	::memset(buf, 0, sizeof buf);
+	BZERO(buf, sizeof buf);
 	
-	snprintf(buf, sizeof buf, "Thread%d", numCreated_.get());
+	snprintf(buf, sizeof buf, "KanonThread%d", numCreated_.get());
 	name_ = buf;
 }
 

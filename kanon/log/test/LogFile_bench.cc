@@ -34,13 +34,10 @@ AsyncLog_pool_bench(State& state) {
   ThreadPool pool{ pool_size, "AsyncLog" };
   
   pool.start(pool_size);
-  
-  // This does not work
+
   for (auto i = 0; i < pool_size; ++i) { 
-    pool.run([&state]() {
-      for (auto _ : state) {
+    pool.run([]() {
         LOG_INFO << "LogFile_bench";
-      }
     });
   }
   

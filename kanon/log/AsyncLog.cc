@@ -25,7 +25,7 @@ AsyncLog::AsyncLog(
     , notEmpty_{ mutex_ }
     , backThread_{ [this]() {
         this->threadFunc();
-    	} }
+    	}, "AsyncLogBackThread" }
 		, latch_{ 1 }
 {
 	// warm up
@@ -135,6 +135,7 @@ AsyncLog::threadFunc() {
 			buffers_.emplace_back(std::move(currentBuffer_));
 
 			// Since tmpBuffers is local, it must be thread safe
+			// If this thread is a consumer, "lock and swap" is a common trick for it.
 			tmpBuffers.swap(buffers_);
 
 			currentBuffer_ = std::move(buffer1);
@@ -151,7 +152,7 @@ AsyncLog::threadFunc() {
 				buf, sizeof buf, "Discard %lu large buffer at %s\n",
 				tmpBuffers.size() - BUFFER_BOUND, 
 				TimeStamp::now().toFormattedString().c_str());
-			fputs(buf, stderr);
+			::fputs(buf, stderr);
 			output.append(buf, strlen(buf));
 
 			tmpBuffers.erase(tmpBuffers.begin() + BUFFER_BOUND, tmpBuffers.end());

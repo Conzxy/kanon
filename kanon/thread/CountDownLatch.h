@@ -19,6 +19,12 @@ public:
 		: count_(count), mutex_(), cond_(mutex_)
 	{ }
 
+	void reset(int count) KANON_NOEXCEPT
+	{ count_ = count; }
+
+	int count() const KANON_NOEXCEPT
+	{ return count_; }
+
 	void wait()
 	{
 		MutexGuard guard(mutex_);

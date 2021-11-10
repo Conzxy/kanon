@@ -2,7 +2,7 @@
 #define KANON_LOGFILE_H
 
 #include "kanon/util/noncopyable.h"
-#include "kanon/string/string-view.h"
+#include "kanon/string/string_view.h"
 #include "kanon/thread/DummyMutexLock.h"
 #include "kanon/thread/MutexLock.h"
 #include "kanon/util/macro.h"
