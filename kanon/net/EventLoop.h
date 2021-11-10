@@ -19,11 +19,14 @@ class PollerBase;
 
 #define POLLTIME 10000 // 10 seconds
 
-/*
- * @brief as follows:
- *		select/poll/epoll(event dispatching)
- *		   ↗	↘
- *	functors ← handle events(including timerfd)
+/**
+ * @brief 
+ * There three phases in loop:
+ * (1)select/poll/epoll(event dispatching) -> (2)
+ * (2)handle events(including timerfd) -> (3)
+ * (3)functors -> (1)
+ * They constrcut a loop to accept event and handle them, 
+ * and also handle the functors that user pushs.
  */
 class EventLoop : noncopyable {
 public:
@@ -125,9 +128,10 @@ private:
 	const pid_t ownerThreadId_;
 	std::unique_ptr<PollerBase> poller_;
 
-	// FIXME: atomic bool
+	// looping_ and callingFunctor_ is not exposed interface for user
+	// so them are thread safe
 	bool looping_;
-	bool quit_;		
+	std::atomic<bool> quit_;
 	bool callingFunctors_;
 	
 	int evfd_;

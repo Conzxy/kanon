@@ -119,8 +119,11 @@ void EventLoop::queueToLoop(FunctorCallback cb) {
 		functors_.emplace_back(std::move(cb));
 	}
 
+	// If not in IO thread, wake up it is needed.
+	// Although in IO thread, it is also need to wake up when 
+	// calling functors(says that queueToLoop() is one of functors).
 	if (! isLoopInThread() ||
-		callingFunctors_) {
+			callingFunctors_) {
 		wakeup();
 	}
 }
@@ -148,8 +151,8 @@ void EventLoop::callFunctors() {
 	// FIXME: auto& better?
 	for (auto const& func : functors) {
 		try {
-			if (func)
-				func();
+			assert(func);
+			func();
 		} catch(std::exception const& ex) {
 			LOG_ERROR << "std::exception caught in callFunctors()"
 					  << "what(): " << ex.what();	
@@ -185,7 +188,11 @@ void EventLoop::wakeup() KANON_NOEXCEPT {
 
 void EventLoop::quit() KANON_NOEXCEPT {
 	quit_ = true;
-	
+
+	// If in IO thread, call wakeup() in quit()	is not necessary,
+	// because it only few cases can call quit() successfully
+	//  -- timer event, but not block
+	//	-- asynchronous call from other thread, will call wakeup()
 	if (! this->isLoopInThread())
 		this->wakeup();
 }

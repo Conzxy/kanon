@@ -5,6 +5,8 @@
 #include <type_traits> // std::is_trivially_destructible
 #include <iterator> // std::iterator_traits
 
+#include "kanon/util/macro.h"
+
 namespace kanon {
 namespace algo_util {
 
@@ -25,6 +27,7 @@ inline void destroySingle(T* ptr, std::false_type) {
 template<typename T>
 inline void destroySingle(T* ptr, std::true_type) {
   // do nothing
+  KANON_UNUSED(ptr);
 }
 
 } // namespace detail 
@@ -48,6 +51,8 @@ inline void destroyRange(FI first, FI last, std::false_type) {
 template<typename FI>
 inline void destroyRange(FI first, FI last, std::true_type) {
   // do something
+  KANON_UNUSED(first);
+  KANON_UNUSED(last);
 }
 } // namespace detail
 
