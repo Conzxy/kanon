@@ -6,37 +6,40 @@
 #include "kanon/thread/DummyMutexLock.h"
 #include "kanon/thread/MutexLock.h"
 #include "kanon/util/macro.h"
-#include "AppendFile.h"
+#include "kanon/process/process_info.h"
+#include "kanon/log/AppendFile.h"
 
 #include <memory>
 #include <time.h>
 #include <sys/time.h>
 #include <string>
+#include <type_traits> // std::conditional
 
 namespace kanon {
-
 
 /**
  * @brief just roll file and write to file
  * @note should be used by Logger
  */
-template<typename MutexLockPolicy = DummyMutexLock>
+template<bool ThreadSafe = false>
 class LogFile : noncopyable
 {
 public:
 	LogFile(StringView basename, 
 			size_t rollSize, 
+      StringView prefix = StringView{ },
 			size_t flushInterval = 3,
 			size_t rollLine = 1024);
 
 	~LogFile() KANON_NOEXCEPT;
-
+  
 	void append(char const* data, size_t num) KANON_NOEXCEPT;
 	void flush() KANON_NOEXCEPT;
 private:
 	void rollFile();
 	static std::string formatTime() KANON_NOEXCEPT;
 	std::string getLogFileName(time_t& now);	
+
 private:
 	StringView basename_;
 	size_t rollSize_; // when file size > rollSize, roll new file
@@ -47,17 +50,25 @@ private:
 	time_t lastRoll_; // remember last roll time to avoid roll same file at the same time
 	time_t lastFlush_;
 	time_t flushInterval_; // if now - lastFlush > flushInterval, flush buffer to file
-	
+  
 	// lock or dummy lock
-	MutexLockPolicy lock_;
+  typedef typename std::conditional<ThreadSafe, MutexLock, DummyMutexLock>::type 
+    MutexPolicy;
+
+	MutexPolicy lock_;
 	std::unique_ptr<AppendFile> file_;
-	
+  
+  // FIXME std::string? 
+  StringView prefix_;
+
+  // seconds for one day
 	static constexpr uint32_t kRollPerSeconds_ = 24 * 60 * 60; //or 86400
 };
 
-template<typename T>
+template<bool T>
 LogFile<T>::LogFile(StringView basename,
 				 size_t rollSize, 
+         StringView prefix,
 				 size_t flushInterval,
 				 size_t rollLine)
 	: basename_(basename)
@@ -69,17 +80,18 @@ LogFile<T>::LogFile(StringView basename,
 	, lastFlush_(0)
 	, flushInterval_(static_cast<time_t>(flushInterval))
 	, lock_()
+  , prefix_(prefix)
 {
 	assert(basename.find('/') == StringView::npos);
 	rollFile();	
 }
 
-template<typename T>
+template<bool T>
 inline LogFile<T>::~LogFile() KANON_NOEXCEPT = default;
 
-template<typename T>
+template<bool T>
 void LogFile<T>::append(char const* data, size_t num) KANON_NOEXCEPT {
-	MutexGuardT<T> guard(lock_);
+	MutexGuardT<MutexPolicy> guard(lock_);
 	
 	file_->append(data, num);
 
@@ -91,8 +103,12 @@ void LogFile<T>::append(char const* data, size_t num) KANON_NOEXCEPT {
 			countLine_ = 0;
 			// second precision
 			auto now = ::time(NULL);
-			// note thisPeriod need * kRollPerSeconds_ since flushInterval in second unit
-			time_t thisPeriod = now / kRollPerSeconds_ * kRollPerSeconds_;
+  
+      // @waring
+      // To conform the semantic of time_t,
+      // it is not recommended use the number of days instead of seconds,
+      // but it is only used here.
+			time_t thisPeriod = now / kRollPerSeconds_; //* kRollPerSeconds;
 
 			if (thisPeriod > startOfPeriod_) {
 				rollFile();
@@ -104,18 +120,18 @@ void LogFile<T>::append(char const* data, size_t num) KANON_NOEXCEPT {
 	}
 }
 
-template<typename T>
+template<bool T>
 void LogFile<T>::flush() KANON_NOEXCEPT {
-	MutexGuardT<T> guard(lock_);
+	MutexGuardT<MutexPolicy> guard(lock_);
 	file_->flush();
 }
 
-template<typename T>
+template<bool T>
 void LogFile<T>::rollFile() {
 	time_t now;	
 	auto filename = getLogFileName(now);
-	
-	time_t newStartPeriod = now / kRollPerSeconds_ * kRollPerSeconds_;
+  
+	time_t newStartPeriod = now / kRollPerSeconds_;// * kRollPerSeconds_;
 	if (now > lastRoll_) {
 		lastRoll_ = now;
 		lastFlush_ = now;
@@ -125,11 +141,16 @@ void LogFile<T>::rollFile() {
 	}
 }
 
-template<typename T>
+template<bool T>
 std::string LogFile<T>::getLogFileName(time_t& now) {
+  // Log file name format:
+  // basename.timestamp.pid.hostname.log
 	std::string filename;
-	filename.reserve(basename_.size() + 64);
-	filename = basename_.data();
+
+  filename.reserve(basename_.size()+prefix_.size()+128);
+
+  filename += prefix_.data();
+	filename += basename_.data();
 
 	char timebuf[32];
 	struct tm tm;
@@ -139,8 +160,9 @@ std::string LogFile<T>::getLogFileName(time_t& now) {
 	::strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
 
 	filename += timebuf;
-
-	// TODO process info
+  filename += process::pidString().data();
+  filename += ".";
+  filename += process::hostname().data();
 	filename += ".log";
 
 	return filename;
