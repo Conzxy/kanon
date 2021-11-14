@@ -41,11 +41,11 @@ AsyncLog_pool_bench(State& state) {
     });
   }
   
-	struct timespec sleepTime;
-	BZERO(&sleepTime, sizeof sleepTime);
-	sleepTime.tv_sec = 100000;
+   struct timespec sleepTime;
+   BZERO(&sleepTime, sizeof sleepTime);
+   sleepTime.tv_sec = 100000;
 
-	::nanosleep(&sleepTime, NULL);
+   ::nanosleep(&sleepTime, NULL);
 }
 
 BENCHMARK(LogFile_bench);

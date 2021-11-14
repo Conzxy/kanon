@@ -34,7 +34,7 @@ public:
     double interval() const KANON_NOEXCEPT { return interval_; }
     bool repeat() const KANON_NOEXCEPT { return repeat_; }
     int sequence() const KANON_NOEXCEPT { return sequence_; }
-	void restart(TimeStamp now) KANON_NOEXCEPT;
+  void restart(TimeStamp now) KANON_NOEXCEPT;
 private:
     TimerCallback callback_;
     TimeStamp expiration_; 

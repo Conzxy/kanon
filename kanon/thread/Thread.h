@@ -26,61 +26,61 @@ namespace kanon{
 // pack and unpack arguments, then call corresponding function you want.
 class Thread : noncopyable {
 public:
-	// Callback register:
-	// use the std::function<> to accept any callables
-	// including functions(or function pointers), function object,
-	// and lambda object.
-	using Threadfunc = std::function<void()>;
+  // Callback register:
+  // use the std::function<> to accept any callables
+  // including functions(or function pointers), function object,
+  // and lambda object.
+  using Threadfunc = std::function<void()>;
 public:
-	explicit Thread(Threadfunc func, std::string const& name = {});
-	~Thread();
+  explicit Thread(Threadfunc func, std::string const& name = {});
+  ~Thread();
 
-	// move constructor
-	// so that thread can be placed in container by move construct
-	// or use pointer(OR better?)
-	Thread(Thread&& rhs) KANON_NOEXCEPT
-		: func_{std::move(rhs.func_)},
-		  is_started_{rhs.is_started_},
-		  is_joined_{rhs.is_joined_},
-		  pthreadId_{rhs.pthreadId_},
-		  name_{std::move(rhs.name_)}
-	{
-		rhs.pthreadId_ = 0;
-	}
-	
-	Thread& operator=(Thread&& rhs) KANON_NOEXCEPT {
-		func_ = std::move(rhs.func_);
-		is_started_ = rhs.is_started_;
-		is_joined_ = rhs.is_joined_;
-		pthreadId_ = rhs.pthreadId_;
-		name_ = std::move(rhs.name_);
+  // move constructor
+  // so that thread can be placed in container by move construct
+  // or use pointer(OR better?)
+  Thread(Thread&& rhs) KANON_NOEXCEPT
+    : func_{std::move(rhs.func_)},
+      is_started_{rhs.is_started_},
+      is_joined_{rhs.is_joined_},
+      pthreadId_{rhs.pthreadId_},
+      name_{std::move(rhs.name_)}
+  {
+    rhs.pthreadId_ = 0;
+  }
+  
+  Thread& operator=(Thread&& rhs) KANON_NOEXCEPT {
+    func_ = std::move(rhs.func_);
+    is_started_ = rhs.is_started_;
+    is_joined_ = rhs.is_joined_;
+    pthreadId_ = rhs.pthreadId_;
+    name_ = std::move(rhs.name_);
 
-		rhs.pthreadId_ = 0;
-		rhs.is_started_ = false;
-		
-		return *this;
-	}
+    rhs.pthreadId_ = 0;
+    rhs.is_started_ = false;
+    
+    return *this;
+  }
 
-	void start();
-	void join();
+  void start();
+  void join();
 
-	std::string name() const KANON_NOEXCEPT
-	{ return name_; }
+  std::string name() const KANON_NOEXCEPT
+  { return name_; }
 
-	pthread_t pthreadId() const KANON_NOEXCEPT
-	{ return pthreadId_; }
-
-private:
-	void setDefaultname();
+  pthread_t pthreadId() const KANON_NOEXCEPT
+  { return pthreadId_; }
 
 private:
-	Threadfunc	func_;
-	bool		is_started_;
-	bool		is_joined_;
-	pthread_t	pthreadId_;
-	std::string name_;
+  void setDefaultname();
 
-	static AtomicInt32 numCreated_;
+private:
+  Threadfunc  func_;
+  bool    is_started_;
+  bool    is_joined_;
+  pthread_t  pthreadId_;
+  std::string name_;
+
+  static AtomicInt32 numCreated_;
 };
 
 }//namespace kanon

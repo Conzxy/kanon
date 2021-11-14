@@ -9,33 +9,33 @@ using namespace kanon;
 AsyncLog* g_asyncLog = nullptr;
 
 void frontThreadFunc() {
-	for (int i = 0; i != 100000; ++i)
-		LOG_INFO << "Async Test";
+  for (int i = 0; i != 100000; ++i)
+    LOG_INFO << "Async Test";
 }
 
 int main(int , char** argv) {
-	AsyncLog asyncLog{ ::basename(argv[0]), 20000 };
-	
-	Logger::setFlushCallback([&asyncLog]() {
-			asyncLog.flush();
-	});
+  AsyncLog asyncLog{ ::basename(argv[0]), 20000 };
+  
+  Logger::setFlushCallback([&asyncLog]() {
+      asyncLog.flush();
+  });
 
-	Logger::setOutputCallback([&asyncLog](char const* data, size_t len) {
-			asyncLog.append(data, len);
-	});
+  Logger::setOutputCallback([&asyncLog](char const* data, size_t len) {
+      asyncLog.append(data, len);
+  });
 
-	asyncLog.start();
+  asyncLog.start();
 
-	ThreadPool pool{};
-	pool.setMaxQueueSize(10);
-	pool.start(200);
-	 
-	for (int i = 0; i < 20; ++i)
-		pool.run(&frontThreadFunc);
+  ThreadPool pool{};
+  pool.setMaxQueueSize(10);
+  pool.start(200);
+   
+  for (int i = 0; i < 20; ++i)
+    pool.run(&frontThreadFunc);
 
-	struct timespec sleepTime;
-	BZERO(&sleepTime, sizeof sleepTime);
-	sleepTime.tv_sec = 100000;
+  struct timespec sleepTime;
+  BZERO(&sleepTime, sizeof sleepTime);
+  sleepTime.tv_sec = 100000;
 
-	::nanosleep(&sleepTime, NULL);
+  ::nanosleep(&sleepTime, NULL);
 }

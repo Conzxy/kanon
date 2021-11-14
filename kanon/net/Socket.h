@@ -11,32 +11,32 @@ class InetAddr;
 
 class Socket : noncopyable {
 public:
-	explicit Socket(int fd)
-		: fd_{ fd }
-	{ }
-	
-	~Socket() KANON_NOEXCEPT;	
+  explicit Socket(int fd)
+    : fd_{ fd }
+  { }
+  
+  ~Socket() KANON_NOEXCEPT;  
 
-	// Must be called by server	
-	void bindAddress(InetAddr const& addr) KANON_NOEXCEPT;
-	int accept(InetAddr& addr) KANON_NOEXCEPT;
-	void shutdownWrite() KANON_NOEXCEPT;
+  // Must be called by server  
+  void bindAddress(InetAddr const& addr) KANON_NOEXCEPT;
+  int accept(InetAddr& addr) KANON_NOEXCEPT;
+  void shutdownWrite() KANON_NOEXCEPT;
 
-	void setReuseAddr(bool flag) KANON_NOEXCEPT
-	{ sock::setReuseAddr(fd_, flag); }
-	void setReusePort(bool flag) KANON_NOEXCEPT
-	{ sock::setReusePort(fd_, flag); }
-	void setNoDelay(bool flag) KANON_NOEXCEPT
-	{ sock::setNoDelay(fd_, flag); }
-	void setKeepAlive(bool flag) KANON_NOEXCEPT
-	{ sock::setKeepAlive(fd_, flag); }
+  void setReuseAddr(bool flag) KANON_NOEXCEPT
+  { sock::setReuseAddr(fd_, flag); }
+  void setReusePort(bool flag) KANON_NOEXCEPT
+  { sock::setReusePort(fd_, flag); }
+  void setNoDelay(bool flag) KANON_NOEXCEPT
+  { sock::setNoDelay(fd_, flag); }
+  void setKeepAlive(bool flag) KANON_NOEXCEPT
+  { sock::setKeepAlive(fd_, flag); }
 
-	// Must be called by client
-	
-	int fd() const KANON_NOEXCEPT
-	{ return fd_; }
+  // Must be called by client
+  
+  int fd() const KANON_NOEXCEPT
+  { return fd_; }
 private:
-	int fd_;
+  int fd_;
 };
 
 } // namespace kanon

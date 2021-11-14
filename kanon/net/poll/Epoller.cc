@@ -40,7 +40,7 @@ Epoller::Epoller(EventLoop* loop)
 }
 
 Epoller::~Epoller() KANON_NOEXCEPT {
-	::close(epoll_fd_);
+  ::close(epoll_fd_);
 }
 
 TimeStamp 
@@ -80,15 +80,15 @@ Epoller::poll(int ms, ChannelVec& activeChannels) {
 }
 
 // typedef union epoll_data {
-//	void *ptr;
-//	int fd;
-//	uint32_t u32;
-//	uint64_t u64;
+//  void *ptr;
+//  int fd;
+//  uint32_t u32;
+//  uint64_t u64;
 // } epoll_data_t;
 //
 // struct epoll_event {
-// 	uint32_t events; // Epoll events
-// 	epoll_data_t data; // user data variable
+//   uint32_t events; // Epoll events
+//   epoll_data_t data; // user data variable
 // };
 void 
 Epoller::fillActiveChannels(int ev_nums, 
@@ -96,7 +96,7 @@ Epoller::fillActiveChannels(int ev_nums,
     assert(ev_nums <= static_cast<int>(events_.size()));
     
     for (int i = 0; i < ev_nums; ++i) {
-		// we use the data.ptr so that no need to look up in channelMap_
+    // we use the data.ptr so that no need to look up in channelMap_
         auto channel = reinterpret_cast<Channel*>(events_[i].data.ptr);
         assert(!channel->isNoneEvent());
 
@@ -114,7 +114,7 @@ Epoller::updateChannel(Channel* ch) {
     Base::assertInThread();
 
     int fd = ch->fd();
-	int index = ch->index();
+  int index = ch->index();
 
     if (index == kNew || index == kDeleted) {
         if (index == kNew) {
@@ -198,11 +198,11 @@ Epoller::removeChannel(Channel* ch) {
     }
 
     auto n = channelMap_.erase(fd);
-	assert(n == 1);
+  assert(n == 1);
     KANON_UNUSED(n); 
 
     // ch is a new channel which not in channelMap_ 
-	// set status to kNew, then we can readd it
+  // set status to kNew, then we can readd it
     ch->setIndex(kNew);
 }
 

@@ -36,8 +36,8 @@ public:
       StringView prefix = "",
       size_t flushInterval = 3,
       size_t rollLine = 1024);
-	
-	~AsyncLog() KANON_NOEXCEPT;
+  
+  ~AsyncLog() KANON_NOEXCEPT;
   
   void append(char const* data, size_t num) KANON_NOEXCEPT;
   void flush() KANON_NOEXCEPT;
@@ -62,7 +62,7 @@ private:
   size_t flushInterval_;
   size_t rollLine_;
 
-  StringView prefix_;	
+  StringView prefix_;  
   std::atomic<bool> running_;
 
   // use "Multiplex Buffering" technique

@@ -5,5 +5,5 @@ using namespace kanon;
 
 int main()
 {
-	ASSERT(0);
+  ASSERT(0);
 }

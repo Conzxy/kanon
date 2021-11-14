@@ -37,9 +37,9 @@
 #define KANON_RETHROW throw
 
 #define BZERO(dst, num) \
-	::memset(dst, 0, num)
+  ::memset(dst, 0, num)
 
 #define MIN(x, y) \
-	(x < y ? x : y )
+  (x < y ? x : y )
 
 #endif // KANON_UTIL_MACRO_H

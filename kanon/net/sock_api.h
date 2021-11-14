@@ -36,22 +36,22 @@ template<typename T>
 struct is_sockaddr : detail::is_sockaddr<typename std::remove_cv<T>::type> {};
 
 template<typename S, typename T, typename = typename std::enable_if<
-		is_sockaddr<S>::value && is_sockaddr<T>::value>::type>
+    is_sockaddr<S>::value && is_sockaddr<T>::value>::type>
 KANON_CONSTEXPR S* sockaddr_cast(T* addr) KANON_NOEXCEPT
 { return reinterpret_cast<S*>(addr); }
 
 template<typename T, typename U>
 struct if_const_add_const 
-	: std::conditional<std::is_const<T>::value,
-		typename std::add_const<U>::type,
-		U>
+  : std::conditional<std::is_const<T>::value,
+    typename std::add_const<U>::type,
+    U>
 { };
 
 template<typename T, typename U>
 using if_const_add_const_t = typename if_const_add_const<T, U>::type;
 
 template<typename S, typename = typename std::enable_if<
-		is_sockaddr<S>::value>::type>
+    is_sockaddr<S>::value>::type>
 KANON_CONSTEXPR if_const_add_const_t<S, SA>* to_sockaddr(S* addr) KANON_NOEXCEPT
 { return reinterpret_cast<if_const_add_const_t<S, SA>*>(addr); }
 
@@ -61,26 +61,26 @@ void toIpPort(char* buf, size_t size, SA const* addr);
 void toIp(char* buf, size_t size, SA const* addr);
 
 inline void fromIpPort(StringArg ip, 
-					   uint16_t port,
-					   sockaddr_in& addr) KANON_NOEXCEPT {
-	addr.sin_family = AF_INET;
-	addr.sin_port = toNetworkByteOrder16(port);
+             uint16_t port,
+             sockaddr_in& addr) KANON_NOEXCEPT {
+  addr.sin_family = AF_INET;
+  addr.sin_port = toNetworkByteOrder16(port);
 
-	if (!::inet_pton(addr.sin_family, ip, &addr.sin_addr)) {
-		LOG_SYSFATAL << "fail to convert ip presentation to numeric";
-	}
-	
+  if (!::inet_pton(addr.sin_family, ip, &addr.sin_addr)) {
+    LOG_SYSFATAL << "fail to convert ip presentation to numeric";
+  }
+  
 }
 
 inline void fromIpPort(StringArg ip,
-					   uint16_t port,
-					   sockaddr_in6& addr) KANON_NOEXCEPT {
-	addr.sin6_family = AF_INET6;
-	addr.sin6_port = toNetworkByteOrder16(port);
+             uint16_t port,
+             sockaddr_in6& addr) KANON_NOEXCEPT {
+  addr.sin6_family = AF_INET6;
+  addr.sin6_port = toNetworkByteOrder16(port);
 
-	if (!::inet_pton(addr.sin6_family, ip, &addr.sin6_addr)) {
-		LOG_SYSFATAL << "fail to convert ip presentation to numeric(ipv6)";
-	}
+  if (!::inet_pton(addr.sin6_family, ip, &addr.sin6_addr)) {
+    LOG_SYSFATAL << "fail to convert ip presentation to numeric(ipv6)";
+  }
 }
 
 void setNonBlockAndCloExec(int fd) KANON_NOEXCEPT;
@@ -89,37 +89,37 @@ int createSocket(bool ipv6) KANON_NOEXCEPT;
 int createNonBlockAndCloExecSocket(bool ipv6) KANON_NOEXCEPT;
 
 inline void close(int fd) KANON_NOEXCEPT {
-	if (::close(fd) < 0) {
-		LOG_SYSFATAL << "close socket error";
-	}
+  if (::close(fd) < 0) {
+    LOG_SYSFATAL << "close socket error";
+  }
 }
 
 inline void bind(int fd, SA const* addr) KANON_NOEXCEPT {
-	auto ret = ::bind(fd, addr, 
-					  addr->sa_family == AF_INET ? 
-					  sizeof(struct sockaddr_in) :
-					  sizeof(struct sockaddr_in6));
+  auto ret = ::bind(fd, addr, 
+            addr->sa_family == AF_INET ? 
+            sizeof(struct sockaddr_in) :
+            sizeof(struct sockaddr_in6));
 
-	if (ret < 0) {
-		LOG_SYSFATAL << "bind error";
-	}
+  if (ret < 0) {
+    LOG_SYSFATAL << "bind error";
+  }
 }
 
 inline void listen(int fd) KANON_NOEXCEPT {
-	auto ret = ::listen(fd, SOMAXCONN);
+  auto ret = ::listen(fd, SOMAXCONN);
 
-	if (ret < 0) {
-		LOG_SYSFATAL << "listen error";
-	}
+  if (ret < 0) {
+    LOG_SYSFATAL << "listen error";
+  }
 }
 
 inline int connect(int fd, SA const* addr) KANON_NOEXCEPT {
-	auto ret = ::connect(fd, addr,
-						 addr->sa_family == AF_INET ?
-						 sizeof(struct sockaddr_in) :
-						 sizeof(struct sockaddr_in6));
+  auto ret = ::connect(fd, addr,
+             addr->sa_family == AF_INET ?
+             sizeof(struct sockaddr_in) :
+             sizeof(struct sockaddr_in6));
 
-	return ret;
+  return ret;
 }
 
 // use ipv6 is better
@@ -128,7 +128,7 @@ int accept(int fd, struct sockaddr_in6* addr) KANON_NOEXCEPT;
 
 // shutdown write direction of a specified connection
 inline int shutdownWrite(int fd) KANON_NOEXCEPT {
-	return ::shutdown(fd, SHUT_WR);
+  return ::shutdown(fd, SHUT_WR);
 }
 
 // socket option
@@ -151,11 +151,11 @@ struct sockaddr_in6 getPeerAddr(int fd) KANON_NOEXCEPT;
 
 // io
 ssize_t inline write(int fd, void const* data, size_t len) KANON_NOEXCEPT {
-	return ::write(fd, data, len);
+  return ::write(fd, data, len);
 }
 
 ssize_t inline read(int fd, void* data, size_t len) KANON_NOEXCEPT {
-	return ::read(fd, data, len);
+  return ::read(fd, data, len);
 }
 
 // check if self-connection

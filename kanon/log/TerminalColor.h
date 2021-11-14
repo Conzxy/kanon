@@ -1,7 +1,7 @@
 #ifndef KANON_LOG_TERMINALCOLOR_H
 #define KANON_LOG_TERMINALCOLOR_H
 
-#define NONE				 "\e[0m"
+#define NONE         "\e[0m"
 #define BLACK                "\e[0;30m"
 #define L_BLACK              "\e[1;30m"
 #define RED                  "\e[0;31m"

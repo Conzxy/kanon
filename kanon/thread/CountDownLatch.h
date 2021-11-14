@@ -15,33 +15,33 @@ namespace kanon {
 class CountDownLatch : noncopyable
 {
 public:
-	explicit CountDownLatch(int count)
-		: count_(count), mutex_(), cond_(mutex_)
-	{ }
+  explicit CountDownLatch(int count)
+    : count_(count), mutex_(), cond_(mutex_)
+  { }
 
-	void reset(int count) KANON_NOEXCEPT
-	{ count_ = count; }
+  void reset(int count) KANON_NOEXCEPT
+  { count_ = count; }
 
-	int count() const KANON_NOEXCEPT
-	{ return count_; }
+  int count() const KANON_NOEXCEPT
+  { return count_; }
 
-	void wait()
-	{
-		MutexGuard guard(mutex_);
-		if(count_ > 0)
-			cond_.wait();
-	}
+  void wait()
+  {
+    MutexGuard guard(mutex_);
+    if(count_ > 0)
+      cond_.wait();
+  }
 
-	void countdown() KANON_NOEXCEPT
-	{
-		MutexGuard guard(mutex_);
-		if(--count_ == 0)
-			cond_.notifyAll();
-	}
+  void countdown() KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    if(--count_ == 0)
+      cond_.notifyAll();
+  }
 private:
-	int count_;
-	MutexLock mutex_;
-	Condition cond_;
+  int count_;
+  MutexLock mutex_;
+  Condition cond_;
 }; 
 
 } // namespace kanon

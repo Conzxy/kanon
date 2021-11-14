@@ -83,109 +83,109 @@ namespace kanon{
 class CAPABILITY("mutexlock") MutexLock : noncopyable
 {
 public:
-	MutexLock(){
-		TCHECK(pthread_mutex_init(&mutex_, NULL));
-	}
-	
-	~MutexLock(){
-		TCHECK(pthread_mutex_destroy(&mutex_));
-	}
-	
-	bool isLockedInThisThread() {
-		return holder_ == CurrentThread::tid();
-	}
-	
-	void assertLocked() {
-		ASSERT(isLockedInThisThread());
-	}
+  MutexLock(){
+    TCHECK(pthread_mutex_init(&mutex_, NULL));
+  }
+  
+  ~MutexLock(){
+    TCHECK(pthread_mutex_destroy(&mutex_));
+  }
+  
+  bool isLockedInThisThread() {
+    return holder_ == CurrentThread::tid();
+  }
+  
+  void assertLocked() {
+    ASSERT(isLockedInThisThread());
+  }
 
-	void lock() ACQUIRE() {
-		assignHolder();
-		TCHECK(pthread_mutex_lock(&mutex_));
-	}
+  void lock() ACQUIRE() {
+    assignHolder();
+    TCHECK(pthread_mutex_lock(&mutex_));
+  }
 
-	void trylock() {
-		TCHECK(pthread_mutex_trylock(&mutex_));
-		unassignHolder();
-	}
+  void trylock() {
+    TCHECK(pthread_mutex_trylock(&mutex_));
+    unassignHolder();
+  }
 
-	void unlock() RELEASE() {
-		TCHECK(pthread_mutex_unlock(&mutex_));
-		unassignHolder();
-	}
+  void unlock() RELEASE() {
+    TCHECK(pthread_mutex_unlock(&mutex_));
+    unassignHolder();
+  }
 
-	void timedlock(timespec const* tout){
-		TCHECK(pthread_mutex_timedlock(&mutex_, tout));
-	}
+  void timedlock(timespec const* tout){
+    TCHECK(pthread_mutex_timedlock(&mutex_, tout));
+  }
 
-	pthread_mutex_t& mutex(){
-		return mutex_;
-	}
+  pthread_mutex_t& mutex(){
+    return mutex_;
+  }
 
 private:
-	friend class Condition;
+  friend class Condition;
 
-	class UnassignHolder : noncopyable
-	{
-	public:
-		explicit UnassignHolder(MutexLock& mutex)
-			: mutex_(mutex)
-		{ mutex_.unassignHolder(); }
+  class UnassignHolder : noncopyable
+  {
+  public:
+    explicit UnassignHolder(MutexLock& mutex)
+      : mutex_(mutex)
+    { mutex_.unassignHolder(); }
 
-		~UnassignHolder()
-		{ mutex_.assignHolder(); }
+    ~UnassignHolder()
+    { mutex_.assignHolder(); }
 
-	private:
-		MutexLock& mutex_;
-	};
+  private:
+    MutexLock& mutex_;
+  };
 
-	void assignHolder() KANON_NOEXCEPT
-	{ holder_ = CurrentThread::tid(); }
+  void assignHolder() KANON_NOEXCEPT
+  { holder_ = CurrentThread::tid(); }
 
-	void unassignHolder() KANON_NOEXCEPT
-	{ holder_ = 0; }
+  void unassignHolder() KANON_NOEXCEPT
+  { holder_ = 0; }
 private:
-	pthread_mutex_t mutex_;
-	pid_t holder_;
+  pthread_mutex_t mutex_;
+  pid_t holder_;
 };
 
 //pthread_mutex_t simple RAII wrapper
 class SCOPED_CAPABILITY MutexGuard : noncopyable
 {
 public:
-	explicit MutexGuard(MutexLock& mutex) ACQUIRE(mutex)
-		: mutex_{mutex}
-	{ mutex_.lock(); }
+  explicit MutexGuard(MutexLock& mutex) ACQUIRE(mutex)
+    : mutex_{mutex}
+  { mutex_.lock(); }
 
-	~MutexGuard() RELEASE()
-	{ mutex_.unlock(); }
+  ~MutexGuard() RELEASE()
+  { mutex_.unlock(); }
 private:
-	MutexLock& mutex_;
+  MutexLock& mutex_;
 };
 
 template<typename T>
 class SCOPED_CAPABILITY MutexGuardT : noncopyable
 {
 public:
-	explicit MutexGuardT(T& mutex) ACQUIRE(mutex)
-		: mutex_(mutex)
-	{ mutex_.lock(); }
+  explicit MutexGuardT(T& mutex) ACQUIRE(mutex)
+    : mutex_(mutex)
+  { mutex_.lock(); }
 
-	~MutexGuardT() RELEASE()
-	{ mutex_.unlock(); }
+  ~MutexGuardT() RELEASE()
+  { mutex_.unlock(); }
 private:
-	T& mutex_;
+  T& mutex_;
 };
 
 #define MutexGuard(x) \
-	static_assert(sizeof(x) < 0, \
-			"error useage of MutexGuard" \
-			"(i.e. tempory object)");
+  static_assert(sizeof(x) < 0, \
+      "error useage of MutexGuard" \
+      "(i.e. tempory object)");
 
 #define MutexGuardT(x) \
-	static_assert(sizeof(x) < 0, \
-			"error useage of MutexGuard" \
-			"(i.e. tempory object)");
+  static_assert(sizeof(x) < 0, \
+      "error useage of MutexGuard" \
+      "(i.e. tempory object)");
 
 } // namespace kanon
 

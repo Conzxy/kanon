@@ -5,17 +5,17 @@ namespace kanon{
 
 struct noncopyable{
 #if __cplusplus >= 201103L
-		noncopyable() = default;
-		noncopyable(noncopyable const&) = delete;
-		noncopyable& operator=(noncopyable const&) = delete;
-		noncopyable(noncopyable&&) = default;
-		noncopyable& operator=(noncopyable&&) = default;
+    noncopyable() = default;
+    noncopyable(noncopyable const&) = delete;
+    noncopyable& operator=(noncopyable const&) = delete;
+    noncopyable(noncopyable&&) = default;
+    noncopyable& operator=(noncopyable&&) = default;
 
 #else
-		noncopyable() { }
+    noncopyable() { }
 private:
-		noncopyable(noncopyable const&){}
-		void operator=(noncopyable const&){}
+    noncopyable(noncopyable const&){}
+    void operator=(noncopyable const&){}
 #endif //_cplusplus > 201103L
 };
 

@@ -20,46 +20,46 @@ class EventLoop;
  */
 class PollerBase : noncopyable {
 public:
-	typedef std::vector<Channel*> ChannelVec;
+  typedef std::vector<Channel*> ChannelVec;
 
-	explicit PollerBase(EventLoop* loop)
-		: loop_{ loop }
-	{ }
-	
-	virtual ~PollerBase() KANON_NOEXCEPT = default;
+  explicit PollerBase(EventLoop* loop)
+    : loop_{ loop }
+  { }
+  
+  virtual ~PollerBase() KANON_NOEXCEPT = default;
 
-	// IO thread
-	virtual TimeStamp poll(int ms, ChannelVec& activeChannels) = 0;
-	//TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
-		//return static_cast<Poller*>(this)->poll(ms, activeChannels);
-	//}
+  // IO thread
+  virtual TimeStamp poll(int ms, ChannelVec& activeChannels) = 0;
+  //TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT {
+    //return static_cast<Poller*>(this)->poll(ms, activeChannels);
+  //}
 
-	// add, delelte, update, search
-	virtual void updateChannel(Channel* ch) = 0;
-	//void updateChannel(Channel* ch) {
-		//static_cast<Poller*>(this)->updateChannel(ch);
-	//}
-	
-	virtual void removeChannel(Channel* ch) = 0;
-	//void removeChannel(Channel* ch) {
-		//static_cast<Poller*>(this)->removeChannel(ch);
-	//}
+  // add, delelte, update, search
+  virtual void updateChannel(Channel* ch) = 0;
+  //void updateChannel(Channel* ch) {
+    //static_cast<Poller*>(this)->updateChannel(ch);
+  //}
+  
+  virtual void removeChannel(Channel* ch) = 0;
+  //void removeChannel(Channel* ch) {
+    //static_cast<Poller*>(this)->removeChannel(ch);
+  //}
 
 
-	bool hasChannel(Channel* ch) {
-		return channelMap_.find(ch->fd()) != channelMap_.end();
-	}
+  bool hasChannel(Channel* ch) {
+    return channelMap_.find(ch->fd()) != channelMap_.end();
+  }
 
 protected:
-	void assertInThread() KANON_NOEXCEPT {
-		loop_->assertInThread();
-	}
+  void assertInThread() KANON_NOEXCEPT {
+    loop_->assertInThread();
+  }
 
-	typedef kanon::map<int, Channel*> ChannelMap;
-	ChannelMap channelMap_;
+  typedef kanon::map<int, Channel*> ChannelMap;
+  ChannelMap channelMap_;
 
 private:
-	EventLoop* loop_;
+  EventLoop* loop_;
 };
 
 } // namespace kanon

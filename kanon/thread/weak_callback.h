@@ -17,32 +17,32 @@ template<typename R, typename T, typename ...Args>
 class WeakCallback
 {
 public:
-	constexpr WeakCallback(
-			std::weak_ptr<T> const& ptr,
-			std::function<R(T*, Args...)> const& fun)
-		: ptr_(ptr), fun_(fun)
-	{ }
+  constexpr WeakCallback(
+      std::weak_ptr<T> const& ptr,
+      std::function<R(T*, Args...)> const& fun)
+    : ptr_(ptr), fun_(fun)
+  { }
 
-	constexpr R operator()(Args... args) const
-	{
-		auto sp = ptr_.lock();
-		if(sp)
-			fun_(sp.get(), args...);
-	}
+  constexpr R operator()(Args... args) const
+  {
+    auto sp = ptr_.lock();
+    if(sp)
+      fun_(sp.get(), args...);
+  }
 private:
-	std::weak_ptr<T> ptr_;
-	std::function<R(T*, Args...)> fun_;
-	
+  std::weak_ptr<T> ptr_;
+  std::function<R(T*, Args...)> fun_;
+  
 };
 
 // factory
 #define MAKEWEAKCALLBACK(qualifier) \
 template<typename R, typename T, typename ...Args> \
 constexpr WeakCallback<R, T, Args...> makeWeakCallback( \
-		std::shared_ptr<T> const& ptr, \
-		R(T::*fun)(Args...) qualifier) \
+    std::shared_ptr<T> const& ptr, \
+    R(T::*fun)(Args...) qualifier) \
 { \
-	return WeakCallback<R, T, Args...>(ptr, fun); \
+  return WeakCallback<R, T, Args...>(ptr, fun); \
 }
 
 // total 24 types

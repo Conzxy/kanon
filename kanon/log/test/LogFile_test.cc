@@ -18,11 +18,11 @@ int main(int, char* argv[]) {
   
   g_logFile = &logFile;
 
-	Logger::setOutputCallback([](char const* data, size_t num) {
+  Logger::setOutputCallback([](char const* data, size_t num) {
     g_logFile->append(data, num);
   });
 
-	Logger::setFlushCallback([]() {
+  Logger::setFlushCallback([]() {
     g_logFile->flush();
   });
   

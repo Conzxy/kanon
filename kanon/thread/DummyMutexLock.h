@@ -6,13 +6,13 @@
 namespace kanon {
 
 class DummyMutexLock : noncopyable
-{	
+{  
 public:
-	DummyMutexLock() = default;
-	~DummyMutexLock() = default;
+  DummyMutexLock() = default;
+  ~DummyMutexLock() = default;
 
-	void lock() {}
-	void unlock() {}
+  void lock() {}
+  void unlock() {}
 };
 
 } // namespace kanon

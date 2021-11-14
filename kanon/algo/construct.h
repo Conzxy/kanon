@@ -18,7 +18,7 @@ inline void construct(T* ptr, Args&&... args) {
 namespace detail {
 
 // Here I use "tag dispatching" to select function,
-// FIXME or using class specilization is better?
+// or using class specilization is better?
 template<typename T>
 inline void destroySingle(T* ptr, std::false_type) {
   ptr->~T();
