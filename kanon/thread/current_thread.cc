@@ -22,12 +22,12 @@ __thread char const* t_name = nullptr;
 // because main thread is not created by pthread_create()
 // need explicit cache
 struct MainThreadInit {
-	MainThreadInit()
-	{
-		CurrentThread::t_name = "main";
-		CurrentThread::tid();
+  MainThreadInit()
+  {
+    CurrentThread::t_name = "main";
+    CurrentThread::tid();
 
-	}
+  }
 };
 
 MainThreadInit mainThreadInit{};
@@ -37,10 +37,10 @@ pid_t gettid()
 
 void cacheTid() KANON_NOEXCEPT
 {
-	if( __builtin_expect(t_tid == 0, 1) ) {
-		t_tid = gettid();
-		strcpy(t_tidString, lexical_cast<char const*>(t_tid));
-	}
+  if( __builtin_expect(t_tid == 0, 1) ) {
+    t_tid = gettid();
+    strcpy(t_tidString, lexical_cast<char const*>(t_tid));
+  }
 }
 
 bool isMainThread() KANON_NOEXCEPT

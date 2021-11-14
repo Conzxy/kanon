@@ -7,17 +7,17 @@
 using namespace kanon;
 
 int main() {
-	EventLoop loop;
-	InetAddr listen_addr{ 9999 };
+  EventLoop loop;
+  InetAddr listen_addr{ 9999 };
 
-	TcpServer server{ &loop, listen_addr, "EPIPE test"};
-	
-	server.setConnectionCallback([](TcpConnectionPtr const& conn) {
-			if (conn->isConnected()) {
-				::sleep(4);
-				conn->send("a");
-			}
+  TcpServer server{ &loop, listen_addr, "EPIPE test"};
+  
+  server.setConnectionCallback([](TcpConnectionPtr const& conn) {
+      if (conn->isConnected()) {
+        ::sleep(4);
+        conn->send("a");
+      }
 
-	});
+  });
 
 }

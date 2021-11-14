@@ -17,18 +17,18 @@ class EventLoop;
  */
 class EventLoopThread : noncopyable {
 public:
-	EventLoopThread(std::string const& = std::string{});
-	
-	// should be called by main thread	
-	EventLoop* start();
+  EventLoopThread(std::string const& = std::string{});
+  
+  // should be called by main thread  
+  EventLoop* start();
 
-	~EventLoopThread() KANON_NOEXCEPT;
+  ~EventLoopThread() KANON_NOEXCEPT;
 private:
-	EventLoop* loop_;
-	
-	MutexLock lock_;
-	Condition cond_;
-	Thread thr_;
+  EventLoop* loop_;
+  
+  MutexLock lock_;
+  Condition cond_;
+  Thread thr_;
 };
 
 } // namespace kanon

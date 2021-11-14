@@ -20,9 +20,9 @@ void cacheTid() KANON_NOEXCEPT;
 
 inline int tid() KANON_NOEXCEPT
 {
-	if( __builtin_expect(t_tid == 0, 0) )
-		cacheTid();
-	return t_tid;
+  if( __builtin_expect(t_tid == 0, 0) )
+    cacheTid();
+  return t_tid;
 }
 
 inline char const* tidString() KANON_NOEXCEPT

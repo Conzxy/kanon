@@ -12,7 +12,7 @@ class TimerQueue;
  *        not just a struct and own value semantic
  */
 class TimerId /* : public copyable */ {
-	friend class TimerQueue;
+  friend class TimerQueue;
 
 public:
     TimerId()

@@ -7,17 +7,17 @@
 namespace kanon {
 
 class Poller final : public PollerBase {
-	typedef PollerBase Base;
-	typedef std::vector<struct pollfd> PollfdVec;
+  typedef PollerBase Base;
+  typedef std::vector<struct pollfd> PollfdVec;
 public:
-	using Base::Base;
+  using Base::Base;
 
-	TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT KANON_OVERRIDE;
-	void updateChannel(Channel* ch) KANON_OVERRIDE;
-	void removeChannel(Channel* ch) KANON_OVERRIDE;
+  TimeStamp poll(int ms, ChannelVec& activeChannels) KANON_NOEXCEPT KANON_OVERRIDE;
+  void updateChannel(Channel* ch) KANON_OVERRIDE;
+  void removeChannel(Channel* ch) KANON_OVERRIDE;
 
 private:
-	PollfdVec pollfds_;	
+  PollfdVec pollfds_;  
 };
 
 

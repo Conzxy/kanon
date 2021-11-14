@@ -26,6 +26,9 @@ public:
     std::string const& name = {});
   ~TcpClient() KANON_NOEXCEPT;
 
+  void setConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
+  { connection_callback_ = std::move(cb); }
+
   void setMessageCallback(MessageCallback cb) KANON_NOEXCEPT
   { message_callback_ = std::move(cb); }
 
@@ -38,6 +41,9 @@ public:
   void disconnect() KANON_NOEXCEPT;
   
   void stop() KANON_NOEXCEPT;
+  
+  void enableRetry() KANON_NOEXCEPT
+  { retry_ = true; }
 
   TcpConnectionPtr connection() const KANON_NOEXCEPT {
     return conn_;

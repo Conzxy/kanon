@@ -21,51 +21,51 @@ class EventLoopPool;
 
 class TcpServer : noncopyable {
 public:
-	TcpServer(EventLoop* loop,
-			  InetAddr const& listen_addr,
-			  StringArg name,
-			  bool reuseport=false);
-	
-	~TcpServer() KANON_NOEXCEPT;	
+  TcpServer(EventLoop* loop,
+        InetAddr const& listen_addr,
+        StringArg name,
+        bool reuseport=false);
+  
+  ~TcpServer() KANON_NOEXCEPT;  
 
-	// Set the number of IO loop
-	void setLoopNum(int num) KANON_NOEXCEPT;
+  // Set the number of IO loop
+  void setLoopNum(int num) KANON_NOEXCEPT;
 
-	// Start all IO thread to loop
-	// then listen and accept connection to IO loop
-	// 
-	// It is harmless although this is called many times.
-	// thread-safe
-	void start() KANON_NOEXCEPT;
+  // Start all IO thread to loop
+  // then listen and accept connection to IO loop
+  // 
+  // It is harmless although this is called many times.
+  // thread-safe
+  void start() KANON_NOEXCEPT;
 
-	// set callback
-	void setConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
-	{ connection_callback_ = std::move(cb); }
+  // set callback
+  void setConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
+  { connection_callback_ = std::move(cb); }
 
-	void setMessageCallback(MessageCallback cb) KANON_NOEXCEPT
-	{ message_callback_ = std::move(cb); }
+  void setMessageCallback(MessageCallback cb) KANON_NOEXCEPT
+  { message_callback_ = std::move(cb); }
 
-	void setWriteCompleteCallback(WriteCompleteCallback cb) KANON_NOEXCEPT
-	{ write_complete_callback_ = std::move(cb); }
+  void setWriteCompleteCallback(WriteCompleteCallback cb) KANON_NOEXCEPT
+  { write_complete_callback_ = std::move(cb); }
 private:
-	typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
+  typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
 
-	void removeConnection(TcpConnectionPtr const& conn);	
+  void removeConnection(TcpConnectionPtr const& conn);  
 
-	EventLoop* loop_;
-	std::string const ip_port_;
-	std::string const name_;
-	
-	std::unique_ptr<Acceptor> acceptor_;	
+  EventLoop* loop_;
+  std::string const ip_port_;
+  std::string const name_;
+  
+  std::unique_ptr<Acceptor> acceptor_;  
 
-	ConnectionCallback connection_callback_;
-	MessageCallback message_callback_;
-	WriteCompleteCallback write_complete_callback_;
-	
-	uint32_t next_conn_id;
-	ConnectionMap connections_;
+  ConnectionCallback connection_callback_;
+  MessageCallback message_callback_;
+  WriteCompleteCallback write_complete_callback_;
+  
+  uint32_t next_conn_id;
+  ConnectionMap connections_;
 
-	std::unique_ptr<EventLoopPool> pool_;
+  std::unique_ptr<EventLoopPool> pool_;
 
   AtomicInt32 count_;
 }; 

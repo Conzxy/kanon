@@ -15,16 +15,16 @@ namespace kanon {
 #endif 
 
 #define ASSERT(ret) \
-	({if (unlikely(ret == 0)) \
-	 {\
-		char buf[1536]; \
-		::memset(buf, 0, sizeof buf); \
-		::snprintf(buf, sizeof buf, "errno: %d; error message: %s; %s; %d; %s\n", \
-				ret, strerror(ret), __FILE__, __LINE__, __func__); \
-		::fputs(buf, stderr); \
-		::fflush(stderr); \
-		abort();\
-	 }})
+  ({if (unlikely(ret == 0)) \
+   {\
+    char buf[1536]; \
+    ::memset(buf, 0, sizeof buf); \
+    ::snprintf(buf, sizeof buf, "errno: %d; error message: %s; %s; %d; %s\n", \
+        ret, strerror(ret), __FILE__, __LINE__, __func__); \
+    ::fputs(buf, stderr); \
+    ::fflush(stderr); \
+    abort();\
+   }})
 
 } // namespace kanon
 

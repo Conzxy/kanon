@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 
     auto id1 = loop.runAfter(&print, 1); KANON_UNUSED(id1);
     auto id2 = loop.runEvery([](){
-		LOG_INFO << "runEvery() 1 second";
+    LOG_INFO << "runEvery() 1 second";
     }, 1); KANON_UNUSED(id2);
 
     loop.loop();
