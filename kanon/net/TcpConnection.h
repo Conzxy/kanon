@@ -4,6 +4,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/unique_ptr.h"
+#include "kanon/util/Any.h"
 #include "kanon/log/Logger.h"
 #include "kanon/net/callback.h"
 #include "kanon/net/InetAddr.h"
@@ -73,6 +74,16 @@ public:
   char const* state2String() const KANON_NOEXCEPT
   { return state_str_[state_]; }
   
+  void setContext(Any const& context) {
+    context_ = context;
+  } 
+  
+  Any& context() KANON_NOEXCEPT
+  { return context_; }
+  
+  Any const& context() const KANON_NOEXCEPT
+  { return context_; }
+
   std::string const& name() const KANON_NOEXCEPT
   { return name_; }
 
@@ -119,7 +130,7 @@ private:
   Buffer input_buffer_;
   // FIXME Use RingBuffer better?
   Buffer output_buffer_;
-
+  
   // Process message from @var input_buffer_  
   MessageCallback message_callback_;
   // Dispatch connnection to acceptor or connector
@@ -134,6 +145,10 @@ private:
   // note: the callback only be called in rising edge
   HighWaterMarkCallback high_water_mark_callback_;
   size_t high_water_mark_;
+  
+  // Context can used for binding some information 
+  // about a specific connnection(So, it named context)
+  Any context_;
 
   // only be called by server
   CloseCallback close_callback_;
