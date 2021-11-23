@@ -106,8 +106,7 @@ public:
 
   // append operation:
   void append(StringView str) {
-    if (str.size() > writable_size())
-      make_space(str.size());
+    make_space(str.size());
     
     std::copy(str.begin(), str.end(), offset(write_index_));
     write_index_ += str.size();
@@ -281,16 +280,23 @@ private:
     // else we can resize inside buffer through adjust layout
     // | prepend size | readable size | writable size | unused |
     //            ||
-    // | prefix size | readable size | writeable size | unused |
-    if (writable_size() + prependable_size() < len + BUFFER_PREFIX_SIZE) {
+    // | prefix size | readable size | writable size | unused |
+    if (len + BUFFER_PREFIX_SIZE >  prependable_size() + writable_size()) {
       // just fit
       data_.resize(write_index_ + len);
+
+      if (prependable_size() < BUFFER_PREFIX_SIZE) {
+        // It should be discarded
+        auto r = read_index_ + BUFFER_PREFIX_SIZE - prependable_size(); 
+        std::copy(offset(r), offset(r+readable_size()), 
+            offset(BUFFER_PREFIX_SIZE));
+      }
     } else {
       // reuse unused space between read_index_ and writable_index
       //
       // read_index_ should after prefix size
       // i.e. response size should prepend at last
-      assert(BUFFER_PREFIX_SIZE < read_index_);
+      assert(BUFFER_PREFIX_SIZE <= read_index_);
       auto readable = this->readable_size();
 
       std::copy(offset(read_index_),

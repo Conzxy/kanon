@@ -42,4 +42,6 @@
 #define MIN(x, y) \
   (x < y ? x : y )
 
+#define IMPORT_NAMESPACE(space) \
+  using namespace space
 #endif // KANON_UTIL_MACRO_H
