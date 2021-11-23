@@ -56,12 +56,6 @@ public:
     , len_(0)
   { }
 
-  template<uint64_t N>
-  StringView(char const(&str)[N])
-    : data_(static_cast<char const*>(str))
-    , len_(sizeof str)
-  { }
-
   StringView(char const* str)
     : data_(str), len_(strlen(str))
   { }
@@ -320,16 +314,42 @@ public:
 
     return npos;
   }
-  
-  // lexicographic compare
-  int compare(StringView v) const KANON_NOEXCEPT
-  {
-    int r = memcmp(data_, v.data(), len_ < v.size() ?
+
+  int caseCompare(StringView v) const KANON_NOEXCEPT {
+    int r = ::strncasecmp(data_, v.data(), len_ < v.size() ?
         len_ : v.size());
 
     if(r == 0){
       if(len_ < v.size()) r = -1;
-      else r = 1;
+      else if (len_ > v.size()) r = 1;
+    }
+
+    return r;
+  }  
+
+  int caseCompare(char c) const KANON_NOEXCEPT
+  {
+    auto data_0 = ::toupper(data_[0]);
+    auto _c = ::toupper(c);
+
+    if (len_ < 1 || data_0 < _c)
+      return -1;
+    
+    if (data_0 > _c)
+      return 1;
+
+    return (data_0 == c && len_ == 1) ? 0 : 1;
+  }
+
+  // lexicographic compare
+  int compare(StringView v) const KANON_NOEXCEPT
+  {
+    int r = ::memcmp(data_, v.data(), len_ < v.size() ?
+        len_ : v.size());
+
+    if(r == 0){
+      if(len_ < v.size()) r = -1;
+      else if(len_ > v.size()) r = 1;
     }
 
     return r;
