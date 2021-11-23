@@ -26,7 +26,7 @@ namespace kanon {
 /**
  * @class RingBuffer
  * @tparam T type of element
- * @brief
+ * @brief 
  * RingBuffer write policy when buffer is full:
  * -- overwrite these old data in buffer.
  * Since memory space is linear, we want to implemete such

@@ -34,19 +34,20 @@ using std::make_unique;
 
 // compatible with smart_pointer and raw pointer
 template<typename T>
-inline T* getPointer(std::unique_ptr<T>& ptr) KANON_NOEXCEPT {
+inline T* getPointer(std::unique_ptr<T> const& ptr) KANON_NOEXCEPT {
   return ptr.get();
 }
 
 template<typename T>
-inline T* getPointer(std::shared_ptr<T>&  ptr) KANON_NOEXCEPT {
+inline T* getPointer(std::shared_ptr<T> const&  ptr) KANON_NOEXCEPT {
   return ptr.get();
 }
 
 template<typename T>
-inline T* getPointer(T* ptr) KANON_NOEXCEPT {
+inline T* getPointer(T* const ptr) KANON_NOEXCEPT {
   return ptr;
 }
+
 
 } // namespace kanon
 
