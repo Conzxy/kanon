@@ -24,7 +24,7 @@ InetAddr::InetAddr(Port port, bool loopback, bool v6) {
     addr6_.sin6_family = AF_INET6;
   } else {
     addr_.sin_port = sock::toNetworkByteOrder16(port);
-    addr_.sin_addr.s_addr = sock::toNetworkByteOrder32(loopback ? INADDR_ANY : INADDR_LOOPBACK);
+    addr_.sin_addr.s_addr = sock::toNetworkByteOrder32(loopback ? INADDR_LOOPBACK : INADDR_ANY);
     addr_.sin_family = AF_INET;
   }
 }
