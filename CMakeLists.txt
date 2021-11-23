@@ -26,6 +26,7 @@ set(CXX_FLAGS
  -Wno-return-local-addr
  -Wno-unused-parameter
  -Wno-unused-function
+ -Wno-switch
  -Werror
  #-Wconversion
  #-Wshadow
@@ -91,6 +92,7 @@ list(FILTER KANON_SRC EXCLUDE REGEX "${ncdm}*bench${ncdm}*.cc")
 
 set(ALL_SRC ${KANON_BASE_SRC} ${KANON_NET_SRC})
 
+add_subdirectory(${KANON_SOURCE_DIR}/util)
 add_subdirectory(${KANON_SOURCE_DIR}/net)
 add_subdirectory(${KANON_SOURCE_DIR}/string)
 add_subdirectory(${KANON_SOURCE_DIR}/thread)
