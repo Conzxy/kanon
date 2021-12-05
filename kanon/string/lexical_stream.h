@@ -360,9 +360,11 @@ constexpr int64_t kLargeStreamSize = 4000 * 1000;
 
 #define SMALL_FIXEDBUFFER_SIZE 4000
 #define LARGE_FIXEDBUFFER_SIZE 4000 * 1000
+#define CAST_FIXEDBUFFER_SIZE 64
 
 using SmallLexicalStream = LexicalStream<kSmallStreamSize>;
 using LargeLexicalStream = LexicalStream<kLargeStreamSize>;
+using CastLexicalStream = LexicalStream<CAST_FIXEDBUFFER_SIZE>;
 
 } // namespace kanon
 
