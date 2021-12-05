@@ -9,6 +9,18 @@ TEST(LexicalCastTest, Int) {
   EXPECT_EQ(0, strcmp(buf, "322222222"));
 }
 
+TEST(LexicalCastTest, Str2Long) {
+  auto opt_long = lexical_cast<long>(makeStringView("11111"));
+  
+  EXPECT_TRUE(opt_long.has_value());
+  EXPECT_EQ(*opt_long, 11111);
+  
+  opt_long = lexical_cast<long>(makeStringView("12345"));
+
+  EXPECT_TRUE(opt_long);
+  EXPECT_EQ(*opt_long, 12345);
+}
+
 int main(int argc, char* argv[])
 {
   ::testing::InitGoogleTest(&argc, argv);
