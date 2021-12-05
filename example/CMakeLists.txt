@@ -4,3 +4,4 @@ add_executable(EchoServer EchoServer.cc ${KANON_SRC})
 
 add_subdirectory(chat)
 add_subdirectory(http)
+add_subdirectory(memcache)
