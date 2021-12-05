@@ -12,6 +12,12 @@ StringView empty_sv = "";
 
 #define NPOS kanon::StringView::npos
 
+TEST(StringViewTest, ctor) {
+  char buf[1024];
+  buf[222] = 0;
+  //StringView s1(buf);
+}
+
 TEST(StringViewTest, sizeTest){
   cout << sv.size() << '\n';
 }
@@ -105,11 +111,16 @@ TEST(StringViewTest, DISABLE_split) {
   std::cout << "split test end\n";
 }
 
-int main(int argc, char* argv[])
-{
-  ios::sync_with_stdio(false);
-  cout.tie(NULL);
+template<unsigned N>
+void f(char const(&)[N]) {
+  ::puts("char const[N]");
+}
 
+void f(char const*) {
+  ::puts("char const*");
+}
+
+int main(int argc, char* argv[]) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
