@@ -15,7 +15,7 @@
 namespace kanon {
 
 #define TIME_INTERVAL \
-  (CHRONO::high_resolution_clock::now() - begin_)
+  (CHRONO::high_resolution_clock::Now() - begin_)
 #define DURATION_CAST(timetype, d) \
   (CHRONO::duration_cast<CHRONO::timetype>(d))
 #define MEASURE_CLOCK \
@@ -36,13 +36,13 @@ public:
 
   explicit MeasureTime(StringView func_name, TimeType ty=TimeType::nanoseconds)
     : func_name_{func_name},
-      begin_{MEASURE_CLOCK::now()},
+      begin_{MEASURE_CLOCK::Now()},
       time_t_{ty}
   {};
   
   void reset()
   {
-    begin_ = MEASURE_CLOCK::now();
+    begin_ = MEASURE_CLOCK::Now();
   }
 
   ~MeasureTime()

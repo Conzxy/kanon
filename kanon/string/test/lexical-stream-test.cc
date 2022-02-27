@@ -1,4 +1,6 @@
 #include "../lexical_stream.h"
+#include "kanon/string/type.h"
+
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string.h>
@@ -22,7 +24,6 @@ using namespace kanon;
        stream << val;   \
     } \
   }while(0)
-
 
 constexpr int a = 322222222;
 char const* ac = "322222222";

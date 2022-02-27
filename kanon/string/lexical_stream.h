@@ -7,84 +7,12 @@
 
 #include <string.h>
 #include <string>
-#include <stdint.h>
-#include <type_traits>
-#include <algorithm>
 #include <assert.h>
 
+#include "stream_common.h"
+#include "fixed_buffer.h"
+
 namespace kanon{
-
-namespace detail{
-/**
- * @class FixedBuffer
- * @tparam SZ size of buffer
- * maintain a fixed-size buffer
- */
-template<unsigned SZ>
-class FixedBuffer
-{
-  using Self = FixedBuffer;
-public:
-  FixedBuffer() 
-    : len_(0) 
-  { }
-  
-  //prohibit modify througt data()
-  char const* data() const KANON_NOEXCEPT { return data_; }
-  
-  // length, avaliable space
-  unsigned len() const KANON_NOEXCEPT 
-  { return len_; }
-
-  bool empty() const KANON_NOEXCEPT
-  { return len() == 0; }
-
-  unsigned avali() const KANON_NOEXCEPT 
-  { return SZ - len_; }
-  
-  char const* end() const KANON_NOEXCEPT 
-  { return data_ + SZ; }
-
-  // append
-  void append(char const* str, unsigned len) KANON_NOEXCEPT {
-    if(len < avali()) {
-      memcpy(cur(), str, len);
-      len_ += len;
-      *cur() = 0;
-    } 
-  }
-  
-  // inplace modify
-  // cur() -> set()
-  char* cur() KANON_NOEXCEPT
-  { return data_ + len_; }
-
-  void reset() KANON_NOEXCEPT
-  { len_ = 0; }
-
-  void add(unsigned diff) KANON_NOEXCEPT
-  { 
-    len_ += diff; 
-    assert(len_ < SZ);
-  }
-  
-  void swap(Self& other) KANON_NOEXCEPT{
-    std::swap(data_, other.data_);
-    std::swap(len_, other.len_);
-  }
-
-  void zero() KANON_NOEXCEPT
-  { memset(data_, 0, SZ); }
-private:
-  char data_[SZ];
-  unsigned len_;
-};
-
-template<unsigned SZ>
-void swap(FixedBuffer<SZ> const& lhs, FixedBuffer<SZ> const& rhs) KANON_NOEXCEPT(KANON_NOEXCEPT(lhs.swap(rhs)))
-{ lhs.swap(rhs); }
-
-} // namespace detail
 
 template<unsigned SZ>
 class LexicalStream : noncopyable
@@ -94,138 +22,74 @@ class LexicalStream : noncopyable
 public:
 
   LexicalStream() = default;
-  LexicalStream(LexicalStream&&) KANON_NOEXCEPT;
-  LexicalStream& operator=(LexicalStream&&) KANON_NOEXCEPT;  
+  LexicalStream(LexicalStream&&) noexcept;
+  LexicalStream& operator=(LexicalStream&&) noexcept;  
 
-  void append(char const* buf, unsigned len) KANON_NOEXCEPT 
-  { buffer_.append(buf, len); }
+  void Append(char const* buf, unsigned len) noexcept 
+  { buffer_.Append(buf, len); }
   
-  void reset() KANON_NOEXCEPT
+  void reset() noexcept
   { buffer_.reset(); }
 
-  char const* data() const KANON_NOEXCEPT
+  char const* data() const noexcept
   { return buffer_.data(); }
   
-  Buffer& buffer() KANON_NOEXCEPT
+  Buffer& buffer() noexcept
   { return buffer_; }
   
-  unsigned size() const KANON_NOEXCEPT
+  unsigned size() const noexcept
   { return buffer_.len(); }
   
-  unsigned maxsize() const KANON_NOEXCEPT
+  unsigned maxsize() const noexcept
   { return SZ; }
 
-  Self& operator<<(bool);
-  Self& operator<<(char);
+  inline Self& operator<<(bool);
+  inline Self& operator<<(char);
 
-  Self& operator<<(short);
-  Self& operator<<(unsigned short);
-  Self& operator<<(int);
-  Self& operator<<(unsigned);
-  Self& operator<<(long);
-  Self& operator<<(unsigned long);
-  Self& operator<<(long long);
-  Self& operator<<(unsigned long long);
-  Self& operator<<(unsigned char);
+  inline Self& operator<<(short);
+  inline Self& operator<<(unsigned short);
+  inline Self& operator<<(int);
+  inline Self& operator<<(unsigned);
+  inline Self& operator<<(long);
+  inline Self& operator<<(unsigned long);
+  inline Self& operator<<(long long);
+  inline Self& operator<<(unsigned long long);
+  inline Self& operator<<(unsigned char);
 
   Self& operator<<(float f)
   { return *this << static_cast<double>(f); }
 
-  Self& operator<<(double);
+  inline Self& operator<<(double);
   
-  Self& operator<<(char const*);
-  Self& operator<<(std::string const& str);
-  Self& operator<<(StringView const&);
+  inline Self& operator<<(char const*);
+  inline Self& operator<<(std::string const& str);
+  inline Self& operator<<(StringView);
 
-  Self& operator<<(void const*);
+  inline Self& operator<<(void const*);
 private:
   Buffer buffer_;
-
-// static
-public:
-  static constexpr unsigned kMaxIntSize = 32;
-  static constexpr unsigned kMaxFloatingSize = 324;
 };
 
+/**
+ * To inline, we don't put them to source file
+ */
 template<unsigned SZ>
-constexpr unsigned LexicalStream<SZ>::kMaxFloatingSize;
-
-template<unsigned SZ>
-LexicalStream<SZ>::LexicalStream(LexicalStream&& other) KANON_NOEXCEPT
+LexicalStream<SZ>::LexicalStream(LexicalStream&& other) noexcept
   : buffer_(other.buffer())
 { }
 
 template<unsigned SZ>
-LexicalStream<SZ>& LexicalStream<SZ>::operator=(LexicalStream&& other) KANON_NOEXCEPT
+LexicalStream<SZ>& LexicalStream<SZ>::operator=(LexicalStream&& other) noexcept
 {
   buffer_.swap(other.buffer_);  
   return *this;
 }
 
-namespace detail {
-  
-  template<
-    typename T,
-    typename = typename std::enable_if<
-      std::is_integral<T>::value
-      >::type>
-  unsigned int2Str(char* buf, T integer){
-    static char const digits[] = "9876543210123456789";
-    static_assert(sizeof digits == 20, "digits size should be 20");
-
-    static char const* pzero = digits + 9;
-
-    char* end = buf;
-
-    do{
-      T left = integer % 10;
-      integer /= 10;
-      *(end++) = *(pzero + left);
-    }while(integer != 0);
-    
-    if(integer < 0)
-      *(end++) = '-';
-  
-    *end = 0;
-    std::reverse(buf, end);
-    
-    return end - buf;
-  }
-
-  inline unsigned ptrToHexStr(char* buf, uintptr_t p) {
-    static char const hex_digits[] = "0123456789ABCDEF";
-    static_assert(sizeof hex_digits == 17, "hex_digits size should be 17");
-
-    auto end = buf;
-    auto count = 0;
-
-    do {
-      auto r = p % 16;
-      p = p / 16;
-      *(end++) = hex_digits[r];
-      ++count;
-    } while (p != 0);
-
-    if (count < 16) {
-      int rest = 16 - count;
-
-      for (; rest > 0; --rest)
-        *(end++) = '0';
-    }
-
-    std::reverse(buf, end);
-    *end = 0;
-
-    return end - buf;
-  }
-
-} // namespace detail
-
 template<unsigned SZ>
 auto LexicalStream<SZ>::operator<<(char c)->
   Self&
 {
-  append(&c, 1);
+  Append(&c, 1);
   return *this;
 }
 
@@ -233,44 +97,34 @@ template<unsigned SZ>
 auto LexicalStream<SZ>::operator<<(bool b)->
   Self&
 {
-  if(b)
-    append("True", 4);
-  else
-    append("False", 5);
-  
+  buffer_.appendBool(b);
   return *this;
 }
 
-#define LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(type) \
+#define LEXICALSTREAM_OPERATOR_LEFT_SHIFT(type) \
 template<unsigned SZ> \
 auto LexicalStream<SZ>::operator<<(type i)->\
   Self&\
 {\
-  if(buffer_.avali() > kMaxIntSize)\
-    buffer_.add(detail::int2Str(buffer_.cur(), i)); \
+  buffer_.appendInt(i);\
   return *this; \
 }
 
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(unsigned char)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(short)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(unsigned short)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(int)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(unsigned)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(long)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(unsigned long)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(long long)
-LEXICALSTREAMg_OPERATOR_LEFT_SHIFT(unsigned long long)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(unsigned char)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(short)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(unsigned short)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(int)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(unsigned)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(long)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(unsigned long)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(long long)
+LEXICALSTREAM_OPERATOR_LEFT_SHIFT(unsigned long long)
 
 template<unsigned SZ>
 auto LexicalStream<SZ>::operator<<(double d)->
   Self&
 {
-  if(buffer_.avali() > kMaxFloatingSize){
-    int len = snprintf(buffer_.cur(), kMaxFloatingSize, "%.12g", d);
-
-    buffer_.add(len);
-  }
-
+  buffer_.appendFloat(d);
   return *this;
 }
 
@@ -278,12 +132,7 @@ template<unsigned SZ>
 auto LexicalStream<SZ>::operator<<(char const* str)->
   Self&
 {
-  if(str){
-    append(str, strlen(str));
-  }else{
-    append("(null)", 6);
-  }
-
+  buffer_.Append(str, strlen(str));
   return *this;
 }
 
@@ -291,15 +140,15 @@ template<unsigned SZ>
 auto LexicalStream<SZ>::operator<<(std::string const& str) ->
   Self&
 {
-  append(str.data(), str.size());
+  buffer_.Append(str.data(), str.size());
   return *this;
 }
 
 template<unsigned SZ>
-auto LexicalStream<SZ>::operator<<(StringView const& sv) ->
+auto LexicalStream<SZ>::operator<<(StringView sv) ->
   Self&
 {
-  append(sv.data(), sv.size());
+  buffer_.Append(sv);
   return *this;
 }
 
@@ -307,17 +156,7 @@ template<unsigned SZ>
 auto LexicalStream<SZ>::operator<<(void const* p) ->
   Self&
 {
-  auto up = reinterpret_cast<uintptr_t>(p);
-
-  auto cur = buffer_.cur();
-
-  if (buffer_.avali() > 18) {
-    cur[0] = '0';
-    cur[1] = 'x';
-
-    buffer_.add(detail::ptrToHexStr(cur+2, up) + 2);
-  }
-
+  buffer_.appendPtr(p);
   return *this;
 }
 
@@ -337,10 +176,10 @@ public:
     : Fmt(str.c_str(), str.size()) 
   { }
   
-  char const* buf() const KANON_NOEXCEPT
+  char const* buf() const noexcept
   { return buf_; }
 
-  unsigned len() const KANON_NOEXCEPT
+  unsigned len() const noexcept
   { return len_; }
 
 private:
@@ -351,21 +190,14 @@ private:
 template<unsigned SZ>
 LexicalStream<SZ>& operator<<(LexicalStream<SZ>& stream, Fmt const& fmt)
 {
-  stream.append(fmt.buf(), fmt.len());
+  stream.Append(fmt.buf(), fmt.len());
   return stream;
 }
 
-constexpr int64_t kSmallStreamSize = 4000;
-constexpr int64_t kLargeStreamSize = 4000 * 1000;
 
-#define SMALL_FIXEDBUFFER_SIZE 4000
-#define LARGE_FIXEDBUFFER_SIZE 4000 * 1000
-#define CAST_FIXEDBUFFER_SIZE 64
-
-using SmallLexicalStream = LexicalStream<kSmallStreamSize>;
-using LargeLexicalStream = LexicalStream<kLargeStreamSize>;
-using CastLexicalStream = LexicalStream<CAST_FIXEDBUFFER_SIZE>;
 
 } // namespace kanon
+
+// #include "lexical_stream_impl.h"
 
 #endif // KANON_LEXICAL_STREAM_H

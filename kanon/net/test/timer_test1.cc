@@ -1,5 +1,5 @@
-#include "kanon/net/EventLoop.h"
-#include "kanon/thread/Thread.h"
+#include "kanon/net/event_loop.h"
+#include "kanon/thread/thread.h"
 
 using namespace kanon;
 
@@ -11,15 +11,15 @@ int main() {
     
   Thread thr([]() {
     EventLoop loop1;
-    g_loop->runEvery([]() {
-        LOG_INFO << "other thread call g_loop::runEvery()";
+    g_loop->RunEvery([]() {
+        LOG_INFO << "other thread call g_loop::RunEvery()";
     }, 1);
       
   });
 
-  thr.start();
-  thr.join();
+  thr.StartRun();
+  thr.Join();
 
-  g_loop->loop();
+  g_loop->StartLoop();
 }
 

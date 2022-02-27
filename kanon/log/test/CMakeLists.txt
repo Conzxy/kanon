@@ -1,4 +1,5 @@
-#add_executable(Logger_test Logger_test.cc ${SRC_LIST})
+add_executable(Logger_test Logger_test.cc ${KANON_BASE_SRC})
+
 add_executable(LogFile_test LogFile_test.cc ${KANON_BASE_SRC})
 add_executable(AsyncLog_test AsyncLog_test.cc ${KANON_BASE_SRC})
 

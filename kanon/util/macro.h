@@ -21,10 +21,10 @@
 #endif
 
 #ifdef CXX_STANDARD_11
-#define KANON_NOEXCEPT noexcept
+#define noexcept noexcept
 #define KANON_OVERRIDE override
 #else
-#define KANON_NOEXCEPT throw()
+#define noexcept throw()
 #define KANON_OVERRIDE
 #endif
 
@@ -35,13 +35,17 @@
 #endif
 
 #define KANON_RETHROW throw
+#define KANON_FUNCTION_TRY try: 
+#define KANON_CATCH catch 
+#define KANON_CATCH_ALL catch (...) 
 
 #define BZERO(dst, num) \
   ::memset(dst, 0, num)
 
-#define MIN(x, y) \
-  (x < y ? x : y )
-
 #define IMPORT_NAMESPACE(space) \
   using namespace space
+
+#define KANON_ASSERT(cond, msg) \
+  assert((cond) && (msg))
+
 #endif // KANON_UTIL_MACRO_H

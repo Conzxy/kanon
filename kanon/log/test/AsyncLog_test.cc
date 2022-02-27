@@ -1,6 +1,6 @@
-#include "kanon/log/AsyncLog.h"
-#include "kanon/log/Logger.h"
-#include "kanon/thread/ThreadPool.h"
+#include "kanon/log/async_log.h"
+#include "kanon/log/logger.h"
+#include "kanon/thread/thread_pool.h"
 
 using namespace kanon;
 
@@ -16,22 +16,22 @@ void frontThreadFunc() {
 int main(int , char** argv) {
   AsyncLog asyncLog{ ::basename(argv[0]), 20000 };
   
-  Logger::setFlushCallback([&asyncLog]() {
+  Logger::SetFlushCallback([&asyncLog]() {
       asyncLog.flush();
   });
 
-  Logger::setOutputCallback([&asyncLog](char const* data, size_t len) {
-      asyncLog.append(data, len);
+  Logger::SetOutputCallback([&asyncLog](char const* data, size_t len) {
+      asyncLog.Append(data, len);
   });
 
-  asyncLog.start();
+  asyncLog.StartRun();
 
   ThreadPool pool{};
-  pool.setMaxQueueSize(10);
-  pool.start(200);
+  pool.SetMaxQueueSize(10);
+  pool.StartRun(200);
    
   for (int i = 0; i < 20; ++i)
-    pool.run(&frontThreadFunc);
+    pool.Push(&frontThreadFunc);
 
   struct timespec sleepTime;
   BZERO(&sleepTime, sizeof sleepTime);

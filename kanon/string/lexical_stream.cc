@@ -4,6 +4,6 @@ namespace kanon {
 
 template class LexicalStream<kSmallStreamSize>;
 template class LexicalStream<kLargeStreamSize>;
-template class LexicalStream<CAST_FIXEDBUFFER_SIZE>;
+template class LexicalStream<kCastStreamSize>;
 
 } // namespace kanon

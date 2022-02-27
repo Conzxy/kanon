@@ -2,6 +2,7 @@
 #define KANON_LEXICAL_CAST_H
 
 #include "kanon/string/lexical_stream.h"
+#include "kanon/string/type.h"
 #include "kanon/util/optional.h"
 #include "kanon/util/arithmetic_type.h"
 

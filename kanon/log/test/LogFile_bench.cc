@@ -1,6 +1,6 @@
-#include "kanon/log/LogFileTrigger.h"
-#include "kanon/log/AsyncLogTrigger.h"
-#include "kanon/thread/ThreadPool.h"
+#include "kanon/log/log_file_trigger.h"
+#include "kanon/log/async_log_trigger.h"
+#include "kanon/thread/thread_pool.h"
 
 #include <benchmark/benchmark.h>
 
@@ -33,10 +33,10 @@ AsyncLog_pool_bench(State& state) {
 
   ThreadPool pool{ pool_size, "AsyncLog" };
   
-  pool.start(pool_size);
+  pool.StartRun(pool_size);
 
   for (auto i = 0; i < pool_size; ++i) { 
-    pool.run([]() {
+    pool.Push([]() {
         LOG_INFO << "LogFile_bench";
     });
   }

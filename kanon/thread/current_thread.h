@@ -16,25 +16,25 @@ extern __thread char t_tidString[32];
 extern __thread int t_tidLength;
 extern __thread char const* t_name;
 
-void cacheTid() KANON_NOEXCEPT;
+void cacheTid() noexcept;
 
-inline int tid() KANON_NOEXCEPT
+inline int tid() noexcept
 {
   if( __builtin_expect(t_tid == 0, 0) )
     cacheTid();
   return t_tid;
 }
 
-inline char const* tidString() KANON_NOEXCEPT
+inline char const* tidString() noexcept
 { return t_tidString; }
 
-inline int tidLength() KANON_NOEXCEPT
+inline int tidLength() noexcept
 { return t_tidLength; }
 
-inline char const* name() KANON_NOEXCEPT
+inline char const* GetName() noexcept
 { return t_name; }
 
-bool isMainThread() KANON_NOEXCEPT;
+bool isMainThread() noexcept;
 
 } // namespace CurrentThread
 } // namespace kanon

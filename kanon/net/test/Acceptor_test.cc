@@ -1,20 +1,19 @@
-#include "kanon/net/Acceptor.h"
-#include "kanon/net/EventLoopThread.h"
+#include "kanon/net/acceptor.h"
+#include "kanon/net/event_loop.h"
+#include "kanon/net/inet_addr.h"
+#include "kanon/net/sock_api.h"
 
 using namespace kanon;
 
 int main() {
-  EventLoopThread loop_thread;
+  EventLoop loop{};
 
   InetAddr listen_addr{ 9999 };
   
-  LOG_DEBUG << "listen_addr: " << listen_addr.toIpPort();  
-  auto loop = loop_thread.start();
+  Acceptor acceptor(&loop, listen_addr);
 
-  Acceptor acceptor(loop, listen_addr);
-
-  acceptor.setNewConnectionCallback([](int sockfd, InetAddr const& cli_addr) {
-    LOG_INFO << "accept a new connection from " << cli_addr.toIpPort();
+  acceptor.SetNewConnectionCallback([](int sockfd, InetAddr const& cli_addr) {
+    LOG_INFO << "accept a new connection from " << cli_addr.ToIpPort();
     char const data[] = "How are you?";
     auto n = sizeof data;
     LOG_INFO << "n= " << n;
@@ -24,9 +23,12 @@ int main() {
       LOG_INFO << "x= " << x;
     } while(n != 0);
 
-    ::close(sockfd);
+    sock::close(sockfd);
   });
 
-  acceptor.listen();
+  acceptor.Listen();
+  LOG_DEBUG << "listen_addr: " << listen_addr.ToIpPort();  
+
+  loop.StartLoop();
 
 }

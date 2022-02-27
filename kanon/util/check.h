@@ -1,6 +1,7 @@
 #ifndef KANON_CHECK_H
 #define KANON_CHECK_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

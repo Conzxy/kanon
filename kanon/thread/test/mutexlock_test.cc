@@ -1,5 +1,5 @@
-#include "MutexLock.h"
-#include "DummyMutexLock.h"
+#include "mutex_lock.h"
+#include "dummy_mutex_lock.h"
 
 using namespace kanon;
 

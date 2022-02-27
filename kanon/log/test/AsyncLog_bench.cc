@@ -1,8 +1,8 @@
-#include "kanon/log/LogFileTrigger.h"
-#include "kanon/log/AsyncLogTrigger.h"
-#include "kanon/thread/ThreadPool.h"
+#include "kanon/log/log_file_trigger.h"
+#include "kanon/log/async_log_trigger.h"
+#include "kanon/thread/thread_pool.h"
 #include "kanon/time/MeasureTime.h"
-#include "kanon/thread/CountDownLatch.h"
+#include "kanon/thread/count_down_latch.h"
 
 using namespace kanon;
 
@@ -15,21 +15,21 @@ AsyncLog_bench_impl(int num) {
 
   ThreadPool pool{ pool_size, "AsyncLog" };
   
-  pool.start(pool_size);
+  pool.StartRun(pool_size);
   
   int thread_log_num = num / pool_size;
 
   for (int i = 0; i != pool_size; ++i) {
-    pool.run([&latch, thread_log_num]() {
+    pool.Push([&latch, thread_log_num]() {
       for (auto i = 0; i != thread_log_num; ++i) {
         LOG_INFO << "AsyncLog_bench";
       }
 
-      latch.countdown();
+      latch.Countdown();
     });
   }
 
-  latch.wait();
+  latch.Wait();
 }
 
 

@@ -13,9 +13,8 @@ StringView empty_sv = "";
 #define NPOS kanon::StringView::npos
 
 TEST(StringViewTest, ctor) {
-  char buf[1024];
-  buf[222] = 0;
-  //StringView s1(buf);
+  StringView s1 = MakeStringView("sssss");
+  EXPECT_TRUE(s1 == "sssss");
 }
 
 TEST(StringViewTest, sizeTest){

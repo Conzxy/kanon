@@ -1,6 +1,8 @@
-#include "kanon/net/TcpServer.h"
-#include "kanon/net/EventLoop.h"
-#include "kanon/net/Buffer.h"
+#include "kanon/net/tcp_server.h"
+#include "kanon/net/event_loop.h"
+#include "kanon/net/buffer.h"
+#include "kanon/net/inet_addr.h"
+#include "kanon/log/logger.h"
 
 using namespace kanon;
 
@@ -11,16 +13,17 @@ int main() {
 
   TcpServer server(&loop, listen_addr, "TcpServer test");
   
-  server.setMessageCallback([](TcpConnectionPtr const& conn,
-                 Buffer* input_buffer,
+  server.SetMessageCallback([](TcpConnectionPtr const& conn,
+                 Buffer& input_buffer,
                  TimeStamp stamp) {
       KANON_UNUSED(stamp);
       KANON_UNUSED(conn);
-      LOG_INFO << input_buffer->retrieveAllAsString();
+      LOG_INFO << input_buffer.RetrieveAllAsString();
 
   });
-  
-  server.listen();
-  loop.loop();
+
+  server.SetLoopNum(2); 
+  server.StartRun();
+  loop.StartLoop();
     
 }

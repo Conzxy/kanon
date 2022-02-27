@@ -1,0 +1,41 @@
+#include "append_file.h"
+#include "logger.h"
+
+namespace kanon {
+
+AppendFile::AppendFile(StringArg filename)
+  : writtenBytes_(0)
+  , fp_(::fopen(filename.data(), "a"))
+{
+  if (! fp_)
+    ::fprintf(stderr, "failed in open file: %s", filename.data());  
+  ::setbuffer(fp_, buf_, sizeof buf_);
+}
+
+AppendFile::~AppendFile() noexcept {
+  flush();
+  if (fp_)
+    ::fclose(fp_);
+}
+
+void AppendFile::Append(char const* data, size_t num) noexcept {
+  size_t written = 0;
+
+  do {
+    size_t left = num - written;
+    auto n = write(data + written, left);
+    
+    if (n != left) {
+      auto err = ferror(fp_);
+      if (err)
+        fprintf(stderr, "AppendFile::Append() failed %s\n", strerror_tl(err));
+      break;
+    }
+    
+    written += n;
+  } while (written != num);
+
+  writtenBytes_ += written;
+}
+
+} // namespace kanon

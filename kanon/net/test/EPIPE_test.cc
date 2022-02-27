@@ -1,6 +1,6 @@
-#include "kanon/net/TcpServer.h"
-#include "kanon/net/EventLoop.h"
-#include "kanon/net/TcpConnection.h"
+#include "kanon/net/tcp_server.h"
+#include "kanon/net/event_loop.h"
+#include "kanon/net/tcp_connection.h"
 
 #include <unistd.h>
 
@@ -12,10 +12,10 @@ int main() {
 
   TcpServer server{ &loop, listen_addr, "EPIPE test"};
   
-  server.setConnectionCallback([](TcpConnectionPtr const& conn) {
-      if (conn->isConnected()) {
+  server.SetConnectionCallback([](TcpConnectionPtr const& conn) {
+      if (conn->IsConnected()) {
         ::sleep(4);
-        conn->send("a");
+        conn->Send("a");
       }
 
   });
