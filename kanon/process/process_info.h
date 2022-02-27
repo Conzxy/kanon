@@ -10,13 +10,13 @@ namespace kanon {
 
 namespace process {
  
-inline pid_t pid() KANON_NOEXCEPT {
+inline pid_t pid() noexcept {
   return ::getpid();
 }
 
-StringView pidString() KANON_NOEXCEPT;
+StringView pidString() noexcept;
 
-StringView hostname() KANON_NOEXCEPT;
+StringView hostname() noexcept;
 
 } // namespace process
 } // namespace kanon

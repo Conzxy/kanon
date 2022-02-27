@@ -2,7 +2,7 @@
 #define KANON_ALGO_RINGBUFFER_H
 
 #include "kanon/util/macro.h"
-#include "kanon/log/Logger.h"
+#include "kanon/log/logger.h"
 #include "kanon/algo/construct.h"
 
 #include <utility>       // swap
@@ -54,44 +54,44 @@ public:
   typedef const_pointer const_iterator;
 
   explicit RingBuffer(size_type n);
-  ~RingBuffer() KANON_NOEXCEPT;
+  ~RingBuffer() noexcept;
   
   RingBuffer(RingBuffer const& other);
-  RingBuffer(RingBuffer&& other) KANON_NOEXCEPT;
+  RingBuffer(RingBuffer&& other) noexcept;
 
   RingBuffer& operator=(RingBuffer const& other);
-  RingBuffer& operator=(RingBuffer&& other) KANON_NOEXCEPT;
+  RingBuffer& operator=(RingBuffer&& other) noexcept;
 
   /**
    * @return size of readable region
    */
-  size_type readable() const KANON_NOEXCEPT {
+  size_type readable() const noexcept {
     return write_index_ - read_index_;
   }
 
   /**
    * @return remaing space for writing
    */
-  size_type writeable() const KANON_NOEXCEPT {
+  size_type writeable() const noexcept {
     return count_ - readable();
   }
 
   /**
    * @return bound of buffer
    */
-  size_type maxSize() const KANON_NOEXCEPT {
+  size_type max_size() const noexcept {
     return count_;
   }
 
   /**
    * @return readable position 
    */
-  const_pointer peek() const KANON_NOEXCEPT {
+  const_pointer GetReadBegin() const noexcept {
     return data_ + read_index_;
   }
   
 
-  pointer peek() KANON_NOEXCEPT {
+  pointer GetReadBegin() noexcept {
     return data_ + read_index_;
   }
   
@@ -99,7 +99,7 @@ public:
    * @brief advance read index
    * @warning should be called after consume readable buffer
    */
-  void advance(size_type n) KANON_NOEXCEPT {
+  void AdvanceRead(size_type n) noexcept {
     read_index_ += n;
     if (read_index_ > count_) {
       read_index_ -= count_;
@@ -112,14 +112,14 @@ public:
    * @return written number of element, 
    */
   template<typename FI>
-  size_type append(FI first, size_type n) {
+  size_type Append(FI first, size_type n) {
     auto last = first;
-    std::advance(last, n);
-    return append(std::move(first), std::move(last));
+    std::AdvanceRead(last, n);
+    return Append(std::move(first), std::move(last));
   }
 
   template<typename FI>
-  size_type append(FI first, FI last);
+  size_type Append(FI first, FI last);
 
   /**
    * @brief emplace element which is constructed in place
@@ -127,7 +127,7 @@ public:
   template<typename... Args>
   void emplace(Args&&... args);
 
-  void swap(RingBuffer& rhs) KANON_NOEXCEPT {
+  void swap(RingBuffer& rhs) noexcept {
     std::swap(data_, rhs.data_);
     std::swap(count_, rhs.count_);
     std::swap(write_index_, rhs.write_index_);
@@ -135,7 +135,7 @@ public:
   }
 
 private:
-  pointer writeBegin() KANON_NOEXCEPT {
+  pointer writeBegin() noexcept {
     return data_ + write_index_;
   }
 
@@ -227,7 +227,7 @@ RingBuffer<T>::RingBuffer(size_type n)
 }
 
 template<typename T>
-RingBuffer<T>::~RingBuffer() KANON_NOEXCEPT {
+RingBuffer<T>::~RingBuffer() noexcept {
   if (data_) {
     if (::munmap(
         data_, 
@@ -243,12 +243,12 @@ template<typename T>
 RingBuffer<T>::RingBuffer(RingBuffer const& other) {
   RingBuffer(other.count_);
 
-  std::copy(other.peek(), other.peek()+other.readable());
-  advance(other.readable());
+  std::copy(other.GetReadBegin(), other.GetReadBegin()+other.readable());
+  AdvanceRead(other.readable());
 }
 
 template<typename T>
-RingBuffer<T>::RingBuffer(RingBuffer&& other) KANON_NOEXCEPT
+RingBuffer<T>::RingBuffer(RingBuffer&& other) noexcept
 {
   swap(other);
   other.data_ = NULL;
@@ -267,14 +267,14 @@ RingBuffer<T>::operator=(RingBuffer<T> const& other) {
 
 template<typename T>
 RingBuffer<T>&
-RingBuffer<T>::operator=(RingBuffer<T>&& other) KANON_NOEXCEPT {
+RingBuffer<T>::operator=(RingBuffer<T>&& other) noexcept {
     // no need to free space
     swap(other);
 }
 
 template<typename T>
 template<typename FI>
-auto RingBuffer<T>::append(FI first, FI last) 
+auto RingBuffer<T>::Append(FI first, FI last) 
 -> size_type {
   int remain = 0;
   const size_type writeable_size = writeable();
@@ -284,14 +284,14 @@ auto RingBuffer<T>::append(FI first, FI last)
     remain = n - writeable_size;
     assert(remain < count_);
     auto mid = first;
-    std::advance(mid, writeable_size);
+    std::AdvanceRead(mid, writeable_size);
 
     std::copy(std::move(first), mid, writeBegin());
     write_index_ += writeable_size;
-    algo_util::destroy(peek(), peek()+remain);
-    std::copy(std::move(mid), std::move(last), peek());
+    algo_util::destroy(GetReadBegin(), GetReadBegin()+remain);
+    std::copy(std::move(mid), std::move(last), GetReadBegin());
     write_index_ += remain;
-    advance(remain);
+    AdvanceRead(remain);
   } else {
     remain = 0;
     std::copy(std::move(first), std::move(last), writeBegin());
@@ -308,10 +308,10 @@ void RingBuffer<T>::emplace(Args&&... args) {
     algo_util::construct(writeBegin(), std::forward<Args>(args)...);
     write_index_++;
   } else {
-    algo_util::destroy(peek());
-    algo_util::construct(peek(), std::forward<Args>(args)...);
+    algo_util::destroy(GetReadBegin());
+    algo_util::construct(GetReadBegin(), std::forward<Args>(args)...);
     write_index_++;
-    advance(1);
+    AdvanceRead(1);
   }
 }
 

@@ -1,5 +1,5 @@
-#include "../EventLoop.h"
-#include "kanon/thread/Thread.h"
+#include "../event_loop.h"
+#include "kanon/thread/thread.h"
 #include "kanon/thread/current_thread.h"
 #include <stdio.h>
 
@@ -10,7 +10,7 @@ std::unique_ptr<EventLoop> g_loop;
 
 void threadFunc() {
   printf("threadFunc: %s\n", CurrentThread::t_tidString);
-  g_loop->loop();
+  g_loop->StartLoop();
 
 }
 
@@ -19,7 +19,7 @@ int main() {
   
   g_loop.reset(new EventLoop{});
   Thread thr{&threadFunc};
-  thr.start();
-  thr.join();
+  thr.StartRun();
+  thr.Join();
 
 }

@@ -1,5 +1,5 @@
-#include "kanon/log/LogFile.h"
-#include "kanon/log/Logger.h"
+#include "kanon/log/log_file.h"
+#include "kanon/log/logger.h"
 
 using namespace kanon;
 
@@ -18,11 +18,11 @@ int main(int, char* argv[]) {
   
   g_logFile = &logFile;
 
-  Logger::setOutputCallback([](char const* data, size_t num) {
-    g_logFile->append(data, num);
+  Logger::SetOutputCallback([](char const* data, size_t num) {
+    g_logFile->Append(data, num);
   });
 
-  Logger::setFlushCallback([]() {
+  Logger::SetFlushCallback([]() {
     g_logFile->flush();
   });
   

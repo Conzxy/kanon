@@ -1,5 +1,5 @@
-#include "kanon/net/Connector.h"
-#include "kanon/net/EventLoop.h"
+#include "kanon/net/connector.h"
+#include "kanon/net/event_loop.h"
 
 using namespace kanon;
 
@@ -12,6 +12,6 @@ int main() {
   InetAddr servAddr{ "127.0.0.1", 9999 };
   Connector connector{ g_loop, servAddr };
 
-  connector.start();
-  g_loop->loop();
+  connector.StartRun();
+  g_loop->StartLoop();
 }

@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 #include <string/string_view.h>
-#include "../Thread.h"
+#include "../thread.h"
 #include <unistd.h>
 
 using namespace kanon;
@@ -31,7 +31,7 @@ int main()
       stocka2.reset();
       });
   
-  thr.start();
+  thr.StartRun();
   
   sleep(1);
   auto stocka = pool->get("A");  
@@ -42,7 +42,7 @@ int main()
   printf("stocka: %p\n", stocka.get());
   printf("stocka3: %p\n", stocka3.get());
   ASSERT(stocka == stocka3);
-  thr.join();
+  thr.Join();
 
 }
 

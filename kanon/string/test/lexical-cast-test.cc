@@ -10,12 +10,12 @@ TEST(LexicalCastTest, Int) {
 }
 
 TEST(LexicalCastTest, Str2Long) {
-  auto opt_long = lexical_cast<long>(makeStringView("11111"));
+  auto opt_long = lexical_cast<long>(MakeStringView("11111"));
   
   EXPECT_TRUE(opt_long.has_value());
   EXPECT_EQ(*opt_long, 11111);
   
-  opt_long = lexical_cast<long>(makeStringView("12345"));
+  opt_long = lexical_cast<long>(MakeStringView("12345"));
 
   EXPECT_TRUE(opt_long);
   EXPECT_EQ(*opt_long, 12345);

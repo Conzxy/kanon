@@ -1,4 +1,4 @@
-#include "kanon/net/InetAddr.h"
+#include "kanon/net/inet_addr.h"
 
 #include <gtest/gtest.h>
 
@@ -6,18 +6,18 @@ using namespace kanon;
 
 TEST(InetAddr, resolve) {
     std::vector<InetAddr> addrs;
-    InetAddr::resolve("www.baidu.com", addrs);
+    InetAddr::Resolve("www.baidu.com", addrs);
 
     for (auto& addr : addrs) {
-        std::cout << addr.toIpPort() << '\n';
+        std::cout << addr.ToIpPort() << '\n';
     }
 
     addrs.clear();
 
-    InetAddr::resolve("conzxy", addrs);
+    InetAddr::Resolve("conzxy", addrs);
 
     for (auto& addr : addrs) {
-        std::cout << addr.toIpPort() << '\n';
+        std::cout << addr.ToIpPort() << '\n';
     }
 
 }

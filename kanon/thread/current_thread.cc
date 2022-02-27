@@ -35,7 +35,7 @@ MainThreadInit mainThreadInit{};
 pid_t gettid() 
 { return ::syscall(SYS_gettid); }
 
-void cacheTid() KANON_NOEXCEPT
+void cacheTid() noexcept
 {
   if( __builtin_expect(t_tid == 0, 1) ) {
     t_tid = gettid();
@@ -43,7 +43,7 @@ void cacheTid() KANON_NOEXCEPT
   }
 }
 
-bool isMainThread() KANON_NOEXCEPT
+bool isMainThread() noexcept
 { return CurrentThread::t_tid == ::getpid(); }
 
 } // namespace CurrentThread

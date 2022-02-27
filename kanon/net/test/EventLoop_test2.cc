@@ -1,6 +1,6 @@
-#include "kanon/net/EventLoop.h"
-#include "kanon/thread/Thread.h"
-#include "kanon/net/Channel.h"
+#include "kanon/net/event_loop.h"
+#include "kanon/thread/thread.h"
+#include "kanon/net/channel.h"
 
 
 #include <sys/timerfd.h>
@@ -24,10 +24,10 @@ int main() {
 
   Channel timer_channel(&loop, timerfd);
 
-  timer_channel.enableReading();
+  timer_channel.EnableReading();
   timer_channel.set_read_callback([](){
       LOG_INFO << "timer out";
   });
 
-  loop.loop();
+  loop.StartLoop();
 }

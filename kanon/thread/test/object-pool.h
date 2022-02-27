@@ -1,4 +1,4 @@
-#include "thread/MutexLock.h"
+#include "thread/mutex_lock.h"
 #include "util/noncopyable.h"
 #include <memory>
 #include <unordered_map>
@@ -95,7 +95,7 @@ public:
   void setKey(K const& key)
   { key_ = key; }
 
-  K const& getKey() const KANON_NOEXCEPT
+  K const& getKey() const noexcept
   { return key_; }
 
   ~Object()

@@ -1,6 +1,6 @@
 //#define NDEBUG
-#include "../Thread.h"
-#include "../MutexLock.h"
+#include "../thread.h"
+#include "../mutex_lock.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -32,11 +32,11 @@ int main()
     delete a;
   });
   
-  thr.start();
+  thr.StartRun();
   sleep(1);
   // now, mutex has destroied
   // trigger assertion in lock()
   // if NDEBUG, core dump also
   a->f();
-  thr.join();
+  thr.Join();
 }

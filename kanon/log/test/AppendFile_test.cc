@@ -1,9 +1,9 @@
-#include "log/AppendFile.h"
+#include "log/append_file.h"
 
 using namespace kanon;
 
 int main() {
   AppendFile file("a.txt");
 
-  file.append("sssssssssssssssssssss", 10);
+  file.Append("sssssssssssssssssssss", 10);
 }

@@ -1,5 +1,5 @@
-#include "kanon/net/TcpClient.h"
-#include "kanon/net/common.h"
+#include "kanon/net/tcp_client.h"
+#include "kanon/net/user_server.h"
 
 using namespace kanon;
 
@@ -12,15 +12,15 @@ int main() {
   InetAddr serv_addr{ "127.0.0.1", 9999 };
   TcpClient client{ g_loop, serv_addr };
 
-  client.connect();
+  client.Connect();
   
-  // loop.queueToLoop([&]() {
-  //   auto connection = client.connection();
+  // loop.QueueToLoop([&]() {
+  //   auto connection = client.GetConnection();
   //   assert(connection);
 
-  //   connection->send("client");
+  //   connection->Send("client");
   // });
 
-  loop.loop();
+  loop.StartLoop();
 
 }

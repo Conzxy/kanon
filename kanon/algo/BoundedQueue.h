@@ -1,14 +1,14 @@
 #ifndef KANON_BOUNDED_QUEUE_H
 #define KANON_BOUNDED_QUEUE_H
 
-#include "kanon/algo/RingBuffer.h"
+#include "CircularBuffer.h"
 
 namespace kanon {
 
-template<typename T>
+
+template<typename T, typename Base=algo_util::CircularBuffer<T>>
 class BoundedQueue {
 public:
-  typedef RingBuffer<T> Base;
   typedef typename Base::size_type size_type;
   typedef typename Base::value_type value_type;
   typedef typename Base::reference reference;
@@ -29,8 +29,8 @@ public:
     buffer_.emplace(std::forward<Args>(args)...);
   }
 
-  value_type top() KANON_NOEXCEPT {
-    return *buffer_.peek();
+  value_type top() noexcept {
+    return *buffer_.GetReadBegin();
   }
   
   // @note
@@ -40,20 +40,20 @@ public:
   // auto top = top();
   // pop();
   value_type pop() {
-    auto front = *buffer_.peek();
-    buffer_.advance(1);
+    auto front = *std::move(buffer_.GetReadBegin());
+    buffer_.AdvanceRead(1);
     return front;
   }
   
-  size_type size() KANON_NOEXCEPT {
+  size_type size() noexcept {
     return buffer_.readable();
   }
 
-  size_type maxSize() KANON_NOEXCEPT {
-    return buffer_.maxSize();
+  size_type max_size() noexcept {
+    return buffer_.max_size();
   }
 
-  Base& base() KANON_NOEXCEPT {
+  Base& base() noexcept {
     return buffer_;
   }
 private:
