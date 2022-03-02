@@ -11,21 +11,19 @@
 using namespace kanon;
 
 Socket::~Socket() noexcept {
-  if (::close(fd_)) {
-    LOG_SYSERROR << "close(" << fd_ << ") error occurred";
-  }
+  sock::Close(fd_);
 }
 
 void
 Socket::bindAddress(InetAddr const& addr) noexcept {
-  sock::bind(fd_, addr.IsIpv4() ? 
+  sock::Bind(fd_, addr.IsIpv4() ? 
       sock::to_sockaddr(addr.ToIpv4()) : sock::to_sockaddr(addr.ToIpv6()));
 }
 
 int
 Socket::accept(InetAddr& addr) noexcept {
   struct sockaddr_in6 addr6;
-  auto cli_fd = sock::accept(fd_, &addr6);
+  auto cli_fd = sock::Accept(fd_, &addr6);
   
   if (cli_fd >= 0) {
     if (addr6.sin6_family == AF_INET) {
@@ -40,6 +38,8 @@ Socket::accept(InetAddr& addr) noexcept {
 
 void
 Socket::ShutdownWrite() noexcept {
+  LOG_TRACE << "Server shutdown peer";
+
   if (sock::ShutdownWrite(fd_)) {
     LOG_SYSERROR << "shutdown write error";
   }

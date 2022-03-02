@@ -32,17 +32,8 @@ public:
   typedef data_type::pointer pointer;
   typedef data_type::const_pointer const_pointer;
 
-  explicit Buffer(size_type init_size = kBufferInitSize)
-    : read_index_{ kBufferPrefixSize }
-    , write_index_{ kBufferPrefixSize }
-  {
-    data_.resize(kBufferPrefixSize + init_size);
-    static_assert(kBufferPrefixSize == 8, "Buffer prefix size must be 8");
-    assert(GetReadableSize() == 0 && "Buffer init readable_size must be 0");
-    assert(GetWritableSize() == init_size && "Buffer init writable_size must be init_size");    
-  }
-
-  ~Buffer() = default;
+  explicit Buffer(size_type init_size = kBufferInitSize);
+  ~Buffer();
 
   StringView ToStringView() const noexcept
   { return StringView{ data_.data() + read_index_, static_cast<StringView::size_type>(GetReadableSize()) }; }  
@@ -122,17 +113,17 @@ public:
   }  
 
   void Append64(uint64_t i) {
-    auto ni = sock::toNetworkByteOrder64(i);
+    auto ni = sock::ToNetworkByteOrder64(i);
     Append(&ni, sizeof ni);
   }  
   
   void Append32(uint32_t i) {
-    auto ni = sock::toNetworkByteOrder32(i);
+    auto ni = sock::ToNetworkByteOrder32(i);
     Append(&ni, sizeof ni);
   }
 
   void Append16(uint16_t i) {
-    auto ni = sock::toNetworkByteOrder16(i);
+    auto ni = sock::ToNetworkByteOrder16(i);
     Append(&ni, sizeof ni);
   }
   
@@ -150,17 +141,17 @@ public:
   }
 
   void Prepend16(uint16_t i) {
-    auto ni = sock::toNetworkByteOrder16(i);
+    auto ni = sock::ToNetworkByteOrder16(i);
     Prepend(&ni, sizeof ni);  
   }
 
   void Prepend32(uint32_t i) {
-    auto ni = sock::toNetworkByteOrder32(i);
+    auto ni = sock::ToNetworkByteOrder32(i);
     Prepend(&ni, sizeof ni);  
   }
 
   void Prepend64(uint64_t i) {
-    auto ni = sock::toNetworkByteOrder64(i);
+    auto ni = sock::ToNetworkByteOrder64(i);
     Prepend(&ni, sizeof ni);  
   }
 
@@ -169,21 +160,21 @@ public:
     uint16_t i;
     ::memcpy(&i, GetReadBegin(), sizeof i);
       
-    return sock::toHostByteOrder16(i);
+    return sock::ToHostByteOrder16(i);
   }
 
   uint32_t GetReadBegin32() const noexcept {
     uint32_t i;
     ::memcpy(&i, GetReadBegin(), sizeof i);
       
-    return sock::toHostByteOrder32(i);
+    return sock::ToHostByteOrder32(i);
   }
 
   uint64_t GetReadBegin64() const noexcept {
     uint64_t i;
     ::memcpy(&i, GetReadBegin(), sizeof i);
       
-    return sock::toHostByteOrder64(i);
+    return sock::ToHostByteOrder64(i);
   }
   
   // advance operation:

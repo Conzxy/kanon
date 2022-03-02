@@ -31,10 +31,10 @@ public:
 
   void ShutdownWrite() noexcept;
 
-  void setReuseAddr(bool flag) noexcept
-  { sock::setReuseAddr(fd_, flag); }
-  void setReusePort(bool flag) noexcept
-  { sock::setReusePort(fd_, flag); }
+  void SetReuseAddr(bool flag) noexcept
+  { sock::SetReuseAddr(fd_, flag); }
+  void SetReusePort(bool flag) noexcept
+  { sock::SetReusePort(fd_, flag); }
   void SetNoDelay(bool flag) noexcept
   { sock::SetNoDelay(fd_, flag); }
   void SetKeepAlive(bool flag) noexcept

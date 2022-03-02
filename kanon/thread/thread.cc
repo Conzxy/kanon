@@ -100,7 +100,8 @@ void Thread::StartRun(){
     // delete data;
 
     char buf[128];
-    ::strerror_r(errno, buf, sizeof buf);
+    auto ret = ::strerror_r(errno, buf, sizeof buf);
+    KANON_UNUSED(ret);
     ::fprintf(stderr, "Failed in pthread_create: %s", buf);
     ::fflush(stderr);
     exit(1);

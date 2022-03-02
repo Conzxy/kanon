@@ -65,12 +65,13 @@ class InetAddr {
 public:
   typedef uint16_t Port;
 
-  enum class HintType {
-    kNoneHint,
+  enum HintType {
+    kNoneHint = 0,
     kServer,
     kClient,
   };
 
+  InetAddr(StringArg hostname, StringArg service);
   // Must be used by server
   explicit InetAddr(Port port=0, bool loopback=false, bool v6=false);
   
@@ -93,8 +94,7 @@ public:
   sa_family_t GetFamily() const noexcept
   { return addr_.sin_family; }
   
-  Port GetPort() const noexcept
-  { return static_cast<Port>(addr_.sin_port); }  
+  Port GetPort() const noexcept;
   
   bool IsIpv4() const noexcept
   { return addr_.sin_family == AF_INET; }
@@ -109,12 +109,18 @@ public:
   { return &addr6_; }
 
   // resolve hostname(no service)
-  static void Resolve(StringArg hostname, std::vector<InetAddr>& addrs,
-            HintType type = HintType::kNoneHint);
+  static std::vector<InetAddr> Resolve(
+    StringArg hostname, 
+    StringArg service, 
+    HintType type = HintType::kNoneHint);
 
-  static void Resolve(StringArg hostname, std::vector<InetAddr>& addrs,
-            struct addrinfo* hint);
 private:
+  static std::vector<InetAddr> Resolve(
+      StringArg hostname, 
+      StringArg service,
+      struct addrinfo const& hint);
+
+  // FIXME Use sockaddr_storage to implemetation
   union {
     sockaddr_in addr_;
     sockaddr_in6 addr6_;

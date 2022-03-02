@@ -18,12 +18,12 @@ int main() {
     auto n = sizeof data;
     LOG_INFO << "n= " << n;
     do {
-      auto x = sock::write(sockfd, data, sizeof data);
+      auto x = sock::Write(sockfd, data, sizeof data);
       n -= x;
       LOG_INFO << "x= " << x;
     } while(n != 0);
 
-    sock::close(sockfd);
+    sock::Close(sockfd);
   });
 
   acceptor.Listen();
