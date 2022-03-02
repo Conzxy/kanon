@@ -26,7 +26,7 @@ TcpClient::TcpClient(
       loop_, 
       name_,
       sockfd,
-      sock::getLocalAddr(sockfd),
+      sock::GetLocalAddr(sockfd),
       servAddr);
 
     new_conn->SetMessageCallback(message_callback_);

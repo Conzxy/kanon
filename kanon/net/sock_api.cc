@@ -10,7 +10,7 @@
 using namespace kanon;
 
 void
-sock::toIp(char* buf, size_t size, SA const* addr) {
+sock::ToIp(char* buf, size_t size, sockaddr const* addr) {
   if (addr->sa_family == AF_INET) {
     assert(size >= INET_ADDRSTRLEN);
     auto addr4 = sockaddr_cast<sockaddr_in const>(addr);
@@ -23,16 +23,16 @@ sock::toIp(char* buf, size_t size, SA const* addr) {
 }
 
 void
-sock::toIpPort(char* buf, size_t size, SA const* addr) {
+sock::ToIpPort(char* buf, size_t size, sockaddr const* addr) {
   buf[0] = '[';
-  toIp(buf+1, size, addr);
+  ToIp(buf+1, size, addr);
   auto len = ::strlen(buf);
   auto addr4 = sockaddr_cast<sockaddr_in const>(addr);
-  ::snprintf(buf+len, size-len, ";%hu]", sock::toHostByteOrder16(addr4->sin_port));
+  ::snprintf(buf+len, size-len, ";%hu]", sock::ToHostByteOrder16(addr4->sin_port));
 }
 
 void
-sock::setNonBlockAndCloExec(int fd) noexcept {
+sock::SetNonBlockAndCloExec(int fd) noexcept {
   auto ret = ::fcntl(fd, F_GETFL, 0);
   if (ret < 0)
     LOG_SYSFATAL << "fail to get file status flag(nonblock)";
@@ -57,7 +57,7 @@ sock::setNonBlockAndCloExec(int fd) noexcept {
 #endif
 
 int
-sock::createSocket(bool ipv6) noexcept {
+sock::CreateSocket(bool ipv6) noexcept {
   int sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sockfd < 0) {
     LOG_SYSFATAL << "create new socket fd error";
@@ -68,12 +68,12 @@ sock::createSocket(bool ipv6) noexcept {
 }
 
 int
-sock::createNonBlockAndCloExecSocket(bool ipv6) noexcept {
+sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept {
   int sockfd;
 #ifdef NO_SOCKTYPE
   sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sockfd < 0) goto error_handle;
-  setNonBlockAndCloExec(sockfd);
+  SetNonBlockAndCloExec(sockfd);
 #else
   sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, 
             SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
@@ -95,13 +95,13 @@ error_handle:
 #endif
 
 int
-sock::accept(int fd, sockaddr_in6* addr) noexcept {
+sock::Accept(int fd, sockaddr_in6* addr) noexcept {
   socklen_t socklen = sizeof(struct sockaddr_in6);
           
   int cli_sock;
 #ifdef NO_ACCEPT4
   cli_sock = ::accept(fd, sock::to_sockaddr(addr), &socklen);
-  setNonBlockAndCloExec(cli_sock);
+  SetNonBlockAndCloExec(cli_sock);
 #else
   cli_sock = ::accept4(fd, sock::to_sockaddr(addr), &socklen, O_NONBLOCK | O_CLOEXEC);
 #endif
@@ -134,7 +134,7 @@ sock::accept(int fd, sockaddr_in6* addr) noexcept {
 }
 
 void
-sock::setReuseAddr(int fd, int flag) noexcept {
+sock::SetReuseAddr(int fd, int flag) noexcept {
   LOG_INFO << "reuseaddr flag " << flag;
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
 
@@ -144,7 +144,7 @@ sock::setReuseAddr(int fd, int flag) noexcept {
 
 
 void
-sock::setReusePort(int fd, int flag) noexcept {
+sock::SetReusePort(int fd, int flag) noexcept {
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 9, 0)
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
 
@@ -174,7 +174,7 @@ sock::SetKeepAlive(int fd, int flag) noexcept {
 }
 
 int
-sock::getsocketError(int fd) noexcept {
+sock::GetSocketError(int fd) noexcept {
   int optval;
   auto len = static_cast<socklen_t>(sizeof optval);
 
@@ -186,7 +186,7 @@ sock::getsocketError(int fd) noexcept {
 }
 
 struct sockaddr_in6
-sock::getLocalAddr(int fd) noexcept {
+sock::GetLocalAddr(int fd) noexcept {
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -199,7 +199,7 @@ sock::getLocalAddr(int fd) noexcept {
 }
 
 struct sockaddr_in6
-sock::getPeerAddr(int fd) noexcept {
+sock::GetPeerAddr(int fd) noexcept {
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -212,9 +212,9 @@ sock::getPeerAddr(int fd) noexcept {
 }
 
 bool
-sock::isSelfConnect(int sockfd) noexcept {
-  const auto local = getLocalAddr(sockfd);
-  const auto peer = getPeerAddr(sockfd);
+sock::IsSelfConnect(int sockfd) noexcept {
+  const auto local = sock::GetLocalAddr(sockfd);
+  const auto peer = GetPeerAddr(sockfd);
 
   if (local.sin6_family == AF_INET) {
     auto local4 = sockaddr_cast<struct sockaddr_in const>(&local);

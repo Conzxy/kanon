@@ -35,7 +35,7 @@ TcpServer::TcpServer(EventLoop* loop,
     
     auto io_loop = pool_->GetNextLoop();
 
-    auto local_addr = sock::getLocalAddr(cli_sock);
+    auto local_addr = sock::GetLocalAddr(cli_sock);
     auto conn = std::make_shared<TcpConnection>(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
 
     connections_[conn_name] = conn;

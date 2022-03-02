@@ -5,21 +5,23 @@
 using namespace kanon;
 
 TEST(InetAddr, resolve) {
-    std::vector<InetAddr> addrs;
-    InetAddr::Resolve("www.baidu.com", addrs);
+  auto addrs = InetAddr::Resolve("www.baidu.com", "http");
 
-    for (auto& addr : addrs) {
-        std::cout << addr.ToIpPort() << '\n';
-    }
+  for (auto& addr : addrs) {
+    std::cout << addr.ToIpPort() << '\n';
+  }
 
-    addrs.clear();
+  addrs = InetAddr::Resolve("172.26.34.206", "http");
 
-    InetAddr::Resolve("conzxy", addrs);
+  for (auto& addr : addrs) {
+    std::cout << addr.ToIpPort() << "\n";
+  }
+}
 
-    for (auto& addr : addrs) {
-        std::cout << addr.ToIpPort() << '\n';
-    }
+TEST(InetAddr, ctor) {
+  InetAddr addr("www.baidu.com", "http");
 
+  std::cout << addr.ToIpPort() << "\n";
 }
 
 int main(int argc, char* argv[]) {

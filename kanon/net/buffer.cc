@@ -3,6 +3,17 @@
 
 using namespace kanon;
 
+Buffer::Buffer(size_type init_size)
+  : read_index_{ kBufferPrefixSize }
+  , write_index_{ kBufferPrefixSize }
+{
+  data_.resize(kBufferPrefixSize + init_size);
+  static_assert(kBufferPrefixSize == 8, "Buffer prefix size must be 8");
+  assert(GetReadableSize() == 0 && "Buffer init readable_size must be 0");
+}
+
+Buffer::~Buffer() = default;
+
 Buffer::size_type
 Buffer::ReadFd(int fd, int& saved_errno) {
   char extra_buf[65536]; // 64k

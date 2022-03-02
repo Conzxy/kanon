@@ -114,7 +114,7 @@ public:
   template<typename FI>
   size_type Append(FI first, size_type n) {
     auto last = first;
-    std::AdvanceRead(last, n);
+    AdvanceRead(last, n);
     return Append(std::move(first), std::move(last));
   }
 
@@ -240,8 +240,9 @@ RingBuffer<T>::~RingBuffer() noexcept {
 }
 
 template<typename T>
-RingBuffer<T>::RingBuffer(RingBuffer const& other) {
-  RingBuffer(other.count_);
+RingBuffer<T>::RingBuffer(RingBuffer const& other) 
+  : RingBuffer(other.count_) 
+{
 
   std::copy(other.GetReadBegin(), other.GetReadBegin()+other.readable());
   AdvanceRead(other.readable());
@@ -284,7 +285,7 @@ auto RingBuffer<T>::Append(FI first, FI last)
     remain = n - writeable_size;
     assert(remain < count_);
     auto mid = first;
-    std::AdvanceRead(mid, writeable_size);
+    AdvanceRead(mid, writeable_size);
 
     std::copy(std::move(first), mid, writeBegin());
     write_index_ += writeable_size;

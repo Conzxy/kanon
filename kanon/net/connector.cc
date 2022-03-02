@@ -52,7 +52,7 @@ Connector::Stop() noexcept {
       setState(State::kDisconnected);
 
       int sockfd = RemoveAndResetChannel();
-      sock::close(sockfd); 
+      sock::Close(sockfd); 
     }
   });
 }
@@ -68,7 +68,7 @@ Connector::Restrat() noexcept {
 
 void
 Connector::Connect() noexcept {
-  int sockfd = sock::createNonBlockAndCloExecSocket(!servAddr_.IsIpv4());
+  int sockfd = sock::CreateNonBlockAndCloExecSocket(!servAddr_.IsIpv4());
   // Poll to check connection if is established
   // If connection is established, we call CompleteConnect() to register write callback,
   // then write callback will call new_connection_callback_.
@@ -104,11 +104,11 @@ Connector::Connect() noexcept {
     case EPROTOTYPE:
     case ETIMEDOUT:
       LOG_SYSERROR << "connect error in Connector::Connect()";
-      sock::close(sockfd);
+      sock::Close(sockfd);
       break;
     default:
       LOG_SYSERROR << "unknown error in Connector::Connect()";
-      sock::close(sockfd);
+      sock::Close(sockfd);
   }
 
 }
@@ -124,7 +124,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
     channel_->SetWriteCallback([this]() {
       if (state_ == State::kConnecting) {
         int sockfd = RemoveAndResetChannel();
-        int err = sock::getsocketError(sockfd);
+        int err = sock::GetSocketError(sockfd);
 
         if (err) {
           // Fatal errors have handled in Connect()
@@ -132,7 +132,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
             << " " << strerror_tl(err);
           // does not complete, retry
           Retry(sockfd);
-        } else if (sock::isSelfConnect(sockfd)) {
+        } else if (sock::IsSelfConnect(sockfd)) {
           LOG_WARN << "self connect";
           Retry(sockfd);
         } else {
@@ -142,7 +142,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
             if (new_connection_callback_) 
               new_connection_callback_(sockfd);
           } else {
-            sock::close(sockfd);
+            sock::Close(sockfd);
           }
         }
       }
@@ -151,7 +151,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
     channel_->SetErrorCallback([this]() {
       if (state_ == State::kConnecting) {
         int sockfd = RemoveAndResetChannel();
-        int err = sock::getsocketError(sockfd);
+        int err = sock::GetSocketError(sockfd);
         if (err) {
           LOG_TRACE << "SO_ERROR = " << err << " " 
             << strerror_tl(err);
@@ -169,7 +169,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
 
 void
 Connector::Retry(int sockfd) noexcept {
-  sock::close(sockfd);
+  sock::Close(sockfd);
 
   if (connect_) {
     double delaySec = std::min<uint32_t>(retryInterval_, MAX_RETRY_INTERVAL) / 1000.0;

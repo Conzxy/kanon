@@ -6,13 +6,13 @@ using namespace kanon;
 
 Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
   : loop_{ loop }
-  , socket_{ sock::createNonBlockAndCloExecSocket(!addr.IsIpv4()) }
+  , socket_{ sock::CreateNonBlockAndCloExecSocket(!addr.IsIpv4()) }
   , channel_{ loop_, socket_.GetFd() }
   , listening_{ false }
   , dummyfd_{ ::open("/dev/null", O_RDONLY | O_CLOEXEC) }
 {
-  socket_.setReuseAddr(true);
-  socket_.setReusePort(reuseport);
+  socket_.SetReuseAddr(true);
+  socket_.SetReusePort(reuseport);
   socket_.SetNoDelay(true);
   socket_.bindAddress(addr);
   
@@ -30,7 +30,7 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
         // dispatching connection to IO thread
         new_connection_callback_(cli_fd, cli_addr);
       } else {
-        sock::close(cli_fd);
+        sock::Close(cli_fd);
       }
     } else {
     // if process limited open fd has reached,
@@ -48,7 +48,7 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
         dummyfd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);  
       }
 
-      // We don't handle error since sock::accept() has handled
+      // We don't handle error since sock::Accept() has handled
     }
   });
 
@@ -66,7 +66,7 @@ Acceptor::~Acceptor() noexcept {
 void
 Acceptor::Listen() noexcept {
   assert(!listening_);
-  sock::listen(socket_.GetFd());
+  sock::Listen(socket_.GetFd());
 
   listening_ = true;
 }

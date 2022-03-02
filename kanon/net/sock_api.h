@@ -14,7 +14,7 @@
 namespace kanon {
 namespace sock {
 
-typedef struct sockaddr SA;
+typedef struct sockaddr sockaddr;
 
 namespace detail {
 // FIXME: or better check method exists?
@@ -28,7 +28,7 @@ template<>
 struct is_sockaddr<struct sockaddr_in6> : std::true_type {};
 
 template<>
-struct is_sockaddr<SA> : std::true_type {};
+struct is_sockaddr<sockaddr> : std::true_type {};
 
 } // namespace detail
 
@@ -52,19 +52,19 @@ using if_const_add_const_t = typename if_const_add_const<T, U>::type;
 
 template<typename S, typename = typename std::enable_if<
     is_sockaddr<S>::value>::type>
-KANON_CONSTEXPR if_const_add_const_t<S, SA>* to_sockaddr(S* addr) noexcept
-{ return reinterpret_cast<if_const_add_const_t<S, SA>*>(addr); }
+KANON_CONSTEXPR if_const_add_const_t<S, sockaddr>* to_sockaddr(S* addr) noexcept
+{ return reinterpret_cast<if_const_add_const_t<S, sockaddr>*>(addr); }
 
 
-void toIpPort(char* buf, size_t size, SA const* addr);
+void ToIpPort(char* buf, size_t size, sockaddr const* addr);
 
-void toIp(char* buf, size_t size, SA const* addr);
+void ToIp(char* buf, size_t size, sockaddr const* addr);
 
-inline void fromIpPort(StringArg ip, 
+inline void FromIpPort(StringArg ip, 
              uint16_t port,
              sockaddr_in& addr) noexcept {
   addr.sin_family = AF_INET;
-  addr.sin_port = toNetworkByteOrder16(port);
+  addr.sin_port = sock::ToNetworkByteOrder16(port);
 
   if (!::inet_pton(addr.sin_family, ip, &addr.sin_addr)) {
     LOG_SYSFATAL << "fail to convert ip presentation to numeric";
@@ -72,29 +72,29 @@ inline void fromIpPort(StringArg ip,
   
 }
 
-inline void fromIpPort(StringArg ip,
+inline void FromIpPort(StringArg ip,
              uint16_t port,
              sockaddr_in6& addr) noexcept {
   addr.sin6_family = AF_INET6;
-  addr.sin6_port = toNetworkByteOrder16(port);
+  addr.sin6_port = sock::ToNetworkByteOrder16(port);
 
   if (!::inet_pton(addr.sin6_family, ip, &addr.sin6_addr)) {
     LOG_SYSFATAL << "fail to convert ip presentation to numeric(ipv6)";
   }
 }
 
-void setNonBlockAndCloExec(int fd) noexcept;
+void SetNonBlockAndCloExec(int fd) noexcept;
 
-int createSocket(bool ipv6) noexcept;
-int createNonBlockAndCloExecSocket(bool ipv6) noexcept;
+int CreateSocket(bool ipv6) noexcept;
+int CreateNonBlockAndCloExecSocket(bool ipv6) noexcept;
 
-inline void close(int fd) noexcept {
+inline void Close(int fd) noexcept {
   if (::close(fd) < 0) {
     LOG_SYSFATAL << "close socket error";
   }
 }
 
-inline void bind(int fd, SA const* addr) noexcept {
+inline void Bind(int fd, sockaddr const* addr) noexcept {
   auto ret = ::bind(fd, addr, 
             addr->sa_family == AF_INET ? 
             sizeof(struct sockaddr_in) :
@@ -105,7 +105,7 @@ inline void bind(int fd, SA const* addr) noexcept {
   }
 }
 
-inline void listen(int fd) noexcept {
+inline void Listen(int fd) noexcept {
   auto ret = ::listen(fd, SOMAXCONN);
 
   if (ret < 0) {
@@ -113,7 +113,7 @@ inline void listen(int fd) noexcept {
   }
 }
 
-inline int Connect(int fd, SA const* addr) noexcept {
+inline int Connect(int fd, sockaddr const* addr) noexcept {
   auto ret = ::connect(fd, addr,
              addr->sa_family == AF_INET ?
              sizeof(struct sockaddr_in) :
@@ -128,7 +128,7 @@ inline int Connect(int fd, SA const* addr) noexcept {
 // we don't need to distinguish two input parameter(more easier).
 // According the family field in sockaddr,
 // we can distinguish ipv6 and ipv4 then cast to correct address.
-int accept(int fd, struct sockaddr_in6* addr) noexcept;
+int Accept(int fd, struct sockaddr_in6* addr) noexcept;
 
 // shutdown write direction of a specified connection
 inline int ShutdownWrite(int fd) noexcept {
@@ -136,34 +136,31 @@ inline int ShutdownWrite(int fd) noexcept {
 }
 
 // socket option
-void setReuseAddr(int fd, int flag) noexcept;
+void SetReuseAddr(int fd, int flag) noexcept;
 
-void setReusePort(int fd, int flag) noexcept;
+void SetReusePort(int fd, int flag) noexcept;
 
 void SetNoDelay(int fd, int flag) noexcept;
 
 void SetKeepAlive(int fd, int flag) noexcept;
 
-int getsocketError(int fd) noexcept;
-
-
+int GetSocketError(int fd) noexcept;
 
 // get local and peer address
-struct sockaddr_in6 getLocalAddr(int fd) noexcept;
-struct sockaddr_in6 getPeerAddr(int fd) noexcept;
-
+struct sockaddr_in6 GetLocalAddr(int fd) noexcept;
+struct sockaddr_in6 GetPeerAddr(int fd) noexcept;
 
 // io
-ssize_t inline write(int fd, void const* data, size_t len) noexcept {
+ssize_t inline Write(int fd, void const* data, size_t len) noexcept {
   return ::write(fd, data, len);
 }
 
-ssize_t inline read(int fd, void* data, size_t len) noexcept {
+ssize_t inline Read(int fd, void* data, size_t len) noexcept {
   return ::read(fd, data, len);
 }
 
 // check if self-connection
-bool isSelfConnect(int sockfd) noexcept;
+bool IsSelfConnect(int sockfd) noexcept;
 
 } // namespace sock
 } // namespace sock

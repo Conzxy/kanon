@@ -84,7 +84,7 @@ TcpConnection::TcpConnection(EventLoop*  loop,
     // FIXME example 
     // Here shouldn't use socket_->GetFd(),
     // because socket maybe has destroyed when peer close early
-    auto n = sock::write(channel_->GetFd(),
+    auto n = sock::Write(channel_->GetFd(),
               output_buffer_.GetReadBegin(),
               output_buffer_.GetReadableSize());
 
@@ -162,7 +162,7 @@ void
 TcpConnection::HandleError() {
   // unsafe also ok
   // loop_->AssertInThread();
-  int err = sock::getsocketError(channel_->GetFd());
+  int err = sock::GetSocketError(channel_->GetFd());
   LOG_SYSERROR << "TcpConnection [" << name_ << "] - [errno: " 
     << err << "; errmsg: " << strerror_tl(err) << "]";
 }
@@ -268,7 +268,7 @@ TcpConnection::SendInLoop(void const* data, size_t len) {
   // When it is not writing state and output_buffer_ is empty,
   // we can write directly first
   if (!channel_->IsWriting() && output_buffer_.GetReadableSize() == 0) {
-    n = sock::write(channel_->GetFd(), data, len);
+    n = sock::Write(channel_->GetFd(), data, len);
 
     LOG_TRACE << "sock::write " << n << " bytes";
 
