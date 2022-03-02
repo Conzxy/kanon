@@ -19,10 +19,12 @@ class HttpResponse {
 public:
   using Self = HttpResponse;
 
-  explicit HttpResponse()
+  explicit HttpResponse(const bool has_length = false)
     : buffer_()
-    , body_()
-  { }
+    , body_(has_length ? 0 : 4096)
+    , has_length_(has_length)
+  { 
+  }
 
   Self& AddHeaderLine(HttpStatusCode code, HttpVersion ver) {
     AddVersion(ver);
@@ -31,7 +33,7 @@ public:
   }
 
   Self& AddHeaderLine(HttpStatusCode code) {
-    return AddHeaderLine(code, HttpVersion::kHttp10);    
+    return AddHeaderLine(code, HttpVersion::kHttp11);    
   }
 
   /**
@@ -52,14 +54,12 @@ public:
 
   /**
    * Add blankline after header lines.
-   * It should be \r\n\r\n(other may be invalid to browser)
    */
   Self& AddBlackLine() {
-    buffer_.Append("\r\n");
-    return *this;
-  }
+    if (has_length_) {
+      buffer_.Append("\r\n");
+    }
 
-  Self& AddHeaderBlackLine() {
     return *this;
   }
 
@@ -68,7 +68,12 @@ public:
    * @param content body content
    */
   Self& AddBody(kanon::StringView content) {
-    body_.Append(content);
+    if (has_length_) {
+      buffer_.Append(content);
+    }
+    else {
+      body_.Append(content);
+    }
     return *this;
   }
 
@@ -87,17 +92,8 @@ public:
   Self& AddBody(char(&buf)[N], kanon::StringArg fmt, Args... args) {
     return AddBody(buf, N, fmt, args...);
   }
-
-  kanon::Buffer& GetBuffer() noexcept
-  {
-    char buf[128];
-    MemoryZero(buf);
-    ::snprintf(buf, sizeof buf, "%lu", body_.GetReadableSize());
-    AddHeader("Content-Length", buf);
-    AddBlackLine();
-    buffer_.Append(body_.ToStringView());
-    return buffer_;
-  }
+  
+  kanon::Buffer& GetBuffer();
   
 private:
   /**
@@ -124,14 +120,14 @@ private:
     return *this;
   }
 
-  // Temp buffer
-  // It should be passed to Send(Buffer&)
   kanon::Buffer buffer_;
   kanon::Buffer body_;
+  bool has_length_ = false;
 };
 
-HttpResponse GetClientError(HttpStatusCode status_code,
-                            kanon::StringView msg);
+HttpResponse GetClientError(
+  HttpStatusCode status_code,
+  kanon::StringView msg);
 
 } // namespace http
 

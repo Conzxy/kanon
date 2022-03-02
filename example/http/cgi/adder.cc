@@ -52,7 +52,7 @@ int main()
   char buf[4096];MemoryZero(buf);
   response.AddHeader("Connection", "close")
           .AddHeader("Content-type", "text/html")
-          .AddHeaderBlackLine()
+          .AddBlackLine()
           .AddBody("<html>")
           .AddBody("<title>adder</title>")
           .AddBody("<body bgcolor=\"#ffffff\">")

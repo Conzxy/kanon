@@ -114,4 +114,12 @@ size_t File::Read(void* buf, size_t len)
   return len - remaining;
 }
 
+size_t File::GetSize() noexcept
+{
+  SeekEnd(0);
+  const auto ret = GetCurrentPosition();
+  Rewind();
+
+  return ret;
+}
 } // namespace http

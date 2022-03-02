@@ -78,9 +78,18 @@ public:
   bool IsEof() const noexcept { return eof_; }
 
   void Reset() noexcept { eof_ = false; }
+  void Rewind() noexcept { ::rewind(fp_); }
+
+  void SeekCurrent(long offset) noexcept { Seek(offset, SEEK_CUR); }
+  void SeekBegin(long offset) noexcept { Seek(offset, SEEK_SET); }
+  void SeekEnd(long offset) noexcept { Seek(offset, SEEK_END); }
+  long GetCurrentPosition() noexcept { return ::ftell(fp_); }
+
+  size_t GetSize() noexcept;
 
   static const size_t kInvalidReturn = static_cast<size_t>(-1);
 private:
+  void Seek(long offset, int whence) noexcept { ::fseek(fp_, offset, whence); }
   FILE* fp_;
   int mode_;
   bool eof_;
