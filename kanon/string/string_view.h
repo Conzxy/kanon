@@ -116,7 +116,7 @@ public:
   // because it may be prvalue
   
   // convert 
-  constexpr operator char const*() const { return data_; }
+  // constexpr operator char const*() const { return data_; }
 
   // capacity
   constexpr bool empty() const noexcept
@@ -190,7 +190,14 @@ public:
     auto len = std::min(count, len_ - pos);
     return StringView(data_ + pos, len);
   }
-  
+
+  KANON_CONSTEXPR StringView substr_range(
+    size_type begin = 0,
+    size_type end = npos) const noexcept
+  {
+    return substr(begin, end - begin);
+  } 
+
   size_type find(StringView v, size_type pos = 0) const noexcept
   {
     // Intead of kmp or other efficient algorithm?
