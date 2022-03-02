@@ -24,6 +24,7 @@ using namespace unix;
 char const HttpServer::kRootPath_[] = "/root/kanon/example/http";
 char const HttpServer::kHtmlPath_[] = "/root/kanon/example/http/html";
 char const HttpServer::kHomePage_[] = "index.html";
+char const HttpServer::kHost_[] = "47.99.92.230";
 
 HttpServer::HttpServer(EventLoop* loop, InetAddr const& listen_addr)
   : TcpServer(loop, listen_addr, "HttpServer")
@@ -46,6 +47,16 @@ void HttpServer::OnMessage(
   switch (parser->Parse(buffer)) {
     case ParseResult::kComplete:
     {
+      // Check Host field in request header
+      const auto host = parser->GetHeaderValue("Host");
+      if (!host || *host != kHost_) {
+        // FIXME
+        // ip should setted in config file
+        LOG_DEBUG << *host << "; " << conn->GetPeerAddr().ToIp();
+        SendErrorResponse(conn, HttpStatusCode::k400BadRequest, *parser);
+        return ;
+      }
+
       switch (parser->GetMethod()) {
       case HttpMethod::kGet:
         if (parser->IsStatic()) {
@@ -77,7 +88,11 @@ void HttpServer::OnMessage(
     }
       break;
     case ParseResult::kBad:
-      SendErrorResponse(conn, parser->GetErrorStatusCode(), parser->GetErrorString());
+      SendErrorResponse(
+        conn,
+        parser->GetErrorStatusCode(),
+        parser->GetErrorString(),
+        *parser);
 
       LOG_DEBUG << "Parse Bad: " << parser->GetErrorString();
       break;
@@ -113,16 +128,30 @@ void HttpServer::ServeFile(
   LOG_DEBUG << "local_path = " << local_path;
   LOG_DEBUG << "path = " << path;
 
-  FilePtr file = new File();
+  FilePtr file = std::make_shared<File>();
 
   if (file->Open(local_path, File::kRead)) {
+    HttpResponse response(true);
+
+    char buf[128];
+
+    ::snprintf(buf, sizeof buf, "%lu", file->GetSize());
+    // FIXME add Content-type
+    response.AddHeaderLine(HttpStatusCode::k200OK)
+            .AddHeader("Content-length", buf)
+            .AddHeader("Connection", "close")
+            .AddBlackLine();
+    
+    LOG_DEBUG << response.GetBuffer().ToStringView();
+
+    conn->Send(response.GetBuffer());
     conn->SetWriteCompleteCallback(
-      [file, path, this](TcpConnectionPtr const& conn)
+      [file, path, this, &parser](TcpConnectionPtr const& conn)
       {
-        this->SendFile(conn, file);
+        this->SendFile(conn, file, parser);
       });
 
-    SendFile(conn, file);
+    SendFile(conn, file, parser);
   }
   else {
     if (errno == ENOENT) {
@@ -147,9 +176,10 @@ void HttpServer::OnConnection(TcpConnectionPtr const& conn)
 
 void HttpServer::SendFile(
   TcpConnectionPtr const& conn,
-  FilePtr file)
+  FilePtr const& file,
+  HttpRequestParser const& parser)
 {
-  char buf[kFileBufferSize];
+  char buf[kFileBufferSize_];
 
   auto readn = file->Read(buf);
 
@@ -159,23 +189,17 @@ void HttpServer::SendFile(
       assert(readn <= sizeof buf);
 
       LOG_DEBUG << "readn > 0 and meet EOF";
-      conn->SetWriteCompleteCallback(
-        [file](TcpConnectionPtr const& conn)
-        {
-          std::unique_ptr<File> guard(file);
-          conn->ShutdownWrite();
-        });
-
-        conn->Send(StringView(buf, readn));
+      
+      conn->SetWriteCompleteCallback(std::bind(
+        &HttpServer::LastWriteComplete, _1, std::cref(parser)));
+      conn->Send(StringView(buf, readn));
     }
     else if (readn > 0) { // readn > 0 && not EOF
       conn->Send(StringView(buf, readn));
     }
     else if (file->IsEof()) { // readn = 0 && EOF
       LOG_DEBUG << "readn = 0 and meet EOF";
-      std::unique_ptr<File> guard(file);
-      conn->ShutdownWrite();
-      conn->SetWriteCompleteCallback(WriteCompleteCallback());
+      LastWriteComplete(conn, parser);
     }
   }
   else { // Error
@@ -207,8 +231,9 @@ void HttpServer::ExecuteCgi(
 
       auto input_buffer = conn->GetInputBuffer();
       if (parser.GetMethod() == HttpMethod::kPost) {
-        input.Write(input_buffer->ToStringView()
-          .substr(0, parser.GetCacheContentLength()), parser.GetCacheContentLength());
+        input.Write(
+          input_buffer->ToStringView().substr(0, parser.GetCacheContentLength()).data(),
+          parser.GetCacheContentLength());
       }
 
       char buf[4096];MemoryZero(buf);
@@ -217,6 +242,8 @@ void HttpServer::ExecuteCgi(
         LOG_DEBUG << StringView(buf, readn);
         conn->Send(buf, readn);
       }
+
+      CloseConnection(conn, parser);
     },
     [&input, &parser, &output]()
     {
@@ -275,13 +302,29 @@ void HttpServer::ExecuteCgi(
 void HttpServer::SendErrorResponse(
   TcpConnectionPtr const& conn,
   HttpStatusCode code,
-  StringView msg)
+  StringView msg,
+  HttpRequestParser const& parser)
 {
-  // conn->SetWriteCompleteCallback(
-  //   [](TcpConnectionPtr const& conn)
-  //   {
-  //     conn->SetWriteCompleteCallback(WriteCompleteCallback());
-  //     conn->ShutdownWrite();
-  //   });
+  conn->SetWriteCompleteCallback(std::bind(
+    &HttpServer::LastWriteComplete, _1, std::cref(parser)));
   conn->Send(GetClientError(code, msg).GetBuffer());
+}
+
+void HttpServer::CloseConnection(
+  kanon::TcpConnectionPtr const& conn,
+  HttpRequestParser const& parser)
+{
+  const auto is_close = parser.GetHeaderValue("Connection");
+
+  if (is_close && *is_close == "close") {
+    conn->ShutdownWrite();
+  }
+}
+
+void HttpServer::LastWriteComplete(
+  TcpConnectionPtr const& conn,
+  HttpRequestParser const& parser)
+{
+  conn->SetWriteCompleteCallback(WriteCompleteCallback());
+  CloseConnection(conn, parser);      
 }

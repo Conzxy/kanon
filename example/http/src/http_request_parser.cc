@@ -888,6 +888,7 @@ void HttpRequestParser::PrintRequestContent(
   StringView msg,
   Buffer const& buffer)
 {
+#ifndef NDEBUG
   LOG_DEBUG << msg;
   for (auto c : buffer.ToStringView()) {
     if (c == CR) {
@@ -900,6 +901,7 @@ void HttpRequestParser::PrintRequestContent(
       putc(c, stdout);
     }
   }
+#endif
 }
 
 char const*
