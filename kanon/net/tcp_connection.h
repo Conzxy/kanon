@@ -128,6 +128,7 @@ public:
   // When TcpServer accept a new connection in newConnectionCallback
   void ConnectionEstablished();
   // When TcpServer has removed connection from its connections_
+  // ! Must not be called in event handling phase
   void ConnectionDestroyed();
 private:
   void HandleError();

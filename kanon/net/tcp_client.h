@@ -16,8 +16,6 @@ class EventLoop;
 class InetAddr;
 class Channel;
 
-typedef std::unique_ptr<Connector> ConnectorPtr;
-
 class TcpClient : noncopyable {
 public:
   TcpClient(
@@ -52,7 +50,7 @@ public:
   EventLoop* GetLoop() const noexcept { return loop_; }
 private:
   EventLoop* loop_;
-  ConnectorPtr connector_;
+  std::unique_ptr<Connector> connector_;
 
   const std::string name_;
 
@@ -65,7 +63,7 @@ private:
   // shutdown write and set connect_ to false
   std::atomic<bool> connect_;
   // for passive close connection
-  // if peer close connection, if restart
+  // if peer close connection, then restart
   std::atomic<bool> retry_;
 
   TcpConnectionPtr conn_;
