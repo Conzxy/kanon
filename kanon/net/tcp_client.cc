@@ -33,26 +33,30 @@ TcpClient::TcpClient(
     new_conn->SetWriteCompleteCallback(write_complete_callback_);
     new_conn->SetConnectionCallback(connection_callback_);
   
-    // Since stack is private, if we directly contruct and set new connection,
+    // If we directly contruct and set new connection,
     // that is dangerous! we may be get a half-completed connection.
     {
       MutexGuard guard{ mutex_ };
       conn_ = new_conn;
     }
 
+    // RemoveConnection
     conn_->SetCloseCallback([this](TcpConnectionPtr const& conn) {
       loop_->AssertInThread();
       // passive close connection
       assert(conn == conn_);
       assert(conn->GetLoop() == loop_);
-   
+
+
+      // Like TcpServer, we remove connection from TcpClient 
       {
         MutexGuard guard{ mutex_ };
         conn_.reset();
       } 
   
-      // @warning in event handle phase, don't disable and remove channel 
-      loop_->QueueToLoop([&conn] () {
+      // ! In event handling phase, don't remove channel(disable is allowed)
+      // ! conn must be copied
+      loop_->QueueToLoop([conn] () {
         conn->ConnectionDestroyed();
       });
       // If user does not call Disconnect() and
@@ -92,7 +96,6 @@ TcpClient::~TcpClient() noexcept {
     connector_->Stop();
   }
   
-   
 }
 
 void

@@ -146,7 +146,7 @@ TcpConnection::ConnectionDestroyed() {
   // This may be called by TcpServer dtor or close_callback_(see TcpServer)
   // if close_callback_ has be called, just remove channel;  
   if (state_ == kConnected) {
-    channel_->DisableAll();
+    // channel_->DisableAll();
     channel_->Remove();
 
     state_ = kDisconnected;
@@ -155,7 +155,8 @@ TcpConnection::ConnectionDestroyed() {
     // Don't pass raw pointer
     connection_callback_(shared_from_this());  
   }  
-  
+ 
+  channel_->Remove();
 }
 
 void
@@ -170,19 +171,27 @@ TcpConnection::HandleError() {
 void
 TcpConnection::HandleClose() {
   loop_->AssertInThread();
-  assert(state_ == kConnected || state_ == kDisconnecting);
+  // Connected ==> read event handling
+  // Disconnecting ==> call ForceClose()
+  assert(state_ & (kConnected | kDisconnecting));
   
   state_ = kDisconnected;
+
+  // ! You can't remove channel in event handling phase.
+  // ! Instead, close_callback_ should delay the remove to
+  // ! functor calling phase
   channel_->DisableAll();
-  channel_->Remove();
   
   // Prevent connection to be removed from TcpServer immediately(since close_callback_)
-  // Ensure the connection ref-count at least is one
-  auto guard = shared_from_this();  
+  // TcpServer::RemoveConnection need to call TcpConnection::ConnectionDestroyed
+  // Therefore, we must guard here
+  const auto guard = shared_from_this();  
   connection_callback_(guard);
   
   // TcpServer remove connection from its connections_
-  close_callback_(guard);
+  if (close_callback_) {
+    close_callback_(guard);
+  }
 }
 
 void
