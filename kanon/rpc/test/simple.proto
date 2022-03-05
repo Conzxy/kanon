@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+option cc_generic_services = true;
+
+message SimpleRequest {
+  required int32 i = 1;
+}
+
+message SimpleResponse {
+  required int32 i = 1;
+}
+
+service SimpleService {
+  rpc simple(SimpleRequest) returns(SimpleResponse);
+}

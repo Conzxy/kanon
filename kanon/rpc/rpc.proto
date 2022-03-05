@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package kanon.protobuf.rpc;
+
+message RpcMessage {
+
+enum ErrorCode {
+  kNoError         = 0;
+  kInvalidMessage  = 1;
+  kNoService       = 2;
+  kNoMethod        = 3;
+  kInvalidRequest  = 4;
+  kInvalidResponse = 5;
+}
+
+enum MessageType {
+  kResponse = 0;
+  kRequest  = 1;
+}
+
+  required MessageType type = 1;
+  required fixed64 id       = 2;
+  optional string service   = 3;
+  optional string method    = 4;
+  optional bytes request    = 5;
+  optional bytes response   = 6;
+  optional ErrorCode error  = 7 [default = kNoError];
+}
