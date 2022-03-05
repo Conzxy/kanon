@@ -3,7 +3,7 @@
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
-#include "kanon/util/unique_ptr.h"
+#include "kanon/util/ptr.h"
 #include "kanon/util/any.h"
 
 #include "kanon/log/logger.h"
@@ -135,7 +135,7 @@ private:
   void HandleClose();
   
   void SendInLoop(void const* data, size_t len);
-  void SendInLoop(StringView const& data);
+  void SendInLoop(StringView data);
 
   EventLoop* loop_;
   std::string const name_;

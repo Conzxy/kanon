@@ -15,6 +15,10 @@ namespace kanon {
 class CountDownLatch : noncopyable
 {
 public:
+  CountDownLatch()
+    : CountDownLatch(0)
+  { }
+
   explicit CountDownLatch(int count)
     : count_(count), mutex_(), cond_(mutex_)
   { }

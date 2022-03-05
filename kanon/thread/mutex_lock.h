@@ -1,10 +1,6 @@
 #ifndef KANON_MUTEXLOCK_H
 #define KANON_MUTEXLOCK_H
 
-#ifndef PTHREAD_CHECK
-#define PTHREAD_CHECK
-#endif
-
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 

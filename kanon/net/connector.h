@@ -4,7 +4,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/net/inet_addr.h"
 #include "kanon/util/macro.h"
-#include "kanon/util/unique_ptr.h"
+#include "kanon/util/ptr.h"
 
 #include <functional>
 #include <atomic>

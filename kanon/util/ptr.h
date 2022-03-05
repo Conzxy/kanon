@@ -48,14 +48,35 @@ inline T* GetPointer(T* const ptr) noexcept {
   return ptr;
 }
 
+// down_pointer_cast is hinted by google
+// * In Debug mode, use dynamic_cast<> to check down_cast if is valid,
+//   then use unsafe cast return casted pointer
+// * In release mode, don't care, since we has checked in debug mode
 template<typename T, typename F>
 inline std::unique_ptr<T> down_pointer_cast(std::unique_ptr<F>& ptr)
 {
 #ifndef NDEBUG
   assert(ptr != nullptr && dynamic_cast<T*>(ptr.get()) != nullptr);
 #endif
-
   return std::unique_ptr<T>(reinterpret_cast<T*>(ptr.release()));
+}
+
+template<typename T, typename F>
+inline std::shared_ptr<T> down_pointer_cast(std::shared_ptr<F>& ptr)
+{
+#ifndef NDEBUG
+  assert(ptr != nullptr && std::dynamic_pointer_cast<T>(ptr) != nullptr);
+#endif
+  return std::static_pointer_cast<T>(ptr);
+}
+
+template<typename T, typename F>
+inline T* down_pointer_cast(F* ptr)
+{
+#ifndef NDEBUG
+  assert(ptr != nullptr && dynamic_cast<T*>(ptr) != nullptr);
+#endif
+  return reinterpret_cast<T*>(ptr);
 }
 
 } // namespace kanon

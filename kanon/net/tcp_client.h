@@ -3,7 +3,7 @@
 
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
-#include "kanon/util/unique_ptr.h"
+#include "kanon/util/ptr.h"
 #include "kanon/net/callback.h"
 #include "kanon/thread/mutex_lock.h"
 
@@ -44,6 +44,7 @@ public:
   { retry_ = true; }
 
   TcpConnectionPtr GetConnection() const noexcept {
+    MutexGuard guard{ mutex_ };
     return conn_;
   }
 

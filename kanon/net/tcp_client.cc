@@ -72,7 +72,7 @@ TcpClient::TcpClient(
 } 
 
 TcpClient::~TcpClient() noexcept {
-  LOG_INFO << "TcpClient-[" << name_ << "]" << "destructed";
+  LOG_INFO << "TcpClient-[" << name_ << "]" << " destructed";
 
   bool is_unique = false;
   TcpConnectionPtr conn;

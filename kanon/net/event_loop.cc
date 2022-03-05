@@ -69,11 +69,11 @@ EventLoop::EventLoop()
 { 
   ev_channel_->SetReadCallback([this](TimeStamp receive_time){
     LOG_TRACE << "event receive_time: " << receive_time.ToFormattedString(true);
-    this->evRead();
+    this->EvRead();
   });
 
   ev_channel_->SetWriteCallback([this](){
-    this->wakeup();
+    this->Wakeup();
   });
 
   ev_channel_->EnableReading();
@@ -104,7 +104,7 @@ void EventLoop::StartLoop() {
       channel->HandleEvents(receive_time);
     }
   
-    callFunctors();
+    CallFunctors();
 
     activeChannels.clear();
   }
@@ -136,7 +136,7 @@ void EventLoop::QueueToLoop(FunctorCallback cb) {
   // in the poll phase or handle events.
   if (! IsLoopInThread() ||
       callingFunctors_) {
-    wakeup();
+    Wakeup();
   }
 }
 
@@ -152,7 +152,7 @@ void EventLoop::HasChannel(Channel* ch) {
   poller_->HasChannel(ch);
 }
 
-void EventLoop::callFunctors() {
+void EventLoop::CallFunctors() {
   decltype(functors_) functors;
   {
     MutexGuard dummy{ lock_ };
@@ -160,18 +160,17 @@ void EventLoop::callFunctors() {
   }  
 
   callingFunctors_ = true;
-  // FIXME: auto& better?
-  for (auto const& func : functors) {
+  for (auto& func : functors) {
     try {
       assert(func);
       func();
     } catch(std::exception const& ex) {
-      LOG_ERROR << "std::exception caught in callFunctors()"
+      LOG_ERROR << "std::exception caught in CallFunctors()"
             << "what(): " << ex.what();  
       KANON_RETHROW;
       callingFunctors_ = false;
     } catch(...) {
-      LOG_ERROR << "some exception caught in callFunctors()";
+      LOG_ERROR << "some exception caught in CallFunctors()";
       KANON_RETHROW;
       callingFunctors_ = false;
     }
@@ -182,30 +181,30 @@ void EventLoop::callFunctors() {
 
 void EventLoop::AssertInThread() noexcept {
   if (!this->IsLoopInThread())
-    this->abortNotInThread();
+    this->AbortNotInThread();
 }
 
 bool EventLoop::IsLoopInThread() noexcept {
   return CurrentThread::t_tid == ownerThreadId_;
 }
 
-void EventLoop::evRead() noexcept {
+void EventLoop::EvRead() noexcept {
   detail::ReadEventFd(evfd_);
 }
 
-void EventLoop::wakeup() noexcept {
+void EventLoop::Wakeup() noexcept {
   detail::WriteEventFd(evfd_);
 }
 
 void EventLoop::Quit() noexcept {
   quit_ = true;
 
-  // If in the IO thread, call wakeup() in Quit()  is not necessary,
+  // If in the IO thread, call Wakeup() in Quit()  is not necessary,
   // because it only few cases can call Quit() successfully
   //  * timer event, but is not blocking(Can be called in this thread)
-  //  * asynchronous call from other thread, will call wakeup() to avoid empty polling(might)
+  //  * asynchronous call from other thread, will call Wakeup() to avoid empty polling(might)
   if (! this->IsLoopInThread())
-    this->wakeup();
+    this->Wakeup();
 }
 
 TimerId EventLoop::RunAt(TimerCallback cb, TimeStamp expiration) {
@@ -220,7 +219,7 @@ void EventLoop::CancelTimer(TimerId timer_id) {
   timer_queue_->CancelTimer(timer_id);
 }
 
-void EventLoop::abortNotInThread() noexcept
+void EventLoop::AbortNotInThread() noexcept
 { LOG_FATAL << "The Policy of \"One Loop Per Thread\" has destroied!"; }
 
 } // namespace kanon
