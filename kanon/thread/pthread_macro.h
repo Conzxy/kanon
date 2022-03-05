@@ -5,16 +5,9 @@
 
 #include <assert.h>
 
-#ifndef PTHREAD_CHECK
-
-#undef ASSERT
-#define ASSERT assert
-
-#endif // PTHREAD_CHECK
-
 #define TCHECK(ret) \
   ({ \
-    ASSERT(((ret) == 0)); \
+    ASSERT(ret); \
    })
 
 

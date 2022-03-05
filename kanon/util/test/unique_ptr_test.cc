@@ -1,4 +1,4 @@
-#include "../unique_ptr.h"
+#include "../ptr.h"
 
 #include <assert.h>
 

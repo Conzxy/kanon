@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 namespace kanon {
 
@@ -16,7 +17,7 @@ namespace kanon {
 #endif 
 
 #define ASSERT(ret) \
-  ({if (unlikely(ret == 0)) \
+  ({if (unlikely(ret != 0)) \
    {\
     char buf[1536]; \
     ::memset(buf, 0, sizeof buf); \
@@ -24,7 +25,7 @@ namespace kanon {
         ret, strerror(ret), __FILE__, __LINE__, __func__); \
     ::fputs(buf, stderr); \
     ::fflush(stderr); \
-    abort();\
+    ::abort();\
    }})
 
 } // namespace kanon

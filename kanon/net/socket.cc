@@ -38,9 +38,9 @@ Socket::accept(InetAddr& addr) noexcept {
 
 void
 Socket::ShutdownWrite() noexcept {
-  LOG_TRACE << "Server shutdown peer";
+  LOG_TRACE << "Shutdown peer in write direction";
 
   if (sock::ShutdownWrite(fd_)) {
-    LOG_SYSERROR << "shutdown write error";
+    LOG_SYSERROR << "Shutdown write error";
   }
 }

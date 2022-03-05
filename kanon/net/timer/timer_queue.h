@@ -6,7 +6,7 @@
 #include "kanon/net/timer/timer.h"
 #include "kanon/net/timer/timer_id.h"
 #include "kanon/net/channel.h"
-#include "kanon/util/unique_ptr.h"
+#include "kanon/util/ptr.h"
 
 #include <map>
 #include <set>

@@ -240,28 +240,17 @@ TcpConnection::Send(Buffer& buf) {
       SendInLoop(buf.GetReadBegin(), buf.GetReadableSize());
       buf.AdvanceRead(buf.GetReadableSize());
     } else {
-      // output_buffer_.swap(buf);
-      // loop_->QueueToLoop([=](){
-      //   auto readable =output_buffer_.GetReadableSize();
-      //   if (readable >= high_water_mark_ &&
-      //     high_water_mark_callback_) {
-      //     high_water_mark_callback_(shared_from_this(), readable);
-      //   }
-        
-      //   if (!channel_->IsWriting())
-      //     channel_->EnableWriting();
-      // });
-      
       // FIXME Use swap()
-      loop_->QueueToLoop([this, &buf]() {
-        SendInLoop(buf.RetrieveAllAsString());
+      const auto content = buf.RetrieveAllAsString();
+      loop_->QueueToLoop([this, content]() {
+        SendInLoop(content);
       });
     }
   }
 }
 
 void
-TcpConnection::SendInLoop(StringView const& data) {
+TcpConnection::SendInLoop(StringView data) {
   SendInLoop(data.data(), data.size());
 }
 

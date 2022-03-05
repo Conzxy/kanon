@@ -4,7 +4,7 @@
 #include "kanon/string/type.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
-#include "kanon/util/unique_ptr.h"
+#include "kanon/util/ptr.h"
 #include "kanon/string/string_view.h"
 #include "kanon/string/stream_common.h"
 #include "kanon/thread/thread.h"

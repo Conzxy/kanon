@@ -2,7 +2,7 @@
 #define KANON_NET_EVENTLOOP_H
 
 #include "kanon/util/noncopyable.h"
-#include "kanon/util/unique_ptr.h"
+#include "kanon/util/ptr.h"
 #include "kanon/util/macro.h"
 
 #include "kanon/thread/mutex_lock.h"
@@ -22,7 +22,11 @@ class TimerQueue;
 class Channel;
 class PollerBase;
 
+#ifdef NDEBUG
 #define POLLTIME 10000 // 10 seconds
+#else
+#define POLLTIME 1000 // 1 seconds
+#endif 
 
 /**
  * There three phases in loop:
@@ -46,7 +50,7 @@ public:
 
   /**
    * Quit loop
-   * @note if not in thread, should call wakeup()
+   * @note if not in thread, should call Wakeup()
    */
   void Quit() noexcept;
 
@@ -104,19 +108,19 @@ private:
    *      to avoid poll block for long time
    *      ((e)poll have to handle and return at once)
    */
-  void wakeup() noexcept;
+  void Wakeup() noexcept;
 
   /**
    * Call all functors in functors_(better name: callable)
    */
-  void callFunctors();
+  void CallFunctors();
 
   /**
    * @brief read callback of eventfd
    */
-  void evRead() noexcept;
+  void EvRead() noexcept;
   
-  void abortNotInThread() noexcept;
+  void AbortNotInThread() noexcept;
 private:
   /** 
    * Used for checking if in this thread 
