@@ -1,10 +1,11 @@
-#include "current_thread.h"
-#include "kanon/string/lexical_cast.h"
+#include "kanon/thread/current_thread.h"
 
 #include <cstring>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/syscall.h>
+
+#include "kanon/string/lexical_cast.h"
 
 // In C++17
 // you can write as:

@@ -1,13 +1,14 @@
 #ifndef KANON_NET_CONNECTOR_H
 #define KANON_NET_CONNECTOR_H
 
+#include <functional>
+#include <atomic>
+
 #include "kanon/util/noncopyable.h"
-#include "kanon/net/inet_addr.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/ptr.h"
 
-#include <functional>
-#include <atomic>
+#include "kanon/net/inet_addr.h"
 
 namespace kanon {
 

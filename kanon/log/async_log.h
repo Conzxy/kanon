@@ -1,6 +1,10 @@
 #ifndef KANON_ASYNC_LOG_H
 #define KANON_ASYNC_LOG_H
 
+#include <stdint.h>
+#include <vector>
+#include <atomic>
+
 #include "kanon/string/type.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
@@ -12,9 +16,7 @@
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/count_down_latch.h"
 
-#include <vector>
-#include <atomic>
-#include <stdint.h>
+
 
 namespace kanon {
 

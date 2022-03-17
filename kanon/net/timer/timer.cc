@@ -2,7 +2,7 @@
 
 namespace kanon {
 
-AtomicInt64 Timer::s_counter_ {};
+AtomicCounter64 Timer::s_counter_ {};
 
 void
 Timer::restart(TimeStamp now) noexcept {

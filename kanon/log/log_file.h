@@ -1,23 +1,20 @@
 #ifndef KANON_LOGFILE_H
 #define KANON_LOGFILE_H
 
-#include "kanon/util/noncopyable.h"
-#include "kanon/util/macro.h"
-
-#include "kanon/string/string_view.h"
-
-#include "kanon/thread/dummy_mutex_lock.h"
-#include "kanon/thread/mutex_lock.h"
-
-#include "kanon/process/process_info.h"
-
-#include "kanon/log/append_file.h"
-
 #include <memory>
 #include <time.h>
 #include <sys/time.h>
 #include <string>
 #include <type_traits> // std::conditional
+
+#include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
+#include "kanon/string/string_view.h"
+#include "kanon/thread/dummy_mutex_lock.h"
+#include "kanon/thread/mutex_lock.h"
+#include "kanon/process/process_info.h"
+
+#include "kanon/log/append_file.h"
 
 namespace kanon {
 
@@ -164,9 +161,9 @@ std::string LogFile<T>::getLogFileName(time_t& now) {
   ::strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
 
   filename += timebuf;
-  filename += process::pidString().data();
+  filename += process::PidString().data();
   filename += ".";
-  filename += process::hostname().data();
+  filename += process::Hostname().data();
   filename += ".log";
 
   return filename;

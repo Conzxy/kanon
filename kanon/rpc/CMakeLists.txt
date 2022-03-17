@@ -6,7 +6,8 @@ add_custom_command(
 
 include_directories(${PROJECT_BINARY_DIR}) # i.e. kanon/build
 
-add_library(protobuf_rpc rpc.pb.cc krpc_channel.cc krpc_server.cc)
-target_link_libraries(protobuf_rpc protobuf_codec)
+set(RPC_SRC rpc.pb.cc krpc_channel.cc krpc_server.cc)
+GenLib(protobuf_rpc ${RPC_SRC})
 
-add_subdirectory(test)
+target_link_libraries(protobuf_rpc protobuf_codec)
+install(TARGETS protobuf_rpc DESTINATION lib)

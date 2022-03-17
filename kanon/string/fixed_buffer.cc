@@ -1,5 +1,5 @@
-#include "fixed_buffer.h"
-#include "stream_common.h"
+#include "kanon/string/fixed_buffer.h"
+#include "kanon/string/stream_common.h"
 
 namespace kanon {
 namespace detail {

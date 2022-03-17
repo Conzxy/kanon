@@ -6,6 +6,7 @@
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/count_down_latch.h"
 #include "kanon/rpc/krpc_channel.h"
+#include "kanon/util/ptr.h"
 
 namespace kanon {
 namespace protobuf {
@@ -20,11 +21,18 @@ public:
 
   StubPtr GetStub() const;
   
-  CountDownLatch& GetLatch() const noexcept { return latch_; }
+  CountDownLatch& GetLatch() const noexcept 
+  { 
+    if (latch_ == nullptr) {
+      latch_= kanon::make_unique<CountDownLatch>(1);
+    }
+    return *latch_;
+  }
+
   void OnConnection(TcpConnectionPtr const& conn);
 private:
 
-  mutable CountDownLatch latch_;
+  mutable std::unique_ptr<CountDownLatch> latch_;
   mutable MutexLock connected_mutex_;
   mutable Condition connected_cond_;
 };

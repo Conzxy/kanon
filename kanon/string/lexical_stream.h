@@ -1,16 +1,16 @@
 #ifndef KANON_LEXICAL_STREAM_H
 #define KANON_LEXICAL_STREAM_H
 
-#include "kanon/string/string_view.h"
-#include "kanon/util/macro.h"
-#include "kanon/util/noncopyable.h"
-
 #include <string.h>
 #include <string>
 #include <assert.h>
 
-#include "stream_common.h"
-#include "fixed_buffer.h"
+#include "kanon/util/macro.h"
+#include "kanon/util/noncopyable.h"
+
+#include "kanon/string/string_view.h"
+#include "kanon/string/stream_common.h"
+#include "kanon/string/fixed_buffer.h"
 
 namespace kanon{
 
@@ -197,7 +197,5 @@ LexicalStream<SZ>& operator<<(LexicalStream<SZ>& stream, Fmt const& fmt)
 
 
 } // namespace kanon
-
-// #include "lexical_stream_impl.h"
 
 #endif // KANON_LEXICAL_STREAM_H

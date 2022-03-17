@@ -3,12 +3,9 @@
 
 #include "kanon/util/check.h"
 
-#include <assert.h>
-
 #define TCHECK(ret) \
   ({ \
     ASSERT(ret); \
    })
-
 
 #endif

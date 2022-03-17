@@ -1,10 +1,12 @@
 #include "kanon/net/tcp_server.h"
+
+#include "kanon/util/ptr.h"
+
 #include "kanon/net/inet_addr.h"
 #include "kanon/net/tcp_connection.h"
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_pool.h"
 #include "kanon/net/acceptor.h"
-#include "kanon/util/ptr.h"
 
 using namespace kanon;
 

@@ -1,14 +1,32 @@
-#include "append_file.h"
-#include "logger.h"
+#include "kanon/log/append_file.h"
+
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include "kanon/log/logger.h"
 
 namespace kanon {
 
 AppendFile::AppendFile(StringArg filename)
   : writtenBytes_(0)
-  , fp_(::fopen(filename.data(), "a"))
 {
-  if (! fp_)
-    ::fprintf(stderr, "failed in open file: %s", filename.data());  
+  while (! (fp_ = ::fopen(filename.data(), "a") ) ) {
+    if (errno != ENOENT) {
+      ::fprintf(stderr, "Failed to open file: %s\n", filename.data());  
+      ::fflush(stderr);
+      ::abort();
+    }
+
+    auto filename_view = StringView(filename.data());
+    const std::string dir = filename_view.substr(0, filename_view.rfind('/')).ToString();
+
+    if (::mkdir(dir.data(), S_IRUSR) ) {
+      ::fprintf(stderr, "Failed to create a directory: %s\n", dir.data());  
+      ::fflush(stderr);
+      ::abort();
+    }
+  }
+
   ::setbuffer(fp_, buf_, sizeof buf_);
 }
 

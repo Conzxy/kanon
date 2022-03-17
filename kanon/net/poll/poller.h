@@ -1,23 +1,31 @@
 #ifndef KANON_NET_POLL_POLLER_H
 #define KANON_NET_POLL_POLLER_H
 
-#include "kanon/net/poller_base.h"
 #include <poll.h>
+#include <map>
+
+#include "kanon/net/poll/poller_base.h"
 
 namespace kanon {
 
 class Poller final : public PollerBase {
-  typedef PollerBase Base;
-  typedef std::vector<struct pollfd> PollfdVec;
 public:
-  using Base::Base;
+  explicit Poller(EventLoop* loop);
 
   TimeStamp Poll(int ms, ChannelVec& activeChannels) noexcept KANON_OVERRIDE;
   void UpdateChannel(Channel* ch) KANON_OVERRIDE;
   void RemoveChannel(Channel* ch) KANON_OVERRIDE;
 
 private:
-  PollfdVec pollfds_;  
+  /**
+   * struct pollfd {
+   *  int fd;
+   *  short events;
+   *  short revents;
+   * };
+   */
+  std::vector<struct pollfd> pollfds_;  
+  std::map<int, Channel*> channels_map_;
 };
 
 

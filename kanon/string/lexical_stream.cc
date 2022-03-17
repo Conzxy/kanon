@@ -1,4 +1,4 @@
-#include "lexical_stream.h"
+#include "kanon/string/lexical_stream.h"
 
 namespace kanon {
 

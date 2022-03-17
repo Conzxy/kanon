@@ -2,8 +2,9 @@
 #define KANON_APPENDFILE_H
 
 #include <stdio.h>
-#include "kanon/util/noncopyable.h"
+
 #include "kanon/string/string_view.h"
+#include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
 

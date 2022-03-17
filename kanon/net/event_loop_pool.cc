@@ -1,9 +1,10 @@
+#include "kanon/net/event_loop_pool.h"
+
 #include "kanon/log/logger.h"
 
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_thread.h"
 
-#include "kanon/net/event_loop_pool.h"
 
 using namespace kanon;
 

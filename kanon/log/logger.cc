@@ -1,12 +1,14 @@
-#include "logger.h"
-#include "terminal_color.h"
-#include "kanon/thread/current_thread.h"
+#include "kanon/log/logger.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+
+#include "kanon/thread/current_thread.h"
+
+#include "kanon/log/terminal_color.h"
 
 namespace kanon {
 

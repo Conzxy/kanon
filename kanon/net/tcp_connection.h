@@ -5,7 +5,6 @@
 #include "kanon/util/macro.h"
 #include "kanon/util/ptr.h"
 #include "kanon/util/any.h"
-
 #include "kanon/log/logger.h"
 
 #include "kanon/net/callback.h"

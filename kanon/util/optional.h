@@ -11,11 +11,11 @@
 // In c++ 17, you can use std::optional
 //
 //
-#include "kanon/util/macro.h"
-
 #include <type_traits>
 #include <utility>
 #include <assert.h>
+
+#include "kanon/util/macro.h"
 
 namespace kanon {
  

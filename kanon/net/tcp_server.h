@@ -4,12 +4,10 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/type.h"
-
 #include "kanon/string/string_view.h"
+#include "kanon/thread/atomic.h"
 
 #include "kanon/net/callback.h"
-
-#include "kanon/thread/atomic.h"
 
 namespace kanon {
 

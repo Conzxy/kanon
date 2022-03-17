@@ -1,10 +1,10 @@
 #ifndef KANON_NET_CALLBACK_H
 #define KANON_NET_CALLBACK_H
 
-#include "kanon/time/time_stamp.h"
-
 #include <memory>
 #include <functional>
+
+#include "kanon/util/time_stamp.h"
 
 namespace kanon {
 

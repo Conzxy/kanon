@@ -3,13 +3,13 @@
 
 #include <stdint.h>
 #include <stdio.h>
-
 #include <type_traits>
 #include <algorithm> // std::reverse
 
 #include "kanon/util/macro.h"
-#include "stream_common.h"
-#include "string_view.h"
+
+#include "kanon/string/stream_common.h"
+#include "kanon/string/string_view.h"
 
 namespace kanon {
 namespace detail {

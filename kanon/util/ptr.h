@@ -11,10 +11,10 @@ namespace kanon {
 #if defined(CXX_STANDARD_11) && !defined(CXX_STANDARD_14)
 
 template<typename T>
-struct Is_bounded_array : std::false_type {};
+struct Is_unbounded_array : std::false_type {};
 
 template<typename T>
-struct Is_bounded_array<T[]> : std::true_type {};
+struct Is_unbounded_array<T[]> : std::true_type {};
 
 template<typename T, typename... Args,
   typename std::enable_if<!std::is_array<T>::value, char>::type = 0>
@@ -23,7 +23,7 @@ inline std::unique_ptr<T> make_unique(Args&&... args) {
 }
 
 template<typename T,
-  typename std::enable_if<Is_bounded_array<T>::value, int>::type = 0>
+  typename std::enable_if<Is_unbounded_array<T>::value, int>::type = 0>
 inline std::unique_ptr<T> make_unique(size_t num) {
   return std::unique_ptr<T>(new typename std::remove_extent<T>::type[num]);
 }
@@ -33,8 +33,8 @@ using std::make_unique;
 #endif
 
 // compatible with smart_pointer and raw pointer
-template<typename T>
-inline T* GetPointer(std::unique_ptr<T> const& ptr) noexcept {
+template<typename T, typename D>
+inline T* GetPointer(std::unique_ptr<T, D> const& ptr) noexcept {
   return ptr.get();
 }
 
@@ -48,12 +48,35 @@ inline T* GetPointer(T* const ptr) noexcept {
   return ptr;
 }
 
+template<typename T>
+struct KeyDeleter {
+public:
+  explicit KeyDeleter(bool is_delete = true)
+    : is_delete_(is_delete)
+  { }
+
+  void operator()(T* ptr) const {
+    if (is_delete_) {
+      delete ptr;
+    }
+  }
+private:
+  bool is_delete_;
+};
+
+template<typename T>
+using KeyUniquePtr = std::unique_ptr<T, KeyDeleter<T>>;
+
+template<typename T>
+KeyUniquePtr<T> MakeUniquePtrAsKey(T* p) noexcept
+{ return KeyUniquePtr<T>(p, KeyDeleter<T>(false)); }
+
 // down_pointer_cast is hinted by google
 // * In Debug mode, use dynamic_cast<> to check down_cast if is valid,
 //   then use unsafe cast return casted pointer
 // * In release mode, don't care, since we has checked in debug mode
-template<typename T, typename F>
-inline std::unique_ptr<T> down_pointer_cast(std::unique_ptr<F>& ptr)
+template<typename T, typename F, typename D>
+inline std::unique_ptr<T, D> down_pointer_cast(std::unique_ptr<F, D>& ptr)
 {
 #ifndef NDEBUG
   assert(ptr != nullptr && dynamic_cast<T*>(ptr.get()) != nullptr);

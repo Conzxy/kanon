@@ -1,10 +1,10 @@
 #ifndef KANON_NET_EVENTLOOP_POOL_H
 #define KANON_NET_EVENTLOOP_POOL_H
 
+#include <string>
+
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_thread.h"
-
-#include <string>
 
 namespace kanon {
 

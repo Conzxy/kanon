@@ -1,30 +1,40 @@
 #include "kanon/net/timer/timer_queue.h"
-#include "kanon/net/event_loop.h"
-#include "kanon/log/logger.h"
-#include "kanon/util/macro.h"
-#include "kanon/util/algo.h"
 
 #include <unistd.h>
 #include <sys/timerfd.h>
 
+#include "kanon/net/callback.h"
+#include "kanon/net/event_loop.h"
+#include "kanon/log/logger.h"
+#include "kanon/net/timer/timer.h"
+#include "kanon/util/macro.h"
+#include "kanon/util/algo.h"
+#include "kanon/util/mem.h"
+#include "kanon/util/ptr.h"
+
 namespace kanon {
 
+// Some wrapper API about timerfd, such as set and reset...
 namespace detail {
 
+static constexpr int64_t kNanosecond = 1000000000;
+
 static inline int CreateTimerFd() noexcept {
-  auto timerfd = ::timerfd_create(CLOCK_MONOTONIC, 
+  auto timerfd = ::timerfd_create(
+                  CLOCK_MONOTONIC,
                   TFD_NONBLOCK | TFD_CLOEXEC);
 
-  LOG_TRACE << "tiemrfd: " << timerfd << " created";
+  LOG_TRACE << "Timer Fd: " << timerfd << " created";
 
-  if (timerfd < 0)
-    LOG_SYSERROR << "timer_create() error occurred";
+  if (timerfd < 0) {
+    LOG_SYSERROR << "::timer_create() error occurred";
+  }
 
   return timerfd;
 }
 
-static struct timespec getTimeFromNow(TimeStamp time) noexcept {
-  int interval = time.GetMicrosecondsSinceEpoch() - TimeStamp::Now().GetMicrosecondsSinceEpoch();
+static inline struct timespec GetTimeFromNow(TimeStamp time) noexcept {
+  int64_t interval = time.GetMicrosecondsSinceEpoch() - TimeStamp::Now().GetMicrosecondsSinceEpoch();
   if (interval < 100) interval = 100;
 
   struct timespec expire;
@@ -34,57 +44,57 @@ static struct timespec getTimeFromNow(TimeStamp time) noexcept {
   return expire;  
 }
 
-//static struct timespec getTimerInterval(double time) noexcept {
-  //static constexpr int kNanoSecondPerSecond = 1000000000;
+static inline struct timespec GetTimerInterval(double interval) noexcept {
+  const int64_t val = interval * kNanosecond;
+  struct timespec spec;
 
-  //int64_t diff = static_cast<int64_t>(time * kNanoSecondPerSecond);
-  
-  //struct timespec interval;
-  //interval.tv_sec = static_cast<time_t>(diff / kNanoSecondPerSecond);
-  //interval.tv_nsec = static_cast<long>(diff % kNanoSecondPerSecond);
+  spec.tv_sec = static_cast<time_t>(val / kNanosecond);
+  spec.tv_nsec = static_cast<long>(val % kNanosecond);
 
-  //return interval;
-//}
-
-// static inline void print_timespec(struct timespec const& spec) noexcept {
-//   LOG_DEBUG << "second: " << spec.tv_sec
-//         << ";nanosecond: " << spec.tv_nsec;
-// }
-
-static inline void print_itimerspec(struct itimerspec const& spec) {
-  LOG_DEBUG << "reset: expiration: " 
-        << "second: " << spec.it_value.tv_sec
-        << ",nanosecond: " << spec.it_value.tv_nsec << ";"
-        << "interval: "
-        << "second: " << spec.it_interval.tv_sec
-        << ",nanosecond: " << spec.it_interval.tv_nsec;
+  return spec;
 }
 
-static void resetTimerfd(int timerfd, Timer const& timer) noexcept {
-  struct itimerspec new_value;
-  BZERO(&new_value.it_interval, sizeof(struct timespec));      
+static inline void PrintItimerspec(struct itimerspec const& spec) {
+#ifndef NDEBUG
+  LOG_DEBUG << "Reset the expiration(sec, nsec): (" 
+            << spec.it_value.tv_sec << ", "
+            << spec.it_value.tv_nsec << ")";
+#endif
+}
 
+static inline void SetTimerFd(int timerfd, Timer const& timer, bool set_interval = false) noexcept {
+  struct itimerspec new_value;
+  MemoryZero(new_value.it_interval);
   // since we use expiration time to sort timer
   // so interval is useless
-  //new_value.it_interval = getTimerInterval(timer.interval());
-  new_value.it_value = getTimeFromNow(timer.expiration());
 
-  print_itimerspec(new_value);
+  if (set_interval && timer.repeat()) {
+    new_value.it_interval = GetTimerInterval(timer.interval());
+  }
 
-  if (::timerfd_settime(timerfd, 0, &new_value, NULL))
-    LOG_SYSERROR << "timerfd_settime error occurred";
+  new_value.it_value = GetTimeFromNow(timer.expiration());
 
-  LOG_TRACE << "reset successfully";
+  PrintItimerspec(new_value);
+
+  // The default interpretation of .it_value is relative time
+  if (::timerfd_settime(timerfd, 0, &new_value, NULL)) {
+    LOG_SYSERROR << "::timerfd_settime() error occurred";
+  }
+  else {
+    LOG_TRACE << "Reset successfully";
+  }
 }
 
-static void readTimerfd(int timerfd) noexcept {
+static inline void ReadTimerFd(int timerfd) noexcept {
   uint64_t dummy = 0;
-  uint64_t n;
+  uint64_t n = 0;
 
-  if ((n = ::read(timerfd, &dummy, sizeof dummy)) != sizeof dummy)
-    LOG_SYSERROR << "timerfd read error";
-
-  LOG_TRACE << "read " << n << " bytes";
+  if ((n = ::read(timerfd, &dummy, sizeof dummy)) != sizeof dummy) {
+    LOG_SYSERROR << "::read() of timerfd error occurred";
+  }
+  else {
+    LOG_TRACE << "Read " << n << " bytes";
+  }
 }
 
 } // namespace detail
@@ -95,188 +105,182 @@ TimerQueue::TimerQueue(EventLoop* loop)
   , calling_timer_{ false }
   , loop_{ loop }
 {
-    timer_channel_->SetReadCallback([this](TimeStamp receive_time) {
-    KANON_UNUSED(receive_time);
-    loop_->AssertInThread();
-    
-    TimeStamp now{ TimeStamp::Now() };
-
-    detail::readTimerfd(timerfd_);  
-
-    auto expired_timers = this->getExpiredTimers(now);
-    
-    // since self-cancel must be called in callback,
-    // before callback, we can clear @var canceling_timers to leave some space    
-    canceling_timers_.clear();
-    // if calling_timer_ is true and self-cancel at same time,
-    // insert it to @var canceling_timers_
-    calling_timer_ = true;  
-    for (auto const& timer : expired_timers) {
-      timer.second->run();
-    }
-    calling_timer_ = false;
-
-    this->reset(expired_timers, now);
-  });
+  timer_channel_->SetReadCallback(std::bind(
+    &TimerQueue::ProcessAllExpiredTimers, this, _1));
 
   timer_channel_->SetErrorCallback([](){
-    LOG_ERROR << "timer event handle error occurred";
+    LOG_SYSERROR << "Timer event handler error occurred";
   });
 
   timer_channel_->EnableReading();
 }
 
 
-TimerId TimerQueue::addTimer(Timer::TimerCallback cb, 
-               TimeStamp time,
-               double interval) {
-  auto new_timer = kanon::make_unique<Timer>(std::move(cb), time, interval);
-  auto ptimer = GetPointer(new_timer);
+TimerId TimerQueue::AddTimer(
+  Timer::TimerCallback cb, 
+  TimeStamp time,
+  double interval) 
+{
+  Timer* timer = new Timer(std::move(cb), time, interval);
+  loop_->RunInLoop([this, timer]() {
+    loop_->AssertInThread();
+    
+    bool earliest_update = Emplace(timer);
 
-  loop_->RunInLoop([this, ptimer, &new_timer]() {
-      loop_->AssertInThread();
-      
-      bool earliest_update = this->emplace(std::move(new_timer));
-
-      if (earliest_update)
-        kanon::detail::resetTimerfd(timerfd_, *ptimer);
+    if (earliest_update) {
+      kanon::detail::SetTimerFd(timerfd_, *timer);
+    }
   });
 
-  return { ptimer };
+  return timer;
 }
 
-bool TimerQueue::emplace(std::unique_ptr<Timer> uptimer) {
-  assert(timer_map_.size() == active_timer_set_.size());
+void TimerQueue::CancelTimer(TimerId id) {
+  LOG_DEBUG << "CancelTimer: "
+    << "TimerId = " << id.seq_;
+
+  loop_->RunInLoop([this, id]() {
+    loop_->AssertInThread();
+    
+    const auto active_timer = active_timers_.find(ActiveTimer(
+      id.seq_, id.timer_));
+    if (active_timers_.end() != active_timer) {
+      active_timers_.erase(active_timer);
+      timers_.erase(TimerEntry(
+        id.timer_->expiration(), MakeUniquePtrAsKey(id.timer_)));
+    } 
+    else if (calling_timer_) {
+      // Self-cancel
+      // @see ProcessAllExpiredTimers()
+      canceling_timers_.emplace(id.seq_, id.timer_);
+    }
+  });
+}
+
+bool TimerQueue::Emplace(Timer* timer) {
+  assert(timers_.size() == active_timers_.size());
   
-  auto earliest_timer_iter = timer_map_.begin();
+  auto earliest_timer_iter = timers_.begin();
   auto ret = false;
 
-  if (timer_map_.empty() || 
-    uptimer->expiration() < earliest_timer_iter->first) {
+  if (timers_.empty() || 
+    timer->expiration() < earliest_timer_iter->first) {
     ret = true;
   }
 
-  {
-    active_timer_set_.insert(
-        std::make_pair(
-          GetPointer(uptimer),
-          uptimer->sequence()));
-  }
-  {
-    timer_map_.insert(
-        std::make_pair(
-          uptimer->expiration(),
-          std::move(uptimer)));
-  }
+  active_timers_.emplace(timer->sequence(), timer);
+  timers_.emplace(timer->expiration(), TimerPtr(timer));
 
-  LOG_TRACE << "now timer total num: " << timer_map_.size();  
+  LOG_TRACE << "Now total timer count = " << timers_.size();  
   return ret;
-
 }
 
-auto TimerQueue::getExpiredTimers(TimeStamp time) 
-  -> TimerVector {
-  assert(!timer_map_.empty());
+void TimerQueue::ProcessAllExpiredTimers(TimeStamp recv_time) {
+  KANON_UNUSED(recv_time);
+  loop_->AssertInThread();
+
+  // Read the message from timer to avoid busy loop 
+  // since level trigger
+  detail::ReadTimerFd(timerfd_);  
+
+  // Get expired time from kernel and put it to GetExpiredTimers()
+  TimeStamp now{ TimeStamp::Now() };
+  auto expired_timers = GetExpiredTimers(now);
+  
+  // Because the canceling_timers_ only useful in the ResetTimers(),
+  // we can clear all the self-cancel timers since them are useless
+  canceling_timers_.clear();
+  // Self-cancel must be called in the callback of timer,
+  // then callback will emplace the canceling timer to 
+  // canceling_timers_ according the calling_timer_ is true.
+  // Then in ResetTimers() can check a timer if is a self-cancel
+  // timer, and if it is, don't reset it althought it should be 
+  // reset.
+  calling_timer_ = true;
+
+  for (auto const& timer : expired_timers) {
+    try {
+      timer->run();
+    }
+    catch (std::exception const& ex) {
+      LOG_ERROR << "caught the std::exception in calling of timer callback";
+      LOG_ERROR << "exception message: " << ex.what();
+      KANON_RETHROW;
+    }
+    catch (...) {
+      LOG_ERROR << "caught the unknown exception in calling of timer callback";
+      KANON_RETHROW;
+    }
+  }
+
+  calling_timer_ = false;
+  ResetTimers(expired_timers, now);
+}
+
+auto TimerQueue::GetExpiredTimers(TimeStamp time) -> TimerVector {
+  assert(!timers_.empty());
   
   TimerVector expireds;
 
-  auto expired_end = timer_map_.lower_bound(time);
-  
-  // LOG_DEBUG << (expired_end != timer_map_.end() ? expired_end->second->expiration().ToFormattedString(true) : "");
-  // LOG_DEBUG << "expire time: " << time.ToFormattedString(true);  
-  // LOG_DEBUG << "expired timer: " << std::distance(timer_map_.begin(), expired_end);
+  // Get the first timer which does not expired
+  // i.e. the after position of the last timer which has expired
 
-  assert(expired_end == timer_map_.end() || time < expired_end->first);
+  auto expired_end = timers_.lower_bound(TimerEntry(
+    time, MakeUniquePtrAsKey<Timer>(
+      reinterpret_cast<Timer*>(UINTPTR_MAX) ) ) );
+
+  // [begin(), expired_end) are all timers which has expired 
+  std::transform(
+    timers_.begin(),
+    expired_end,
+    std::back_inserter(expireds),
+    [](TimerSetValue const& x) -> TimerPtr {
+      // The return value of TimerSet::iterator is const key_type
+      // So, argument type must be const& and need const_cast<>
+      return TimerPtr(const_cast<TimerPtr&>(x.second).release());
+      // return std::move(const_cast<TimerSetValue&>(x).second);
+    });
+
+  timers_.erase(timers_.begin(), expired_end);
+  LOG_DEBUG << "Expired time =  " << time.ToFormattedString(true);  
+  LOG_DEBUG << "Expired timer count = " << expireds.size();
   
-  std::copy(std::make_move_iterator(timer_map_.begin()), 
-        std::make_move_iterator(expired_end), 
-        std::back_inserter(expireds));
-  
-  // Must erase all active_timer in @var active_timer_set_,
-  // otherwise we can't use @var active_timer_set_ to tell the timer whether live or not.
-  //
-  // At first, I don't erase active_timer in set,
-  // therefore, if active_timer is erased actually which indicate it is canceled by user although self-cancel.
-  // But when implemating CancelTimer(), we also need consider how to erase timer in map,
-  // you can't erase timer in map easily now.
-  //
-  // Right approach is set a canceling_timers_,
-  // if timer in canceling_timer_, we don't reset repeat timer.
-  //
   for (auto& expired_timer : expireds) {
     //if (!expired_timer.second->repeat())
-      timer_map_.erase(expired_timer.first);
-    active_timer_set_.erase(std::make_pair(
-          GetPointer(expired_timer.second),
-          expired_timer.second->sequence()));
+    active_timers_.erase(ActiveTimer(
+      expired_timer->sequence(), GetPointer(expired_timer)));
   }  
     
-  return expireds;    
+  return expireds;
 }
 
-void 
-TimerQueue::reset(TimerVector& expireds, TimeStamp now) {
+void TimerQueue::ResetTimers(TimerVector& expireds, TimeStamp now) {
   Timer* next_expire{ nullptr };
   
   for (auto& timer : expireds) {
-    // if timer is repeat, we should restart it
-    // but if it in such case as self-cancel,
-    // we shouldn't restart it and do nothing.
-    auto ptimer = GetPointer(timer.second);
-    if (timer.second->repeat()) {
-      if (!contains(canceling_timers_, 
-          ActiveTimer{ ptimer, ptimer->sequence() })) {
-        // auto ptimer = std::move(timer.second);
-        // auto tmp = GetPointer(ptimer);
-        
-        // timer_map_.erase(timer.first);
-        // ptimer->restart(now);
-        
-        // timer_map_.emplace(std::make_pair(
-        //       ptimer->expiration(),
-        //       std::move(ptimer)));
-      
-        // active_timer_set_.emplace(ActiveTimer{ tmp, tmp->sequence() });
-
-        // if (timer_map_.begin()->first > tmp->expiration())
-        //   detail::resetTimerfd(timerfd_, *tmp);
-        timer.second->restart(now);
-        this->emplace(std::move(timer.second));
+    if (timer->repeat()) {
+      // If timer is repeat, we should restart it
+      // but if it in such case as self-cancel,
+      // we shouldn't restart it and do nothing.
+      if (canceling_timers_.find(ActiveTimer(
+        timer->sequence(), GetPointer(timer)) ) 
+          == canceling_timers_.end()) {
+        timer->restart(now);
+        Emplace(timer.release());
       }
     }
   }
   
-  // LOG_DEBUG << "reset timer_map size: " << timer_map_.size();
+  LOG_DEBUG << "Reset timer_map size: " << timers_.size();
 
-  if (!timer_map_.empty()) {
-    next_expire = timer_map_.begin()->second.get();
+  if (!timers_.empty()) {
+    next_expire = timers_.begin()->second.get();
   }
 
   if (next_expire) {
-    detail::resetTimerfd(timerfd_, *next_expire);
+    detail::SetTimerFd(timerfd_, *next_expire);
   }
 }
 
-void
-TimerQueue::CancelTimer(TimerId const& id) {
-  // LOG_DEBUG << "cancelTimer: "
-  //   << id.timer_->expiration().ToFormattedString(true) << id.seq_;
-
-  loop_->RunInLoop([this, &id]() {
-    loop_->AssertInThread();
-    
-    auto active_timer = active_timer_set_.find(ActiveTimer{ id.timer_, id.seq_ });
-
-    if (active_timer_set_.end() != active_timer) {
-      active_timer_set_.erase(active_timer);
-      timer_map_.erase(active_timer->first->expiration());
-    } else if (calling_timer_) {
-      // this case is self-cancel
-      canceling_timers_.insert(ActiveTimer { id.timer_, id.seq_ });
-    }
-    
-  });
-
-}
 
 } // namespace kanon

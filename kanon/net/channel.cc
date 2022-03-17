@@ -1,10 +1,11 @@
-#include "kanon/net/event_loop.h"
-#include "kanon/log/logger.h"
-
 #include "kanon/net/channel.h"
-#include "kanon/util/macro.h"
 
 #include <stdio.h>
+
+#include "kanon/log/logger.h"
+#include "kanon/util/macro.h"
+
+#include "kanon/net/event_loop.h"
 
 namespace kanon {
 

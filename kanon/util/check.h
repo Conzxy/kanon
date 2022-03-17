@@ -16,13 +16,15 @@ namespace kanon {
 #define unlikely(x) __builtin_expect(!!(x), 0)
 #endif 
 
+// Not need #ret
+// We just see the error of specific errno
 #define ASSERT(ret) \
-  ({if (unlikely(ret != 0)) \
+  ({if (unlikely((ret) != 0)) \
    {\
     char buf[1536]; \
     ::memset(buf, 0, sizeof buf); \
-    ::snprintf(buf, sizeof buf, "errno: %d; error message: %s; %s; %d; %s\n", \
-        ret, strerror(ret), __FILE__, __LINE__, __func__); \
+    ::snprintf(buf, sizeof buf, "Aborted.\n%s() (Errno: %d, %s) - %s:%d\n", \
+        __func__, ret, ::strerror(ret), __FILE__, __LINE__) ; \
     ::fputs(buf, stderr); \
     ::fflush(stderr); \
     ::abort();\

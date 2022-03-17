@@ -6,9 +6,11 @@
 #endif
 
 #include <pthread.h>
-#include "pthread_macro.h"
+
 #include "kanon/util/noncopyable.h"
-#include "mutex_lock.h"
+
+#include "kanon/thread/pthread_macro.h"
+#include "kanon/thread/mutex_lock.h"
 
 namespace kanon{
 

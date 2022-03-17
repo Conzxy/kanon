@@ -1,10 +1,5 @@
-/*
- * @version: 0.1 2021-5-24
- * @author: Conzxy
- * implement of conditial.h 
- */
-
 #include "kanon/thread/condition.h"
+
 #include <pthread.h>
 #include <time.h>
 #include <errno.h>

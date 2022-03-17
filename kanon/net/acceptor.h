@@ -1,14 +1,14 @@
 #ifndef KANON_NET_ACCEPT_H
 #define KANON_NET_ACCEPT_H
 
+#include <functional>
+
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
-#include "socket.h"
-#include "channel.h"
-#include "inet_addr.h"
-
-#include <functional>
+#include "kanon/net/socket.h"
+#include "kanon/net/channel.h"
+#include "kanon/net/inet_addr.h"
 
 namespace kanon {
 

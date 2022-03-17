@@ -3,6 +3,7 @@
 
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
+
 #include "kanon/log/log_file.h"
 #include "kanon/log/logger.h"
 

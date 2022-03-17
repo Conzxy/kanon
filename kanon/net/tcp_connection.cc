@@ -1,12 +1,13 @@
+#include "kanon/net/tcp_connection.h"
+
+#include <errno.h>
+#include <signal.h> // SIGPIPE, signal()
+#include <atomic>
+
 #include "kanon/net/socket.h"
 #include "kanon/net/channel.h"
 #include "kanon/net/event_loop.h"
 
-#include "kanon/net/tcp_connection.h"
-
-#include <asm-generic/errno-base.h>
-#include <signal.h> // SIGPIPE, signal()
-#include <atomic>
 
 using namespace kanon;
 

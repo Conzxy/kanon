@@ -7,7 +7,8 @@
 #include "kanon/util/macro.h"
 #include "kanon/string/string_view.h"
 #include "kanon/string/fmt_stream.h"
-#include "log_stream.h"
+
+#include "kanon/log/log_stream.h"
 
 namespace kanon {
 

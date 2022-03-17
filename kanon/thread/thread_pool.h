@@ -1,14 +1,15 @@
 #ifndef KANON_THREAD_THREADPOOL
 #define KANON_THREAD_THREADPOOL
 
+#include <queue>
+#include <functional>
+
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/ptr.h"
+
 #include "kanon/thread/condition.h"
 #include "kanon/thread/mutex_lock.h"
-
-#include <queue>
-#include <functional>
 
 namespace kanon {
 

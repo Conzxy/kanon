@@ -1,15 +1,16 @@
 #ifndef KANON_SOCK_API_H
 #define KANON_SOCK_API_H
 
-#include "kanon/util/macro.h"
-#include "kanon/log/logger.h"
-#include "kanon/net/endian_api.h"
-
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <type_traits>
+
+#include "kanon/util/macro.h"
+#include "kanon/log/logger.h"
+
+#include "kanon/net/endian_api.h"
 
 namespace kanon {
 namespace sock {
