@@ -1,4 +1,5 @@
-#include "fmt_stream.h"
+#include "kanon/string/fmt_stream.h"
+
 #include "kanon/string/stream_common.h"
 
 namespace kanon {

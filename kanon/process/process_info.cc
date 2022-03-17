@@ -3,7 +3,7 @@
 using namespace kanon;
 
 StringView 
-process::pidString() noexcept {
+process::PidString() noexcept {
 
   static char pid_cache[32];
   static bool has_cache = false;
@@ -11,7 +11,7 @@ process::pidString() noexcept {
   if (!has_cache) {
     
     if (::snprintf(pid_cache, sizeof pid_cache, 
-          "%d", pid()) < 0) {
+          "%d", Pid()) < 0) {
       ::fprintf(stderr, "cache pid failed: %s\n", ::strerror(errno));
     } 
   } 
@@ -20,7 +20,7 @@ process::pidString() noexcept {
 }
 
 StringView
-process::hostname() noexcept {
+process::Hostname() noexcept {
   // hostname is limited to HOST_NAME_MAX in posix,
   // it is 64 in linux.
   static char hostname_cache[64];

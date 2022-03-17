@@ -2,6 +2,7 @@
 #define KANON_LOG_ASYNCLOG_TRIGGER_H
 
 #include "kanon/util/noncopyable.h"
+
 #include "kanon/log/logger.h"
 #include "kanon/log/async_log.h"
 

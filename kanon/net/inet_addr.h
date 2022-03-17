@@ -1,13 +1,13 @@
 #ifndef KANON_INET_ADDR_H
 #define KANON_INET_ADDR_H
 
-#include "kanon/util/macro.h"
-#include "kanon/string/string_view.h"
-
 #include <vector>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdint.h>
+
+#include "kanon/util/macro.h"
+#include "kanon/string/string_view.h"
 
 /**
  * Generic socket address(old but also useful)

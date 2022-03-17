@@ -1,24 +1,19 @@
-#include "kanon/thread/current_thread.h"
-
-#include "kanon/time/time_stamp.h"
-
-#include "kanon/util/macro.h"
-
-#include "kanon/log/logger.h"
-
-#include "kanon/net/poll/poller.h"
-#include "kanon/net/poll/epoller.h"
-
-#include "kanon/net/timer/timer_queue.h"
-
-#include "kanon/net/channel.h"
-#include "kanon/net/macro.h"
-
 #include "kanon/net/event_loop.h"
 
 #include <assert.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
+
+#include "kanon/thread/current_thread.h"
+#include "kanon/util/time_stamp.h"
+#include "kanon/util/macro.h"
+#include "kanon/log/logger.h"
+
+#include "kanon/net/poll/poller.h"
+#include "kanon/net/poll/epoller.h"
+#include "kanon/net/timer/timer_queue.h"
+#include "kanon/net/channel.h"
+#include "kanon/net/macro.h"
 
 namespace kanon {
 
@@ -148,10 +143,6 @@ void EventLoop::RemoveChannel(Channel* ch) {
   poller_->RemoveChannel(ch);
 }
 
-void EventLoop::HasChannel(Channel* ch) {
-  poller_->HasChannel(ch);
-}
-
 void EventLoop::CallFunctors() {
   decltype(functors_) functors;
   {
@@ -208,11 +199,11 @@ void EventLoop::Quit() noexcept {
 }
 
 TimerId EventLoop::RunAt(TimerCallback cb, TimeStamp expiration) {
-  return timer_queue_->addTimer(std::move(cb), expiration, 0.0);
+  return timer_queue_->AddTimer(std::move(cb), expiration, 0.0);
 }
 
 TimerId EventLoop::RunEvery(TimerCallback cb, TimeStamp expiration, double interval) {
-  return timer_queue_->addTimer(std::move(cb), expiration, interval);
+  return timer_queue_->AddTimer(std::move(cb), expiration, interval);
 }
 
 void EventLoop::CancelTimer(TimerId timer_id) {

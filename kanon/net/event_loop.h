@@ -1,20 +1,18 @@
 #ifndef KANON_NET_EVENTLOOP_H
 #define KANON_NET_EVENTLOOP_H
 
-#include "kanon/util/noncopyable.h"
-#include "kanon/util/ptr.h"
-#include "kanon/util/macro.h"
-
-#include "kanon/thread/mutex_lock.h"
-
-#include "timer/timer_id.h"
-
-#include "callback.h"
-
 #include <vector>
 #include <sys/types.h>
 #include <atomic>
 #include <functional>
+
+#include "kanon/util/noncopyable.h"
+#include "kanon/util/ptr.h"
+#include "kanon/util/macro.h"
+#include "kanon/thread/mutex_lock.h"
+
+#include "kanon/net/timer/timer_id.h"
+#include "kanon/net/callback.h"
 
 namespace kanon {
 
@@ -75,7 +73,6 @@ public:
    */
   void RemoveChannel(Channel* ch);
   void UpdateChannel(Channel* ch);
-  void HasChannel(Channel* ch);
 
   /**
    * @brief timer API

@@ -1,23 +1,16 @@
-/*
- * @version: 0.1 2021-5-28
- * @author: Conzxy
- * atomic counter
- */
-
-#ifndef _ATOMIC_H
-#define _ATOMIC_H
-
-#include "kanon/util/noncopyable.h"
-#include "kanon/util/macro.h"
+#ifndef THREAD_ATOMIC_H
+#define THREAD_ATOMIC_H
 
 #include <type_traits>
 #include <stdint.h>
 
+#include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
+
 namespace kanon{
 
 template<typename T>
-class Atomic : noncopyable
-{
+class Atomic : noncopyable {
 public:
   static_assert(std::is_integral<T>::value, 
       "Atomic type must be integral\n");

@@ -1,14 +1,15 @@
 #ifndef KANON_THREAD_H
 #define KANON_THREAD_H
 
-#include "kanon/util/noncopyable.h"
-#include "kanon/util/macro.h"
-#include "atomic.h"
-#include "current_thread.h"
-
 #include <pthread.h>
 #include <functional>
 #include <utility>
+
+#include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
+
+#include "kanon/thread/atomic.h"
+#include "kanon/thread/current_thread.h"
 
 namespace kanon{
 

@@ -1,15 +1,16 @@
-#include "inet_addr.h"
-#include "kanon/net/endian_api.h"
-#include "kanon/string/string_view.h"
-#include "kanon/util/macro.h"
-#include "kanon/util/mem.h"
-#include "sock_api.h"
+#include "kanon/net/inet_addr.h"
 
 #include <string.h>
 #include <netdb.h>
-
 #include <memory>
 #include <sys/socket.h>
+
+#include "kanon/string/string_view.h"
+#include "kanon/util/macro.h"
+#include "kanon/util/mem.h"
+
+#include "kanon/net/sock_api.h"
+#include "kanon/net/endian_api.h"
 
 using namespace kanon;
 

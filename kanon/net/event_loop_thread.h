@@ -1,12 +1,12 @@
 #ifndef KANON_EVENTLOOP_THREAD_H
 #define KANON_EVENTLOOP_THREAD_H
 
+#include <string>
+
 #include "kanon/thread/thread.h"
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/condition.h"
 #include "kanon/util/macro.h"
-
-#include <string>
 
 namespace kanon {
 

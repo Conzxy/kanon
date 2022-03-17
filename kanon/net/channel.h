@@ -6,18 +6,16 @@
 #define _GNU_SOURCE
 #endif 
 
-#include "kanon/util/noncopyable.h"
-#include "kanon/util/macro.h"
-
-#include "kanon/log/logger.h"
-
-#include "kanon/time/time_stamp.h"
-
-#include "kanon/net/macro.h"
-
 #include <functional>
 #include <string>
 #include <poll.h>
+
+#include "kanon/util/noncopyable.h"
+#include "kanon/util/macro.h"
+#include "kanon/util/time_stamp.h"
+#include "kanon/log/logger.h"
+
+#include "kanon/net/macro.h"
 
 #ifdef ENABLE_EPOLL
 #include <sys/epoll.h>

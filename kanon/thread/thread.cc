@@ -1,15 +1,16 @@
 #include "kanon/thread/thread.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+#include <sys/prctl.h>
+
 #include "kanon/thread/atomic.h"
 #include "kanon/thread/current_thread.h"
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/ptr.h"
-
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <sys/prctl.h>
 
 using namespace std;
 

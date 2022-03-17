@@ -1,7 +1,8 @@
-#include "epoller.h"
-#include "kanon/net/event_loop.h"
+#include "kanon/net/poll/epoller.h"
 
 #include <unistd.h>
+
+#include "kanon/net/event_loop.h"
 
 namespace kanon {
 
@@ -10,11 +11,12 @@ namespace kanon {
 enum EventStatus {
   kNew = -1, // event is never added to events table
   kAdded = 1, // event has added
-  kDeleted = 2, // event has been added before but deleted now
+  kDeleted, // event has removed
 };
 
 namespace detail {
-static inline int createEpollfd() noexcept {
+
+static inline int CreateEpollFd() noexcept {
   // since linux 2.6.8, size argument is ignored for epoll_create()
   // on the contrary, epoll_create1() accept a flag argument
   // only one flag: EPOLL_CLOEXEC
@@ -32,8 +34,8 @@ static inline int createEpollfd() noexcept {
 static constexpr int kEventInitNums = 16;
 
 Epoller::Epoller(EventLoop* loop)
-  : Base{ loop }
-  , epoll_fd_{ detail::createEpollfd() }
+  : PollerBase{ loop }
+  , epoll_fd_{ detail::CreateEpollFd() }
   , events_{ kEventInitNums }
 {
   LOG_TRACE << "Epoller created";
@@ -44,26 +46,27 @@ Epoller::~Epoller() noexcept {
 }
 
 TimeStamp Epoller::Poll(int ms, ChannelVec& activeChannels) {
-  Base::AssertInThread();
+  AssertInThread();
 
-  int ev_nums = ::epoll_wait(epoll_fd_, 
-                             events_.data(),
-                             static_cast<int>(events_.size()), // maxsize
-                             ms);
+  int ev_nums = ::epoll_wait(
+                  epoll_fd_, 
+                  events_.data(),
+                  static_cast<int>(events_.size()), // maxsize
+                  ms);
 
   int saved_errno = errno; 
   TimeStamp now{ TimeStamp::Now() };
 
   if (ev_nums > 0) {
     LOG_TRACE << ev_nums << " events are ready";
-    fillActiveChannels(ev_nums, activeChannels);
+    FillActiveChannels(ev_nums, activeChannels);
     
     // since epoll_wait does not expand space and 
     // not use any modifier member function of std::vector
     // so size is not modified automacally
     // ==> should use resize() instead of reserve()
     if (static_cast<int>(events_.size()) == ev_nums) {
-        events_.resize(ev_nums << 1);
+      events_.resize(ev_nums << 1);
     }
   } else if (ev_nums == 0) {
     LOG_TRACE << "none events ready";
@@ -78,58 +81,31 @@ TimeStamp Epoller::Poll(int ms, ChannelVec& activeChannels) {
   return now;
 }
 
-// typedef union epoll_data {
-//  void *ptr;
-//  int fd;
-//  uint32_t u32;
-//  uint64_t u64;
-// } epoll_data_t;
-//
-// struct epoll_event {
-//   uint32_t events; // Epoll events
-//   epoll_data_t data; // user data variable
-// };
-void 
-Epoller::fillActiveChannels(int ev_nums, 
-                          ChannelVec& activeChannels) noexcept {  
+void Epoller::FillActiveChannels(int ev_nums, 
+                            ChannelVec& activeChannels) noexcept {  
   assert(ev_nums <= static_cast<int>(events_.size()));
   
   for (int i = 0; i < ev_nums; ++i) {
-    // we use the data.ptr so that no need to look up in channelMap_
+    // we use the data.ptr so that no need to look up in channels_map_
     auto channel = reinterpret_cast<Channel*>(events_[i].data.ptr);
     assert(!channel->IsNoneEvent());
 
     int fd = channel->GetFd();KANON_UNUSED(fd);
-    assert(channelMap_.find(fd) != channelMap_.end()); 
-    assert(channelMap_[fd] == channel);
 
     channel->SetRevents(events_[i].events);
     activeChannels.emplace_back(channel);
   }
 }
 
-void
-Epoller::UpdateChannel(Channel* ch) {
-  Base::AssertInThread();
+void Epoller::UpdateChannel(Channel* ch) {
+  AssertInThread();
 
-  int fd = ch->GetFd();
   int index = ch->GetIndex();
 
   if (index == kNew || index == kDeleted) {
-    if (index == kNew) {
-      assert(channelMap_.find(fd) == channelMap_.end());
-      channelMap_.insert(channelMap_.end(), std::make_pair(fd, ch));
-    } else {
-      assert(channelMap_.find(fd) != channelMap_.end());
-      assert(channelMap_[fd] == ch);
-    } 
-
     UpdateEpollEvent(EPOLL_CTL_ADD, ch);
     ch->SetIndex(kAdded);
   } else { // ch->GetIndex() = kAdded
-    assert(channelMap_.find(fd) != channelMap_.end());
-    assert(channelMap_[fd] == ch);
-
     if (ch->IsNoneEvent()) {
       UpdateEpollEvent(EPOLL_CTL_DEL, ch);
       ch->SetIndex(kDeleted);
@@ -140,7 +116,7 @@ Epoller::UpdateChannel(Channel* ch) {
 }
 
 namespace detail {
-static inline char const* op2Str(int op) noexcept {
+static inline char const* Op2Str(int op) noexcept {
   switch (op) {
   case EPOLL_CTL_ADD:
     return " ADD ";
@@ -149,18 +125,16 @@ static inline char const* op2Str(int op) noexcept {
   case EPOLL_CTL_MOD:
     return " MOD ";
   default:
-    assert(false && "error op");
     return " Unknown operation ";
   }
 }
 
 } // namespace detail
 
-void
-Epoller::UpdateEpollEvent(int op, Channel* ch) noexcept {
+void Epoller::UpdateEpollEvent(int op, Channel* ch) noexcept {
   int fd = ch->GetFd();
 
-  LOG_TRACE << "epoll_ctl op =" << detail::op2Str(op) 
+  LOG_TRACE << "epoll_ctl op =" << detail::Op2Str(op) 
     << " fd: " << fd << " {" << ch->Events2String() << "}";
 
   Event ev;
@@ -169,39 +143,30 @@ Epoller::UpdateEpollEvent(int op, Channel* ch) noexcept {
 
   if (::epoll_ctl(epoll_fd_, op, ch->GetFd(), &ev)) {
     if (op == EPOLL_CTL_DEL) {
-      LOG_SYSERROR << "epoll_ctl() op =" << detail::op2Str(op)
+      LOG_SYSERROR << "epoll_ctl() op =" << detail::Op2Str(op)
         << " fd = " << fd;
     } else {
-      LOG_SYSFATAL << "epoll_ctl() op =" << detail::op2Str(op) 
+      LOG_SYSFATAL << "epoll_ctl() op =" << detail::Op2Str(op) 
         << " fd = " << fd;
     }
   }
 }
 
-void
-Epoller::RemoveChannel(Channel* ch) {
-  Base::AssertInThread();
+void Epoller::RemoveChannel(Channel* ch) {
+  AssertInThread();
   
   int fd = ch->GetFd();
 
-  LOG_TRACE << "remove fd: " << fd;
+  LOG_TRACE << "Remove fd = " << fd;
 
-  assert(channelMap_.find(fd) != channelMap_.end());
-  assert(channelMap_[fd] == ch);
-  
   auto index = ch->GetIndex();
   assert(index == kAdded || index == kDeleted);
   
   if (index == kAdded) {
-      UpdateEpollEvent(EPOLL_CTL_DEL, ch);
+    UpdateEpollEvent(EPOLL_CTL_DEL, ch);
   }
 
-  auto n = channelMap_.erase(fd);
-  assert(n == 1);
-  KANON_UNUSED(n); 
-
-  // ch is a new channel which not in channelMap_ 
-  // set status to kNew, then we can readd it
+  // set status to kNew, then we can add it again
   ch->SetIndex(kNew);
 }
 

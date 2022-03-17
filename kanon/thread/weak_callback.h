@@ -1,11 +1,9 @@
 #ifndef KANON_WEAK_CALLBACK_H
 #define KANON_WEAK_CALLBACK_H
 
-#include <bits/node_handle.h>
-#include <ctime>
-#include <iterator>
 #include <memory>
 #include <functional> 
+
 namespace kanon {
 
 // @note
@@ -23,7 +21,7 @@ public:
     : ptr_(ptr), fun_(fun)
   { }
 
-  constexpr R operator()(Args... args) const
+  R operator()(Args... args) const
   {
     auto sp = ptr_.lock();
     if(sp)

@@ -1,12 +1,13 @@
-#include "socket.h"
-
-#include "kanon/log/logger.h"
-#include "inet_addr.h"
+#include "kanon/net/socket.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 #include <netinet/in.h> // IPPROTO_TCP
+
+#include "kanon/log/logger.h"
+#include "kanon/net/inet_addr.h"
+
 
 using namespace kanon;
 

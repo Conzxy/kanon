@@ -1,13 +1,14 @@
 #ifndef KANON_MUTEXLOCK_H
 #define KANON_MUTEXLOCK_H
 
+#include <pthread.h>
+
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
-#include "pthread_macro.h"
-#include "current_thread.h" 
+#include "kanon/thread/pthread_macro.h"
+#include "kanon/thread/current_thread.h" 
 
-#include <pthread.h>
 
 // Enable thread safety attributes only with clang.
 // The attributes can be safely erased when compiling with other compilers.

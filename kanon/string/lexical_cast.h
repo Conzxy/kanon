@@ -1,14 +1,15 @@
 #ifndef KANON_LEXICAL_CAST_H
 #define KANON_LEXICAL_CAST_H
 
-#include "kanon/string/lexical_stream.h"
-#include "kanon/string/type.h"
-#include "kanon/util/optional.h"
-#include "kanon/util/arithmetic_type.h"
-
 #include <string.h>
 #include <string>
 #include <iostream>
+
+#include "kanon/util/optional.h"
+#include "kanon/util/arithmetic_type.h"
+
+#include "kanon/string/lexical_stream.h"
+#include "kanon/string/type.h"
 
 namespace kanon {
   

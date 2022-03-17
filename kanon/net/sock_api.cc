@@ -1,11 +1,12 @@
-#include "sock_api.h"
-#include "kanon/net/endian_api.h"
+#include "kanon/net/sock_api.h"
 
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
 #include <linux/version.h>
 #include <netinet/tcp.h>
+
+#include "kanon/net/endian_api.h"
 
 using namespace kanon;
 

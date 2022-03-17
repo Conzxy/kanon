@@ -1,10 +1,10 @@
 #ifndef KANON_NET_ENDIAN_API_H
 #define KANON_NET_ENDIAN_API_H
 
-#include "kanon/util/macro.h"
-
 #include <stdint.h>
 #include <endian.h>
+
+#include "kanon/util/macro.h"
 
 namespace kanon {
 
