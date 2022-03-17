@@ -2,11 +2,11 @@
 # Get the kanon source files
 ##########################################################
 file(GLOB_RECURSE KANON_BASE_SRC 
-	string/*.cc
-	log/*.cc
-	process/*.cc
-	thread/*.cc
-	util/*.cc
+  string/*.cc
+  log/*.cc
+  process/*.cc
+  thread/*.cc
+  util/*.cc
 )
 
 file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
