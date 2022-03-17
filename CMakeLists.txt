@@ -4,7 +4,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 project(kanon)
 
 #if (NOT CMAKE_BUILD_TYPE)
-#	set(CMAKE_BUILD_TYPE "Release")
+#  set(CMAKE_BUILD_TYPE "Release")
 #endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
@@ -59,13 +59,13 @@ function (GenLib lib)
       PROPERTIES
       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     )
-else ()
-  message(STATUS "Build shared library: ${lib}")
-  set_target_properties(${lib}
-    PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-  )
-endif (NOT ${BUILD_SHARED_LIBS})
+  else ()
+    message(STATUS "Build shared library: ${lib}")
+    set_target_properties(${lib}
+      PROPERTIES
+      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+  endif (NOT ${BUILD_SHARED_LIBS})
 endfunction ()
 
 
