@@ -36,9 +36,9 @@ set(CXX_FLAGS
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	list(REMOVE_ITEM CXX_FLAGS "-Wno-return-local-addr")
-	list(REMOVE_ITEM CXX_FLAGS "-rdynamic")
-	list(APPEND CXX_FLAGS "-Wthread-safety")
+  list(REMOVE_ITEM CXX_FLAGS "-Wno-return-local-addr")
+  list(REMOVE_ITEM CXX_FLAGS "-rdynamic")
+  list(APPEND CXX_FLAGS "-Wthread-safety")
 endif()
 
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
@@ -51,21 +51,21 @@ set(KANON_SOURCE_DIR ${PROJECT_SOURCE_DIR}/kanon)
 
 
 function (GenLib lib)
-	add_library(${lib} ${ARGN})
+  add_library(${lib} ${ARGN})
 
-	if (NOT ${BUILD_SHARED_LIBS})
-		message(STATUS "Build static library: ${lib}")
-		set_target_properties(${lib}
-			PROPERTIES
-			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-		)
-	else ()
-		message(STATUS "Build shared library: ${lib}")
-		set_target_properties(${lib}
-			PROPERTIES
-			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-		)
-	endif (NOT ${BUILD_SHARED_LIBS})
+  if (NOT ${BUILD_SHARED_LIBS})
+    message(STATUS "Build static library: ${lib}")
+    set_target_properties(${lib}
+      PROPERTIES
+      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+else ()
+  message(STATUS "Build shared library: ${lib}")
+  set_target_properties(${lib}
+    PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  )
+endif (NOT ${BUILD_SHARED_LIBS})
 endfunction ()
 
 
