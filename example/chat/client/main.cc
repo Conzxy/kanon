@@ -1,22 +1,22 @@
-#include "ChatClient.h"
-
-#include "kanon/net/EventLoopThread.h"
-#include "kanon/log/AsyncLogTrigger.h"
+#include "chat_client.h"
 
 #include <iostream>
+
+#include "kanon/net/event_loop_thread.h"
+#include "kanon/log/async_log_trigger.h"
 
 using namespace kanon;
 using namespace std;
 
-int main(int , char* argv[]) {
+int main(int argc, char* argv[]) {
   AsyncLogTrigger::instance(::basename(argv[0]), 20000, "/root/.log/");
 
   EventLoopThread loop_thread{ };
   InetAddr serv_addr{ "127.0.0.1", 9999 };
 
-  ChatClient client{ loop_thread.start(), serv_addr };
+  ChatClient client{ loop_thread.StartRun(), serv_addr };
 
-  client.connect();
+  client.Connect();
   
   string line; 
   
@@ -26,9 +26,8 @@ int main(int , char* argv[]) {
     if (std::getline(std::cin, line)) {
       if (std::cin.eof()) 
         break;
-      client.writeMessage(line);
+      client.WriteMessage(line);
     }
   }
-  client.disconnect();
-
+  client.Disconnect();
 }

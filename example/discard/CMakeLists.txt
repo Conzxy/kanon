@@ -1,0 +1,1 @@
+GenExample(discard_server discard_server.cc)

@@ -20,8 +20,8 @@ public:
 
   explicit LengthHeaderCodec(StringMessageCallback cb);
   
-  void send(TcpConnectionPtr const& conn, StringView msg);
-  void onMessage(TcpConnectionPtr const& conn,
+  void Send(TcpConnectionPtr const& conn, StringView msg);
+  void OnMessage(TcpConnectionPtr const& conn,
       Buffer& buf, 
       TimeStamp);
 

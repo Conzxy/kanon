@@ -1,4 +1,4 @@
-#include "kanon/net/InetAddr.h"
+#include "kanon/net/inet_addr.h"
 #include "kanon/net/sock_api.h"
 #include <unistd.h>
 
@@ -28,9 +28,9 @@ int main(int argc, char** argv) {
   fds.reserve(maxConnectionNum);
   
   for (int i = 0; i < maxConnectionNum; ++i) {
-    fds.emplace_back(sock::createSocket(0));
+    fds.emplace_back(sock::CreateSocket(0));
   
-       sock::connect(fds[i], sock::to_sockaddr(servAddr.toIpv4()));
+       sock::Connect(fds[i], sock::to_sockaddr(servAddr.ToIpv4()));
        incConnection(conn_num);
  }
 
