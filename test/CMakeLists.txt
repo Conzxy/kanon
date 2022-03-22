@@ -4,19 +4,14 @@ file(GLOB KANON_BENCH_SOURCES "${PROJECT_SOURCE_DIR}/test/*/*bench.cc")
 
 list(APPEND KANON_TEST_BENCH_SOURCES ${KANON_TEST_SOURCES} ${KANON_BENCH_SOURCES})
 
-option(PRINT_MESSAGE "print message about some data" ON)
-
 ############################################
 # User can determine whether to build all tests when build target all
 # e.g. cmake --build */kanon/build [--target all -j 2]
 ############################################
 set(BUILD_ALL_TESTS OFF CACHE BOOL "Don't exclude tests from target all")
 
-if (${PRINT_MESSAGE})
-  message(STATUS "BUILD_ALL_TESTS = ${BUILD_ALL_TESTS}")
-  message(STATUS "kanon test source files: ${KANON_TEST_SOURCES}")
-  message(STATUS "kanon bench source files: ${KANON_BENCH_SOURCES}")
-endif (${PRINT_MESSAGE})
+message(STATUS "kanon test source files: ${KANON_TEST_SOURCES}")
+message(STATUS "kanon bench source files: ${KANON_BENCH_SOURCES}")
 
 if (NOT ${BUILD_ALL_TESTS})
   message(STATUS "[The kanon test and bench files are excluded from the build of target all]")
