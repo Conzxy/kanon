@@ -11,7 +11,6 @@ int main() {
 
   if (p_loop) {
     p_loop->Quit();
-
     LOG_INFO << "Loop has quited";
   }
 }
