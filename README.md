@@ -1,10 +1,12 @@
 # Kanon
+```
  _  __                       
 | |/ /                       
 | ' / __ _ _ __   ___  _ __  
 |  < / _` | '_ \ / _ \| '_ \ 
 | . \ (_| | | | | (_) | | | |
 |_|\_\__,_|_| |_|\___/|_| |_|
+```
 ## Introduction
 `Kanon` is an event-driven network library written in `C++11`(Support `TCP` only). The library must be be used in `linux` or `unix-like` platform(since depends on the API of them).
 Therefore, the event-handling is synchronized-unblocking(`poll()` or `epoll()`). Due to this feature, it is natural to implement the network module of library in the `reactor` design pattern. Also in order to take the advantage of the mutil-core machine, the library can start many thread, and the main thread accept connection, other threads(**IO threads**) handle IO events, that including receiving messages, processing messages, sending messages, etc. This is called as `multi-reactor`.
