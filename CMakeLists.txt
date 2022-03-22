@@ -3,9 +3,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 project(kanon)
 
-#if (NOT CMAKE_BUILD_TYPE)
-#  set(CMAKE_BUILD_TYPE "Release")
-#endif()
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
@@ -43,7 +43,8 @@ endif()
 
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}; BUILD_TYPE: ${CAMKE_BUILD_TYPE}")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 include_directories(${PROJECT_SOURCE_DIR})
 
@@ -68,6 +69,10 @@ function (GenLib lib)
   endif (NOT ${BUILD_SHARED_LIBS})
 endfunction ()
 
+# message(STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
+message(STATUS "BUILD_ALL_TESTS = ${BUILD_ALL_TESTS}")
+message(STATUS "BUILD_ALL_EXAMPLES = ${BUILD_ALL_EXAMPLES}")
 
 add_subdirectory(kanon)
 add_subdirectory(test)
+add_subdirectory(example)
