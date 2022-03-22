@@ -19,15 +19,19 @@ class EventLoopThread : noncopyable {
 public:
   EventLoopThread(std::string const& = std::string{});
   
-  // should be called by main thread  
+  // Must be called in main thread  
   EventLoop* StartRun();
+
+  // Start loop in background thread(IO thread usually)
+  void BackGroundStartLoop();
 
   ~EventLoopThread() noexcept;
 private:
   EventLoop* loop_;
   
-  MutexLock lock_;
-  Condition cond_;
+  MutexLock mutex_;
+  Condition cond_ GUARDED_BY(mutex_);
+
   Thread thr_;
 };
 

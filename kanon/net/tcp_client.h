@@ -56,19 +56,20 @@ private:
 
   const std::string name_;
 
-  // set for connection
+  // callback of conn_
   ConnectionCallback connection_callback_;
   MessageCallback message_callback_;
   WriteCompleteCallback write_complete_callback_;
 
-  // for active close connection
-  // shutdown write and set connect_ to false
+  // For active close connection
+  // Shutdown write and set connect_ to false
   std::atomic<bool> connect_;
-  // for passive close connection
-  // if peer close connection, then restart
+
+  // For passive close connection
+  // If peer close connection, then restart
   std::atomic<bool> retry_;
 
-  TcpConnectionPtr conn_;
+  TcpConnectionPtr conn_ GUARDED_BY(mutex_);
   mutable MutexLock mutex_;
 };
 

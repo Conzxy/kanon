@@ -32,92 +32,20 @@ TcpConnection::TcpConnection(EventLoop*  loop,
   , channel_{ kanon::make_unique<Channel>(loop, sockfd) }
   , local_addr_{ local_addr }
   , peer_addr_{ peer_addr }
-  , state_{ kConnecting }
   , high_water_mark_{ kDefaultHighWatermark }
+  , state_{ kConnecting }
 {
-  channel_->SetReadCallback([this](TimeStamp receive_time) {
-    /**
-     * 1. Call ReadFd() to get data
-     * 2. Check return value
-     * 2.1. If 0, indicates peer close connection, call close_callback_
-     * 2.2. >0, call message_callback_
-     * 2.3. <0, error occurred, call HandleError()
-     */
-    loop_->AssertInThread();
-    int saved_errno;
-    auto n = input_buffer_.ReadFd(channel_->GetFd(), saved_errno);
-    
-    LOG_DEBUG << "Read " << n << " bytes from fd = " << channel_->GetFd(); 
+  channel_->SetReadCallback(std::bind(
+    &TcpConnection::HandleRead, this, _1));
 
-    if (n > 0) {
-      if (message_callback_) {
-        message_callback_(shared_from_this(), input_buffer_, receive_time);
-      } else {
-        LOG_WARN << "If user want to process message from peer, should set "
-          "proper message_callback_";
-      }
-    } else if (n == 0) {
-      // Peer close the connection
-      // Note: Don't distinguish the shutdown(WR) and close()
-      LOG_DEBUG << "Peer close connection";
-      HandleClose();
-    } else {
-      errno = saved_errno;
+  channel_->SetWriteCallback(std::bind(
+    &TcpConnection::HandleWrite, this));
 
-      if (errno != EAGAIN) {
-        LOG_SYSERROR << "Read event handle error";
-        HandleError();
-      }
-    }
-  });
-
-  channel_->SetWriteCallback([this]() {
-    /**
-     * Logical is simple, just write the contents in ouput_buffer_
-     * Normally, this be called when 
-     * * Short write 
-     * * Active write(e.g. output_buffer_ provided by user)
-     * ! No need to handle error, since read callback will handle(read() return 0)
-     */
-    loop_->AssertInThread();
-    assert(channel_->IsWriting());  
-
-    // FIXME example 
-    // Here shouldn't use socket_->GetFd(),
-    // because socket maybe has destroyed when peer close early
-    auto n = sock::Write(channel_->GetFd(),
-              output_buffer_.GetReadBegin(),
-              output_buffer_.GetReadableSize());
-
-    LOG_TRACE << "sock::write " << n << " bytes"; 
-
-    if (n > 0) {
-      output_buffer_.AdvanceRead(n);
-
-      LOG_TRACE << "Ouput Buffer remaining = " << output_buffer_.GetReadableSize();
-      if (output_buffer_.GetReadableSize() == 0) {
-        channel_->DisableWriting();
-        if (write_complete_callback_) {
-          // May be called async
-          write_complete_callback_(shared_from_this());
-        }
-      }
-    } else {
-      LOG_SYSERROR << "write event handle error";
-      HandleError();
-    }
-  });
-
-  channel_->SetErrorCallback([this]() {
-    // HandleRead and Handle write also call
-    // Make it be a member function is better
-    this->HandleError();
-  });
+  channel_->SetErrorCallback(std::bind(
+    &TcpConnection::HandleError, this));
   
-  channel_->SetCloseCallback([this]() {
-    // ForceClose also call
-    this->HandleClose();
-  });
+  channel_->SetCloseCallback(std::bind(
+    &TcpConnection::HandleClose, this));
 
   LOG_TRACE << "TcpConnection::ctor [" << name_ << "] created";
   
@@ -128,28 +56,26 @@ TcpConnection::~TcpConnection() noexcept {
   LOG_TRACE << "TcpConnection::dtor [" << name_ << "] destroyed";
 }
 
-void
-TcpConnection::ConnectionEstablished() {
+void TcpConnection::ConnectionEstablished() {
   loop_->AssertInThread();
 
   assert(state_ == kConnecting);
   state_ = kConnected;
-  
-  // start observing read event on this socket  
+
+  // Start observing read event on this socket  
+  // and call the OnConnection callback which
+  // is set by user or default.
   channel_->EnableReading();  
   connection_callback_(shared_from_this());
 }
 
-void
-TcpConnection::ConnectionDestroyed() {
+void TcpConnection::ConnectionDestroyed() {
   loop_->AssertInThread();
 
   // This may be called by TcpServer dtor or close_callback_(see TcpServer)
   // if close_callback_ has be called, just remove channel;  
   if (state_ == kConnected) {
     // channel_->DisableAll();
-    channel_->Remove();
-
     state_ = kDisconnected;
 
     // Because ConnectionDestroyed maybe async call
@@ -160,17 +86,91 @@ TcpConnection::ConnectionDestroyed() {
   channel_->Remove();
 }
 
-void
-TcpConnection::HandleError() {
-  // unsafe also ok
-  // loop_->AssertInThread();
+void TcpConnection::HandleRead(TimeStamp recv_time) {
+  /**
+    * 1. Call ReadFd() to get data
+    * 2. Check return value
+    * 2.1. If 0, indicates peer close connection, call close_callback_
+    * 2.2. >0, call message_callback_
+    * 2.3. <0, error occurred, call HandleError()
+    */
+  loop_->AssertInThread();
+  int saved_errno;
+  auto n = input_buffer_.ReadFd(channel_->GetFd(), saved_errno);
+  
+  LOG_DEBUG << "Read " << n << " bytes from fd = " << channel_->GetFd(); 
+
+  if (n > 0) {
+    if (message_callback_) {
+      message_callback_(shared_from_this(), input_buffer_, recv_time);
+    } else {
+      input_buffer_.AdvanceAll();
+      LOG_WARN << "If user want to process message from peer, should set "
+        "proper message_callback_";
+    }
+  } else if (n == 0) {
+    // Peer close the connection
+    // Note: Don't distinguish the shutdown(WR) and close()
+    LOG_DEBUG << "Peer close connection";
+    HandleClose();
+  } else {
+    errno = saved_errno;
+
+    if (errno != EAGAIN) {
+      LOG_SYSERROR << "Read event handle error";
+      HandleError();
+    }
+  }
+}
+
+void TcpConnection::HandleWrite() {
+  /**
+    * Logical is simple, just write the contents in ouput_buffer_
+    * Normally, this be called when 
+    * * Short write 
+    * * Active write(e.g. output_buffer_ provided by user)
+    * ! No need to handle error, since read callback will handle(read() return 0)
+    */
+  loop_->AssertInThread();
+  assert(channel_->IsWriting());  
+
+  // FIXME example 
+  // Here shouldn't use socket_->GetFd(),
+  // because socket maybe has destroyed when peer close early
+  auto n = sock::Write(channel_->GetFd(),
+            output_buffer_.GetReadBegin(),
+            output_buffer_.GetReadableSize());
+
+  LOG_TRACE << "sock::write " << n << " bytes"; 
+
+  if (n > 0) {
+    output_buffer_.AdvanceRead(n);
+
+    LOG_TRACE << "Ouput Buffer remaining = " << output_buffer_.GetReadableSize();
+    if (output_buffer_.GetReadableSize() == 0) {
+      channel_->DisableWriting();
+      if (write_complete_callback_) {
+        // We delay the callback to phase 3
+        // to increase the response rate
+        loop_->QueueToLoop([this]() {
+          write_complete_callback_(shared_from_this());
+        });
+      }
+    }
+  } else {
+    LOG_SYSERROR << "write event handle error";
+    HandleError();
+  }
+
+}
+void TcpConnection::HandleError() {
+  loop_->AssertInThread();
   int err = sock::GetSocketError(channel_->GetFd());
   LOG_SYSERROR << "TcpConnection [" << name_ << "] - [errno: " 
     << err << "; errmsg: " << strerror_tl(err) << "]";
 }
 
-void
-TcpConnection::HandleClose() {
+void TcpConnection::HandleClose() {
   loop_->AssertInThread();
   // Connected ==> read event handling
   // Disconnecting ==> call ForceClose()
@@ -195,15 +195,13 @@ TcpConnection::HandleClose() {
   }
 }
 
-void
-TcpConnection::ShutdownWrite() noexcept {
+void TcpConnection::ShutdownWrite() noexcept {
   loop_->RunInLoop([=]() {
     socket_->ShutdownWrite();
   });
 }
 
-void
-TcpConnection::ForceClose() noexcept {
+void TcpConnection::ForceClose() noexcept {
   loop_->RunInLoop([=]() {
       loop_->AssertInThread();
       
@@ -214,15 +212,13 @@ TcpConnection::ForceClose() noexcept {
   });
 }
 
-void
-TcpConnection::Send(void const* data, size_t len) {
+void TcpConnection::Send(void const* data, size_t len) {
   Send(StringView{ 
       static_cast<char const*>(data), 
       static_cast<StringView::size_type>(len) });
 }
 
-void
-TcpConnection::Send(StringView data) {
+void TcpConnection::Send(StringView data) {
   if (state_ == kConnected) {
     if (loop_->IsLoopInThread()) {
       SendInLoop(data);
@@ -234,29 +230,50 @@ TcpConnection::Send(StringView data) {
   }
 }
 
-void
-TcpConnection::Send(Buffer& buf) {
+void TcpConnection::Send(Buffer& buf) {
   if (state_ == kConnected) {
     if (loop_->IsLoopInThread()) {
+      // No need to call swap() even even though output_buffer_ is empty.
+      // We just use it in this loop, the remaining contents will cached 
+      // in output_buffer_
       SendInLoop(buf.GetReadBegin(), buf.GetReadableSize());
       buf.AdvanceRead(buf.GetReadableSize());
     } else {
-      // FIXME Use swap()
-      const auto content = buf.RetrieveAllAsString();
-      loop_->QueueToLoop([this, content]() {
-        SendInLoop(content);
-      });
+      if (!output_buffer_.HasReadable()) {
+        buf.swap(output_buffer_);
+        // Also, mutiple calls EnableWriting() is harmless
+        // But the syscall is not cheap.
+        loop_->QueueToLoop([this]() {
+          if (!channel_->IsWriting()) {
+            channel_->EnableWriting();
+          }
+        });
+      }
+      else {
+        const auto content = buf.RetrieveAllAsString();
+        // In C++11, lambda don't support move capture
+
+        // loop_->QueueToLoop([this, content]() {
+        //   SendInLoop(content);
+        // });
+
+        loop_->QueueToLoop(std::bind(
+          &TcpConnection::SendInLoopForStr, this, std::move(content)));
+      }
     }
   }
 }
 
-void
-TcpConnection::SendInLoop(StringView data) {
+void TcpConnection::SendInLoopForStr(std::string& data) {
+  const auto content = std::move(data);
+  SendInLoop(content.data(), content.size());
+}
+
+void TcpConnection::SendInLoop(StringView data) {
   SendInLoop(data.data(), data.size());
 }
 
-void
-TcpConnection::SendInLoop(void const* data, size_t len) {
+void TcpConnection::SendInLoop(void const* data, size_t len) {
   LOG_TRACE << "The length of data parameter is " << len;
 
   ssize_t n = 0;
@@ -297,7 +314,9 @@ TcpConnection::SendInLoop(void const* data, size_t len) {
     if (readable_len + remaining >= high_water_mark_ &&
         readable_len < high_water_mark_ &&
         high_water_mark_callback_) {
-      high_water_mark_callback_(shared_from_this(), readable_len + remaining);
+      loop_->QueueToLoop([this, readable_len, remaining]() {
+        high_water_mark_callback_(shared_from_this(), readable_len + remaining);
+      });
     }
 
     LOG_TRACE << "Remaining content length = " << remaining;    
@@ -308,12 +327,10 @@ TcpConnection::SendInLoop(void const* data, size_t len) {
   }
 }
 
-void
-TcpConnection::SetNoDelay(bool flag) noexcept
+void TcpConnection::SetNoDelay(bool flag) noexcept
 { socket_->SetNoDelay(flag); }
 
-void
-TcpConnection::SetKeepAlive(bool flag) noexcept
+void TcpConnection::SetKeepAlive(bool flag) noexcept
 { socket_->SetKeepAlive(flag); }
 
 // When peer close connection, if you continue write the closed fd which
@@ -328,4 +345,4 @@ struct IgnoreSignalPipe {
   }
 };
 
-static IgnoreSignalPipe dummy{};
+static IgnoreSignalPipe ignore_singal_pipe{};

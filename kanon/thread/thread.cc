@@ -6,6 +6,7 @@
 #include <sys/prctl.h>
 
 #include "kanon/thread/atomic.h"
+#include "kanon/thread/atomic_counter.h"
 #include "kanon/thread/current_thread.h"
 
 #include "kanon/util/noncopyable.h"
@@ -70,7 +71,12 @@ namespace detail{
 
 }//namespace detail
 
-AtomicInt32 Thread::numCreated_{};
+AtomicCounter32 Thread::numCreated_{};
+
+Thread::Thread(std::string const& name)
+  : Thread(Threadfunc(), name)
+{
+}
 
 Thread::Thread(Threadfunc func, string const& name)
   : func_{std::move(func)},
@@ -79,13 +85,13 @@ Thread::Thread(Threadfunc func, string const& name)
     pthreadId_{0},
     name_{name}
 {
-  numCreated_.increment();
+  numCreated_.Add(1);
   SetDefaultName();
 }
 
 Thread::~Thread(){
   if(is_started_ && !is_joined_) {
-    pthread_detach(pthreadId_);
+    ::pthread_detach(pthreadId_);
   }
 }
 
@@ -109,6 +115,12 @@ void Thread::StartRun(){
   }
 }
 
+void Thread::StartRun(Threadfunc cb)
+{
+  func_ = std::move(cb);
+  StartRun();
+}
+
 void Thread::Join(){
   assert(is_started_);
   assert(!is_joined_);
@@ -124,7 +136,7 @@ void Thread::SetDefaultName(){
   char buf[64];
   BZERO(buf, sizeof buf);
   
-  snprintf(buf, sizeof buf, "KanonThread%d", numCreated_.get());
+  snprintf(buf, sizeof buf, "KanonThread%d", numCreated_.GetValue());
   name_ = buf;
 }
 
