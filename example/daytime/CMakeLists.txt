@@ -1,0 +1,1 @@
+GenExample(daytime_server daytime_server.cc daytime_format.cc)
