@@ -23,7 +23,7 @@ class PollerBase;
 #ifdef NDEBUG
 #define POLLTIME 10000 // 10 seconds
 #else
-#define POLLTIME 1000 // 1 seconds
+#define POLLTIME 10000 // 1 seconds
 #endif 
 
 /**

@@ -194,7 +194,10 @@ public:
     }
 
   }  
-  
+
+  void AdvanceAll() noexcept
+  { AdvanceRead(GetReadableSize()); } 
+
   // since uint64_t in some machine which only support 32bit at most 
   // present 32bit, you can't just write AdvanceRead(8)  
   void AdvanceRead64() noexcept
@@ -249,6 +252,9 @@ public:
   
   size_type GetPrependableSize() const noexcept
   { return read_index_; }
+
+  bool HasReadable() const noexcept
+  { return read_index_ != write_index_; }
 
   size_type GetReadableSize() const noexcept
   { return write_index_ - read_index_; }

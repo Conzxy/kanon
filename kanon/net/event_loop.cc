@@ -22,7 +22,7 @@ namespace detail {
 /**
  * Event fd API
  */
-static int CreateEventFd() noexcept {
+static inline int CreateEventFd() noexcept {
   int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
   LOG_TRACE << "eventfd: " << evfd << " created";
@@ -34,14 +34,21 @@ static int CreateEventFd() noexcept {
   return evfd;
 }
 
-static void ReadEventFd(int evfd) noexcept {
+/**
+ * Eventfd maintains a counter.
+ * The write() adds the 8-byte integer value to counter.
+ * The read() will block if counter is zero.
+ * Therefore, the dummy of write is must not be zero.
+ * @see man eventfd(2)
+ */
+static inline void ReadEventFd(int evfd) noexcept {
   uint64_t dummy;
   if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
     LOG_SYSERROR << "ReadEventFd() error occurred";
 }
 
-static void WriteEventFd(int evfd) noexcept {
-  uint64_t dummy = 0;
+static inline void WriteEventFd(int evfd) noexcept {
+  uint64_t dummy = 1;
   if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
     LOG_SYSERROR << "WriteEventFd() error occurred";
 }
@@ -63,7 +70,7 @@ EventLoop::EventLoop()
   , timer_queue_{ kanon::make_unique<TimerQueue>(this) }
 { 
   ev_channel_->SetReadCallback([this](TimeStamp receive_time){
-    LOG_TRACE << "event receive_time: " << receive_time.ToFormattedString(true);
+    LOG_TRACE << "Event receive_time: " << receive_time.ToFormattedString(true);
     this->EvRead();
   });
 
@@ -184,11 +191,14 @@ void EventLoop::EvRead() noexcept {
 }
 
 void EventLoop::Wakeup() noexcept {
+  LOG_DEBUG << "Wakeup";
   detail::WriteEventFd(evfd_);
 }
 
 void EventLoop::Quit() noexcept {
   quit_ = true;
+
+  LOG_DEBUG << "EventLoop is quiting";
 
   // If in the IO thread, call Wakeup() in Quit()  is not necessary,
   // because it only few cases can call Quit() successfully

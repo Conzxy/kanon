@@ -56,10 +56,11 @@ TcpClient::TcpClient(
       } 
   
       // ! In event handling phase, don't remove channel(disable is allowed)
-      // ! conn must be copied
+      // ! conn must be copied(@see TcoConnection::HandleClose())
       loop_->QueueToLoop([conn] () {
         conn->ConnectionDestroyed();
       });
+
       // If user does not call Disconnect() and
       // support restart when passive close occurred
       if (connect_ && retry_) {
@@ -81,12 +82,20 @@ TcpClient::~TcpClient() noexcept {
     MutexGuard guard{ mutex_ };
 
     is_unique = (conn_.use_count() == 1); // not atomic
+
+    // To write or read conn_ is not thread-safe,
+    // we can copy it first, for the duplication, 
+    // it is thread-safe. 
+    // Because conn_ if is not released, conn also.
+    // In the following operations, it is also alive
+    // since ref count is not 0(i.e. pinned). Otherwise, 
+    // conn is released. we can't access it.
     conn = conn_;
   } 
   
-  // has established new connection 
+  // Has established new connection 
   if (conn) {
-    assert(conn_->GetLoop() == loop_);
+    assert(conn->GetLoop() == loop_);
     // Should not use old close callback
     // may be other thread using it
     if (is_unique) {
@@ -99,28 +108,23 @@ TcpClient::~TcpClient() noexcept {
   
 }
 
-void
-TcpClient::Connect() noexcept {
+void TcpClient::Connect() noexcept {
   connect_ = true;
 
   connector_->StartRun();
 }
 
-void
-TcpClient::Disconnect() noexcept {
+void TcpClient::Disconnect() noexcept {
   connect_ = false;
 
   // FIXME use weak callback?
-  {
-    MutexGuard guard{ mutex_ };
-    if (conn_) {
-      conn_->ShutdownWrite();
-    }
+  MutexGuard guard{ mutex_ };
+  if (conn_) {
+    conn_->ShutdownWrite();
   }
 }
 
-void
-TcpClient::Stop() noexcept {
+void TcpClient::Stop() noexcept {
   connect_ = false;
   // in loop
   connector_->Stop();

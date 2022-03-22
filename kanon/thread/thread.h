@@ -8,7 +8,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
-#include "kanon/thread/atomic.h"
+#include "kanon/thread/atomic_counter.h"
 #include "kanon/thread/current_thread.h"
 
 namespace kanon{
@@ -38,6 +38,8 @@ public:
   // and lambda object.
   using Threadfunc = std::function<void()>;
 public:
+  Thread(std::string const& name = {});
+
   explicit Thread(Threadfunc func, std::string const& name = {});
   ~Thread();
 
@@ -68,6 +70,7 @@ public:
   }
 
   void StartRun();
+  void StartRun(Threadfunc cb);
   void Join();
 
   std::string GetName() const noexcept
@@ -87,7 +90,7 @@ private:
   pthread_t  pthreadId_;
   std::string name_;
 
-  static AtomicInt32 numCreated_;
+  static AtomicCounter32 numCreated_;
 };
 
 }//namespace kanon

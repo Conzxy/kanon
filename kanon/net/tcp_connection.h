@@ -18,22 +18,30 @@ class Socket;
 class Channel;
 
 class EventLoop;
+class TcpServer;
+class TcpClient;
 
 /**
- * Represents Tcp connection.
- * User don't care detail of it, you can
- * * Register message callback to process message from the peer
- * * Register highwatermark callback to do something when output buffer is too full
- * * Register connection callback to do something when connection down or up
- * * Register write complete callback to do something when write complete
+ * Represents a tcp connection.
+ * User don't care detail of it, the work just to register callback as following:
+ * * Message callback to process message from the peer
+ * * Highwatermark callback to do something when output buffer is too full
+ * * Connection callback to do something when connection down or up
+ * * Write complete callback to do something when write complete
+ * Besides,
  * * Send message to peer(std::string, kanon::StringView, char const*, kanon::Buffer)
- * * Shut down(usually client) and close
+ * * Shutdown in write direction and close
  * * Set context that tie with this connection
  * @note Public class
  */
 class TcpConnection 
   : noncopyable
   , public std::enable_shared_from_this<TcpConnection> {
+  // Allow TcpServer and TcpClient call the private APIs
+  // that we don't exposed to user
+  friend class TcpServer;
+  friend class TcpClient;
+
   enum State {
     kConnecting = 0x1,
     kConnected = 0x2,
@@ -41,55 +49,53 @@ class TcpConnection
     kDisconnected = 0x8,
     STATE_NUM = 4,
   };
-  
+
+  // For Debugging only  
   static char const* const state_str_[STATE_NUM];
 public:
   TcpConnection(EventLoop* loop,
-          std::string const& name,
-          int sockfd,
-          InetAddr const& local_addr,
-          InetAddr const& peer_addr);
+                std::string const& name,
+                int sockfd,
+                InetAddr const& local_addr,
+                InetAddr const& peer_addr);
   
   ~TcpConnection() noexcept;
   
-  // !Must be thread safe  
+  // That's ok for async-call since it is in loop.
   void Send(Buffer& buf);    
   void Send(void const* data, size_t len);
   void Send(StringView data);
   
-  // half-close
+  // Half-close
   void ShutdownWrite() noexcept;
   void ForceClose() noexcept;
 
-  // Since server thread will dispatch connection to IO thread,
-  // need run some function in loop to ensure thread safe  
+  // Accept thread(OR main thread) will dispatch connection to IO thread
+  // to ensure one loop per thread
   EventLoop* GetLoop() const noexcept
   { return loop_; }  
 
-  // set callback
   void SetMessageCallback(MessageCallback cb)
   { message_callback_ = std::move(cb); }
-
-  void SetConnectionCallback(ConnectionCallback cb)
-  { connection_callback_ = std::move(cb); }
 
   void SetWriteCompleteCallback(WriteCompleteCallback cb)
   { write_complete_callback_ = std::move(cb); }
   
-  // should be called by server
   void SetCloseCallback(CloseCallback cb)
-  { close_callback_ = std::move(cb); }  
+  { close_callback_ = std::move(cb); }
   
-  void SetHighWaterMarkCallback(HighWaterMarkCallback cb)
-  { high_water_mark_callback_ = std::move(cb); }
+  void SetHighWaterMarkCallback(HighWaterMarkCallback cb, size_t mark)
+  { 
+    high_water_mark_ = mark;
+    high_water_mark_callback_ = std::move(cb); 
+  }
 
-  // field infomation
+  // This is useful in OnConnectionCallback(),
+  // we can do something when connection is established
+  // or destroyed.
   bool IsConnected() const noexcept
   { return state_ == kConnected; }
 
-  char const* State2String() const noexcept
-  { return state_str_[state_]; }
-  
   void SetContext(Any&& context) {
     context_ = std::move(context);
   } 
@@ -123,18 +129,28 @@ public:
 
   Buffer* GetOutputBuffer() noexcept
   { return &output_buffer_; }
-  
-  // When TcpServer accept a new connection in newConnectionCallback
-  void ConnectionEstablished();
-  // When TcpServer has removed connection from its connections_
-  // ! Must not be called in event handling phase
-  void ConnectionDestroyed();
+
 private:
+  void HandleRead(TimeStamp recv_time);
+  void HandleWrite();
   void HandleError();
   void HandleClose();
   
   void SendInLoop(void const* data, size_t len);
   void SendInLoop(StringView data);
+  void SendInLoopForStr(std::string& data);
+
+  void SetConnectionCallback(ConnectionCallback cb)
+  { connection_callback_ = std::move(cb); }
+
+  // When TcpServer accept a new connection in newConnectionCallback
+  void ConnectionEstablished();
+  // When TcpServer has removed connection from its connections_
+  // ! Must not be called in event handling phase
+  void ConnectionDestroyed();
+
+  char const* State2String() const noexcept
+  { return state_str_[state_]; }
 
   EventLoop* loop_;
   std::string const name_;
@@ -144,39 +160,45 @@ private:
   std::unique_ptr<Channel> channel_;  
   InetAddr const local_addr_;
   InetAddr const peer_addr_;
-  
-  State state_;
 
   Buffer input_buffer_;
   // FIXME Use RingBuffer better?
   Buffer output_buffer_;
   
   // Process message from @var input_buffer_  
-  // * Default is empty(optional also ok, just don't process message)
+  // * Default is empty(optional also ok, just don't process message and discard)
+  // * Is always set
   MessageCallback message_callback_;
+
   // Dispatch connnection to acceptor or connector
   // * Default is print the local address and peer address, connection state(TRACE level)
+  // * Is always override
   ConnectionCallback connection_callback_;
 
   // Called when write event is completed
-  // a.k.a. low_water_mark_callback_
+  // a.k.a. low watermark callback
   // * Default is empty(optional)
+  // * Is always set
   WriteCompleteCallback write_complete_callback_;  
   
   // Avoid so much data filling the kernel input/output buffer
   // Note: the callback only be called in rising edge
   // * Default is empty(optional)
+  // * Is always use with write_complete_callback_
   HighWaterMarkCallback high_water_mark_callback_;
   size_t high_water_mark_;
   
+
+  // * Default is remove Connection frmo the server/client and call ConnectionDestroyed()
+  // Internal callback, must not be exposed to user
+  CloseCallback close_callback_;
+
   // Context can used for binding some information 
   // about a specific connnection(So, it named context)
   Any context_;
-
-  // Only be called by server
-  // * Default is remove Connection frmo the server and call ConnectionDestroyed()
-  // * Internal callback, must not be exposed to user
-  CloseCallback close_callback_;
+  
+  // Internal useage
+  State state_;
 };
 
 // Default connection callback.

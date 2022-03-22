@@ -71,13 +71,11 @@ TcpServer::~TcpServer() noexcept
   }
 }
 
-void
-TcpServer::SetLoopNum(int num) noexcept {
+void TcpServer::SetLoopNum(int num) noexcept {
   pool_->SetLoopNum(num);
 }
 
-void
-TcpServer::StartRun() noexcept {
+void TcpServer::StartRun() noexcept {
   // ! Must be thread-safe
   // Scenario:
   // If the other thread also call this function,
@@ -94,8 +92,7 @@ TcpServer::StartRun() noexcept {
   }
 }
 
-void
-TcpServer::RemoveConnection(TcpConnectionPtr const& conn) {
+void TcpServer::RemoveConnection(TcpConnectionPtr const& conn) {
   // Remove connection in server thread
   loop_->RunInLoop([conn, this]() {
     loop_->AssertInThread();

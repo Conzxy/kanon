@@ -44,6 +44,7 @@ public:
 
   void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
   { write_complete_callback_ = std::move(cb); }
+
 private:
   typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
 

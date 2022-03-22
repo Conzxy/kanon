@@ -6,26 +6,11 @@ using namespace kanon;
 
 EventLoopThread::EventLoopThread(std::string const& name)
   : loop_{ nullptr }
-  , lock_{}
-  , cond_{ lock_ } 
-  , thr_{ [this]() {
-    // !Called in IO thread
-  
-    EventLoop loop{};
-    {
-      MutexGuard guard{ lock_ };
-      loop_ = &loop;
-      cond_.Notify();
-    }
-    
-    // may quit before StartLoop() be called
-    loop_->StartLoop();
-
-    // FIXME: need mutex?
-    //MutexGuard guard{ lock_ };
-    loop_ = nullptr;
-  }, name}
-{ }
+  , mutex_{ }
+  , cond_{ mutex_ } 
+  , thr_{ name }
+{ 
+}
 
 EventLoopThread::~EventLoopThread() noexcept {
   // if Quit() is not called through pointer return from StartRun()
@@ -36,18 +21,32 @@ EventLoopThread::~EventLoopThread() noexcept {
   }
 }
 
-EventLoop*
-EventLoopThread::StartRun() {
-  // !Called in caller thread(instead the member thread), normally,
-  // !it is very likely the main thread
-  thr_.StartRun();
+EventLoop* EventLoopThread::StartRun() {
+  thr_.StartRun(std::bind(&EventLoopThread::BackGroundStartLoop, this));
   
   {
-    MutexGuard guard{ lock_ };
+    MutexGuard guard{ mutex_ };
     while (loop_ == nullptr) {
       cond_.Wait();
     }  
   }
   
   return loop_;
+}
+
+void EventLoopThread::BackGroundStartLoop()
+{    
+    // Called in IO thread
+    EventLoop loop;
+    {
+      MutexGuard guard{ mutex_ };
+      loop_ = &loop;
+      cond_.Notify();
+    }
+    
+    // Maybe quit before StartLoop() be called,
+    // but it is harmless.
+    loop_->StartLoop();
+
+    loop_ = nullptr;
 }
