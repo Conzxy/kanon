@@ -86,8 +86,7 @@ AsyncLog::Append(char const* data, size_t len) noexcept {
 
 void
 AsyncLog::flush() noexcept {
-  // flush operation is called in back thread
-  // Logger do nothing  
+  // The flush operation is called in back thread
 }
 
 void
