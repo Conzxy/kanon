@@ -33,10 +33,11 @@ Then, build `kanon` by following commands:
 # ${USER_ROOT_DIR} is ~ usually.
 $ cd ${USER_ROOT_DIR}/kanon
 $ mkdir build && cd build
-# Setting BUILD_SHARED_LIB can choose to generate shared libaray(.so) or static libaray(.a)
-# Setting BUILD_ALL_TESTS can choose whether to generate tests or not
-# Setting BUILD_ALL_EXAMPLES can choose whether to generate example or not
-$ cmake .. -D BUILD_SHARED_LIBS=ON -D BUILD_ALL_TESTS=ON -D BUILD_ALL_EXAMPLES=ON
+# Options:
+# Setting BUILD_STATIC_LIB can choose to generate shared libaray(.so) or static libaray(.a)(default: OFF)
+# Setting BUILD_ALL_TESTS can choose whether to generate tests or not(default: OFF)
+# Setting BUILD_ALL_EXAMPLES can choose whether to generate example or not(default: OFF)
+$ cmake ..
 # -j specify the number of concurrent jobs
 # You can set it according to the core number of your machine
 $ cmake --build . --target all -j 2
@@ -50,7 +51,7 @@ cmake -G Ninja ...
 
 * The default build type is **Release**, if you want to build **Debug** mode, you can input following command:
 ```shell
-$ cmake .. -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=ON -D BUILD_ALL_TESTS=ON
+$ cmake .. -D CMAKE_BUILD_TYPE=Debug ...
 ```
 
 * The default output directory of library is `${USER_ROOT_DIR}/kanon/build/lib`.
