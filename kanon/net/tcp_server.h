@@ -44,7 +44,9 @@ public:
 
   void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
   { write_complete_callback_ = std::move(cb); }
-
+  
+  EventLoop* GetLoop() noexcept
+  { return loop_; }
 private:
   typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
 
