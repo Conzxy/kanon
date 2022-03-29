@@ -73,21 +73,21 @@ public:
   constexpr StringView(char const* str, size_type len)
     : data_(str), len_(len) 
   { }
-  
-  // Since overload resolution specify:
-  // excluding Lvalue transformation
-  // and Lvalue transformation includeing array-to-pointer
+
+  // N3337 p292:
+  // Overload resolution specify:
+  // Excluding Lvalue transformation, and
+  // Lvalue transformation includeing array-to-pointer
   // So if you call:
   // StringView s("hello");
   // It will call StringView(char const*) instead this
   // So this is deprecated!
   // You can use MakeStringView() to create a StringView for string literal
-  //
+  // OR use *_sv to create it.
   // template<unsigned N> 
   // StringView(char const(&literal)[N])
   //   : data_(literal), len_(N-1)
   // { 
-  //   static_assert(N < 0, "ctor"); 
   // }
 
   StringView(std::string const& str)
@@ -202,17 +202,20 @@ public:
   {
     // Intead of kmp or other efficient algorithm?
     // It is maybe bring some overhead.
-    char const* begin;
 
-    // Ensure the len_ - pos not be negative number
-    KANON_ASSERT(pos < len_, "The Position argument should be [0, len)");
+    // Ensure the len_ - pos not be a negative number
+    KANON_ASSERT(pos <= len_, "The position argument should be [0, len)");
 
-    // strstr() return NULL if not found
-    if(v.size() > len_ - pos|| 
-        !(begin = ::strstr(data_ + pos, v.data())))
-      return npos;
-    else
-      return begin - data_;
+    if (v.size() <= len_) {
+      size_type n = len_ - v.size() + 1;
+      for (size_type i = pos; i < n; ++i) {
+        if (!::strncmp(data_ + i, v.data(), v.size())) {
+          return i;
+        }
+      }
+    }
+
+    return npos;
   }
   
   size_type find(char c, size_type pos = 0) const noexcept
