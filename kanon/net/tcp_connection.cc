@@ -286,7 +286,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
   if (!channel_->IsWriting() && output_buffer_.GetReadableSize() == 0) {
     n = sock::Write(channel_->GetFd(), data, len);
 
-    LOG_TRACE << "sock::write " << n << " bytes";
+    LOG_TRACE << "write " << n << " bytes";
 
     if (n >= 0) {
       if (static_cast<size_t>(n) != len) {
