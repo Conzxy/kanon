@@ -15,6 +15,8 @@ namespace kanon {
 __thread time_t t_lastSecond = 0;
 __thread char t_timebuf[64] = { 0 };
 
+bool Logger::need_color_ = true;
+
 char const* Logger::logLevelName[Logger::LogLevel::NUM_LOG_LEVEL] = {
   "TRACE",
   "DEBUG",
@@ -82,9 +84,14 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
   formatTime();
   stream_ << CurrentThread::t_tid << " ";
   stream_ << CurrentThread::t_name << " ";
-  stream_ << g_logLevelColor[level] 
-      << "[" << logLevelName[level] << "]"
-      << NONE << " ";
+  if (need_color_) {
+    stream_ << g_logLevelColor[level] 
+        << "[" << logLevelName[level] << "]"
+        << NONE << " ";
+  }
+  else {
+    stream_ << "[" << logLevelName[level] << "] ";
+  }
 
   if (level == SYS_ERROR || level == SYS_FATAL) {
     auto savedErrno = errno;

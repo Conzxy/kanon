@@ -14,6 +14,7 @@
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/process/process_info.h"
 
+#include "kanon/log/logger.h"
 #include "kanon/log/append_file.h"
 
 namespace kanon {
@@ -84,6 +85,7 @@ LogFile<T>::LogFile(StringView basename,
   , prefix_(prefix)
 {
   assert(basename.find('/') == StringView::npos);
+  Logger::SetColor(false);
   rollFile();  
 }
 
@@ -151,6 +153,11 @@ std::string LogFile<T>::getLogFileName(time_t& now) {
   filename.reserve(basename_.size()+prefix_.size()+128);
 
   filename += prefix_.data();
+
+  if (!prefix_.empty() && !prefix_.ends_with('/')) {
+    filename += '/';
+  }
+
   filename += basename_.data();
 
   char timebuf[32];
