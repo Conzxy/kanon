@@ -154,11 +154,13 @@ public:
   { return value(); }
 
   T const&& operator*() const && noexcept
-  { return value(); }
+  { return std::move(value()); }
 
   T&& operator*() && noexcept
-  { return value(); }
-
+  { return std::move(value()); }
+  
+  void SetInvalid() noexcept
+  { opt_.first = false; }
 private:
   std::pair<bool, T> opt_;
 };
