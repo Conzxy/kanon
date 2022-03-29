@@ -13,6 +13,8 @@ class TimerId {
   friend class TimerQueue;
 
 public:
+    TimerId() = default;
+
     TimerId(Timer* timer)
         : timer_{ timer }
         , seq_{ timer->sequence() }

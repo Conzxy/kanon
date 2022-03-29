@@ -74,10 +74,11 @@ private:
    * a predicate to determine which timestamp of timer is early.
    * However, timers_ can't contains two difference timer even 
    * thought them have same timestamp. Oh, std::multiset<> could
-   * resolve this, but when erase timer, then all timers with 
-   * same timestamp will be removed that is not the right behavior
-   * we desired. Therefore, we use <TimeStamp, Timer*> to identify
-   * an active timer
+   * resolve this, but when erase timer by call CancelTimer(), 
+   * then all timers with same timestamp will be removed that is
+   * not the right behavior we desired. Therefore, we use 
+   * <TimeStamp, Timer*> to identify an active timer since Timer*
+   * is unique and don't represents a timestamp here.
    */
   TimerSet timers_;
 
