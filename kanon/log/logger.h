@@ -90,6 +90,7 @@ public:
   
   LogStream& stream() noexcept { return stream_; }
 
+  static void SetColor(bool c) noexcept { need_color_ = c; }
   static LogLevel GetLogLevel() noexcept { return logLevel_; }
   static void SetLogLevel(LogLevel GetLogLevel) noexcept { logLevel_ = GetLogLevel; }
   static OutputCallback GetOutputCallback() noexcept { return outputCallback_; }
@@ -103,7 +104,7 @@ private:
   size_t line_; /** Line number */
 
   LogStream stream_;
-  
+
   void formatTime() noexcept;
 
 
@@ -113,6 +114,7 @@ private:
    * You can define environment variable to specify WARN or TRACE
    */
   static LogLevel logLevel_;
+  static bool need_color_; 
   static OutputCallback outputCallback_;
   static FlushCallback flushCallback_;
 
