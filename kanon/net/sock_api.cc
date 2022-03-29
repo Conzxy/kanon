@@ -136,21 +136,28 @@ sock::Accept(int fd, sockaddr_in6* addr) noexcept {
 
 void
 sock::SetReuseAddr(int fd, int flag) noexcept {
-  LOG_INFO << "reuseaddr flag " << flag;
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
 
-  if (ret < 0)
-    LOG_SYSERROR << "setsockopt error(socket: reuse address)";
+  if (ret < 0) {
+    LOG_SYSERROR << "setsockopt error(SO_REUSEADDR)";
+  }
+  else {
+    LOG_INFO << "SO_REUSEADDR option is set to " << static_cast<bool>(flag);
+  }
 }
 
 
 void
 sock::SetReusePort(int fd, int flag) noexcept {
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 9, 0)
-  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
+  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &flag, static_cast<socklen_t>(sizeof flag));
 
-  if (ret < 0)
-    LOG_SYSERROR << "setsockopt error(socket: reuse port)";
+  if (ret < 0) {
+    LOG_SYSERROR << "setsockopt error(SO_REUSEPORT)";
+  }
+  else {
+    LOG_INFO << "SO_REUSEPORT option is set to " << static_cast<bool>(flag);
+  }
 #else
   LOG_INFO << "linux version less than 3.9, there no reuseport option can set";
 #endif
