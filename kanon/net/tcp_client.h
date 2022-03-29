@@ -49,7 +49,7 @@ public:
     return conn_;
   }
 
-  EventLoop* GetLoop() const noexcept { return loop_; }
+  EventLoop* GetLoop() noexcept { return loop_; }
 private:
   EventLoop* loop_;
   std::unique_ptr<Connector> connector_;
