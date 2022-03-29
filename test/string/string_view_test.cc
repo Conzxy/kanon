@@ -32,6 +32,15 @@ TEST(StringViewTest, emptyTest){
 TEST(StringViewTest, findTest){
   StringView v = "long long int";
   EXPECT_EQ(5, v.find("long", 2));
+
+  std::string s = "This is string_view test";
+  StringView sv(s.data(), 5);
+
+  EXPECT_EQ(sv.find("test"), StringView::npos);
+
+  EXPECT_EQ(""_sv.find("xxx"), StringView::npos);
+  EXPECT_EQ(""_sv.find(""), 0);
+  EXPECT_EQ("xxx"_sv.find(""), 0);
 }
 
 TEST(StringViewTest, rfindTest){
