@@ -16,8 +16,6 @@
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/count_down_latch.h"
 
-
-
 namespace kanon {
 
 /**
