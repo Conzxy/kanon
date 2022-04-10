@@ -42,19 +42,35 @@ Connector::StartRun() noexcept {
 
 void
 Connector::Stop() noexcept {
-  loop_->RunInLoop([this]() {
-    loop_->AssertInThread();
-  
-    // Only be called when connecting,
-    // interrupt reconnecting to peer 
-    if (state_ == State::kConnecting) {
-      connect_ = false;
-      setState(State::kDisconnected);
+  // This is unsafe
+  // Scenario:
+  // one thread(usually, main thread) desctroy
+  // TcpClient and call Stop() in its dtor, but
+  // Connector has destroyed together, then the
+  // loop_ become invalid address, access will 
+  // trigger AssertInthread() to abort entire program.
+  // (this is called in the phase3 as a callback)
 
-      int sockfd = RemoveAndResetChannel();
-      sock::Close(sockfd); 
-    }
-  });
+  loop_->RunInLoop(std::bind(&Connector::StopInLoop, shared_from_this()));
+}
+
+void
+Connector::StopInLoop() noexcept
+{ 
+  loop_->AssertInThread();
+
+  // Only be called when connecting,
+  // interrupt reconnecting to peer 
+  if (state_ == State::kConnecting) {
+    connect_ = false;
+    setState(State::kDisconnected);
+
+    int sockfd = RemoveAndResetChannel();
+    sock::Close(sockfd); 
+
+    loop_->CancelTimer(timer_);
+  }
+
 }
 
 void
@@ -73,7 +89,7 @@ Connector::Connect() noexcept {
   // If connection is established, we call CompleteConnect() to register write callback,
   // then write callback will call new_connection_callback_.
   // Otherwise, call Retry() to connect again.
-  auto ret = sock::Connect(sockfd, sock::to_sockaddr(servAddr_.ToIpv6()));
+  auto ret = sock::Connect(sockfd, servAddr_.ToSockaddr());
 
   auto saved_errno = (ret == 0) ? 0 : errno;
 
@@ -177,7 +193,7 @@ Connector::Retry(int sockfd) noexcept {
     LOG_INFO << "Client will reconnect to " << servAddr_.ToIpPort()
       << " after " << delaySec << " seconds";
 
-    loop_->RunAfter([this]() {
+    timer_ = loop_->RunAfter([this]() {
       StartRun();
     }, delaySec);
 
@@ -193,7 +209,7 @@ Connector::RemoveAndResetChannel() noexcept {
   channel_->DisableAll();
   channel_->Remove();
 
-  // @warning 
+  // \warning 
   // in event handle phase now
   // So, you can't call it immediately
   loop_->QueueToLoop([this]() {
