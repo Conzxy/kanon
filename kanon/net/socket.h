@@ -16,7 +16,7 @@ class InetAddr;
  * 
  * Also, this class wrap some API in @file sock_api.h
  * that make it easy to use.
- * @note Internal class
+ * \note Internal class
  */
 class Socket : noncopyable {
 public:
@@ -31,6 +31,7 @@ public:
   int accept(InetAddr& addr) noexcept;
 
   void ShutdownWrite() noexcept;
+  void ShutdownTwoDirection() noexcept;
 
   void SetReuseAddr(bool flag) noexcept
   { sock::SetReuseAddr(fd_, flag); }

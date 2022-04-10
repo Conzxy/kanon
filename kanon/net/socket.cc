@@ -45,3 +45,12 @@ Socket::ShutdownWrite() noexcept {
     LOG_SYSERROR << "Shutdown write error";
   }
 }
+
+void
+Socket::ShutdownTwoDirection() noexcept {
+  LOG_TRACE << "Shutdown peer in two dierction(read/write)";
+
+  if (sock::ShutdownTwoDirection(fd_)) {
+    LOG_SYSERROR << "Shutdown read/write error";
+  }
+}
