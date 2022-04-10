@@ -181,6 +181,10 @@ public:
     KANON_ASSERT(!IsIpv4(), "The InetAddr doesn't represent an ipv6 address");
     return &addr6_;
   }
+
+  struct sockaddr* ToSockaddr() noexcept
+  { return reinterpret_cast<sockaddr*>(&addr_); }
+
   //!@}
 
   //! \name Attribute getter  
