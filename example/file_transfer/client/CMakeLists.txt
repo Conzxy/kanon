@@ -1,0 +1,1 @@
+GenExample(file_transfer_client main.cc ../util/file.cc client.cc ${EXAMPLE_SOURCE_DIR}/length_codec/codec.cc)
