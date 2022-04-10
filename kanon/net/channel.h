@@ -198,8 +198,8 @@ private:
    * Used for poller
    *
    * - To Poller, this is the index in the pollfds
-   *   (To implemetate remove pollfd from array
-   *    in O(1))
+   *   (To implemetate saerch and remove pollfd in 
+   *    array in O(1))
    * - To Epoller, this is state of fd(Reuse index)
    */
   int index_;

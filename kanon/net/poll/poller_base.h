@@ -49,15 +49,25 @@ public:
   
   /**
    * \brief Update interested event of a channel
+   *
+   * \note
+   *   If there are no events are interested, 
+   *     - To Poller, set fd to negative that make
+   *       poll() ignores it.
+   *     - To Epoller, remove fd from kernel evenst table
    * \param ch Channel that will be updated
    */
   virtual void UpdateChannel(Channel* ch) = 0;
 
   /**
    * \brief Remove channel from the interested table
+   * 
+   * Call this indicates channel has reached the end of lifetime
+   * That is no longer a valid channel
    *
-   * - To Poller, we just remove pollfd object from array
-   * - To Epoller, we remove this from kernel events table
+   * - To Poller, it just remove pollfd object from its array
+   * - To Epoller, it remove this from kernel events table(rb tree)
+   *   if the fd is added to events table
    *
    * \param ch Channel that will be removed
    */
