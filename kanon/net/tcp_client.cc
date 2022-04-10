@@ -13,7 +13,8 @@ TcpClient::TcpClient(
   InetAddr const& servAddr,
   std::string const& name)
   : loop_{ loop }
-  , connector_{ kanon::make_unique<Connector>(loop, servAddr) }
+  // Use std::make_shared is ok here since no weak pointer
+  , connector_{ std::make_shared<Connector>(loop, servAddr) }
   , name_{ name }
   , connection_callback_{ &DefaultConnectionCallback }
   , connect_{ true }
@@ -56,7 +57,7 @@ TcpClient::TcpClient(
       } 
   
       // ! In event handling phase, don't remove channel(disable is allowed)
-      // ! conn must be copied(@see TcoConnection::HandleClose())
+      // ! conn must be copied(\see TcoConnection::HandleClose())
       loop_->QueueToLoop([conn] () {
         conn->ConnectionDestroyed();
       });
