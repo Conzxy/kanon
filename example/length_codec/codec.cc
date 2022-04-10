@@ -7,47 +7,50 @@ using namespace kanon;
 
 constexpr int LengthHeaderCodec::kHeaderLength;
 
-LengthHeaderCodec::LengthHeaderCodec(StringMessageCallback cb)
-  : messageCallback_{ std::move(cb) }
+LengthHeaderCodec::LengthHeaderCodec() = default;
+
+LengthHeaderCodec::LengthHeaderCodec(MessageCallback cb)
+  : message_callback_{ std::move(cb) }
 {
 }
 
-void
-LengthHeaderCodec::Send(TcpConnectionPtr const& conn,
-  StringView msg) {
+void LengthHeaderCodec::Send(TcpConnectionPtr const& conn, StringView msg)
+{
   Buffer output_buffer;
   
   uint32_t length = msg.size(); 
   output_buffer.Append(msg);
-  output_buffer.Prepend32(sock::ToNetworkByteOrder32(length));
-  
-  LOG_DEBUG << sock::ToHostByteOrder32(output_buffer.GetReadBegin32()); 
+  output_buffer.Prepend32(length);
+
+  LOG_DEBUG << "length = " << length; 
+  LOG_DEBUG << "length header = " << output_buffer.GetReadBegin32();
   conn->Send(output_buffer);
 }
 
-void
-LengthHeaderCodec::OnMessage(TcpConnectionPtr const& conn,
-  Buffer& buf,
-  TimeStamp receive_time) {
-  
+void LengthHeaderCodec::OnMessage(TcpConnectionPtr const& conn,
+                                  Buffer& buf,
+                                  TimeStamp receive_time)
+{
   // Since tcp is stream protocol,
   // we should use while instread of just a if
   while (buf.GetReadableSize() >= kHeaderLength) {
-    uint32_t message_len = sock::ToHostByteOrder32(buf.GetReadBegin32());
+    uint32_t message_len = buf.GetReadBegin32();
     
     LOG_DEBUG << "message_len: " << message_len;
     // Check length if valid
-    if (message_len > 65536 || message_len < 0) {
+    LOG_DEBUG << "buf readable size = " << buf.GetReadableSize();
+    if (message_len > max_accept_len_) {
       LOG_ERROR << "Invalid message length";
       conn->ShutdownWrite();
       break; 
       
-      // if not a complete packet, just exit loop. 
-    } else if (buf.GetReadableSize() >= kHeaderLength + message_len) {
+    } else if (buf.GetReadableSize() >= (kHeaderLength + message_len)) {
       buf.AdvanceRead(kHeaderLength);
-      const auto msg = buf.RetrieveAsString(message_len);
-      messageCallback_(conn, msg, receive_time);
+      auto msg = buf.RetrieveAsVector(message_len);
+      message_callback_(conn, msg, receive_time);
     } else {
+      // if not a complete packet, just exit loop.
+      LOG_DEBUG << "Not a complete message";
       break;
     }
   }
