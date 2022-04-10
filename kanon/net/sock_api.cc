@@ -36,21 +36,12 @@ void
 sock::SetNonBlockAndCloExec(int fd) noexcept {
   auto ret = ::fcntl(fd, F_GETFL, 0);
   if (ret < 0)
-    LOG_SYSFATAL << "fail to get file status flag(nonblock)";
+    LOG_SYSFATAL << "fail to get file status flag";
 
-  ret |= O_NONBLOCK;
+  ret |= (O_NONBLOCK | O_CLOEXEC);
   ret = ::fcntl(fd, F_SETFL, ret);
   if (ret < 0)
-    LOG_SYSFATAL << "fail to set file status flag(nonblock)";
-  
-  ret = ::fcntl(fd, F_GETFD);
-  if (ret < 0)
-    LOG_SYSERROR << "fail to get file descriptor flag(cloexec)";
-
-  ret |= O_CLOEXEC;
-  ret = ::fcntl(fd, F_SETFD, ret);
-  if (ret < 0)
-    LOG_SYSERROR << "fail to set file descriptor flag(cloexec)";
+    LOG_SYSFATAL << "fail to set file status flag(O_NONBLOCK | O_CLOEXEC)";
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 27)

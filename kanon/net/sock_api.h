@@ -136,6 +136,10 @@ inline int ShutdownWrite(int fd) noexcept {
   return ::shutdown(fd, SHUT_WR);
 }
 
+inline int ShutdownTwoDirection(int fd) noexcept {
+  return ::shutdown(fd, SHUT_RDWR);
+}
+
 // socket option
 void SetReuseAddr(int fd, int flag) noexcept;
 
