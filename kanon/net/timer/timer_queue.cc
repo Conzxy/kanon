@@ -100,8 +100,7 @@ static inline void ReadTimerFd(int timerfd) noexcept {
 } // namespace detail
 
 TimerQueue::TimerQueue(EventLoop* loop)
-  : timerfd_{ detail::CreateTimerFd() }
-  , timer_channel_{ kanon::make_unique<Channel>(loop, timerfd_) }
+  : timer_channel_{ kanon::make_unique<Channel>(loop, detail::CreateTimerFd()) }
   , calling_timer_{ false }
   , loop_{ loop }
 {
@@ -128,7 +127,7 @@ TimerId TimerQueue::AddTimer(
     bool earliest_update = Emplace(timer);
 
     if (earliest_update) {
-      kanon::detail::SetTimerFd(timerfd_, *timer);
+      kanon::detail::SetTimerFd(timer_channel_->GetFd(), *timer);
     }
   });
 
@@ -151,7 +150,7 @@ void TimerQueue::CancelTimer(TimerId id) {
     } 
     else if (calling_timer_) {
       // Self-cancel
-      // @see ProcessAllExpiredTimers()
+      // \see ProcessAllExpiredTimers()
       canceling_timers_.emplace(id.seq_, id.timer_);
     }
   });
@@ -181,7 +180,7 @@ void TimerQueue::ProcessAllExpiredTimers(TimeStamp recv_time) {
 
   // Read the message from timer to avoid busy loop 
   // since level trigger
-  detail::ReadTimerFd(timerfd_);  
+  detail::ReadTimerFd(timer_channel_->GetFd());  
 
   // Get expired time from kernel and put it to GetExpiredTimers()
   TimeStamp now{ TimeStamp::Now() };
@@ -278,7 +277,7 @@ void TimerQueue::ResetTimers(TimerVector& expireds, TimeStamp now) {
   }
 
   if (next_expire) {
-    detail::SetTimerFd(timerfd_, *next_expire);
+    detail::SetTimerFd(timer_channel_->GetFd(), *next_expire);
   }
 }
 

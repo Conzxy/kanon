@@ -12,16 +12,20 @@ namespace kanon {
 Poller::Poller(EventLoop* loop)
   : PollerBase(loop)
 {
-  LOG_DEBUG << "Poller created";
+  LOG_TRACE << "Poller is created";
 }
 
-TimeStamp Poller::Poll(int ms, ChannelVec& activeChannels) noexcept {
+Poller::~Poller() noexcept
+{
+  LOG_TRACE << "Poller is destroyed";
+}
+
+TimeStamp Poller::Poll(int ms, ChannelVec& active_channels) noexcept {
   AssertInThread();
 
-  auto ret = ::poll(
-              pollfds_.data(), 
-              static_cast<nfds_t>(pollfds_.size()), 
-              ms);
+  auto ret = ::poll(pollfds_.data(), 
+                    static_cast<nfds_t>(pollfds_.size()), 
+                    ms);
 
   TimeStamp now{ TimeStamp::Now() };
 
@@ -44,7 +48,7 @@ TimeStamp Poller::Poll(int ms, ChannelVec& activeChannels) noexcept {
 
         channel->SetRevents(pollfd.revents);
 
-        activeChannels.emplace_back(channel);
+        active_channels.emplace_back(channel);
         
         --ev_num; 
       }
