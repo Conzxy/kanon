@@ -38,28 +38,28 @@ Epoller::Epoller(EventLoop* loop)
   , epoll_fd_{ detail::CreateEpollFd() }
   , events_{ kEventInitNums }
 {
-  LOG_TRACE << "Epoller created";
+  LOG_TRACE << "Epoller is created";
 }
 
 Epoller::~Epoller() noexcept {
   ::close(epoll_fd_);
+  LOG_TRACE << "Epoller is destroyed";
 }
 
-TimeStamp Epoller::Poll(int ms, ChannelVec& activeChannels) {
+TimeStamp Epoller::Poll(int ms, ChannelVec& active_channels) {
   AssertInThread();
 
-  int ev_nums = ::epoll_wait(
-                  epoll_fd_, 
-                  events_.data(),
-                  static_cast<int>(events_.size()), // maxsize
-                  ms);
+  int ev_nums = ::epoll_wait(epoll_fd_, 
+                             events_.data(),
+                             static_cast<int>(events_.size()), // maxsize
+                             ms);
 
   int saved_errno = errno; 
   TimeStamp now{ TimeStamp::Now() };
 
   if (ev_nums > 0) {
     LOG_TRACE << ev_nums << " events are ready";
-    FillActiveChannels(ev_nums, activeChannels);
+    FillActiveChannels(ev_nums, active_channels);
     
     // since epoll_wait does not expand space and 
     // not use any modifier member function of std::vector
@@ -82,7 +82,7 @@ TimeStamp Epoller::Poll(int ms, ChannelVec& activeChannels) {
 }
 
 void Epoller::FillActiveChannels(int ev_nums, 
-                            ChannelVec& activeChannels) noexcept {  
+                                 ChannelVec& active_channels) noexcept {  
   assert(ev_nums <= static_cast<int>(events_.size()));
   
   for (int i = 0; i < ev_nums; ++i) {
@@ -93,7 +93,7 @@ void Epoller::FillActiveChannels(int ev_nums,
     int fd = channel->GetFd();KANON_UNUSED(fd);
 
     channel->SetRevents(events_[i].events);
-    activeChannels.emplace_back(channel);
+    active_channels.emplace_back(channel);
   }
 }
 
@@ -102,13 +102,13 @@ void Epoller::UpdateChannel(Channel* ch) {
 
   int index = ch->GetIndex();
 
-  if (index == kNew || index == kDeleted) {
+  if (index == kNew) {
     UpdateEpollEvent(EPOLL_CTL_ADD, ch);
     ch->SetIndex(kAdded);
   } else { // ch->GetIndex() = kAdded
     if (ch->IsNoneEvent()) {
       UpdateEpollEvent(EPOLL_CTL_DEL, ch);
-      ch->SetIndex(kDeleted);
+      ch->SetIndex(kNew);
     } else { 
       UpdateEpollEvent(EPOLL_CTL_MOD, ch);
     }
@@ -134,11 +134,17 @@ static inline char const* Op2Str(int op) noexcept {
 void Epoller::UpdateEpollEvent(int op, Channel* ch) noexcept {
   int fd = ch->GetFd();
 
-  LOG_TRACE << "epoll_ctl op =" << detail::Op2Str(op) 
-    << " fd: " << fd << " {" << ch->Events2String() << "}";
-
   Event ev;
+
   ev.events = ch->GetEvents();
+  if (!ch->IsNoneEvent() && is_et_mode_) {
+    ev.events |= EPOLLET;
+  }
+
+  LOG_TRACE << "epoll_ctl op =" << detail::Op2Str(op) 
+    << " fd: " << fd << " {" << Channel::Ev2String(ev.events) << "}";
+  
+  // In this way, can get channel accroding to fd in O(1)
   ev.data.ptr = static_cast<void*>(ch);
 
   if (::epoll_ctl(epoll_fd_, op, ch->GetFd(), &ev)) {
@@ -160,14 +166,13 @@ void Epoller::RemoveChannel(Channel* ch) {
   LOG_TRACE << "Remove fd = " << fd;
 
   auto index = ch->GetIndex();
-  assert(index == kAdded || index == kDeleted);
   
   if (index == kAdded) {
     UpdateEpollEvent(EPOLL_CTL_DEL, ch);
+    // set status to kNew, then we can add it again
+    ch->SetIndex(kNew);
   }
 
-  // set status to kNew, then we can add it again
-  ch->SetIndex(kNew);
 }
 
 } // namespace kanon

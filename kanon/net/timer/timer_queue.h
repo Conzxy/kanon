@@ -15,34 +15,49 @@ namespace kanon {
 class EventLoop;
 
 /**
- * Maintains timers.
+ * \ingroup net
+ * \addtogroup timer
+ * \brief Timer module, manage timer and process timer events
+ * 
+ * This is an internal module of net module
+ * @{
+ */
+/**
+ * \brief A FIFO data structure that manage timers
+ *
  * User can register callback and expiration of a timer, 
  * and can cancel a timer also.
- * @note This is a internal class used for EventLoop
+ * \warning This is a internal class used for EventLoop
  */
 class TimerQueue : noncopyable {
 public:
   using TimerCallback = Timer::TimerCallback;
   
+  /**
+   * \brief Construct TimerQueue that binded to a specific loop
+   * \param loop EventLoop object
+   */  
   explicit TimerQueue(EventLoop* loop);
 
   /**
-   * Add a timer to TimerQueue
-   * @param cb the callback of timer
-   * @param time expiration time
-   * @param interval used for repeated timer only, 
-   *                 once timer should put 0
-   * @return 
-   * a timer id which used for cancel
-   * If this is a once timer, maybe not use it.
+   * \brief Add a timer to TimerQueue
+   * \param cb The callback of timer
+   * \param time Expiration time
+   * \param interval 
+   *   Used for repeated timer only, 
+   *   once timer should put 0
+   * \return 
+   *   A TimerId object which used for cancel
+   *   If this is a once timer, maybe not use it.
    */
   TimerId AddTimer(TimerCallback cb, TimeStamp time, double interval);
 
   /**
-   * Cancel a timer in TimerQueue
-   * @param id the timer id return by AddTimer
+   * \brief Cancel a timer in TimerQueue
+   * \param id The timer id return by AddTimer
    */ 
   void CancelTimer(TimerId const id);
+
 private:
   using TimerPtr      = KeyUniquePtr<Timer>;
   using ActiveTimer   = std::pair<uint64_t,  Timer*>;
@@ -62,13 +77,9 @@ private:
   void ResetTimers(TimerVector&, TimeStamp now);
 
 private:
-  int timerfd_;
-  std::unique_ptr<Channel> timer_channel_;
+  std::unique_ptr<Channel> timer_channel_; //!< Manage events of timerfd
 
-  /** 
-   * Maintain active timers
-   *
-   * @note 
+  /**
    * Timer* contains timestamp, but we can't store single Timer* 
    * in std::set<>. Suppose you do so, then you need to provide 
    * a predicate to determine which timestamp of timer is early.
@@ -80,14 +91,10 @@ private:
    * <TimeStamp, Timer*> to identify an active timer since Timer*
    * is unique and don't represents a timestamp here.
    */
-  TimerSet timers_;
+  TimerSet timers_; //!< Maintain active timers
+/* The follwing data structure used for implementing CancelTimer() */
 
-  /** The follwing data structure used for implementing CancelTimer() */
-
-  /** 
-   * Detect a timer if is active
-   *
-   * @note 
+  /**
    * To cancel a timer, we must call timers_.erase().
    * Therefore, we must return Timer* or a wrapper of it.
    * However, we also need to dereference the Timer* to get
@@ -105,29 +112,28 @@ private:
    * Because two difference timer object maybe have same
    * address, I can't use Timer* to identify timer in 
    * active_timers_.
-   * ==============================================================
+   *
+   * ```cpp
    * Scenario:
    * int* p = new int(); delete p;
    * int* p2 = new int(); delete p2;
    * assert(p == p2); // Don't abort!
-   * ===============================================================
+   * ```
+   *
    * We can suppose OS will reuse the deleted memory space.
-   * * For repeated timer, it is ok, since we don't remove 
-   *   timer actively.
-   * * For once timer, we must remove timer, and the new 
-   *   timer maybe reuse the memory space of old timer.
-   *   If user call CancelTimer() and TimerId is single 
-   *   Timer*, the canceled tiemr is not desired.
+   *   - For repeated timer, it is ok, since we don't remove 
+   *     timer actively.
+   *   - For once timer, we must remove timer, and the new 
+   *     timer maybe reuse the memory space of old timer.
+   *     If user call CancelTimer() and TimerId is single 
+   *     Timer*, the canceled tiemr is not desired.
    * (Also, take the TimerId to represent ActimeTimer is
    *  more exact, but we need provide a predicate like 
    *  std::pair<> to sort it, thus, just reuse std::pair<> :D)
    */
-  std::set<ActiveTimer> active_timers_;
+  std::set<ActiveTimer> active_timers_; //!< Detect a timer if is active
 
-  /** 
-   * Detect self-cancel 
-   *
-   * @note 
+  /**
    * Self-cancel indicates user cancel a timer in
    * the callback of the timer itself.
    * If this is a repeated timer, we still reset it.
@@ -136,21 +142,19 @@ private:
    * callback of all the expired timers is not finished.
    * then callback self-cancel a timer will be detected.
    */
-  bool calling_timer_;
+  bool calling_timer_; //!< Detect self-cancel
 
-  /** 
-   * Store the self-cancel timer to avoid reset
-   *
-   * @note 
+  /**
    * The self-cancel timers will be put in this container.
    * The all timers are not reset, and before the next phase of 
    * calling callback will be cleared.
    */
-  std::set<ActiveTimer> canceling_timers_; 
+  std::set<ActiveTimer> canceling_timers_; //!< Store the self-cancel timer to avoid reset
   
-  /** Ensure one loop per thread */
-  EventLoop* loop_;
+  EventLoop* loop_; //!< Ensure one loop per thread
 };
+
+//!@}
 
 } // namespace kanon
 

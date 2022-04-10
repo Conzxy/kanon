@@ -26,8 +26,8 @@ Channel::~Channel() noexcept
   // In the handling events phase, close_callback_ remove the connection(i.e. channel),
   // it is unsafe, we should remove it in next phase(calling functor phase)
   KANON_ASSERT(!events_handling_, 
-    "Event is handling when Channel is destoyed."
-    "Advise: You should call EventLoop::QueueToLoop() to delay remove");
+    "Events are being handled when Channel is destoyed.\n"
+    "Advice: You should call EventLoop::QueueToLoop() to delay remove");
 }
 
 void Channel::HandleEvents(TimeStamp receive_time) {
@@ -37,12 +37,14 @@ void Channel::HandleEvents(TimeStamp receive_time) {
   LOG_TRACE << "fd = " << fd_ << ", revent(result event) : {" << Revents2String() << "}";
   
 
-  /**
+  /*
    * POLLHUP indicates the connection is closed in two direction
-   * @see https://stackoverflow.com/questions/56177060/pollhup-vs-pollrdhup
-   * But according the manpage of poll
-   * POLLHUP also can read until 0
-   * So !revents_ & POLLIN
+   * i.e. The FIN has been received and sent
+   *
+   * If POLLIN is set, we can read until 0(FIN->EOF) and close connection
+   * Otherwise, close it here
+   *
+   * \see https://stackoverflow.com/questions/56177060/pollhup-vs-pollrdhup
    */
   if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
     if (log_hup_) {
@@ -52,19 +54,25 @@ void Channel::HandleEvents(TimeStamp receive_time) {
     if (close_callback_) close_callback_();
   }
   
-  // Fd not open
-  // also a error(after if branch log error)
-  if (revents_ & POLLNVAL) {
-    LOG_WARN << "fd = " << fd_ << " POLLNVAL(fd not open) happend";  
-  }
-  
+  /*
+   * In tcp, POLLERR typically indicates RST has been received or sent.
+   *   - To server, it is maybe occurred when SO_LINGER is set and timeout is set to 0.
+   *     (But to this library, we don't set it)
+   *   - To client, retry(reuse the socket) or close(can be controled by user) is better.
+   *
+   * Therefore, the error_callback_ just log error message of socket(see tcp_connection.cc)
+   * is also ok.
+   */
   if (revents_ & (POLLERR | POLLNVAL)) {
+    if (revents_ & POLLNVAL) {
+      LOG_WARN << "fd = " << fd_ << " POLLNVAL(fd not open) happend";  
+    }
     if (error_callback_) error_callback_();
   }
 
-  // When revents_ == POLLIN, process message except EOF(FIN or RESET)
-  // RDHUP indicates peer half-close(but we don't distinguish, also close)
-  // FIXME If peer shutdown, we need skip write event
+  // When revents_ == POLLIN, process message except FIN or RST
+  // RDHUP indicates peer half-close in write direction(but we don't distinguish, also close)
+  // So, we can continue receive message
   if (revents_ & (POLLIN | POLLPRI | POLLRDHUP)) {
     if (read_callback_) read_callback_(receive_time);
   }
@@ -77,6 +85,9 @@ void Channel::HandleEvents(TimeStamp receive_time) {
 }
 
 void Channel::Update() {
+  // This must be called in a event loop
+  // We just check the eventloop of poller
+  // is same with this
   loop_->UpdateChannel(this);
 }
 
@@ -84,7 +95,7 @@ void Channel::Remove() noexcept {
   loop_->RemoveChannel(this);
 }
 
-std::string Channel::ev2String(int ev) {
+std::string Channel::Ev2String(uint32_t ev) {
   std::string buf;
   buf.reserve(32);
 
@@ -103,9 +114,11 @@ std::string Channel::ev2String(int ev) {
     buf += " ERR";
   if (ev & POLLNVAL)
     buf += " NVAL";
+  if (ev & EPOLLET)
+    buf += " ET";
   buf += " ";
 
-  return buf; // RVO will use move semantic
+  return buf; // RVO will use move semantic(11)
 }
 
 } // namespace kanon

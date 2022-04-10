@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "kanon/thread/current_thread.h"
+#include "kanon/util/ptr.h"
 #include "kanon/util/time_stamp.h"
 #include "kanon/util/macro.h"
 #include "kanon/log/logger.h"
@@ -39,7 +40,7 @@ static inline int CreateEventFd() noexcept {
  * The write() adds the 8-byte integer value to counter.
  * The read() will block if counter is zero.
  * Therefore, the dummy of write is must not be zero.
- * @see man eventfd(2)
+ * \see man eventfd(2)
  */
 static inline void ReadEventFd(int evfd) noexcept {
   uint64_t dummy;
@@ -56,21 +57,31 @@ static inline void WriteEventFd(int evfd) noexcept {
 } // namespace detail
 
 EventLoop::EventLoop()
+  : EventLoop(false)
+{
+
+}
+
+EventLoop::EventLoop(bool is_poller)
   : ownerThreadId_{ CurrentThread::t_tid }
   , looping_{ false }
   , quit_{ false }
   , callingFunctors_{ false }
+  , is_poller_{ is_poller }
 #ifdef ENABLE_EPOLL
-  , poller_{ kanon::make_unique<Epoller>(this) }
+  , poller_{ is_poller_ ?
+     static_cast<PollerBase*>(new Poller(this)) :
+     static_cast<PollerBase*>(new Epoller(this)) }
 #else
-  , poller_{ kanon::make_unique<Poller>(this) }
+  , poller_{ std::make_unique<Poller>(this) }
 #endif
-  , evfd_{ detail::CreateEventFd() }
-  , ev_channel_{ kanon::make_unique<Channel>(this, evfd_) }
+  // CreateEventfd() is don't throw exception, don't wrong exception-safety
+  , ev_channel_{ kanon::make_unique<Channel>(this, detail::CreateEventFd()) }
   , timer_queue_{ kanon::make_unique<TimerQueue>(this) }
 { 
+
   ev_channel_->SetReadCallback([this](TimeStamp receive_time){
-    LOG_TRACE << "Event receive_time: " << receive_time.ToFormattedString(true);
+    LOG_TRACE << "EventFd receive_time: " << receive_time.ToFormattedString(true);
     this->EvRead();
   });
 
@@ -85,7 +96,13 @@ EventLoop::EventLoop()
 
 EventLoop::~EventLoop()
 { 
+  // No need to Quit() explicitly here:
+  // 1. If in loop, call it by user instead of library
+  // 2. If not in loop, call it by EventLoopThread so
+  //    it don't considered by user.
   LOG_TRACE << "EventLoop " << this << " destroyed";
+
+  assert(!looping_);
 }
 
 void EventLoop::StartLoop() {
@@ -118,7 +135,16 @@ void EventLoop::StartLoop() {
 
 void EventLoop::RunInLoop(FunctorCallback cb) {
   if (IsLoopInThread()) {
-    cb();  
+    try {
+      cb();
+    } catch(std::exception const& ex) {
+      LOG_ERROR << "std::exception(including its derived class) is caught in RunInLoop()";
+      LOG_ERROR << "Reason: " << ex.what();
+      KANON_RETHROW;
+    } catch(...) {
+      LOG_ERROR << "Unknown exception is caught in RunInLoop()";
+      KANON_RETHROW;
+    }
   } else {
     this->QueueToLoop(std::move(cb));
   }
@@ -130,14 +156,26 @@ void EventLoop::QueueToLoop(FunctorCallback cb) {
     functors_.emplace_back(std::move(cb));
   }
 
-  // If not in IO thread(async), may be in empty polling(It is also OK if not)
-  // It is in the "call functor" phase in the (IO)loop, indicates QueueToLoop() is also
-  // a functor in @var functors_, then the @var functor_ is not empty,
-  // and also may be in empty polling, wakeup to avoid empty polling.
-  // i.e. If in the IO thread and not calling functors, indicates
-  // in the poll phase or handle events.
-  if (! IsLoopInThread() ||
-      callingFunctors_) {
+  // If not in IO thread(async), and not event occurred, then block.
+  // That's wrong, since it is expected to be called immediately.
+  // e.g. 
+  // async call the Connect() of TcpClient(or derived class)
+  // there is no event occurred, but we should call it intead
+  // of block POLL_TIME(e.g. 10s).
+
+  // If call QueueToLoop() in the "call functor" phase(i.e. phase 3), we can't ensure
+  // the next loop don't do a empty poll(and block), should Wakeup() eventfd to avoid
+  // it. The other two phase it OK, since phase 3 in after.
+  // e.g. 
+  // Sending file in pipeline way.
+  // If the first write is not complete, we need to write it again.
+  // Fortunatly, kanon provide WriteCompleteCallback can implemete
+  // it. We first register it in phase2(Suppose we send it in ConnectionCallback)
+  // then WriteCompleteCallback continue write and register it if 
+  // not complete, but this is in the phase3, if we don't Wakeup(),
+  // the next loop must be blocked.
+  // \see example/file_transfer/client.cc
+  if (!IsLoopInThread() || callingFunctors_) {
     Wakeup();
   }
 }
@@ -163,14 +201,14 @@ void EventLoop::CallFunctors() {
       assert(func);
       func();
     } catch(std::exception const& ex) {
-      LOG_ERROR << "std::exception caught in CallFunctors()"
-            << "what(): " << ex.what();  
-      KANON_RETHROW;
+      LOG_ERROR << "std::exception caught in CallFunctors()";
+      LOG_ERROR << "Reason: " << ex.what();  
       callingFunctors_ = false;
+      KANON_RETHROW;
     } catch(...) {
-      LOG_ERROR << "some exception caught in CallFunctors()";
-      KANON_RETHROW;
+      LOG_ERROR << "Unknown exception caught in CallFunctors()";
       callingFunctors_ = false;
+      KANON_RETHROW;
     }
   }
 
@@ -187,12 +225,11 @@ bool EventLoop::IsLoopInThread() noexcept {
 }
 
 void EventLoop::EvRead() noexcept {
-  detail::ReadEventFd(evfd_);
+  detail::ReadEventFd(ev_channel_->GetFd());
 }
 
 void EventLoop::Wakeup() noexcept {
-  LOG_DEBUG << "Wakeup";
-  detail::WriteEventFd(evfd_);
+  detail::WriteEventFd(ev_channel_->GetFd());
 }
 
 void EventLoop::Quit() noexcept {
@@ -200,10 +237,11 @@ void EventLoop::Quit() noexcept {
 
   LOG_DEBUG << "EventLoop is quiting";
 
-  // If in the IO thread, call Wakeup() in Quit()  is not necessary,
+  // If in the IO thread, call Wakeup() in Quit() is not necessary,
   // because it only few cases can call Quit() successfully
-  //  * timer event, but is not blocking(Can be called in this thread)
-  //  * asynchronous call from other thread, will call Wakeup() to avoid empty polling(might)
+  // * In the loop, the only choice is timer event, but it is not blocking
+  // * In the other thread, do an asynchronous call, need call Wakeup() to 
+  //   avoid empty poll like QueueToLoop()
   if (! this->IsLoopInThread())
     this->Wakeup();
 }
@@ -221,6 +259,39 @@ void EventLoop::CancelTimer(TimerId timer_id) {
 }
 
 void EventLoop::AbortNotInThread() noexcept
-{ LOG_FATAL << "The Policy of \"One Loop Per Thread\" has destroied!"; }
+{ LOG_FATAL << "The policy of \"One Loop Per Thread\" has destroyed!"; }
+
+void EventLoop::SetEdgeTriggerMode() noexcept
+{
+#ifdef ENABLE_EPOLL
+  if (!is_poller_) {
+    auto ptr = kanon::down_pointer_cast<Epoller>(poller_.get());
+    KANON_ASSERT(ptr, "This must be a Epoller*");
+    ptr->SetEdgeTriggertMode();
+    LOG_TRACE << "The Poller will working in edge-trigger mode";
+  }
+  else {
+    LOG_TRACE << "poll(2) can't set to edge-trigger mode, the only mode is level-trigger";
+  }
+#else
+  LOG_TRACE << "poll(2) can't set to edge-trigger mode, the only mode is level-trigger";
+#endif
+}
+
+bool EventLoop::IsEdgeTriggerMode() const noexcept
+{ 
+#ifdef ENABLE_EPOLL
+  if (!is_poller_) {
+    auto ptr = kanon::down_pointer_cast<Epoller>(poller_.get());
+    KANON_ASSERT(ptr, "This must be a Epoller*");
+
+    return ptr->IsEdgeTriggerMode();
+  }
+  
+  return false;
+#else
+  return false;
+#endif
+}
 
 } // namespace kanon
