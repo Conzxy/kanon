@@ -1,5 +1,6 @@
 set(BUILD_ALL_EXAMPLES OFF CACHE BOOL "Determine if build all examples")
 
+set(EXAMPLE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/example)
 
 function (GenExample exec_name)
   if (${BUILD_ALL_EXAMPLES})   
@@ -19,3 +20,4 @@ add_subdirectory(daytime)
 add_subdirectory(echo)
 add_subdirectory(discard)
 add_subdirectory(chat)
+add_subdirectory(file_transfer)
