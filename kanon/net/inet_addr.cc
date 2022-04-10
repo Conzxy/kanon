@@ -4,6 +4,7 @@
 #include <netdb.h>
 #include <memory>
 #include <sys/socket.h>
+#include <cctype>
 
 #include "kanon/string/string_view.h"
 #include "kanon/util/macro.h"
@@ -25,18 +26,6 @@ static_assert(offsetof(sockaddr_in, sin_port)
 static_assert(sizeof(InetAddr) == sizeof(struct sockaddr_in6), 
       "InetAddr size should equal to sockaddr_in6");
 
-static inline struct addrinfo MakeHint(const int flag, const int family) noexcept
-{
-  struct addrinfo hint;
-  MemoryZero(&hint, sizeof hint);
-
-  hint.ai_socktype = SOCK_STREAM;
-  hint.ai_flags = flag;
-  hint.ai_family = family;
-
-  return hint;
-}
-
 InetAddr::InetAddr(Port port, bool loopback, bool v6) {
   if (v6) {
     addr6_.sin6_port = sock::ToNetworkByteOrder16(port);
@@ -49,19 +38,57 @@ InetAddr::InetAddr(Port port, bool loopback, bool v6) {
   }
 }
 
-InetAddr::InetAddr(StringArg ip, Port port, bool v6) {
-  if (v6) {
-    sock::FromIpPort(ip, port, addr6_);
-  } else {
-    sock::FromIpPort(ip, port, addr_);
+InetAddr::InetAddr(StringView ip, Port port) {
+  if (ip.find('.') != StringView::npos) {
+    sock::FromIpPort(ip.data(), port, addr_);
+  } 
+  else if (ip.find(':') != StringView::npos) {
+    sock::FromIpPort(ip.data(), port, addr6_);
+  } 
+  else {
+    LOG_ERROR << "This is invalid ip argument:" << ip;
+  }
+}
+
+InetAddr::InetAddr(StringView addr)
+{      
+  if (std::isalpha(addr[0])) {
+    // Hostname
+    auto colon_pos = addr.find(':');
+    if (colon_pos != StringView::npos) {
+      auto const hostname = addr.substr(0, colon_pos).ToString();
+      auto const service = addr.substr(colon_pos+1).ToString();
+      *this = InetAddr(hostname, service);
+    }
+  }
+  else if (std::isalnum(addr[0]) && addr.find('.') != StringView::npos) {
+    // Ipv4 address
+    auto colon_pos = addr.find(':');
+    if (colon_pos != StringView::npos) {
+      auto const ip = addr.substr(0, colon_pos).ToString();
+      auto const port = addr.substr(colon_pos+1).ToString();
+      sock::FromIpPort(ip, ::atoi(port.c_str()), addr_);
+    }
+  }
+  else if (addr[0] == '[') {
+    // Ipv6 address
+    auto right_pos = addr.find(']');
+
+    if (right_pos != StringView::npos) {
+      auto const ip = addr.substr_range(1, right_pos).ToString();
+      auto const port = addr.substr(right_pos+2).ToString();
+      sock::FromIpPort(ip.c_str(), ::atoi(port.c_str()), addr6_);
+    }
+  }
+  else {
+    LOG_ERROR << "This is invalid address string";
   }
 }
 
 InetAddr::InetAddr(StringArg hostname, StringArg service) {
-  const auto addrs = Resolve(hostname, service, MakeHint(AI_ALL, AF_INET));
+  const auto addrs = Resolve(hostname, service);
 
-  // Bitwise is also ok
-  *this = addrs.front();
+  *this = std::move(addrs.front());
 }
 
 InetAddr::Port InetAddr::GetPort() const noexcept
@@ -91,38 +118,49 @@ std::vector<InetAddr>
 InetAddr::Resolve(
   StringArg hostname, 
   StringArg service,
-  HintType type) {
+  bool is_server)
+{
   struct addrinfo hint;
   BZERO(&hint, sizeof hint);
 
-  switch (type) {
-    case HintType::kClient:
-      hint.ai_socktype = SOCK_STREAM;
-      hint.ai_flags |= AI_NUMERICSERV | AI_ADDRCONFIG;
-      break;
-    case HintType::kServer:
-      hint.ai_socktype = SOCK_STREAM;
-      hint.ai_flags |= AI_NUMERICSERV | AI_PASSIVE | AI_ADDRCONFIG;
-    break;
-    case HintType::kNoneHint:
-      hint.ai_socktype = SOCK_STREAM;
-      hint.ai_flags |= AI_ALL;
-    default:
-      break;
+  // Support Ipv4 and Ipv6
+  hint.ai_family = AF_UNSPEC;
+  // Support TCP connection only
+  hint.ai_socktype = SOCK_STREAM;
+
+  // Looks up ipv4 and ipv6 address
+  // AI_V4MAPPED:
+  // 
+
+  // AI_ADDRCONFIG:
+  // control return ipv4 address 
+  // only when ipv4 address is configured in local system
+  // so does ipv6, this is useful on IPv4 only system.
+
+  // AI_NUMERICSERV:
+  // return decimal port number instead service name
+  hint.ai_flags = (AI_V4MAPPED | AI_ADDRCONFIG | AI_NUMERICSERV);
+
+ if (is_server) {
+      // AI_PASSIVE is suitable for binding socket,
+      // otherwise, these returned address will be 
+      // suiltable for connect
+      hint.ai_flags |= AI_PASSIVE;
   }
   
-  return Resolve(hostname, service, hint);  
+  return Resolve(hostname, service, &hint);  
 }
 
 std::vector<InetAddr> 
 InetAddr::Resolve(
   StringArg hostname, 
   StringArg service,
-  struct addrinfo const& hint) {
+  struct addrinfo const* hint)
+{
   std::vector<InetAddr> addrs;
   
   struct addrinfo* addr_list;
-  auto ret = ::getaddrinfo(hostname.data(), service.data(), &hint, &addr_list);
+  auto ret = ::getaddrinfo(hostname.data(), service.data(), hint, &addr_list);
 
   auto addrinfo_deleter = 
     [](struct addrinfo* const info)
@@ -149,7 +187,8 @@ InetAddr::Resolve(
       }
     }
   } else {
-    LOG_SYSERROR << "resolve the hostname to address error: " << ::gai_strerror(ret);
+    LOG_SYSERROR << "Resolve the hostname to address error: " << ::gai_strerror(ret);
+    LOG_SYSERROR << "User can retry get address later";
   }
 
   return addrs;
