@@ -52,7 +52,7 @@ public:
   EventLoop* GetLoop() noexcept { return loop_; }
 private:
   EventLoop* loop_;
-  std::unique_ptr<Connector> connector_;
+  std::shared_ptr<Connector> connector_;
 
   const std::string name_;
 
