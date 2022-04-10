@@ -32,7 +32,7 @@ class TcpClient;
  * * Send message to peer(std::string, kanon::StringView, char const*, kanon::Buffer)
  * * Shutdown in write direction and close
  * * Set context that tie with this connection
- * @note Public class
+ * \note Public class
  */
 class TcpConnection 
   : noncopyable
@@ -131,14 +131,22 @@ public:
   { return &output_buffer_; }
 
 private:
-  void HandleRead(TimeStamp recv_time);
+  void HandleRead(TimeStamp rece_time);
+  void HandleLtRead(TimeStamp recv_time);
+  void HandleEtRead(TimeStamp recv_time);
+
   void HandleWrite();
+  void HandleLtWrite();
+  void HandleEtWrite();
+
   void HandleError();
   void HandleClose();
-  
+
+  void CallWriteCompleteCallback(); 
   void SendInLoop(void const* data, size_t len);
   void SendInLoop(StringView data);
   void SendInLoopForStr(std::string& data);
+  void SendInLoopForBuf(Buffer& buffer);
 
   void SetConnectionCallback(ConnectionCallback cb)
   { connection_callback_ = std::move(cb); }
@@ -179,6 +187,9 @@ private:
   // a.k.a. low watermark callback
   // * Default is empty(optional)
   // * Is always set
+  // \return 
+  // 1. ture: write complete really
+  // 2. false: continue write in callback(e.g. pipeline)
   WriteCompleteCallback write_complete_callback_;  
   
   // Avoid so much data filling the kernel input/output buffer
