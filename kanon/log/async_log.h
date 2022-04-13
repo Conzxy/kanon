@@ -20,14 +20,14 @@ namespace kanon {
 
 /**
  * @class AsyncLog
- * @brief 
+ * \brief 
  * Log message to specified devices or files asynchronously
- * @warning
+ * \warning
  * If main thread exits, then backthread which write message to disk will also stop.
  * Therefore, it is best that this used for such service which is long-running
  * (Fortunately, server is usually long-running).
- * @note This should used by Logger
- * @note Must be thread safe
+ * \note This should used by Logger
+ * \note Must be thread safe
  */
 class AsyncLog : noncopyable {
 public:
@@ -67,7 +67,7 @@ private:
   std::atomic<bool> running_;
 
   // use "Multiplex Buffering" technique
-  // @see "Multiplex Buffering" entry of Wikipedia
+  // \see "Multiplex Buffering" entry of Wikipedia
   BufferUPtr currentBuffer_;
   BufferUPtr nextBuffer_;
   Buffers buffers_;

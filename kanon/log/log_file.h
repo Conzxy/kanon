@@ -20,8 +20,8 @@
 namespace kanon {
 
 /**
- * @brief just roll file and write to file
- * @note should be used by Logger
+ * \brief just roll file and write to file
+ * \note should be used by Logger
  */
 template<bool ThreadSafe = false>
 class LogFile : noncopyable
@@ -163,7 +163,8 @@ std::string LogFile<T>::getLogFileName(time_t& now) {
   char timebuf[32];
   struct tm tm;
   now = ::time(NULL);
-  ::gmtime_r(&now, &tm);
+  tzset();
+  ::localtime_r(&now, &tm);
 
   ::strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
 
