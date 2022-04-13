@@ -21,6 +21,7 @@ public:
   {
       conn->SetWriteCompleteCallback([](TcpConnectionPtr const& conn) {
         conn->ShutdownWrite();
+        return true;
       });
 
       conn->Send(GetDaytime());
