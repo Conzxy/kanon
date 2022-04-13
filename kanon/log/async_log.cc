@@ -115,12 +115,12 @@ AsyncLog::threadFunc() {
     tmpBuffers.reserve(16);  
     {
       MutexGuard guard{ mutex_ };
-      // @warning 
+      // \warning 
       // You shouldn't use while.
       // Otherwise, it will wait infinitly
       // when current message accumulation
       // does not reach a buffer size.
-      // @note
+      // \note
       // this is not a classic use,
       // but there are one cosumer, so you can just use if here.
       if (buffers_.empty()) {

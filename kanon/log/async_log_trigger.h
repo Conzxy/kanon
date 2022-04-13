@@ -9,8 +9,8 @@
 namespace kanon {
 
 /**
- * @brief construct this to trigger asynchronous logging
- * @warning 
+ * \brief construct this to trigger asynchronous logging
+ * \warning 
  *  -- This is must be not a temporary object
  *  -- construct before any logic, that is the first statement in main()
  */
