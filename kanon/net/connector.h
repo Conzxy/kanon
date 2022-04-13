@@ -16,6 +16,17 @@ namespace kanon {
 class EventLoop;
 class Channel;
 
+//! \ingroup net
+//! \addtogroup client
+//! \brief Client parts
+//!@{
+
+/**
+ * \brief Connect to peer(server)
+ *
+ * \note
+ *   Internal class(User by TcpClient)
+ */
 class Connector : public std::enable_shared_from_this<Connector>, noncopyable {
   enum class State {
     kConnecting,
@@ -70,6 +81,8 @@ private:
   NewConnectionCallback new_connection_callback_;
   TimerId timer_;
 };
+
+//!@}
 
 } // namespace kanon
 

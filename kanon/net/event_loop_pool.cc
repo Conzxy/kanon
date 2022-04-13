@@ -8,12 +8,11 @@
 
 using namespace kanon;
 
-EventLoopPool::EventLoopPool(
-    EventLoop* baseLoop,
-    std::string const& name)
-  : baseLoop_{ baseLoop }
+EventLoopPool::EventLoopPool(EventLoop* base_loop,
+                             std::string const& name)
+  : base_loop_{ base_loop }
   , started_{ false }
-  , loopNum_{ 0 }
+  , loop_num_{ 0 }
   , next_{ 0 }
   , name_{ name }
 {
@@ -25,7 +24,8 @@ EventLoopPool::~EventLoopPool() noexcept {
 
 void
 EventLoopPool::StartRun() {
-  baseLoop_->AssertInThread();
+  base_loop_->AssertInThread();
+
   // If the function is called not once, warning user
   assert(!started_); 
   started_ = true;
@@ -34,10 +34,10 @@ EventLoopPool::StartRun() {
   std::vector<char> buf;
   buf.reserve(len);
 
-  for (int i = 0; i != loopNum_; ++i) {
+  for (int i = 0; i != loop_num_; ++i) {
     ::snprintf(buf.data(), len, "%s[%d]", name_.c_str(), i);
     auto loopThread = new EventLoopThread{ buf.data() };
-    threads_.emplace_back(std::unique_ptr<EventLoopThread>(loopThread));
+    loop_threads_.emplace_back(std::unique_ptr<EventLoopThread>(loopThread));
     loops_.emplace_back(loopThread->StartRun());
   }
 
@@ -45,7 +45,7 @@ EventLoopPool::StartRun() {
 
 EventLoop*
 EventLoopPool::GetNextLoop() {
-  baseLoop_->AssertInThread();
+  base_loop_->AssertInThread();
   assert(started_); 
 
   EventLoop* loop = nullptr;
@@ -53,13 +53,13 @@ EventLoopPool::GetNextLoop() {
   if (!loops_.empty()) {
     loop = loops_[next_];
     ++next_;
-    if (next_ >= loopNum_) {
+    if (next_ >= loop_num_) {
       next_ = 0;
     }
 
-    LOG_DEBUG << "Next event loop Index = " << next_;
+    LOG_TRACE << "Next event loop Index = " << next_;
   } else {
-    loop = baseLoop_;
+    loop = base_loop_;
   }
 
   return loop;
@@ -68,7 +68,7 @@ EventLoopPool::GetNextLoop() {
 auto 
 EventLoopPool::GetLoops() 
 -> LoopVector* {
-  baseLoop_->AssertInThread();
+  base_loop_->AssertInThread();
   assert(started_);
 
   if (loops_.empty()) {

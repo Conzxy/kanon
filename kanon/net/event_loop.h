@@ -23,7 +23,8 @@ class PollerBase;
 #define POLLTIME 10000 // 10 seconds
 
 /**
- * \addtogroup net
+ * \ingroup net
+ * \addtogroup EventLoop
  * @{
  */
 

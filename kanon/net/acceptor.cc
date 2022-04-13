@@ -1,5 +1,6 @@
 #include "kanon/net/acceptor.h"
 
+#include "kanon/util/check.h"
 #include "kanon/util/time_stamp.h"
 
 #include "kanon/net/event_loop.h"
@@ -16,7 +17,7 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
   socket_.SetReuseAddr(true);
   socket_.SetReusePort(reuseport);
   socket_.SetNoDelay(true);
-  socket_.bindAddress(addr);
+  socket_.BindAddress(addr);
   
   // set listen channel read callback(accept peer end)
   // and start observing the read event  
@@ -25,7 +26,7 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
     loop_->AssertInThread();
     
     InetAddr cli_addr;
-    auto cli_fd = socket_.accept(cli_addr);
+    auto cli_fd = socket_.Accpet(cli_addr);
     
     if (cli_fd >= 0) {
       if (new_connection_callback_) {
@@ -58,8 +59,11 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 }
 
 Acceptor::~Acceptor() noexcept {
+  // FIXME 
+  loop_->AssertInThread();
+
   listening_ = false;
-  // FIXME: need DisableAll()?
+  // FIXME Need DisableAll()?
   channel_.DisableAll();
   channel_.Remove();
   ::close(dummyfd_);
@@ -68,7 +72,8 @@ Acceptor::~Acceptor() noexcept {
 void
 Acceptor::Listen() noexcept {
   assert(!listening_);
+  loop_->AssertInThread();
+  
   sock::Listen(socket_.GetFd());
-
   listening_ = true;
 }

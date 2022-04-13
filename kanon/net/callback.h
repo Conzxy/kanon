@@ -13,7 +13,7 @@ class Buffer;
 
 using TcpConnectionPtr      = std::shared_ptr<TcpConnection>;
 using ConnectionCallback    = std::function<void(TcpConnectionPtr const&)>;
-using WriteCompleteCallback = std::function<void(TcpConnectionPtr const&)>;
+using WriteCompleteCallback = std::function<bool(TcpConnectionPtr const&)>;
 using HighWaterMarkCallback = std::function<void(TcpConnectionPtr const&, size_t)>;
 using CloseCallback         = std::function<void(TcpConnectionPtr const&)>;
 using TimerCallback         = std::function<void()>;

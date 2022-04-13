@@ -5,9 +5,13 @@
 
 namespace kanon {
 
+//! \addtogroup timer
+//!@{
+
 /**
- * @brief since this class is exposed to user,
- *        not just a struct and own value semantic
+ * \brief A Timer* wrapper
+ * \note
+ *   This class is exposed to user and has value semantic.
  */
 class TimerId {
   friend class TimerQueue;
@@ -25,7 +29,7 @@ private:
     uint64_t seq_;        
 };
 
-
+//!@}
 } // namespace kanon
 
 #endif // KANON_NET_TIMER_TIMERID_H

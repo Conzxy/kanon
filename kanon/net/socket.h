@@ -10,13 +10,19 @@ namespace kanon {
 
 class InetAddr;
 
+//! \addtogroup net
+//!@{
+
 /**
- * We don't create socket, just store the fd
- * and use the RAII property to avoid handler(fd) leak
- * 
- * Also, this class wrap some API in @file sock_api.h
- * that make it easy to use.
- * \note Internal class
+ * \brief Represents socket instance
+ * \note
+ *   We don't create socket, just store the fd of socket
+ *   and use the RAII property to avoid handler(fd) leak
+ *   
+ *   Also, this class wrap some API in sock_api.h
+ *   that make it easy to use.
+ *   
+ *   Internal class
  */
 class Socket : noncopyable {
 public:
@@ -27,8 +33,8 @@ public:
   ~Socket() noexcept;  
 
   // Must be called by server  
-  void bindAddress(InetAddr const& addr) noexcept;
-  int accept(InetAddr& addr) noexcept;
+  void BindAddress(InetAddr const& addr) noexcept;
+  int Accpet(InetAddr& addr) noexcept;
 
   void ShutdownWrite() noexcept;
   void ShutdownTwoDirection() noexcept;
@@ -49,6 +55,8 @@ public:
 private:
   int fd_;
 };
+
+//!@}
 
 } // namespace kanon
 

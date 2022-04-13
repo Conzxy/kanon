@@ -34,6 +34,8 @@ public:
   // It is harmless although this is called many times.
   // thread-safe
   void StartRun() noexcept;
+  
+  bool IsRunning() noexcept;
 
   // set callback
   void SetConnectionCallback(ConnectionCallback cb) noexcept

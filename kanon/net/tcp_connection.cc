@@ -551,15 +551,15 @@ void TcpConnection::SetNoDelay(bool flag) noexcept
 void TcpConnection::SetKeepAlive(bool flag) noexcept
 { socket_->SetKeepAlive(flag); }
 
-// Although Send() and SendInLoop() check the state of connection,
-// peer can also close connection when server is busy.
-// 
-// When peer close connection, if you continue write the closed fd which
-// will receive SIGPIPE but this signal default handler is terminal the process
-// so we should ignore it
-//
-// The dtor is trivial, So define static variable is OK
-// \see test/SIGPIPE_test
+//! Although Send() and SendInLoop() check the state of connection,
+//! peer can also close connection when server is busy.
+//! 
+//! When peer close connection, if you continue write the closed fd which
+//! will receive SIGPIPE but this signal default handler is terminal the process
+//! so we should ignore it
+//!
+//! The dtor is trivial, So define static variable is OK
+//! \see test/SIGPIPE_test
 struct IgnoreSignalPipe {
   IgnoreSignalPipe() {
     ::signal(SIGPIPE, SIG_IGN);
