@@ -29,7 +29,9 @@ namespace kanon {
 class EventLoop;
 
 /**
- * \addtogroup net
+ * \ingroup net
+ * \addtogroup dispatcher
+ * \brief Event Dispatcher
  * @{
  */
 

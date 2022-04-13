@@ -217,8 +217,6 @@ void TimerQueue::ProcessAllExpiredTimers(TimeStamp recv_time) {
 }
 
 auto TimerQueue::GetExpiredTimers(TimeStamp time) -> TimerVector {
-  assert(!timers_.empty());
-  
   TimerVector expireds;
 
   // Get the first timer which does not expired

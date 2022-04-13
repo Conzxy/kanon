@@ -22,23 +22,26 @@ class TcpServer;
 class TcpClient;
 
 /**
- * Represents a tcp connection.
+ * \brief Represents a tcp connection.
+ *
  * User don't care detail of it, the work just to register callback as following:
- * * Message callback to process message from the peer
- * * Highwatermark callback to do something when output buffer is too full
- * * Connection callback to do something when connection down or up
- * * Write complete callback to do something when write complete
+ *  - Message callback to process message from the peer
+ *  - Highwatermark callback to do something when output buffer is too full
+ *  - Connection callback to do something when connection down or up
+ *  - Write complete callback to do something when write complete
  * Besides,
- * * Send message to peer(std::string, kanon::StringView, char const*, kanon::Buffer)
- * * Shutdown in write direction and close
- * * Set context that tie with this connection
- * \note Public class
+ *  - Send message to peer(std::string, kanon::StringView, char const*, kanon::Buffer)
+ *  - Shutdown in write direction and close
+ *  - Set context that tie with this connection
+ *
+ * \note 
+ *   Public class
  */
 class TcpConnection 
   : noncopyable
   , public std::enable_shared_from_this<TcpConnection> {
-  // Allow TcpServer and TcpClient call the private APIs
-  // that we don't exposed to user
+  //! Allow TcpServer and TcpClient call the private APIs
+  //! that we don't exposed to user
   friend class TcpServer;
   friend class TcpClient;
 

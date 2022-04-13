@@ -7,6 +7,7 @@
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_pool.h"
 #include "kanon/net/acceptor.h"
+#include <atomic>
 
 using namespace kanon;
 
@@ -84,12 +85,15 @@ void TcpServer::StartRun() noexcept {
   if (start_once_.test_and_set(std::memory_order_relaxed) == false) {
     // start IO loop
     pool_->StartRun();
-    loop_->RunInLoop(
-      [this]() {
-        LOG_TRACE << "Start listen in " << ip_port_;
-        acceptor_->Listen();
-      });
+    loop_->RunInLoop([this]() {
+      LOG_TRACE << "Listening in " << ip_port_;
+      acceptor_->Listen();
+    });
   }
+}
+
+bool TcpServer::IsRunning() noexcept {
+  return acceptor_->Listening();
 }
 
 void TcpServer::RemoveConnection(TcpConnectionPtr const& conn) {

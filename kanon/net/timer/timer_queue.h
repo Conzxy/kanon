@@ -17,7 +17,7 @@ class EventLoop;
 /**
  * \ingroup net
  * \addtogroup timer
- * \brief Timer module, manage timer and process timer events
+ * \brief Manage timer and process timer events
  * 
  * This is an internal module of net module
  * @{
@@ -92,7 +92,7 @@ private:
    * is unique and don't represents a timestamp here.
    */
   TimerSet timers_; //!< Maintain active timers
-/* The follwing data structure used for implementing CancelTimer() */
+  /* The follwing data structure used for implementing CancelTimer() */
 
   /**
    * To cancel a timer, we must call timers_.erase().

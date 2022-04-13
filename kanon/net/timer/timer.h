@@ -13,8 +13,11 @@ namespace kanon {
 
 class TimerQueue;
 
+//! \addtogroup timer
+//!@{
+
 /**
- * @brief 
+ * \brief 
  * Encapsulation of itimespec
  */
 class Timer : noncopyable {
@@ -50,6 +53,7 @@ private:
   static AtomicCounter64 s_counter_;
 };
 
+//!@}
 } // namespace kanon
 
 #endif // KANON_TIMER_TIMER_H

@@ -16,13 +16,13 @@ Socket::~Socket() noexcept {
 }
 
 void
-Socket::bindAddress(InetAddr const& addr) noexcept {
+Socket::BindAddress(InetAddr const& addr) noexcept {
   sock::Bind(fd_, addr.IsIpv4() ? 
       sock::to_sockaddr(addr.ToIpv4()) : sock::to_sockaddr(addr.ToIpv6()));
 }
 
 int
-Socket::accept(InetAddr& addr) noexcept {
+Socket::Accpet(InetAddr& addr) noexcept {
   struct sockaddr_in6 addr6;
   auto cli_fd = sock::Accept(fd_, &addr6);
   

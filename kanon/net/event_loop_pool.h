@@ -11,40 +11,62 @@ namespace kanon {
 class EventLoop;
 class EventLoopThread;
 
+//! \addtogroup EventLoop
+//!@{
+
 /**
- * @class EventLoopPool
- * @brief 
- * Collects IO thread loop in pool,
- * to satisfy the policy of "one loop per thread"
+ * \brief Like ThreadPool, but the elements are EventLoopThread
+ * \see
+ *   EventLoopThread
  */
 class EventLoopPool : noncopyable {
-  typedef std::vector<std::unique_ptr<EventLoopThread>> ThreadVector;
+  typedef std::vector<std::unique_ptr<EventLoopThread>> LoopThreadVector;
   typedef std::vector<EventLoop*> LoopVector;
 public:
-  explicit EventLoopPool(EventLoop* baseLoop, std::string const& name = {});
+  /**
+   * \brief Construct a EventLoopPool object
+   * \param base_loop The loop that call this(i.e. owner of the pool)
+   * \param name The base name of the thread
+   */
+  explicit EventLoopPool(EventLoop* base_loop, std::string const& name = {});
   ~EventLoopPool() noexcept;
   
-  void SetLoopNum(int loopNum) noexcept { loopNum_ = loopNum; }
+  //! Set pool size 
+  void SetLoopNum(int loop_num) noexcept { loop_num_ = loop_num; }
+
+  //! Ask whether pool has started
   bool started() const noexcept { return started_; }
   
-  // Should be called once
+  /**
+   * \brief Start run
+   * \warning 
+   *   Should be called once
+   */
   void StartRun(); 
   
-  // Switch IO loop by using RR(round-robin) algorithm
+  /**
+   * \brief Get the next event loop in the pool based on RR(round-robin) scheduling algorithm
+   */
   EventLoop* GetNextLoop();
+
+  /**
+   * \brief Get all loops
+   */
   LoopVector* GetLoops();
 private: 
   
-  EventLoop* baseLoop_; //< caller thread
-  bool started_; //< used for check of invariants
-  int loopNum_;  
-  int next_; //< next IO thread(used for RR)
+  EventLoop* base_loop_; //!< caller thread
+  bool started_; //!< used for check of invariants
+  int loop_num_; //!< The size of pool
+  int next_; //!< Index of next IO thread(used for RR)
   
-  std::string name_;
-  ThreadVector threads_; //< IO threads
-  LoopVector loops_; //< IO loops
+  std::string name_; //!< base name of event loop thread
+  LoopThreadVector loop_threads_; //!< IO threads
+  LoopVector loops_; //!< IO loops
 };
 
-}
+//!@}
+
+} // namespace kanon
 
 #endif // KANON_NET_EVENTLOOP_POOL_H

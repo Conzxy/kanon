@@ -12,21 +12,30 @@ namespace kanon {
 
 class EventLoop;
 
+//! \addtogroup EventLoop
+//!@{
+
 /**
- * Used for IO thread
+ * \brief Represents a event loop but running in another thread
+ * \note
+ *   This is used for IO thread
  */
 class EventLoopThread : noncopyable {
 public:
   EventLoopThread(std::string const& = std::string{});
-  
-  // Must be called in main thread  
+  ~EventLoopThread() noexcept;
+
+  /**
+   * \brief Start a new thread and start event loop
+   * \note
+   *   Must be called in main thread  
+   */
   EventLoop* StartRun();
 
+private:
   // Start loop in background thread(IO thread usually)
   void BackGroundStartLoop();
 
-  ~EventLoopThread() noexcept;
-private:
   EventLoop* loop_;
   
   MutexLock mutex_;
@@ -35,6 +44,7 @@ private:
   Thread thr_;
 };
 
+//!@}
 } // namespace kanon
 
 #endif // KANON_EVENTLOOP_THREAD_H

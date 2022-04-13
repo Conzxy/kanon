@@ -17,8 +17,9 @@ namespace sock {
 
 typedef struct sockaddr sockaddr;
 
+//! \cond
 namespace detail {
-// FIXME: or better check method exists?
+
 template<typename T>
 struct is_sockaddr : std::false_type {};
 
@@ -55,7 +56,6 @@ template<typename S, typename = typename std::enable_if<
     is_sockaddr<S>::value>::type>
 KANON_CONSTEXPR if_const_add_const_t<S, sockaddr>* to_sockaddr(S* addr) noexcept
 { return reinterpret_cast<if_const_add_const_t<S, sockaddr>*>(addr); }
-
 
 void ToIpPort(char* buf, size_t size, sockaddr const* addr);
 
@@ -170,4 +170,6 @@ bool IsSelfConnect(int sockfd) noexcept;
 } // namespace sock
 } // namespace sock
 
+//! \endcond
+//
 #endif // KANON_SOCK_API_H
