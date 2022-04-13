@@ -23,7 +23,7 @@ private:
 
   // operation + sequence number + filename-length + filename + file-size + file-content + END(last chunk)
   // 8 + 4 + 4 + 4096 + 4 + 65536 + 3
-  static constexpr uint32_t kMaxAcceptLength = 65655;
+  static constexpr uint32_t kMaxAcceptLength = 69655;
   static constexpr int kFileBufferSize = 64 * 1024;
 };
 

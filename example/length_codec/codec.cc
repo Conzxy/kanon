@@ -47,6 +47,8 @@ void LengthHeaderCodec::OnMessage(TcpConnectionPtr const& conn,
     } else if (buf.GetReadableSize() >= (kHeaderLength + message_len)) {
       buf.AdvanceRead(kHeaderLength);
       auto msg = buf.RetrieveAsVector(message_len);
+      buf.Shrink(buf.GetReadableSize());
+
       message_callback_(conn, msg, receive_time);
     } else {
       // if not a complete packet, just exit loop.
