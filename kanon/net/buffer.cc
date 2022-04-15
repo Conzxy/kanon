@@ -63,7 +63,7 @@ Buffer::Shrink(size_type n) {
 
 void
 Buffer::MakeSpace(size_type len) {
-  if (len >= GetWritableSize()) {
+  if (len <= GetWritableSize()) {
     return ;
   }
 
