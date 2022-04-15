@@ -471,11 +471,7 @@ public:
  
   //! Like std::vector::reserve(), to ensure buffer has @p len space at least
   void ReserveWriteSpace(uint32_t len) noexcept {
-    if (len > GetWritableSize()) {
-      MakeSpace(len);
-    }
-
-    assert(GetWritableSize() >= len);
+    MakeSpace(len);
   }
   
   //! Like std::vector::shrink_to_fit(), to shrink the buffer to (readable size + 8)
