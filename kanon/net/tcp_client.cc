@@ -10,26 +10,24 @@ using namespace kanon;
 
 TcpClient::TcpClient(
   EventLoop* loop,
-  InetAddr const& servAddr,
+  InetAddr const& serv_addr,
   std::string const& name)
   : loop_{ loop }
   // Use std::make_shared is ok here since no weak pointer
-  , connector_{ std::make_shared<Connector>(loop, servAddr) }
+  , connector_{ std::make_shared<Connector>(loop, serv_addr) }
   , name_{ name }
   , connection_callback_{ &DefaultConnectionCallback }
   , connect_{ true }
-  , retry_{ true }
+  , retry_{ false }
+  , conn_{ nullptr }
   , mutex_{ }
 {
   LOG_INFO << "TcpClient-[" << name_ << "]" << " constructed";
 
-  connector_->SetNewConnectionCallback([this, &servAddr](int sockfd) {
-    auto new_conn = std::make_shared<TcpConnection>(
-      loop_, 
-      name_,
-      sockfd,
-      sock::GetLocalAddr(sockfd),
-      servAddr);
+  connector_->SetNewConnectionCallback([this, &serv_addr](int sockfd) {
+    if (conn_) { return ; }
+
+    auto new_conn = TcpConnection::NewTcpConnection(loop_, name_, sockfd, sock::GetLocalAddr(sockfd), serv_addr);
 
     new_conn->SetMessageCallback(message_callback_);
     new_conn->SetWriteCompleteCallback(write_complete_callback_);
@@ -116,6 +114,7 @@ void TcpClient::Connect() noexcept {
 }
 
 void TcpClient::Disconnect() noexcept {
+  assert(connect_);
   connect_ = false;
 
   // FIXME use weak callback?
@@ -126,6 +125,7 @@ void TcpClient::Disconnect() noexcept {
 }
 
 void TcpClient::Stop() noexcept {
+  assert(connect_);
   connect_ = false;
   // in loop
   connector_->Stop();

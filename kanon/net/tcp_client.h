@@ -17,12 +17,27 @@ class EventLoop;
 class InetAddr;
 class Channel;
 
+//! \addtogroup client
+//!@{
+
+/**
+ * \brief A Tcp client instance
+ *
+ * User can connect or disconnect actively, and
+ * get the connection to send message.
+ * \note Public class
+ */
 class TcpClient : noncopyable {
 public:
-  TcpClient(
-    EventLoop* loop, 
-    InetAddr const& servAddr,
-    std::string const& name = {});
+  /**
+   * \param loop evnet loop(usually not main thread)
+   * \param serv_addr Address of server that you want to connect
+   * \param name Can be empty
+   */
+  TcpClient(EventLoop* loop, 
+            InetAddr const& serv_addr,
+            std::string const& name = {});
+
   ~TcpClient() noexcept;
 
   void SetConnectionCallback(ConnectionCallback cb) noexcept
@@ -34,15 +49,27 @@ public:
   void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
   { write_complete_callback_ = std::move(cb); }
 
-  // active connect
+  //! Active connect
   void Connect() noexcept;
-  // active close
+  //! Active close
   void Disconnect() noexcept;
-  
+
+  /**
+   * \brief Stop connecting to the server
+   * \note Only useful when connection isn't established successfully
+   */
   void Stop() noexcept;
-  
+
+  /**
+   * Enable the client retry connect when client
+   * is closed by peer(But if you call disconnect
+   * early, this is useless)
+   */ 
   void EnableRetry() noexcept
   { retry_ = true; }
+
+  //! \name getter
+  //!@{
 
   TcpConnectionPtr GetConnection() const noexcept {
     MutexGuard guard{ mutex_ };
@@ -50,6 +77,8 @@ public:
   }
 
   EventLoop* GetLoop() noexcept { return loop_; }
+
+  //!@}
 private:
   EventLoop* loop_;
   std::shared_ptr<Connector> connector_;
@@ -73,6 +102,7 @@ private:
   mutable MutexLock mutex_;
 };
 
+//!@}
 } // namespace kanon
 
 #endif // KANON_NET_TCP_TCPCLIENT_H
