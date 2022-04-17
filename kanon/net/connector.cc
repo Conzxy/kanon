@@ -11,37 +11,35 @@ using namespace kanon;
 
 Connector::Connector(
   EventLoop* loop,
-  InetAddr const& servAddr) 
+  InetAddr const& serv_addr) 
   : loop_{ loop }
-  , servAddr_{ servAddr }
-  , connect_{ true }
+  , serv_addr_{ serv_addr }
+  , retry_interval_{ INIT_RETRY_INTERVAL }
   , state_{ State::kDisconnected }
-  , retryInterval_{ INIT_RETRY_INTERVAL }
+  , connect_{ true }
 {
-  LOG_DEBUG << "Connector constructed";
+  LOG_DEBUG << "Connector is constructed";
 }
 
 Connector::~Connector() noexcept {
-  LOG_DEBUG << "Connector destructed";
+  LOG_DEBUG << "Connector is destructed";
   // user should call stop explicitly when reconnecting...
   assert(!channel_);
 } 
 
-void
-Connector::StartRun() noexcept {
+void Connector::StartRun() noexcept {
   loop_->RunInLoop([this]() {
     loop_->AssertInThread();
 
     if (connect_) {
       Connect();
     } else {
-      setState(State::kDisconnected);
+      SetState(State::kDisconnected);
     }
   });
 }
 
-void
-Connector::Stop() noexcept {
+void Connector::Stop() noexcept {
   // This is unsafe
   // Scenario:
   // one thread(usually, main thread) desctroy
@@ -50,12 +48,13 @@ Connector::Stop() noexcept {
   // loop_ become invalid address, access will 
   // trigger AssertInthread() to abort entire program.
   // (this is called in the phase3 as a callback)
+  // Solution:
+  // Make connector managed by std::shared_ptr
 
   loop_->RunInLoop(std::bind(&Connector::StopInLoop, shared_from_this()));
 }
 
-void
-Connector::StopInLoop() noexcept
+void Connector::StopInLoop() noexcept
 { 
   loop_->AssertInThread();
 
@@ -63,76 +62,62 @@ Connector::StopInLoop() noexcept
   // interrupt reconnecting to peer 
   if (state_ == State::kConnecting) {
     connect_ = false;
-    setState(State::kDisconnected);
+    SetState(State::kDisconnected);
 
     int sockfd = RemoveAndResetChannel();
     sock::Close(sockfd); 
 
-    loop_->CancelTimer(timer_);
+    if (timer_) loop_->CancelTimer(*timer_);
   }
 
 }
 
-void
-Connector::Restrat() noexcept {
-  connect_ = false;
-  setState(State::kDisconnected);
-  retryInterval_ = INIT_RETRY_INTERVAL;
+void Connector::Restrat() noexcept {
+  connect_ = true;
+  SetState(State::kDisconnected);
+  retry_interval_ = INIT_RETRY_INTERVAL;
 
   StartRun();
 }
 
-void
-Connector::Connect() noexcept {
-  int sockfd = sock::CreateNonBlockAndCloExecSocket(!servAddr_.IsIpv4());
+void Connector::Connect() noexcept {
+  int sockfd = sock::CreateNonBlockAndCloExecSocket(!serv_addr_.IsIpv4());
   // Poll to check connection if is established
   // If connection is established, we call CompleteConnect() to register write callback,
   // then write callback will call new_connection_callback_.
   // Otherwise, call Retry() to connect again.
-  auto ret = sock::Connect(sockfd, servAddr_.ToSockaddr());
+  auto ret = sock::Connect(sockfd, serv_addr_.ToSockaddr());
 
   auto saved_errno = (ret == 0) ? 0 : errno;
 
+  // \see man connect
   switch(saved_errno) {
     case 0:
     case EINTR:
-    case EINPROGRESS: // connecting...(only for nonblocking)
-    case EISCONN: // connected(continues harmlessly)
+    case EINPROGRESS: // Connecting(Only for nonblocking)
+    case EISCONN: // Connected(continues harmlessly)
       CompleteConnect(sockfd);
       break;
 
-    case EAGAIN: // ephemeral port have run out
+    case EAGAIN: // For tcp, there are insufficient entries in the routing cache
     case EADDRINUSE:
-    case EADDRNOTAVAIL: // no port can be used(or enlarge port range?)
+    case EADDRNOTAVAIL: // No port can be used(or enlarge port range?)
     case ENETUNREACH:
-    case ECONNREFUSED: // accept RST packet
+    case ECONNREFUSED: // Accept RST segments, unreachable address
       Retry(sockfd);
       break;
 
-    // tried to connect to a broadcast address but not set flag
-    // or local firewall rule
-    case EACCES: case EPERM:
-    case EALREADY:
-    case EAFNOSUPPORT: // address family not correct
-    case EBADF: // fd is invalid
-    case EFAULT:
-    case ENOTSOCK: // fd is not a socket
-    case EPROTOTYPE:
-    case ETIMEDOUT:
-      LOG_SYSERROR << "connect error in Connector::Connect()";
-      sock::Close(sockfd);
-      break;
     default:
-      LOG_SYSERROR << "unknown error in Connector::Connect()";
+      LOG_SYSERROR << "Unexpected error in Connector::Connect()";
       sock::Close(sockfd);
   }
 
 }
 
-void
-Connector::CompleteConnect(int sockfd) noexcept {
-  if (state_ == State::kDisconnected) {
-    setState(State::kConnecting);
+void Connector::CompleteConnect(int sockfd) noexcept {
+  if (state_ == State::kDisconnected &&
+      connect_) {
+    SetState(State::kConnecting);
 
     assert(!channel_);
     channel_ = kanon::make_unique<Channel>(loop_, sockfd);
@@ -145,8 +130,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
         if (err) {
           // Fatal errors have handled in Connect()
           LOG_WARN << "SO_ERROR = " << err 
-            << " " << strerror_tl(err);
-          // does not complete, retry
+                   << " " << strerror_tl(err);
           Retry(sockfd);
         } else if (sock::IsSelfConnect(sockfd)) {
           LOG_WARN << "self connect";
@@ -154,7 +138,7 @@ Connector::CompleteConnect(int sockfd) noexcept {
         } else {
           if (connect_) {
             // new_connection_callback should be seted by client
-            setState(State::kConnected);
+            SetState(State::kConnected);
             if (new_connection_callback_) 
               new_connection_callback_(sockfd);
           } else {
@@ -173,7 +157,6 @@ Connector::CompleteConnect(int sockfd) noexcept {
             << strerror_tl(err);
         }
 
-        setState(State::kDisconnected);
         Retry(sockfd);
       }   
     });
@@ -187,17 +170,18 @@ void
 Connector::Retry(int sockfd) noexcept {
   sock::Close(sockfd);
 
+  SetState(State::kDisconnected);
   if (connect_) {
-    double delaySec = std::min<uint32_t>(retryInterval_, MAX_RETRY_INTERVAL) / 1000.0;
+    double delaySec = std::min<uint32_t>(retry_interval_, MAX_RETRY_INTERVAL) / 1000.0;
 
-    LOG_INFO << "Client will reconnect to " << servAddr_.ToIpPort()
-      << " after " << delaySec << " seconds";
+    LOG_INFO << "Client will reconnect to " << serv_addr_.ToIpPort()
+             << " after " << delaySec << " seconds";
 
     timer_ = loop_->RunAfter([this]() {
       StartRun();
     }, delaySec);
 
-    retryInterval_ *= 2;  
+    retry_interval_ *= 2;  
   }
 }
 
