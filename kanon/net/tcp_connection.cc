@@ -4,6 +4,7 @@
 #include <signal.h> // SIGPIPE, signal()
 #include <atomic>
 
+#include "kanon/log/logger.h"
 #include "kanon/net/socket.h"
 #include "kanon/net/channel.h"
 #include "kanon/net/event_loop.h"
@@ -12,14 +13,6 @@
 using namespace kanon;
 
 static constexpr int kDefaultHighWatermark = 64 * 1024;
-
-char const* const
-TcpConnection::state_str_[STATE_NUM] = {
-  "connecting",
-  "connected",
-  "disconnecting",
-  "disconnected"
-};
 
 TcpConnection::TcpConnection(EventLoop*  loop,
                std::string const& name,
@@ -35,6 +28,10 @@ TcpConnection::TcpConnection(EventLoop*  loop,
   , high_water_mark_{ kDefaultHighWatermark }
   , state_{ kConnecting }
 {
+  // Pass raw pointer is safe here since 
+  // will disable all events when connection
+  // become disconnectioned(later, it will
+  // be destroyed)
   channel_->SetReadCallback(std::bind(
     &TcpConnection::HandleRead, this, _1));
 
@@ -116,7 +113,8 @@ void TcpConnection::HandleLtRead(TimeStamp recv_time) {
   int saved_errno;
   auto n = input_buffer_.ReadFd(channel_->GetFd(), saved_errno);
   
-  LOG_DEBUG << "Read " << n << " bytes from fd = " << channel_->GetFd(); 
+  LOG_DEBUG << "Read " << n << " bytes from [Connection: " << name_
+            << ", fd: " << channel_->GetFd() << "]";
 
   if (n > 0) {
     if (message_callback_) {
@@ -200,8 +198,8 @@ void TcpConnection::HandleWrite()
   // 2. ConnectionDestoryed() is called when connection is active
   //    (e.g. TcpServer desctroyed)
   if (!channel_->IsWriting()) {
-    assert(state_ == kConnected);
-    LOG_TRACE << "This connection is down";
+    assert(state_ == kDisconnected);
+    LOG_TRACE << "This Connection: " << name_ << " is down";
     return ;
   }
 
@@ -233,7 +231,8 @@ void TcpConnection::HandleLtWrite() {
             output_buffer_.GetReadBegin(),
             output_buffer_.GetReadableSize());
 
-  LOG_TRACE << "Write " << n << " bytes"; 
+  LOG_TRACE << "Write " << n << " bytes to [Connection: " << name_
+            << ", fd: " << channel_->GetFd() << "]";
 
   if (n > 0) {
     output_buffer_.AdvanceRead(n);
@@ -254,8 +253,12 @@ void TcpConnection::HandleLtWrite() {
         // also ok.
         // loop_->QueueToLoop(std::bind(
         //   write_complete_callback_, shared_from_this()));
+
+        // Pass this is unsafe even thought this is in the
+        // phase of processing write event since there is a
+        // HandleClose() callback has register early
         loop_->QueueToLoop(std::bind(
-          &TcpConnection::CallWriteCompleteCallback, this));
+          &TcpConnection::CallWriteCompleteCallback, shared_from_this()));
       }
       else {
         channel_->DisableWriting();
@@ -277,8 +280,13 @@ void TcpConnection::HandleLtWrite() {
 
 void TcpConnection::CallWriteCompleteCallback()
 {
+  assert(channel_->IsWriting());
   if (write_complete_callback_(shared_from_this())) {
+    LOG_TRACE << "Last chunk in the pipeline write";
     channel_->DisableWriting();
+  }
+  else {
+    LOG_TRACE << "Not last chunk int the pipeline wirte()[don't disable wirting]";
   }
 }
 
@@ -292,7 +300,9 @@ void TcpConnection::HandleEtWrite()
     output_buffer_.GetReadBegin(),
     output_buffer_.GetReadableSize());
   
-  LOG_TRACE << "Write " << writen << " bytes"; 
+  LOG_TRACE << "Write " << writen << " bytes to [Connection: " << name_
+            << ", fd: " << channel_->GetFd() << "]";
+
   if (writen > 0) {
     output_buffer_.AdvanceRead(writen);
 
@@ -305,7 +315,7 @@ void TcpConnection::HandleEtWrite()
       if (write_complete_callback_) {
         // No need to disable writing
         loop_->QueueToLoop(std::bind(
-          write_complete_callback_, shared_from_this()));
+          &TcpConnection::CallWriteCompleteCallback, shared_from_this()));
       }
 
       if (state_ == kDisconnecting) {
@@ -331,10 +341,11 @@ void TcpConnection::HandleClose() {
   loop_->AssertInThread();
   // Connected ==> read event handling
   // Disconnecting ==> call ForceClose()
-  assert(state_ & (kConnected | kDisconnecting));
+  assert(state_ == kConnected || state_ == kDisconnecting);
   
   state_ = kDisconnected;
-
+  
+  LOG_TRACE << "The connection [" << name_ << "] is disconnected";
   // ! You can't remove channel in event handling phase.
   // ! Instead, close_callback_ should delay the remove to
   // ! functor calling phase
@@ -353,28 +364,29 @@ void TcpConnection::HandleClose() {
 }
 
 void TcpConnection::ShutdownWrite() noexcept {
-  state_ = kDisconnecting;
-
-  loop_->RunInLoop([this]() {
-    // If channel is writing state, we need write all message to
-    // the buffer in kernel space, in case peer half-close can 
-    // also receive message
-    if (!channel_->IsWriting() || loop_->IsEdgeTriggerMode()) {
-      socket_->ShutdownWrite();
-    }
-  });
+  if (state_ == kConnected) {
+    state_ = kDisconnecting;
+    
+    // Pass raw pointer is safe.
+    loop_->RunInLoop([this]() {
+      // If channel is writing state, we need write all message to
+      // the buffer in kernel space, in case peer half-close can 
+      // also receive message
+      if (!channel_->IsWriting() || loop_->IsEdgeTriggerMode()) {
+        socket_->ShutdownWrite();
+      }
+    });
+  }
 }
 
 void TcpConnection::ForceClose() noexcept {
-  loop_->RunInLoop([=]() {
-      loop_->AssertInThread();
+  if (state_ == kConnected) {
+    state_ = kDisconnecting;
+  }
 
-      if (state_ & (kConnected)) {
-        state_ = kDisconnecting;
-
-        // socket_->ShutdownTwoDirection();
-        HandleClose(); 
-      }
+  loop_->RunInLoop([this]() {
+    loop_->AssertInThread();
+    HandleClose(); 
   });
 }
 
@@ -394,8 +406,12 @@ void TcpConnection::Send(void const* data, size_t len) {
       // loop_->QueueToLoop(std::bind(fp, this, std::move(str)));
 
       loop_->QueueToLoop(std::bind(
-        &TcpConnection::SendInLoopForStr, this, std::move(str)));
+        &TcpConnection::SendInLoopForStr, shared_from_this(), std::move(str)));
     }
+  }
+  else {
+    LOG_TRACE << "Connection [" << name_ << "](fd = " << channel_->GetFd() << ") is down\n"
+              << "state(" << State2String() << "), stop send";
   }
 }
 
@@ -418,9 +434,13 @@ void TcpConnection::Send(Buffer& buf) {
       // lambda expression doesn't support move capture in
       // C++11, we can't move resource in the capture list 
       loop_->QueueToLoop(std::bind(
-        &TcpConnection::SendInLoopForBuf, this, std::move(buffer)
+        &TcpConnection::SendInLoopForBuf, shared_from_this(), std::move(buffer)
       ));
     }
+  }
+  else {
+    LOG_TRACE << "Connection [" << name_ << "](fd = " << channel_->GetFd() << ") is down\n"
+              << "state(" << State2String() << "), stop send";
   }
 }
 
@@ -436,22 +456,71 @@ void TcpConnection::SendInLoop(StringView data) {
 void TcpConnection::SendInLoop(void const* data, size_t len) {
   ssize_t n = 0;
   size_t remaining = len;
+  
 
+  LOG_TRACE << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
   // Although Send() has checked state_ is kConnected
   // But connection also can be closed in the phase 2 
   // when this is called in phase 3
-  if (state_ & ~(kConnected)) {
-    LOG_WARN << "This connection is not connected, don't send any message";
+  if (state_ != kConnected) {
+    LOG_WARN << "This connection [" << name_ << "] is not connected, don't send any message";
     return ;
   }
 
-  // if is not writing state, indicates output_buffer_ maybe is empty,
-  // but also output_buffer_ is filled by user throught GetOutputBuffer().
-  // When it is not writing state and output_buffer_ is empty,
-  // we can write directly first
-  if (!channel_->IsWriting() && output_buffer_.GetReadableSize() == 0) {
-    n = sock::Write(channel_->GetFd(), data, len);
+  //=============DELETED==================//
+  //// If is not writing state, indicates output_buffer_ maybe is empty,
+  //// but also output_buffer_ is filled by user throught GetOutputBuffer().
+  //// When it is not writing state and output_buffer_ is empty,
+  //// we can write directly first
+  //=============DELETED==================//
 
+  // Although channel in the writing state, we can write directly when the 
+  // output_buffer_ is empty.
+  //
+  // The reason for why I strict to the writing is that I want to support 
+  // pipeline writing and don't disable writing when write complete not 
+  // actually after HandleWrite() complete.
+  // If write complete is not of the last chunk, then disable writing
+  // and might register again later. This is wasteful. Because EnableWriting()
+  // and DisableWriting() both is forwarded to call ::epoll_ctl() that is
+  // expensive.
+  // So, My solution is:
+  // In HandleWrite(), if write complete but write_complete_callback_ return false,
+  // I don't disable writing(If it is empty callback, think it return true).
+  // Disable writing only when it return true.
+  // In SendInLoop(), regardless of write_complete_callback_, if it is writing state 
+  // after write complete, disable writing state since next write must call write
+  // directly instead of HandleWrite().
+  //
+  // In short, I want to achieve:
+  // Send() --> EnableWriting()[incomplete] --> HandleWrite()[complete, but don't disable]
+  // --> Send()[write_complete_callback_, incomplete] --> HandleWrite()[complete, but don't disable]
+  // --> Send()[write_complete_callback_, incomplete] --> HandleWrite()[complete, last chunk, disable]
+  // --> DisableWriting()
+  // Compared with the original process:
+  // Send() --> EnableWriting()[incomplete] --> HandleWrite()[complete] --> DisableWriting()
+  // --> Send()[write_complete_callback_, incomplete] --> EnableWriting() --> HandleWrite()[complete]
+  // --> DisableWriting() --> Send()[write_complete_callback_] --> EnableWriting() --> 
+  // HandleWrite()[complete] --> DisableWriting()
+  //
+  // Also, might:
+  // Send() --> EnableWriting()[incomplete] --> HandleWrite()[complete, but don't disable]
+  // --> Send()[write_complete_callback_, incomplete] --> HandleWrite()[complete, but don't disable]
+  // --> Send()[write_complete_callback_, complete but not last chunk] --> DisableWriting()
+  // --> Send()[write_complete_callback_, incomplete] --> EnableWriting() --> ...
+  //
+  // Compared with the original process:
+  // Send() --> EnableWriting()[incomplete] --> HandleWrite()[complete] --> DisableWriting()
+  // --> Send()[write_complete_callback_, incomplete] --> EnableWriting() --> HandleWrite()[complete]
+  // --> DisableWriting() --> Send()[write_complete_callback_, complete but not last chunk]
+  // --> Send()[write_complete_callback_, incomplete] --> EnableWriting() --> ...
+  // 
+  // Above two example indicates this approach decrease the number of the call of DisableWriting() 
+  // and EnableWriting()
+
+  // if (channel_->IsWriting() && output_buffer_.GetReadableSize() == 0) {
+  if (!output_buffer_.HasReadable()) {
+    n = sock::Write(channel_->GetFd(), data, len);
 
     if (n >= 0) {
       LOG_TRACE << "write " << n << " bytes";
@@ -461,6 +530,10 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
         if (write_complete_callback_) {
           loop_->QueueToLoop(std::bind(
             write_complete_callback_, shared_from_this()));
+        }
+
+        if (channel_->IsWriting()) {
+          channel_->DisableWriting();
         }
         
         return ;
@@ -497,12 +570,15 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
 }
 
 void TcpConnection::SendInLoopForBuf(Buffer& buffer) {
-  if (state_ & ~(kConnected)) {
-    LOG_WARN << "This connection is not connected, don't send any message";
+  LOG_TRACE << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
+
+  if (state_ != kConnected) {
+    LOG_WARN << "This connection" << name_ << "] is not connected, don't send any message";
     return ;
   }
 
-  if (!channel_->IsWriting() && !output_buffer_.HasReadable()) {
+  // if (!channel_->IsWriting() && !output_buffer_.HasReadable()) {
+  if (!output_buffer_.HasReadable()) {
     output_buffer_.swap(buffer);
 
     auto n = sock::Write(
@@ -526,8 +602,11 @@ void TcpConnection::SendInLoopForBuf(Buffer& buffer) {
       else {
         if (write_complete_callback_) {
           loop_->QueueToLoop(std::bind(
-            write_complete_callback_, shared_from_this()
-          ));
+            write_complete_callback_, shared_from_this()));
+        }
+
+        if (channel_->IsWriting()) {
+          channel_->DisableWriting();
         }
       }
 
@@ -551,6 +630,21 @@ void TcpConnection::SetNoDelay(bool flag) noexcept
 void TcpConnection::SetKeepAlive(bool flag) noexcept
 { socket_->SetKeepAlive(flag); }
 
+char const* TcpConnection::State2String() const noexcept
+{
+  switch (state_) {
+  case kConnecting:
+    return "Connecting";
+  case kConnected:
+    return "Connected";
+  case kDisconnecting:
+    return "Disconnecting";
+  case kDisconnected:
+    return "Disconnected";
+  default:
+    return "Invalid State";
+  }
+}
 //! Although Send() and SendInLoop() check the state of connection,
 //! peer can also close connection when server is busy.
 //! 
