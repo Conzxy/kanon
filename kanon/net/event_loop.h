@@ -25,6 +25,7 @@ class PollerBase;
 /**
  * \ingroup net
  * \addtogroup EventLoop
+ * \brief event loop facilities
  * @{
  */
 
