@@ -21,6 +21,9 @@ class EventLoop;
 class TcpServer;
 class TcpClient;
 
+//! \addtogroup net
+//!@{
+
 /**
  * \brief Represents a tcp connection.
  *
@@ -40,43 +43,90 @@ class TcpClient;
 class TcpConnection 
   : noncopyable
   , public std::enable_shared_from_this<TcpConnection> {
-  //! Allow TcpServer and TcpClient call the private APIs
-  //! that we don't exposed to user
+  // Allow TcpServer and TcpClient call the private APIs
+  // that we don't exposed to user
   friend class TcpServer;
   friend class TcpClient;
 
   enum State {
-    kConnecting = 0x1,
-    kConnected = 0x2,
-    kDisconnecting = 0x4,
-    kDisconnected = 0x8,
-    STATE_NUM = 4,
+    kConnecting = 0,
+    kConnected,
+    kDisconnecting,
+    kDisconnected,
   };
-
-  // For Debugging only  
-  static char const* const state_str_[STATE_NUM];
+  
 public:
+  ~TcpConnection() noexcept;
+
+  /**
+   * Shouldn't call this. To call NewTcpConnection().
+   * Can't set this be private member
+   * since std::make_shared<> need access ctor
+   */
   TcpConnection(EventLoop* loop,
                 std::string const& name,
                 int sockfd,
                 InetAddr const& local_addr,
                 InetAddr const& peer_addr);
-  
-  ~TcpConnection() noexcept;
-  
-  // That's ok for async-call since it is in loop.
-  void Send(Buffer& buf);    
-  void Send(void const* data, size_t len);
-  void Send(StringView data);
-  
-  // Half-close
-  void ShutdownWrite() noexcept;
-  void ForceClose() noexcept;
 
-  // Accept thread(OR main thread) will dispatch connection to IO thread
-  // to ensure one loop per thread
-  EventLoop* GetLoop() const noexcept
-  { return loop_; }  
+  /**
+   * \brief Create a TcpConnection instance correctly
+   * 
+   * This is a factory method
+   * \param loop owner event loop
+   * \param sockfd managed socket fd
+   * \param local_addr local address
+   * \param peer_addr peer or remote address
+   */
+  static TcpConnectionPtr NewTcpConnection(EventLoop* loop, 
+                                           std::string const& name,
+                                           int sockfd,
+                                           InetAddr const& local_addr,
+                                           InetAddr const& peer_addr)
+  { return std::make_shared<TcpConnection>(loop, name, sockfd, local_addr, peer_addr); }
+  
+
+  //! \name write operation
+  //!@{
+
+  /**
+   * \brief Send message in the \p buf
+   *
+   * \note Not thread-safe but in loop
+   */
+  void Send(Buffer& buf);    
+
+  /**
+   * \brief Send message in the \p date of \p len
+   *
+   * \note Not thread-safe but in loop
+   */
+  void Send(void const* data, size_t len);
+
+  /**
+   * \brief wrapper of Send(void const*, size_t)
+   */
+  void Send(StringView data);
+
+  //!@}  
+
+  //! \name close operation
+  //!@{
+
+  /**
+   * \brief Half close the connection in write connection
+   */
+  void ShutdownWrite() noexcept;
+
+  /**
+   * \brief Close the connection regardless of peer whether send FIN or not
+   */
+  void ForceClose() noexcept;
+  //!@}
+
+
+  //! \name setter
+  //!@{
 
   void SetMessageCallback(MessageCallback cb)
   { message_callback_ = std::move(cb); }
@@ -88,24 +138,43 @@ public:
   { close_callback_ = std::move(cb); }
   
   void SetHighWaterMarkCallback(HighWaterMarkCallback cb, size_t mark)
-  { 
-    high_water_mark_ = mark;
-    high_water_mark_callback_ = std::move(cb); 
-  }
+  { high_water_mark_ = mark; high_water_mark_callback_ = std::move(cb); }
 
-  // This is useful in OnConnectionCallback(),
-  // we can do something when connection is established
-  // or destroyed.
+  /**
+   * Context can used for binding some information 
+   * about a specific connnection(So, it named context)
+   */
+  void SetContext(Any&& context) { context_ = std::move(context); }
+  
+  void SetContext(Any const& context) { context_ = context; } 
+
+  //! Whether disable Negele algorithm
+  void SetNoDelay(bool flag) noexcept;
+  //! Whether disable keep-alive timer
+  void SetKeepAlive(bool flag) noexcept;
+
+  //!@}
+
+  //! \name getter
+  //!@{
+
+  /**
+   * Accept thread(OR main thread) will dispatch connection to IO thread
+   * to ensure one loop per thread
+   * \return
+   *   The event loop where acceptor in(Usually, this is main thread)
+   */
+  EventLoop* GetLoop() const noexcept
+  { return loop_; }  
+
+  /**
+   * \brief Connection whether is down
+   * This is useful in OnConnectionCallback(),
+   * we can do something when connection is established
+   * or destroyed.
+   */
   bool IsConnected() const noexcept
   { return state_ == kConnected; }
-
-  void SetContext(Any&& context) {
-    context_ = std::move(context);
-  } 
-  
-  void SetContext(Any const& context) {
-    context_ = context;
-  } 
 
   Any& GetContext() noexcept
   { return context_; }
@@ -122,16 +191,12 @@ public:
   InetAddr const& GetPeerAddr() const noexcept
   { return peer_addr_; }
   
-  // set option(optional)
-  void SetNoDelay(bool flag) noexcept;
-  void SetKeepAlive(bool flag) noexcept;
-  
-  // interface for user to consume(read)
   Buffer* GetInputBuffer() noexcept
   { return &input_buffer_; }
 
   Buffer* GetOutputBuffer() noexcept
   { return &output_buffer_; }
+  //!@}  
 
 private:
   void HandleRead(TimeStamp rece_time);
@@ -160,8 +225,7 @@ private:
   // ! Must not be called in event handling phase
   void ConnectionDestroyed();
 
-  char const* State2String() const noexcept
-  { return state_str_[state_]; }
+  char const* State2String() const noexcept;
 
   EventLoop* loop_;
   std::string const name_;
@@ -172,47 +236,57 @@ private:
   InetAddr const local_addr_;
   InetAddr const peer_addr_;
 
-  Buffer input_buffer_;
-  // FIXME Use RingBuffer better?
-  Buffer output_buffer_;
-  
-  // Process message from @var input_buffer_  
-  // * Default is empty(optional also ok, just don't process message and discard)
-  // * Is always set
-  MessageCallback message_callback_;
+  Buffer input_buffer_; //!< Store the message peer sent
 
-  // Dispatch connnection to acceptor or connector
-  // * Default is print the local address and peer address, connection state(TRACE level)
-  // * Is always override
-  ConnectionCallback connection_callback_;
-
-  // Called when write event is completed
-  // a.k.a. low watermark callback
-  // * Default is empty(optional)
-  // * Is always set
-  // \return 
-  // 1. ture: write complete really
-  // 2. false: continue write in callback(e.g. pipeline)
-  WriteCompleteCallback write_complete_callback_;  
+  /**
+   * TODO(conzxy/output_buffer) use linked list to achieve zero-copy
+   */
+  Buffer output_buffer_; //!< Store the message local sent
   
-  // Avoid so much data filling the kernel input/output buffer
-  // Note: the callback only be called in rising edge
-  // * Default is empty(optional)
-  // * Is always use with write_complete_callback_
+  /**
+   * Default is empty(optional also ok, just don't process message and discard)
+   * But this is always specified by user
+   */ 
+  MessageCallback message_callback_; //!< Process message from input_buffer_ 
+
+  /**
+   * Default is print the local address and peer address, connection state(TRACE level)
+   * Is always override
+   */
+  ConnectionCallback connection_callback_; //!< Do something when connection is up or down
+
+  /**
+   * Called when write event is completed, a.k.a. low watermark callback \n
+   * Default is empty(optional), but always specified by user.
+   * \return 
+   *  - ture: write complete really
+   *  - false: continue write in callback(e.g. pipeline)
+   */
+  WriteCompleteCallback write_complete_callback_;  //!< Do something when write complete
+
+  /**
+   * Avoid so much data filling the kernel input/output buffer
+   * Default is empty(optional)
+   * Is always use with write_complete_callback_
+   * \warning
+   *   the callback only be called in rising edge
+   */
   HighWaterMarkCallback high_water_mark_callback_;
   size_t high_water_mark_;
   
-
-  // * Default is remove Connection frmo the server/client and call ConnectionDestroyed()
-  // Internal callback, must not be exposed to user
+  /**
+   * Default is remove Connection frmo the server/client and call ConnectionDestroyed()
+   * Internal callback, must not be exposed to user
+   */
   CloseCallback close_callback_;
 
-  // Context can used for binding some information 
-  // about a specific connnection(So, it named context)
+  /**
+   * Context can used for binding some information 
+   * about a specific connnection(So, it named context)
+   */
   Any context_;
   
-  // Internal useage
-  State state_;
+  State state_; //!< Internal useage
 };
 
 // Default connection callback.
@@ -224,6 +298,7 @@ inline void DefaultConnectionCallback(TcpConnectionPtr const& conn) {
     << (conn->IsConnected() ? "UP" : "DOWN");
 }
 
+//!@}
 } // namespace kanon
 
 #endif // KANON_NET_TCPCONNECTION_H
