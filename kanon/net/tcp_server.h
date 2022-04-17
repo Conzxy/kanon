@@ -16,28 +16,60 @@ class InetAddr;
 class EventLoop;
 class EventLoopPool;
 
+//! \addtogroup server
+//!@{
+
+/**
+ * \brief A Tcp server instance
+ * 
+ * User don't care of server how to accept connection and other detail. \n
+ * Just write business logic in the callback and register it. \n
+ * The Server can start mutilple IO event loop(thread）to process events
+ * 
+ * example:
+ * ```cpp
+ *   EventLoop loop{};
+ *   InetAddr listen_addr{ 9999 };
+ *   TcpServer echo_server(&loop, listen_addr, "Echo Server");
+ *   echo_server.SetMessageCallback([](TcpConnnectionPtr const& conn, Buffer& buffer, TimeStamp recv_time) {
+ *      
+ *   });
+ *
+ *   echo_server.SetLoopNum(1); // start with 1 IO event loop, this is option 
+ *   echo_server.StartRun();
+ * ```
+ * \note Public class
+ */
 class TcpServer : noncopyable {
 public:
+  /**
+   * \param reuseport 
+   */
   TcpServer(EventLoop* loop,
-        InetAddr const& listen_addr,
-        StringArg name,
-        bool reuseport=false);
+            InetAddr const& listen_addr,
+            StringArg name,
+            bool reuseport=false);
   
   ~TcpServer() noexcept;  
 
-  // Set the number of IO loop
+  //! Set the number of IO loop
   void SetLoopNum(int num) noexcept;
 
-  // Start all IO thread to loop
-  // then listen and accept connection to IO loop
-  // 
-  // It is harmless although this is called many times.
-  // thread-safe
+  /**
+   * Start all IO thread to loop
+   * then listen and accept connection to IO loop
+   * 
+   * It is harmless although this is called many times.
+   * thread-safe
+   */
   void StartRun() noexcept;
-  
+
+  //! \name getter
+  //!@{
+
+  //! Whether the server is running 
   bool IsRunning() noexcept;
 
-  // set callback
   void SetConnectionCallback(ConnectionCallback cb) noexcept
   { connection_callback_ = std::move(cb); }
 
@@ -49,11 +81,10 @@ public:
   
   EventLoop* GetLoop() noexcept
   { return loop_; }
+
+  //!@}
 private:
   typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
-
-  // ! Must be thread-safe
-  void RemoveConnection(TcpConnectionPtr const& conn);  
 
   EventLoop* loop_;
   std::string const ip_port_;
@@ -65,15 +96,17 @@ private:
   MessageCallback message_callback_;
   WriteCompleteCallback write_complete_callback_;
   
-  /** Store the connections */
+  /* Store the connections */
   ConnectionMap connections_;
 
-  /** Multi Reactor */
+  /* Multi-Reactor */
   uint32_t next_conn_id;
   std::unique_ptr<EventLoopPool> pool_;
 
   std::atomic_flag start_once_;
 }; 
+
+//!@}
 
 } // namespace kanon
 

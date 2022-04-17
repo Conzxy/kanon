@@ -12,16 +12,15 @@
 using namespace kanon;
 
 TcpServer::TcpServer(EventLoop* loop,
-           InetAddr const& listen_addr,
-           StringArg name,
-           bool reuseport)
+                     InetAddr const& listen_addr,
+                     StringArg name,
+                     bool reuseport)
   : loop_{ loop }
   , ip_port_{ listen_addr.ToIpPort() }
   , name_{ name }
   , acceptor_{ kanon::make_unique<Acceptor>(loop_, listen_addr, reuseport) }
   , next_conn_id{ 1 }
-  , pool_{ kanon::make_unique<EventLoopPool>(
-       loop, static_cast<char const*>(name)) }
+  , pool_{ kanon::make_unique<EventLoopPool>(loop, static_cast<char const*>(name)) }
   , start_once_{ ATOMIC_FLAG_INIT }
 {
   SetConnectionCallback(&DefaultConnectionCallback);
@@ -39,7 +38,7 @@ TcpServer::TcpServer(EventLoop* loop,
     auto io_loop = pool_->GetNextLoop();
 
     auto local_addr = sock::GetLocalAddr(cli_sock);
-    auto conn = std::make_shared<TcpConnection>(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
+    auto conn = TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
 
     connections_[conn_name] = conn;
 
@@ -47,11 +46,24 @@ TcpServer::TcpServer(EventLoop* loop,
     conn->SetConnectionCallback(connection_callback_);
     conn->SetWriteCompleteCallback(write_complete_callback_);
     conn->SetCloseCallback([this](TcpConnectionPtr const& conn) {
-      this->RemoveConnection(conn);
+      loop_->AssertInThread();
+
+      auto n = connections_.erase(conn->GetName());
+      assert(n == 1);
+      KANON_UNUSED(n);
+      
+      auto io_loop = conn->GetLoop();
+
+      // !Must call QueueToLoop() here,
+      // we can't destroy the channel_ in the handling events phase,
+      // and delay the ConnectionDestroyed() in calling functor phase.
+      io_loop->QueueToLoop([conn]() {
+          conn->ConnectionDestroyed();
+      });
     });
     
     // io loop or main loop
-    io_loop->RunInLoop([conn]() {
+    io_loop->RunInLoop([&conn]() {
       conn->ConnectionEstablished();
     });
 
@@ -66,7 +78,7 @@ TcpServer::~TcpServer() noexcept
     conn_pair.second.reset();
 
     auto io_loop = conn->GetLoop();
-    io_loop->RunInLoop([&conn]() {
+    io_loop->RunInLoop([conn]() {
         conn->ConnectionDestroyed();
     });
   }
@@ -94,24 +106,4 @@ void TcpServer::StartRun() noexcept {
 
 bool TcpServer::IsRunning() noexcept {
   return acceptor_->Listening();
-}
-
-void TcpServer::RemoveConnection(TcpConnectionPtr const& conn) {
-  // Remove connection in server thread
-  loop_->RunInLoop([conn, this]() {
-    loop_->AssertInThread();
-
-    auto n = connections_.erase(conn->GetName());
-    assert(n == 1);
-    KANON_UNUSED(n);
-    
-    auto io_loop = conn->GetLoop();
-
-    // !Must call QueueToLoop() here,
-    // we can't destroy the channel_ in the handling events phase,
-    // and delay the ConnectionDestroyed() in calling functor phase.
-    io_loop->QueueToLoop([conn]() {
-        conn->ConnectionDestroyed();
-    });
-  });
 }
