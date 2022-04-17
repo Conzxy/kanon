@@ -32,6 +32,7 @@ class TcpClient;
  *  - Highwatermark callback to do something when output buffer is too full
  *  - Connection callback to do something when connection down or up
  *  - Write complete callback to do something when write complete
+ *
  * Besides,
  *  - Send message to peer(std::string, kanon::StringView, char const*, kanon::Buffer)
  *  - Shutdown in write direction and close
@@ -59,7 +60,7 @@ public:
   ~TcpConnection() noexcept;
 
   /**
-   * Shouldn't call this. To call NewTcpConnection().
+   * Shouldn't call this. To call NewTcpConnection(). \n
    * Can't set this be private member
    * since std::make_shared<> need access ctor
    */
@@ -169,6 +170,7 @@ public:
 
   /**
    * \brief Connection whether is down
+   *
    * This is useful in OnConnectionCallback(),
    * we can do something when connection is established
    * or destroyed.

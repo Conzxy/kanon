@@ -74,9 +74,10 @@ void Connector::StopInLoop() noexcept
 
 void Connector::Restrat() noexcept {
   connect_ = true;
+
+  assert(state_ == kConnected);
   SetState(State::kDisconnected);
   retry_interval_ = INIT_RETRY_INTERVAL;
-
   StartRun();
 }
 
@@ -156,7 +157,7 @@ void Connector::CompleteConnect(int sockfd) noexcept {
           LOG_TRACE << "SO_ERROR = " << err << " " 
             << strerror_tl(err);
         }
-
+        
         Retry(sockfd);
       }   
     });
@@ -166,27 +167,26 @@ void Connector::CompleteConnect(int sockfd) noexcept {
   }
 }
 
-void
-Connector::Retry(int sockfd) noexcept {
+void Connector::Retry(int sockfd) noexcept {
   sock::Close(sockfd);
 
-  SetState(State::kDisconnected);
   if (connect_) {
-    double delaySec = std::min<uint32_t>(retry_interval_, MAX_RETRY_INTERVAL) / 1000.0;
+    double delay_sec = std::min<uint32_t>(retry_interval_, MAX_RETRY_INTERVAL) / 1000.0;
 
     LOG_INFO << "Client will reconnect to " << serv_addr_.ToIpPort()
-             << " after " << delaySec << " seconds";
+             << " after " << delay_sec << " seconds";
 
     timer_ = loop_->RunAfter([this]() {
       StartRun();
-    }, delaySec);
+    }, delay_sec);
 
     retry_interval_ *= 2;  
   }
 }
 
-int
-Connector::RemoveAndResetChannel() noexcept {
+int Connector::RemoveAndResetChannel() noexcept {
+  // Ensure this is called in loop
+  // This can be called in the phase2 or phase3
   loop_->AssertInThread();
 
   int sockfd = channel_->GetFd();
@@ -194,7 +194,7 @@ Connector::RemoveAndResetChannel() noexcept {
   channel_->Remove();
 
   // \warning 
-  // in event handle phase now
+  // In event handle phase now if called in phase2
   // So, you can't call it immediately
   loop_->QueueToLoop([this]() {
     channel_.reset();

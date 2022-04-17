@@ -45,6 +45,7 @@ public:
 
   /**
    * \brief Start connect to peer
+   *
    * Call Connect() to connect server in server address that passed
    * to the constructor. \n
    * If Connect() fails, continue call this until connect to peer successfully
@@ -54,12 +55,14 @@ public:
 
   /**
    * \brief Stop retry connect to peer when fails infinitely
+   *
    * Only useful when connectino is not established successfully
    */
   void Stop() noexcept;
 
   /**
    * \brief Restart connector to connect to peer
+   *
    * Used in close callback when closed by peer passively
    * \note Not thread safe, but in loop
    */
@@ -85,7 +88,7 @@ private:
   std::unique_ptr<Channel> channel_;
 
   NewConnectionCallback new_connection_callback_;
-  State state_; //!< Control the behavior
+  std::atomic<State> state_; //!< Control the behavior
   std::atomic<bool> connect_; //!< Control whether connect peer
 
   kanon::optional<TimerId> timer_; //!< Retry timer
