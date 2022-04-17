@@ -7,6 +7,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/ptr.h"
+#include "kanon/util/optional.h"
 #include "kanon/net/timer/timer_id.h"
 
 #include "kanon/net/inet_addr.h"
@@ -28,7 +29,7 @@ class Channel;
  *   Internal class(User by TcpClient)
  */
 class Connector : public std::enable_shared_from_this<Connector>, noncopyable {
-  enum class State {
+  enum State : uint8_t {
     kConnecting,
     kConnected,
     kDisconnected,
@@ -38,30 +39,37 @@ class Connector : public std::enable_shared_from_this<Connector>, noncopyable {
 
 public:
   Connector(EventLoop* loop,
-            InetAddr const& servAddr);
+            InetAddr const& serv_addr);
 
   ~Connector() noexcept;
 
-  // Call Connect() to connect server in servAddr_
-  // If Connect() fails, continue call this till connect to peer
-  // \note Not thread safe, but in loop
+  /**
+   * \brief Start connect to peer
+   * Call Connect() to connect server in server address that passed
+   * to the constructor. \n
+   * If Connect() fails, continue call this until connect to peer successfully
+   * \note Not thread safe, but in loop
+   */
   void StartRun() noexcept;
 
-  // stop retry connect to peer when fials infinitely
-  // \note Not thread safe, but in loop
+  /**
+   * \brief Stop retry connect to peer when fails infinitely
+   * Only useful when connectino is not established successfully
+   */
   void Stop() noexcept;
 
-  // restart connector to connect to peer
-  // used as close callback that will be called
-  // when closed by peer passively
-  // \note Not thread safe, but in loop
+  /**
+   * \brief Restart connector to connect to peer
+   * Used in close callback when closed by peer passively
+   * \note Not thread safe, but in loop
+   */
   void Restrat() noexcept;
 
   void SetNewConnectionCallback(NewConnectionCallback cb) noexcept
   { new_connection_callback_ = std::move(cb); }
 
 private:
-  void setState(State s) noexcept { state_ = s; }
+  void SetState(State s) noexcept { state_ = s; }
 
   void Connect() noexcept;
   void CompleteConnect(int sockfd) noexcept;
@@ -71,15 +79,16 @@ private:
   void StopInLoop() noexcept;
 
   EventLoop* loop_;
-  InetAddr servAddr_;
+  InetAddr serv_addr_;
+  uint32_t retry_interval_;  //!< Time interval of retry connect
 
-  std::atomic<bool> connect_; // control if continues to connect
-  State state_;
   std::unique_ptr<Channel> channel_;
-  uint32_t retryInterval_;  
 
   NewConnectionCallback new_connection_callback_;
-  TimerId timer_;
+  State state_; //!< Control the behavior
+  std::atomic<bool> connect_; //!< Control whether connect peer
+
+  kanon::optional<TimerId> timer_; //!< Retry timer
 };
 
 //!@}
