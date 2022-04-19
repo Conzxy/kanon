@@ -237,7 +237,7 @@ void TcpConnection::HandleLtWrite() {
   if (n > 0) {
     output_buffer_.AdvanceRead(n);
 
-    LOG_TRACE << "Ouput Buffer remaining = " << output_buffer_.GetReadableSize();
+    LOG_TRACE << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
     if (output_buffer_.GetReadableSize() == 0) {
       if (write_complete_callback_) {
         // We delay the callback to phase 3
@@ -307,7 +307,7 @@ void TcpConnection::HandleEtWrite()
     output_buffer_.AdvanceRead(writen);
 
     if (output_buffer_.HasReadable()) {
-      LOG_TRACE << "Ouput Buffer remaining = " << output_buffer_.GetReadableSize();
+      LOG_TRACE << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
       // To write entire message, we need resigter write event again
       channel_->EnableWriting();
     }
@@ -523,7 +523,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
     n = sock::Write(channel_->GetFd(), data, len);
 
     if (n >= 0) {
-      LOG_TRACE << "write " << n << " bytes";
+      LOG_TRACE << "Write " << n << " bytes";
       if (static_cast<size_t>(n) != len) {
         remaining -= n;  
       } else {

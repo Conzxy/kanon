@@ -71,6 +71,21 @@ public:
   //! \name getter
   //!@{
 
+  /**
+   * \brief Get the connection
+   * 
+   * I don't implemete this through condition variable
+   * to make caller thread sleeping when connection is not 
+   * established since it will block the caller thread.
+   * To GUI program, this is might not good behavior.
+   *
+   * If you want to block caller thread until connection 
+   * is established in the other thread, you can notify
+   * caller thread in the ConnectionCallback
+   * \return
+   *   This only return nullptr or established conection.
+   * \note Thread-safe
+   */
   TcpConnectionPtr GetConnection() const noexcept {
     MutexGuard guard{ mutex_ };
     return conn_;

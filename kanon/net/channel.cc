@@ -55,13 +55,15 @@ void Channel::HandleEvents(TimeStamp receive_time) {
   }
   
   /*
-   * In tcp, POLLERR typically indicates RST has been received or sent.
+   * To TCP, POLLERR typically indicates RST has been received or sent.
    *   - To server, it is maybe occurred when SO_LINGER is set and timeout is set to 0.
-   *     (But to this library, we don't set it)
-   *   - To client, retry(reuse the socket) or close(can be controled by user) is better.
-   *
-   * Therefore, the error_callback_ just log error message of socket(see tcp_connection.cc)
-   * is also ok.
+   *     (But to this library, we don't set it). In other case, receive RST segment when
+   *     three hand-shake to avoid old duplicate connection(\see RFC 793)
+   *   - To client, it is maybe occurred when connect to a nonexistent server or server is 
+   *     configured to SO_LINGER/0.  If connect() return acceptable errno except EINPROGRESS,
+   *     will close old socket and reconnect to server.
+   *     
+   * Therefore, the error_callback_ just log error message of socket(see tcp_connection.cc) is ok.
    */
   if (revents_ & (POLLERR | POLLNVAL)) {
     if (revents_ & POLLNVAL) {
