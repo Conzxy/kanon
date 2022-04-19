@@ -41,6 +41,9 @@ public:
   Connector(EventLoop* loop,
             InetAddr const& serv_addr);
 
+  static std::shared_ptr<Connector> NewConnector(EventLoop* loop, InetAddr const& serv_addr)
+  { return std::make_shared<Connector>(loop, serv_addr); }
+
   ~Connector() noexcept;
 
   /**
@@ -88,8 +91,20 @@ private:
   std::unique_ptr<Channel> channel_;
 
   NewConnectionCallback new_connection_callback_;
-  std::atomic<State> state_; //!< Control the behavior
-  std::atomic<bool> connect_; //!< Control whether connect peer
+
+  /** 
+   * The connect_ and state_ are necessary. \n
+   * We can't use state_ == kDisconnected or kConnecting
+   * to determine whether retry connect since kDisconnected
+   * is not only the initialized state but also can be set
+   * by Stop(), we need to distinguish them. \n
+   * The sematic of state_ is the connect reach what stage.
+   * But connect_ indicates whether retry. \n
+   * i.e. connect_ is externel variable can specified by user
+   * but state_ is internal variable modified by Connector
+   */
+  State state_; //!< Control the behavior
+  std::atomic<bool> connect_; //!< Control whether retry connect peer 
 
   kanon::optional<TimerId> timer_; //!< Retry timer
 };
