@@ -20,7 +20,7 @@ endif (NOT ${BUILD_ALL_TESTS})
 ############################################
 # generate test and bench program
 ############################################
-foreach (kanon_test_source ${KANON_TEST_SOURCES})
+foreach (kanon_test_source ${KANON_TEST_BENCH_SOURCES})
   get_filename_component(kanon_test_filename ${kanon_test_source} NAME_WE)
 
   if (${BUILD_ALL_TESTS})
