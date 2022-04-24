@@ -87,4 +87,5 @@ Other examples in [example](https://github.com/Conzxy/kanon/tree/master/example)
 ## Document
 Document is produced by Doxygen(incomplete)
 
-The website is: http://47.99.92.230:9999/
+The website is: http://47.99.92.230:9999/<br>
+(Powered by [kanon_httpd](https://github.com/Conzxy/kanon_httpd))
