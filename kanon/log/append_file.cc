@@ -31,7 +31,7 @@ AppendFile::AppendFile(StringArg filename)
 }
 
 AppendFile::~AppendFile() noexcept {
-  flush();
+  Flush();
   if (fp_)
     ::fclose(fp_);
 }
