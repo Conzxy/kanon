@@ -22,7 +22,7 @@ void* Run(void* arg);
 // that are function type and the parameter types.
 // The technique use the base class and (pure) virtual member function
 // Is is need some cost to call true function dynamically.
-// @see https://www.zhihu.com/question/30553807
+// \see https://www.zhihu.com/question/30553807
 // 
 // In fact, use std::function<void()> and lambda capture list, 
 // you can wrapper any function, regardless of return type and arguments.

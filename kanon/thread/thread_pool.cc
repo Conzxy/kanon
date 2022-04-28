@@ -4,13 +4,12 @@
 
 using namespace kanon;
 
-ThreadPool::ThreadPool(
-  int maxQueueSize,
-  std::string const& name)
+ThreadPool::ThreadPool(int max_queue_size,
+                       std::string const& name)
   : mutex_ { }
-  , notFull_{ mutex_ }
-  , notEmpty_{ mutex_ }
-  , maxQueueSize_{ maxQueueSize }
+  , not_full_{ mutex_ }
+  , not_empty_{ mutex_ }
+  , max_queue_size_{ max_queue_size }
 { }
 
 ThreadPool::~ThreadPool() noexcept {
@@ -19,13 +18,17 @@ ThreadPool::~ThreadPool() noexcept {
   }
 }
 
-void
-ThreadPool::StartRun(int threadNum) {
+void ThreadPool::StartRun(int thread_num) {
   MutexGuard guard{ mutex_ };
 
-  for (int i = 0; i != threadNum; ++i) {
+  for (int i = 0; i != thread_num; ++i) {
     auto up_thr = kanon::make_unique<Thread>([this]() {
-      this->runOfThread();
+      auto task = Pop();
+
+      if (task) {
+        // Exception is handled by Thread
+        task();
+      }
     });
     
     auto p_thr = GetPointer(up_thr);
@@ -34,40 +37,28 @@ ThreadPool::StartRun(int threadNum) {
   }
 }
 
-void
-ThreadPool::Push(Task task) {
+void ThreadPool::Push(Task task) {
   MutexGuard guard{ mutex_ };
 
-  if (static_cast<int>(tasks_.size()) == maxQueueSize_) {
-    notFull_.Wait();
+  while (static_cast<int>(tasks_.size()) == max_queue_size_) {
+    not_full_.Wait();
   }
 
   tasks_.emplace(std::move(task));
-  notEmpty_.Notify();
+  not_empty_.Notify();
 }
 
-auto
-ThreadPool::Pop()
-  -> Task
+auto ThreadPool::Pop() -> Task
 {
   MutexGuard guard{ mutex_ };
 
-  if (tasks_.size() == 0) {
-    notEmpty_.Wait();
+  while (tasks_.size() == 0) {
+    not_empty_.Wait();
   }
 
   auto task = std::move(tasks_.front());
   tasks_.pop();
 
-  notFull_.Notify();
+  not_full_.Notify();
   return task;
-}
-
-void
-ThreadPool::runOfThread() {
-  auto task = Pop();
-
-  if (task) {
-    task();
-  }
 }
