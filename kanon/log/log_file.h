@@ -28,8 +28,6 @@ namespace kanon {
 /**
  * \brief Append log to file
  * 
- * The file is rolled automatically when the filesize reach threshold
- * or new day
  * \note should be used by Logger
  */
 template<bool ThreadSafe = false>
