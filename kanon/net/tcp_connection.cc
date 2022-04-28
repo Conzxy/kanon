@@ -630,6 +630,20 @@ void TcpConnection::SetNoDelay(bool flag) noexcept
 void TcpConnection::SetKeepAlive(bool flag) noexcept
 { socket_->SetKeepAlive(flag); }
 
+void TcpConnection::DisbaleRead()
+{
+  if (state_ == kConnected && channel_->IsReading()) {
+    channel_->DisableReading();
+  }
+}
+
+void TcpConnection::EnableRead()
+{
+  if (state_ == kConnected && !channel_->IsReading()) {
+    channel_->EnableReading();
+  }
+}
+
 char const* TcpConnection::State2String() const noexcept
 {
   switch (state_) {
