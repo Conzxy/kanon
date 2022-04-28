@@ -7,6 +7,7 @@ file(GLOB_RECURSE KANON_BASE_SRC
   process/*.cc
   thread/*.cc
   util/*.cc
+  buffer/*.cc
 )
 
 file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
