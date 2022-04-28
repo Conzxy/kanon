@@ -10,30 +10,30 @@ using namespace kanon;
 
 AsyncLog::AsyncLog(
     StringView basename,
-    size_t rollSize,
+    size_t roll_size,
     StringView prefix,
-    size_t flushInterval,
-    size_t rollLine)
-    : basename_{ basename }
-    , rollSize_{ rollSize }
-    , flushInterval_{ flushInterval }
-    , rollLine_{ rollLine }
-    , prefix_{ prefix }
+    size_t log_file_num,
+    size_t roll_interval,
+    size_t flush_interval)
+    : basename_{ basename.ToString() }
+    , roll_size_{ roll_size }
+    , prefix_{ prefix.ToString() }
+    , log_file_num_(log_file_num)
+    , roll_interval_(roll_interval)
+    , flush_interval_{ flush_interval }
     , running_{ false }
-    , currentBuffer_{ kanon::make_unique<Buffer>() }
-    , nextBuffer_{ kanon::make_unique<Buffer>() }
+    , current_buffer_{ kanon::make_unique<Buffer>() }
+    , next_buffer_{ kanon::make_unique<Buffer>() }
     , mutex_{ }
-    , notEmpty_{ mutex_ }
-    , backThread_{ [this]() {
-        this->threadFunc();
-      }, "AsyncLogBackThread" }
+    , not_empty_{ mutex_ }
+    , back_thr_{ "AsyncLog" }
     , latch_{ 1 }
 {
   // warm up
-  currentBuffer_->zero();
-  nextBuffer_->zero();
+  current_buffer_->zero();
+  next_buffer_->zero();
   buffers_.reserve(16);
-
+  
 }
 
 AsyncLog::~AsyncLog() noexcept {
@@ -42,148 +42,143 @@ AsyncLog::~AsyncLog() noexcept {
   }
 }
 
-void
-AsyncLog::StartRun() {
+void AsyncLog::StartRun() {
   assert(!running_);
 
   running_ = true;
-  backThread_.StartRun();
+
+  buffers_dup_.reserve(16);
+
+  back_thr_.StartRun([this]() {
+    latch_.Countdown();
+
+    // In back thread, we also can set two buffer for front threads using,
+    BufferUPtr buffer1{ kanon::make_unique<Buffer>() };
+    BufferUPtr buffer2{ kanon::make_unique<Buffer>() };
+
+    // Warm up
+    buffer1->zero();
+    buffer2->zero();  
+
+    // write to disk
+    // Not thread-safe is OK here.
+    LogFile<> output(basename_, roll_size_, 
+      prefix_, log_file_num_, roll_interval_, flush_interval_);
+
+    // back thread do long loop
+    while (running_) {
+      assert(buffer1 && buffer1->len() == 0);
+      assert(buffer2 && buffer2->len() == 0);
+      assert(buffers_dup_.empty());
+
+      {
+        MutexGuard guard{ mutex_ };
+        // \warning 
+        //   You shouldn't use while.
+        //   Otherwise, it will wait infinitly
+        //   when current message accumulation
+        //   does not reach a buffer size.
+        // \note
+        //   This is not a classic use,
+        //   but there is one cosumer, use if here is safe
+        if (buffers_.empty()) {
+          // If front thread log message is so short,
+          // we also awake and write
+          // To ensure real time message
+          not_empty_.WaitForSeconds(flush_interval_);
+        }
+
+        // Although current_buffer_ have space to fill
+        // we also push it to buffers_
+        buffers_.emplace_back(std::move(current_buffer_));
+
+        buffers_dup_.swap(buffers_);
+
+        current_buffer_ = std::move(buffer1);
+        if (!next_buffer_) {
+          next_buffer_ = std::move(buffer2);
+        }
+      }
+
+      // If buffer total size over 64M,
+      // we discard these part to avoid accumulation
+      if (buffers_dup_.size() > BUFFER_BOUND) {
+        char buf[64];
+        ::snprintf(
+          buf, sizeof buf, "Discard %lu large buffer at %s\n",
+          buffers_dup_.size() - BUFFER_BOUND, 
+          TimeStamp::Now().ToFormattedString().c_str());
+        // ::fputs(buf, stderr);
+        output.Append(buf, strlen(buf));
+
+        buffers_dup_.erase(buffers_dup_.begin() + BUFFER_BOUND, buffers_dup_.end());
+      }  
+
+      for (auto& buffer : buffers_dup_) {
+        output.Append(buffer->data(), buffer->len());
+      }
+    
+      // only leave the two warmed buffer
+      // and move to buffer1 and buffer2
+      if (buffers_dup_.size() > 2)
+        buffers_dup_.resize(2);
+
+      if (!buffer1) {
+        buffer1 = std::move(buffers_dup_.back());
+        // reuse buffer
+        buffer1->reset();
+        buffers_dup_.pop_back();
+      }
+
+      if (!buffer2) {
+        buffer2 = std::move(buffers_dup_.back());
+        buffer2->reset();
+        buffers_dup_.pop_back();
+      }
+      
+      buffers_dup_.clear();
+
+      output.Flush();
+    }
+
+    // Flush output buffer(the last)
+    output.Flush();
+  });
 
   // Main thread wait until back thread runs
   latch_.Wait();
 }
 
-void 
-AsyncLog::Stop() noexcept {
+void AsyncLog::Stop() noexcept {
   assert(running_);
 
   running_ = false;
-  notEmpty_.Notify();
-  backThread_.Join();
+  not_empty_.Notify();
+  back_thr_.Join();
 }
 
-void
-AsyncLog::Append(char const* data, size_t len) noexcept {
+void AsyncLog::Append(char const* data, size_t len) noexcept {
     MutexGuard guard{ mutex_ };
   
-    // If there are no space for data in @var currentBuffer_,
-    // swap with @var nextBuffer_, and append new buffer
-    // then notify @var backThread_ to log message
-    if (len < currentBuffer_->avali()) {
-      currentBuffer_->Append(data, len);
+    // If there are no space for data in @var current_buffer_,
+    // swap with @var next_buffer_, and append new buffer
+    // then notify @var back_thr_ to log message
+    if (len < current_buffer_->avali()) {
+      current_buffer_->Append(data, len);
     } else {
-      buffers_.emplace_back(std::move(currentBuffer_));
+      buffers_.emplace_back(std::move(current_buffer_));
 
-      if (!nextBuffer_) {
-      nextBuffer_.reset(new Buffer{});
+      if (!next_buffer_) {
+        next_buffer_.reset(new Buffer{});
       }
 
-      currentBuffer_ = std::move(nextBuffer_);
-      currentBuffer_->Append(data, len);
-      notEmpty_.Notify();
+      current_buffer_ = std::move(next_buffer_);
+      assert(!next_buffer_);
+      current_buffer_->Append(data, len);
+      not_empty_.Notify();
     }
 }
 
-void
-AsyncLog::flush() noexcept {
+void AsyncLog::Flush() noexcept {
   // The flush operation is called in back thread
-}
-
-void
-AsyncLog::threadFunc() {
-  // In back thread, we also can set two buffer for front threads using,
-  latch_.Countdown();
-  
-  BufferUPtr buffer1{ kanon::make_unique<Buffer>() };
-  BufferUPtr buffer2{ kanon::make_unique<Buffer>() };
-
-  // warm up
-  buffer1->zero();
-  buffer2->zero();  
-
-  // write to disk
-  LogFile<> output{ basename_, rollSize_, prefix_, flushInterval_, rollLine_ };
-
-  Buffers tmpBuffers;
-
-  // back thread do infinite loop
-  while (running_) {
-    assert(buffer1 && buffer1->len() == 0);
-    assert(buffer2 && buffer2->len() == 0);
-    assert(tmpBuffers.empty());
-
-    tmpBuffers.reserve(16);  
-    {
-      MutexGuard guard{ mutex_ };
-      // \warning 
-      // You shouldn't use while.
-      // Otherwise, it will wait infinitly
-      // when current message accumulation
-      // does not reach a buffer size.
-      // \note
-      // this is not a classic use,
-      // but there are one cosumer, so you can just use if here.
-      if (buffers_.empty()) {
-        // If front thread log message is so short,
-        // we also awake and write
-        // To ensure real time message
-        notEmpty_.WaitForSeconds(flushInterval_);
-      }
-
-      // Although @var currentBuffer_ have space to fill
-      // we also push it to @var buffers_
-      buffers_.emplace_back(std::move(currentBuffer_));
-
-      // Since tmpBuffers is local, it must be thread safe
-      // If this thread is a consumer, "lock and swap" is a common trick for it.
-      tmpBuffers.swap(buffers_);
-
-      currentBuffer_ = std::move(buffer1);
-      if (!nextBuffer_) {
-        nextBuffer_ = std::move(buffer2);
-      }
-    } // block end
-
-    // If buffer total size over 64M,
-    // we discard these part to avoid accumulation
-    if (tmpBuffers.size() > BUFFER_BOUND) {
-      char buf[64];
-      ::snprintf(
-        buf, sizeof buf, "Discard %lu large buffer at %s\n",
-        tmpBuffers.size() - BUFFER_BOUND, 
-        TimeStamp::Now().ToFormattedString().c_str());
-      ::fputs(buf, stderr);
-      output.Append(buf, strlen(buf));
-
-      tmpBuffers.erase(tmpBuffers.begin() + BUFFER_BOUND, tmpBuffers.end());
-    }  
-
-    for (auto& buffer : tmpBuffers) {
-      output.Append(buffer->data(), buffer->len());
-    }
-  
-    // only leave the two warmed buffer
-    // and move to buffer1 and buffer2
-    if (tmpBuffers.size() > 2)
-      tmpBuffers.resize(2);
-
-    if (!buffer1) {
-      buffer1 = std::move(tmpBuffers.back());
-      // reuse buffer
-      buffer1->reset();
-      tmpBuffers.pop_back();
-    }
-
-    if (!buffer2) {
-      buffer2 = std::move(tmpBuffers.back());
-      buffer2->reset();
-      tmpBuffers.pop_back();
-    }
-    
-    tmpBuffers.clear();
-
-    output.flush();
-  }
-  // flush output buffer(the last)
-  output.flush();
 }
