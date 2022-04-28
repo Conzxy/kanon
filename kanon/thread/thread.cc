@@ -45,7 +45,7 @@ namespace detail{
 
 //   // process control
 //   // set calling thread name
-//   // @note: the second argument just up to 16 bytes(including terminating null byte)
+//   // \note: the second argument just up to 16 bytes(including terminating null byte)
 //   ::prctl(PR_SET_NAME, CurrentThread::t_name);
   
 //   try {
@@ -109,7 +109,7 @@ void Thread::StartRun(){
     char buf[128];
     auto ret = ::strerror_r(errno, buf, sizeof buf);
     KANON_UNUSED(ret);
-    ::fprintf(stderr, "Failed in pthread_create: %s", buf);
+    ::fprintf(stderr, "Failed in pthread_create: %s\n", buf);
     ::fflush(stderr);
     exit(1);
   }
@@ -149,20 +149,20 @@ void* Run(void* arg) {
 
   // process control
   // set calling thread name
-  // @note: the second argument just up to 16 bytes(including terminating null byte)
+  // \note: the second argument just up to 16 bytes(including terminating null byte)
   ::prctl(PR_SET_NAME, CurrentThread::t_name);
   
   try {
     thread->func_();
     CurrentThread::t_name = "finished";
   } catch(std::exception const& ex) {
-    ::fprintf(stderr, "exception caught in Thread %s\n", thread->name_.c_str());
-    ::fprintf(stderr, "reason: %s", ex.what());
+    ::fprintf(stderr, "std::exception is caught in Thread %s\n", thread->name_.c_str());
+    ::fprintf(stderr, "Reason: %s", ex.what());
     ::fflush(stderr);
-    abort(); // don't throw or return just terminate
+    ::abort(); // don't throw or return just terminate
   } catch(...) {
-    ::fprintf(stderr, "exception caught in Thread %s\n", thread->name_.c_str());
-    KANON_RETHROW;
+    ::fprintf(stderr, "Unknown exception is caught in Thread %s\n", thread->name_.c_str());
+    ::abort();
   }
 
   return NULL;
