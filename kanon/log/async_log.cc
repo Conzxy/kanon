@@ -33,7 +33,8 @@ AsyncLog::AsyncLog(
   current_buffer_->zero();
   next_buffer_->zero();
   buffers_.reserve(16);
-  
+
+  Logger::SetColor(false); 
 }
 
 AsyncLog::~AsyncLog() noexcept {
