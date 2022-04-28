@@ -12,12 +12,12 @@
 
 namespace kanon {
 
-__thread time_t t_lastSecond = 0;
-__thread char t_timebuf[64] = { 0 };
+static __thread time_t t_lastSecond = 0;
+static __thread char t_timebuf[64] = { 0 };
 
 bool Logger::need_color_ = true;
 
-char const* Logger::logLevelName[Logger::LogLevel::NUM_LOG_LEVEL] = {
+char const* Logger::s_log_level_names_[Logger::LogLevel::NUM_LOG_LEVEL] = {
   "TRACE",
   "DEBUG",
   "INFO",
@@ -39,7 +39,7 @@ static char const* g_logLevelColor[] = {
   L_RED
 };
 
-Logger::LogLevel initLogLevel()
+static Logger::LogLevel initLogLevel() noexcept
 {
   if (::getenv("KANON_TRACE"))
     return Logger::LogLevel::TRACE;
@@ -49,27 +49,25 @@ Logger::LogLevel initLogLevel()
     return Logger::LogLevel::INFO;
 }
 
-Logger::LogLevel Logger::logLevel_ = initLogLevel();
+Logger::LogLevel Logger::log_level_ = initLogLevel();
 
-void defaultOutput(char const* data, size_t num)
+void DefaultOutput(char const* data, size_t num)
 {
   ::fwrite(data, 1, num, stdout);
 }
 
-void defaultFlush()
+void DefaultFlush()
 {
   ::fflush(stdout);
 }
 
-Logger::OutputCallback Logger::outputCallback_ = &defaultOutput;
-Logger::FlushCallback Logger::flushCallback_ = &defaultFlush;
+Logger::OutputCallback Logger::output_callback_ = &DefaultOutput;
+Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
 
 #define ERRNO_BUFFER_SIZE 1024
 #define TIME_BUFFER_SIZE 64
 
 __thread char t_errorBuf[ERRNO_BUFFER_SIZE];
-__thread char t_timeBuf[TIME_BUFFER_SIZE];
-__thread int t_lastSec;
 
 // tl = thread local
 char const* strerror_tl(int savedErrno) {
@@ -78,22 +76,26 @@ char const* strerror_tl(int savedErrno) {
 
 Logger::Logger(SourceFile file, size_t line, LogLevel level)
   : basename_(file.basename_)
-  , curLogLevel_(level)
+  , cur_log_level_(level)
   , line_(line)
 {
-  formatTime();
+  FormatTime();
   stream_ << CurrentThread::t_tid << " ";
   stream_ << CurrentThread::t_name << " ";
   if (need_color_) {
     stream_ << g_logLevelColor[level] 
-        << "[" << logLevelName[level] << "]"
+        << "[" << s_log_level_names_[level] << "]"
         << NONE << " ";
   }
   else {
-    stream_ << "[" << logLevelName[level] << "] ";
+    stream_ << "[" << s_log_level_names_[level] << "] ";
   }
 
-  if (level == SYS_ERROR || level == SYS_FATAL) {
+}
+
+Logger::Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys) 
+  : Logger(basefile, line, level) {
+  if (is_sys) {
     auto savedErrno = errno;
     if (savedErrno) {
       ::snprintf(t_errorBuf, ERRNO_BUFFER_SIZE, "errno: %d, errmsg: %s",
@@ -107,15 +109,15 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
 Logger::~Logger() noexcept 
 {
   stream_ << " - " << basename_ << ":" << line_ << "\n";
-  outputCallback_(stream_.data(), stream_.size());
+  output_callback_(stream_.data(), stream_.size());
   
-  if (curLogLevel_ == FATAL || curLogLevel_ == SYS_FATAL) {
-    flushCallback_();
+  if (cur_log_level_ == FATAL || cur_log_level_ == SYS_FATAL) {
+    flush_callback_();
     abort();
   }
 }
 
-void Logger::formatTime() noexcept {
+void Logger::FormatTime() noexcept {
   struct timeval tv;
   ::gettimeofday(&tv, NULL);
   
