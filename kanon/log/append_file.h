@@ -18,7 +18,7 @@ public:
   
   void Append(char const* data, size_t num) noexcept;
 
-  void flush() noexcept
+  void Flush() noexcept
   { ::fflush_unlocked(fp_); }
 
   size_t writtenBytes() const noexcept
