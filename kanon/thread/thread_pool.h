@@ -59,6 +59,8 @@ private:
 
   std::vector<std::unique_ptr<kanon::Thread>> threads_;
   std::queue<Task> tasks_;
+
+  std::string name_;
 };
 } // namespace kanon
 
