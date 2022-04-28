@@ -1,12 +1,9 @@
 #include "kanon/log/async_log.h"
-#include "kanon/log/logger.h"
 #include "kanon/thread/thread_pool.h"
 
 using namespace kanon;
 
 #define NANOSECOND_PER_SECOND 1000000000
-
-AsyncLog* g_asyncLog = nullptr;
 
 void frontThreadFunc() {
   for (int i = 0; i != 100000; ++i)
@@ -14,17 +11,9 @@ void frontThreadFunc() {
 }
 
 int main(int , char** argv) {
-  AsyncLog asyncLog{ ::basename(argv[0]), 20000 };
+  AsyncLog asyncLog{ ::basename(argv[0]), 20000 , "/root/.log/async_log_test" };
   
-  Logger::SetFlushCallback([&asyncLog]() {
-      asyncLog.flush();
-  });
-
-  Logger::SetOutputCallback([&asyncLog](char const* data, size_t len) {
-      asyncLog.Append(data, len);
-  });
-
-  asyncLog.StartRun();
+  SetupAsyncLog(asyncLog);
 
   ThreadPool pool{};
   pool.SetMaxQueueSize(10);
@@ -37,5 +26,5 @@ int main(int , char** argv) {
   BZERO(&sleepTime, sizeof sleepTime);
   sleepTime.tv_sec = 100000;
 
-  // ::nanosleep(&sleepTime, NULL);
+  ::nanosleep(&sleepTime, NULL);
 }

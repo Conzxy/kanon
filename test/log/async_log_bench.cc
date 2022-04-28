@@ -1,8 +1,10 @@
-#include "kanon/log/log_file_trigger.h"
-#include "kanon/log/async_log_trigger.h"
 #include "kanon/thread/thread_pool.h"
-#include "kanon/util/measure_time.h"
 #include "kanon/thread/count_down_latch.h"
+
+#include "kanon/log/log_file.h"
+#include "kanon/log/async_log.h"
+
+#include "kanon/util/measure_time.h"
 
 using namespace kanon;
 
@@ -44,17 +46,15 @@ LogFile_bench_impl(int num) {
 
 static inline void
 AsyncLog_bench(int num) {
-  auto& log = AsyncLogTrigger::instance("AsyncLog_bench", 200000, "/root/.log/AsyncLog_bench/").log();
-  auto& latch = log.latch();
-  KANON_UNUSED(latch);
-
+  AsyncLog log("async_log", 200000, "/root/.log/async-log-bench");
+  SetupAsyncLog(log);
   ::detail::AsyncLog_bench_impl(num);
 }
 
 static inline void
 LogFile_bench(int num) {
-  LogFileTrigger<> log("AsyncLog_bench", 200000, "/root/.log/LogFile_bench/");
-
+  LogFile<> log("log_file", 200000, "/root/.log/async-log-bench/");
+  SetupLogFile(log);
   ::detail::LogFile_bench_impl(num);
 }
 
