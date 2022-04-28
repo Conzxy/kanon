@@ -4,86 +4,110 @@
 #include <stdint.h>
 #include <vector>
 #include <atomic>
+#include <limits.h>
 
-#include "kanon/string/type.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/ptr.h"
+
+#include "kanon/string/type.h"
 #include "kanon/string/string_view.h"
 #include "kanon/string/stream_common.h"
+
 #include "kanon/thread/thread.h"
 #include "kanon/thread/condition.h"
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/count_down_latch.h"
 
+#include "kanon/log/logger.h"
+
 namespace kanon {
 
 /**
- * @class AsyncLog
- * \brief 
- * Log message to specified devices or files asynchronously
+ * \brief Log message to specified devices or files asynchronously
  * \warning
- * If main thread exits, then backthread which write message to disk will also stop.
- * Therefore, it is best that this used for such service which is long-running
- * (Fortunately, server is usually long-running).
- * \note This should used by Logger
- * \note Must be thread safe
+ *   If main thread exits, then backthread which write message to disk will also stop.
+ *   Therefore, it is best that this used for such service which is long-running
+ *   (Fortunately, server is usually long-running).
+ * \note 
+ *   This should used by Logger.
+ *   Must be thread safe
  */
 class AsyncLog : noncopyable {
 public:
+  /** 
+   * \see LogFile
+   */
   AsyncLog(
       StringView basename,
-      size_t rollSize,
+      size_t roll_size,
       StringView prefix = "",
-      size_t flushInterval = 3,
-      size_t rollLine = 1024);
+      size_t log_file_num = UINT_MAX,
+      size_t roll_interval = 86400,
+      size_t flush_interval = 3);
   
   ~AsyncLog() noexcept;
   
   void Append(char const* data, size_t num) noexcept;
-  void flush() noexcept;
-
-  CountDownLatch& latch() noexcept
-  { return latch_; }
+  void Flush() noexcept;
 
   void StartRun();
   void Stop() noexcept;
 
 private:
-  void threadFunc();
+  typedef detail::LargeFixedBuffer Buffer;
 
-  typedef detail::SmallFixedBuffer Buffer;
   // Don't expose the FixedBuffer
   typedef std::unique_ptr<Buffer> BufferUPtr;
   typedef std::vector<BufferUPtr> Buffers;
 
-  // forward parameter to LogFile
-  StringView basename_;
-  size_t rollSize_;
-  size_t flushInterval_;
-  size_t rollLine_;
+  // Forward parameter to LogFile
+  std::string basename_;
+  size_t roll_size_;
+  std::string prefix_;  
+  size_t log_file_num_;
+  size_t roll_interval_;
+  size_t flush_interval_;
 
-  StringView prefix_;  
   std::atomic<bool> running_;
 
-  // use "Multiplex Buffering" technique
-  // \see "Multiplex Buffering" entry of Wikipedia
-  BufferUPtr currentBuffer_;
-  BufferUPtr nextBuffer_;
+  /**
+   * use "Multiplex Buffering" technique
+   * \see "Multiplex Buffering" entry of Wikipedia
+   */
+  BufferUPtr current_buffer_;
+  BufferUPtr next_buffer_;
   Buffers buffers_;
+  Buffers buffers_dup_;
 
-// mutexlock used to synchronize front threads(i.e. writers)
+  // mutexlock used to synchronize front threads(i.e. writers)
   MutexLock mutex_;
 
-// If @var buffers_ is empty, back thread sleeping
-  Condition notEmpty_;
+  // If buffers_ is empty, back thread sleeping
+  Condition not_empty_;
 
-  // backThread log buffer to disk
-  Thread backThread_;
+  // back thread log buffer to disk
+  Thread back_thr_;
 
-  // as barrier to avoid main thread destroy it early
+  // As a barrier to avoid main thread destroy it early
   CountDownLatch latch_;
 };
+
+/**
+ * \warning 
+ *  -- construct before any logic, that is the first statement in main()
+ */
+inline void SetupAsyncLog(AsyncLog& al) {
+  Logger::SetFlushCallback([&al](){
+    al.Flush();
+  });
+
+  Logger::SetOutputCallback([&al](char const* data, size_t len) {
+    al.Append(data, len);
+  });
+
+  al.StartRun();
+}
 
 } // namespace kanon
 
