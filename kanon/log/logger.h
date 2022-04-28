@@ -12,20 +12,27 @@
 
 namespace kanon {
 
-extern __thread time_t t_lastSecond;
-extern __thread char t_timebuf[64];
+// __thread time_t t_lastSecond;
+// __thread char t_timebuf[64];
 
 /**
- * The log format is 
- * timestamp thread_id thread_name [log_level] (errno errmsg) 
- * (function_name) (user-provided message) - filename:line_no
+ * \brief Format the log message to specified device
+ * 
+ * The log format:
+ * timestamp thread_id thread_name [log_level] (errno errmsg) (function_name) (user-provided message) - filename:line_no
  *
- * * errno errmsg only used for SYSERROR, SYSFATAL
- * * function_name only used for TRACE, DEBUG
- * * user-provided message throught user call LOG_XXX
+ *  - errno errmsg only used for SYSERROR, SYSFATAL
+ *  - function_name only used for TRACE, DEBUG
+ *  - user-provided message throught user call LOG_XXX
  * 
  * Because the user-provided message in the middle
  * we use RAII property to construct entire log message
+ * 
+ * \note
+ *   The default output device is stdout(i.e. terminal).
+ *   Change this by modify append and flush callback
+ * \see
+ *   AsyncLog, LogFile
  */
 class Logger : noncopyable {
   using size_type      = StringView::size_type;
@@ -33,6 +40,14 @@ class Logger : noncopyable {
   using FlushCallback  = std::function<void()>;
 
 public:
+  /**
+   * Default log level is INFO if user don't specify the environment variable
+   * The highest log level can be specified is INFO
+   * This indicates the WARN, (SYS)ERROR, (SYS)FATAL is don't effect by user.
+   * Obviously, if current log level > LOG_XXX, can't log and message
+   * e.g. current log level is DEBUG, user call LOG_TRACE is no effect
+   * i.e. Log condiftion is current log level <= XXX
+   */
   enum LogLevel {
     TRACE = 0,
     DEBUG,
@@ -76,14 +91,21 @@ public:
   };
 
   // TRACE DEBUG
+  // Need put function name to let user know the call track
   Logger(SourceFile basefile, size_t line, LogLevel level, char const* func)
     : Logger(basefile, line, level)
   {
     stream_ << func << "() ";
   }
 
-  // INFO WARN ERROR FATAL SYS_ERROR SYS_FATAL
+  // INFO WARN 
+  // This is also a forward constructor of others
   Logger(SourceFile basefile, size_t line, LogLevel level);
+
+  // ERROR FATAL SYS_ERROR SYS_FATAL
+  // Because I don't let INFO and WARN also check whether this is a SYS_ERROR/SYS_FATAL,
+  // split them to two parts
+  Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys);
 
   // Do output and flush
   ~Logger() noexcept;
@@ -91,38 +113,38 @@ public:
   LogStream& stream() noexcept { return stream_; }
 
   static void SetColor(bool c) noexcept { need_color_ = c; }
-  static LogLevel GetLogLevel() noexcept { return logLevel_; }
-  static void SetLogLevel(LogLevel GetLogLevel) noexcept { logLevel_ = GetLogLevel; }
-  static OutputCallback GetOutputCallback() noexcept { return outputCallback_; }
-  static void SetOutputCallback(OutputCallback output) noexcept { outputCallback_ = output; }
-  static FlushCallback GetFlushCallback() noexcept { return flushCallback_; }
-  static void SetFlushCallback(FlushCallback flush) noexcept { flushCallback_ = flush; }
+  static LogLevel GetLogLevel() noexcept { return log_level_; }
+  static void SetLogLevel(LogLevel GetLogLevel) noexcept { log_level_ = GetLogLevel; }
+  static OutputCallback GetOutputCallback() noexcept { return output_callback_; }
+  static void SetOutputCallback(OutputCallback output) noexcept { output_callback_ = output; }
+  static FlushCallback GetFlushCallback() noexcept { return flush_callback_; }
+  static void SetFlushCallback(FlushCallback flush) noexcept { flush_callback_ = flush; }
 
 private:
   StringView basename_; /** Filename(may including slash) */
-  LogLevel curLogLevel_;
+  LogLevel cur_log_level_;
   size_t line_; /** Line number */
 
   LogStream stream_;
 
-  void formatTime() noexcept;
+  void FormatTime() noexcept;
 
 
-  static char const* logLevelName[NUM_LOG_LEVEL];
+  static char const* s_log_level_names_[NUM_LOG_LEVEL];
   /** 
    * Current Log Level, initial value is INFO
    * You can define environment variable to specify WARN or TRACE
    */
-  static LogLevel logLevel_;
+  static LogLevel log_level_;
   static bool need_color_; 
-  static OutputCallback outputCallback_;
-  static FlushCallback flushCallback_;
+  static OutputCallback output_callback_;
+  static FlushCallback flush_callback_;
 
 };
 
 char const* strerror_tl(int _errno);
-void defaultFlush();
-void defaultOutput(char const*, size_t);
+void DefaultFlush();
+void DefaultOutput(char const*, size_t);
 
 #define LOG_TRACE \
   if (kanon::Logger::GetLogLevel() <= kanon::Logger::TRACE) \
@@ -151,13 +173,16 @@ void defaultOutput(char const*, size_t);
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_FATAL).stream()
 
 #define FMT_LOG_TRACE(fmt, ...) \
-  LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::TRACE) \
+    LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 
 #define FMT_LOG_DEBUG(fmt, ...) \
-  LOG_DEBUG << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::DEBUG) \
+    LOG_DEBUG << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 
 #define FMT_LOG_INFO(fmt, ...) \
-  LOG_INFO << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::INFO) \
+    LOG_INFO << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 
 #define FMT_LOG_WARN(fmt, ...) \
   LOG_WARN << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
