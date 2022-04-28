@@ -10,6 +10,7 @@ ThreadPool::ThreadPool(int max_queue_size,
   , not_full_{ mutex_ }
   , not_empty_{ mutex_ }
   , max_queue_size_{ max_queue_size }
+  , name_{ name }
 { }
 
 ThreadPool::~ThreadPool() noexcept {
@@ -29,7 +30,7 @@ void ThreadPool::StartRun(int thread_num) {
         // Exception is handled by Thread
         task();
       }
-    });
+    }, name_ + std::to_string(i));
     
     auto p_thr = GetPointer(up_thr);
     threads_.emplace_back(std::move(up_thr));        
