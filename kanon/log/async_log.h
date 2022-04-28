@@ -95,14 +95,21 @@ private:
 
 /**
  * \warning 
- *  -- construct before any logic, that is the first statement in main()
+ *  -- construct before any logic, e.g. the first statement in main()
  */
-inline void SetupAsyncLog(AsyncLog& al) {
-  Logger::SetFlushCallback([&al](){
+inline void SetupAsyncLog(StringView basename, 
+                          size_t roll_size,
+                          StringView prefix = "",
+                          size_t log_file_num = UINT_MAX,
+                          size_t roll_interval = 86400,
+                          size_t flush_interval = 3) {
+  static AsyncLog al(basename, roll_size, prefix, log_file_num, roll_interval, flush_interval);
+
+  Logger::SetFlushCallback([](){
     al.Flush();
   });
 
-  Logger::SetOutputCallback([&al](char const* data, size_t len) {
+  Logger::SetOutputCallback([](char const* data, size_t len) {
     al.Append(data, len);
   });
 
