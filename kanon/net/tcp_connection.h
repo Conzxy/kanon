@@ -86,7 +86,6 @@ public:
                                            InetAddr const& peer_addr)
   { return std::make_shared<TcpConnection>(loop, name, sockfd, local_addr, peer_addr); }
   
-
   //! \name write operation
   //!@{
 
@@ -138,6 +137,26 @@ public:
   void SetCloseCallback(CloseCallback cb)
   { close_callback_ = std::move(cb); }
   
+  /**
+   * \brief Disable connection continue read message from kernel space
+   *
+   * This is used for cooperating with HighwatermarkCallback usually
+   *
+   * \note
+   *   If read has disabled, this is no effect
+   */ 
+  void DisbaleRead();
+
+  /**
+   * \brief Restart connection continue read message from kernel space
+   *
+   * This is a paired API of DisableRead()
+   *
+   * \note
+   *   If read has enabled, this is no effect
+   */
+  void EnableRead();
+
   void SetHighWaterMarkCallback(HighWaterMarkCallback cb, size_t mark)
   { high_water_mark_ = mark; high_water_mark_callback_ = std::move(cb); }
 
