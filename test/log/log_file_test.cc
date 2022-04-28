@@ -1,11 +1,9 @@
 #include "kanon/log/log_file.h"
-#include "kanon/log/logger.h"
 
 using namespace kanon;
 
-#define N 1000
-
-LogFile<>* g_logFile = nullptr;
+#define N 10000000
+#define GB 1 << 30
 
 int main(int, char* argv[]) {
   char const* basename = ::basename(argv[0]);
@@ -14,17 +12,9 @@ int main(int, char* argv[]) {
   prefix += basename;
   prefix += "/";
 
-  LogFile<> logFile{ basename, 20000 , prefix};
+  LogFile<> lf{ basename, GB , prefix, UINT_MAX, 3};
   
-  g_logFile = &logFile;
-
-  Logger::SetOutputCallback([](char const* data, size_t num) {
-    g_logFile->Append(data, num);
-  });
-
-  Logger::SetFlushCallback([]() {
-    g_logFile->flush();
-  });
+  SetupLogFile(lf);
   
   for (int i = 0; i < N; ++i) {
     LOG_INFO << "LogFile_test";
