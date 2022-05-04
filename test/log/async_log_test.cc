@@ -11,16 +11,22 @@ void frontThreadFunc() {
 }
 
 int main(int , char** argv) {
-  AsyncLog asyncLog{ ::basename(argv[0]), 20000 , "/root/.log/async_log_test" };
-  
-  SetupAsyncLog(asyncLog);
+  AsyncLog log(::basename(argv[0]), 20000 , "/root/.log/async_log_test");
 
-  ThreadPool pool{};
-  pool.SetMaxQueueSize(10);
-  pool.StartRun(10);
-   
-  for (int i = 0; i < 20; ++i)
-    pool.Push(&frontThreadFunc);
+  Logger::SetOutputCallback([&log](char const* data, size_t num) {
+    log.Append(data, num);
+  });
+
+  Logger::SetFlushCallback([&log]() {
+    log.Flush();
+  });
+
+  log.StartRun();
+  // SetupAsyncLog al(::basename(argv[0]), 20000 , "/root/.log/async_log_test");
+
+  for (int i = 0; i < 10; ++i) {
+    LOG_INFO << "async test";
+  }
 
   struct timespec sleepTime;
   BZERO(&sleepTime, sizeof sleepTime);

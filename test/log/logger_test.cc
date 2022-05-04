@@ -4,7 +4,7 @@ using namespace kanon;
 
 #define N 100
 
-int main(int argc, char* argv[]) {
+int main() {
   int cnt = 0;
   
   for (int i = 0; i != N; ++i) {

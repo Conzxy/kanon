@@ -95,15 +95,14 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
 
 Logger::Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys) 
   : Logger(basefile, line, level) {
-  if (is_sys) {
-    auto savedErrno = errno;
-    if (savedErrno) {
-      ::snprintf(t_errorBuf, ERRNO_BUFFER_SIZE, "errno: %d, errmsg: %s",
-          savedErrno, strerror_tl(savedErrno));
-      stream_ << t_errorBuf << " ";
-    }
-    errno = savedErrno;
+
+  auto savedErrno = errno;
+  if (savedErrno) {
+    ::snprintf(t_errorBuf, ERRNO_BUFFER_SIZE, "errno: %d, errmsg: %s",
+        savedErrno, strerror_tl(savedErrno));
+    stream_ << t_errorBuf << " ";
   }
+  errno = savedErrno;
 }
 
 Logger::~Logger() noexcept 

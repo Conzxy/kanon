@@ -87,6 +87,7 @@ void AsyncLog::StartRun() {
           // we also awake and write
           // To ensure real time message
           not_empty_.WaitForSeconds(flush_interval_);
+          // not_empty_.Wait();
         }
 
         // Although current_buffer_ have space to fill
