@@ -6,7 +6,7 @@
 
 namespace kanon {
 
-// @note
+// \note
 // I don't think this is great wrapper:
 // member function wrapper too many( &, &&, noexcept, const, volatile i.e. 48 types)
 // if std::is_member_pointer<> provide traits type alias, it's great(my TinySTL::Is_member_pointer<> can provide return and paraemter for 48 types)

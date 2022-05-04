@@ -40,7 +40,7 @@ private:
   Condition cond_r_; //!< Wait when read_num_ > 0
 
   bool has_writer_;
-  uint64_t reader_num_; 
+  uint32_t reader_num_; 
 };
 
 class RLockGuard {

@@ -4,7 +4,7 @@
 #include "kanon/thread/rw_lock.h"
 #include "kanon/thread/mutex_lock.h"
 
-static constexpr uint64_t MAX_READER_NUM = UINT64_MAX;
+static constexpr uint32_t MAX_READER_NUM = UINT_MAX;
 
 namespace kanon {
 
