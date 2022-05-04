@@ -110,19 +110,15 @@ void TcpConnection::HandleLtRead(TimeStamp recv_time) {
     * 2.2. >0, call message_callback_
     * 2.3. <0, error occurred, call HandleError()
     */
-  int saved_errno;
+  int saved_errno = 0;
   auto n = input_buffer_.ReadFd(channel_->GetFd(), saved_errno);
   
-  LOG_DEBUG << "Read " << n << " bytes from [Connection: " << name_
-            << ", fd: " << channel_->GetFd() << "]";
+  if (saved_errno != 0) {
+    errno = saved_errno;
 
-  if (n > 0) {
-    if (message_callback_) {
-      message_callback_(shared_from_this(), input_buffer_, recv_time);
-    } else {
-      input_buffer_.AdvanceAll();
-      LOG_WARN << "If user want to process message from peer, should set "
-                  "proper message_callback_";
+    if (errno != EAGAIN) {
+      LOG_SYSERROR << "Read event handle error";
+      HandleError();
     }
   } else if (n == 0) {
     // Peer close the connection
@@ -130,11 +126,17 @@ void TcpConnection::HandleLtRead(TimeStamp recv_time) {
     LOG_TRACE << "Peer close connection";
     HandleClose();
   } else {
-    errno = saved_errno;
+    assert(n > 0 && n != static_cast<size_t>(-1));
 
-    if (errno != EAGAIN) {
-      LOG_SYSERROR << "Read event handle error";
-      HandleError();
+    LOG_DEBUG << "Read " << n << " bytes from [Connection: " << name_
+              << ", fd: " << channel_->GetFd() << "]";
+
+    if (message_callback_) {
+      message_callback_(shared_from_this(), input_buffer_, recv_time);
+    } else {
+      input_buffer_.AdvanceAll();
+      LOG_WARN << "If user want to process message from peer, should set "
+                  "proper message_callback_";
     }
   }
 }
@@ -159,7 +161,7 @@ void TcpConnection::HandleEtRead(TimeStamp recv_time)
   for (; ; ) {
     auto readn = input_buffer_.ReadFd(channel_->GetFd(), saved_errno);
 
-    if (saved_errno < 0) {
+    if (saved_errno != 0) {
       if (saved_errno != EAGAIN) {
         LOG_SYSERROR << "Read event handle error";
         HandleError();
@@ -169,6 +171,8 @@ void TcpConnection::HandleEtRead(TimeStamp recv_time)
       }
     }
 
+    LOG_DEBUG << "Read " << readn << " bytes from [Connection: " << name_
+              << ", fd: " << channel_->GetFd() << "]";
     if (readn == 0) {
       LOG_DEBUG << "Peer close connection";
       HandleClose();
@@ -295,38 +299,44 @@ void TcpConnection::HandleEtWrite()
   // The event occurred only in the:
   // 1. buffer high-watermark to low-watermark(writable)
 
-  auto writen = sock::Write(
+  while (true) {
+    auto writen = sock::Write(
     channel_->GetFd(),
     output_buffer_.GetReadBegin(),
     output_buffer_.GetReadableSize());
-  
-  LOG_TRACE << "Write " << writen << " bytes to [Connection: " << name_
-            << ", fd: " << channel_->GetFd() << "]";
 
-  if (writen > 0) {
+    if (writen < 0) {
+      if (errno == EAGAIN) { break; }
+      else {
+        // writen == 0 is also error, since output_buffer_ must not be empty when write event occurred
+        LOG_SYSERROR << "Write event handle error";
+        HandleError();
+      }
+    }
+
+    LOG_TRACE << "Write " << writen << " bytes to [Connection: " << name_
+              << ", fd: " << channel_->GetFd() << "]";
+
     output_buffer_.AdvanceRead(writen);
 
-    if (output_buffer_.HasReadable()) {
-      LOG_TRACE << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
-      // To write entire message, we need resigter write event again
-      channel_->EnableWriting();
-    }
-    else {
-      if (write_complete_callback_) {
-        // No need to disable writing
-        loop_->QueueToLoop(std::bind(
-          &TcpConnection::CallWriteCompleteCallback, shared_from_this()));
-      }
+    if (!output_buffer_.HasReadable()) { break; }
+  }
 
-      if (state_ == kDisconnecting) {
-        socket_->ShutdownWrite();
-      }
-    }
+  if (output_buffer_.HasReadable()) {
+    LOG_TRACE << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
+    // To write entire message, we need resigter write event again
+    channel_->EnableWriting();
   }
   else {
-    // writen == 0 is also error, since output_buffer_ must not be empty when write event occurred
-    LOG_SYSERROR << "Write event handle error";
-    HandleError();
+    if (write_complete_callback_) {
+      // No need to disable writing
+      loop_->QueueToLoop(std::bind(
+        &TcpConnection::CallWriteCompleteCallback, shared_from_this()));
+    }
+
+    if (state_ == kDisconnecting) {
+      socket_->ShutdownWrite();
+    }
   }
 }
 
@@ -345,7 +355,7 @@ void TcpConnection::HandleClose() {
   
   state_ = kDisconnected;
   
-  LOG_TRACE << "The connection [" << name_ << "] is disconnected";
+  LOG_DEBUG << "The connection [" << name_ << "] is disconnected";
   // ! You can't remove channel in event handling phase.
   // ! Instead, close_callback_ should delay the remove to
   // ! functor calling phase
