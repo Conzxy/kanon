@@ -53,7 +53,7 @@ public:
    * \param is_poller specify the poll(2) as the demultiplexer
    */
   explicit EventLoop(bool is_poller);
-  
+
   ~EventLoop();
 
   //! \name Loop API
@@ -201,7 +201,7 @@ private:
    * Used for checking if in this thread 
    * when calling the method of EventLoop
    */
-  const pid_t ownerThreadId_; //!< Current thread Id
+  const pid_t owner_thread_id_; //!< Current thread Id
 
   /* 
    * looping_ and callingFunctor_ is not exposed interface for user
@@ -221,7 +221,7 @@ private:
   /**
    * Determining this functors is a self-register functor
    */
-  bool callingFunctors_; //!< Whether functors are being called
+  bool calling_functors_; //!< Whether functors are being called
 
   bool is_poller_; //!< Whther demultipler(poller_) is working in poller()
 

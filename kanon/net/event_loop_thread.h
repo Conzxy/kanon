@@ -24,14 +24,15 @@ class EventLoopThread : noncopyable {
 public:
   EventLoopThread(std::string const& = std::string{});
   ~EventLoopThread() noexcept;
-
+  
   /**
    * \brief Start a new thread and start event loop
    * \note
    *   Must be called in main thread  
    */
   EventLoop* StartRun();
-
+  EventLoop* GetLoop() noexcept { return loop_; }
+  EventLoop const* GetLoop() const noexcept { return loop_; }
 private:
   // Start loop in background thread(IO thread usually)
   void BackGroundStartLoop();

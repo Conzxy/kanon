@@ -2,7 +2,7 @@
 #define KANON_NET_POLL_POLLER_H
 
 #include <poll.h>
-#include <map>
+#include <unordered_map>
 
 #include "kanon/net/poll/poller_base.h"
 
@@ -60,7 +60,7 @@ private:
    * pollfd don't give such data member in epoll_data,
    * we need to maintain a map from fd to channel
    */
-  std::map<int, Channel*> channels_map_; //!< Map: fd->channel
+  std::unordered_map<int, Channel*> channels_map_; //!< Map: fd->channel
 };
 
 //!@}

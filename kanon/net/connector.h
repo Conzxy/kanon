@@ -94,17 +94,11 @@ private:
 
   /** 
    * The connect_ and state_ are necessary. \n
-   * We can't use state_ == kDisconnected or kConnecting
-   * to determine whether retry connect since kDisconnected
-   * is not only the initialized state but also can be set
-   * by Stop(), we need to distinguish them. \n
-   * The sematic of state_ is the connect reach what stage.
-   * But connect_ indicates whether retry. \n
-   * i.e. connect_ is externel variable can specified by user
-   * but state_ is internal variable modified by Connector
+   * e.g. Stop() need remove channle and close fd
+   * when connector in the connecting state
    */
-  State state_; //!< Control the behavior
-  std::atomic<bool> connect_; //!< Control whether retry connect peer 
+  State state_; //!< Current stage, used for checking
+  bool connect_; //!< Control whether continue connect to peer
 
   kanon::optional<TimerId> timer_; //!< Retry timer
 };
