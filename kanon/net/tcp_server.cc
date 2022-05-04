@@ -40,19 +40,25 @@ TcpServer::TcpServer(EventLoop* loop,
     auto local_addr = sock::GetLocalAddr(cli_sock);
     auto conn = TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
 
+    {
+    MutexGuard guard(lock_conn_);
     connections_[conn_name] = conn;
+    }
 
     conn->SetMessageCallback(message_callback_);
     conn->SetConnectionCallback(connection_callback_);
     conn->SetWriteCompleteCallback(write_complete_callback_);
     conn->SetCloseCallback([this](TcpConnectionPtr const& conn) {
-      loop_->AssertInThread();
-
-      auto n = connections_.erase(conn->GetName());
-      assert(n == 1);
-      KANON_UNUSED(n);
-      
       auto io_loop = conn->GetLoop();
+      io_loop->AssertInThread();
+
+      int n = 0;
+      {
+      MutexGuard guard(lock_conn_);
+      n = connections_.erase(conn->GetName());
+      }
+
+      assert(n == 1);
 
       // !Must call QueueToLoop() here,
       // we can't destroy the channel_ in the handling events phase,
@@ -63,7 +69,7 @@ TcpServer::TcpServer(EventLoop* loop,
     });
     
     // io loop or main loop
-    io_loop->RunInLoop([&conn]() {
+    io_loop->RunInLoop([conn]() {
       conn->ConnectionEstablished();
     });
 

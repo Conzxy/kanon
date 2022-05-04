@@ -1,11 +1,14 @@
 #ifndef KANON_NET_TCPSERVER_H
 #define KANON_NET_TCPSERVER_H
 
+#include <unordered_map>
+
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/type.h"
 #include "kanon/string/string_view.h"
 #include "kanon/thread/atomic.h"
+#include "kanon/thread/mutex_lock.h"
 
 #include "kanon/net/callback.h"
 
@@ -84,7 +87,7 @@ public:
 
   //!@}
 private:
-  typedef kanon::map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
+  typedef std::unordered_map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
 
   EventLoop* loop_;
   std::string const ip_port_;
@@ -104,6 +107,8 @@ private:
   std::unique_ptr<EventLoopPool> pool_;
 
   std::atomic_flag start_once_;
+
+  MutexLock lock_conn_;
 }; 
 
 //!@}
