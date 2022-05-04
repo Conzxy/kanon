@@ -167,22 +167,19 @@ void DefaultOutput(char const*, size_t);
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::FATAL).stream()
 
 #define LOG_SYSERROR \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_ERROR).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_ERROR, true).stream()
 
 #define LOG_SYSFATAL \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_FATAL).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_FATAL, true).stream()
 
 #define FMT_LOG_TRACE(fmt, ...) \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::TRACE) \
-    LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 
 #define FMT_LOG_DEBUG(fmt, ...) \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::DEBUG) \
-    LOG_DEBUG << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_DEBUG << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 
 #define FMT_LOG_INFO(fmt, ...) \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::INFO) \
-    LOG_INFO << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_INFO << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 
 #define FMT_LOG_WARN(fmt, ...) \
   LOG_WARN << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
