@@ -15,14 +15,11 @@ Socket::~Socket() noexcept {
   sock::Close(fd_);
 }
 
-void
-Socket::BindAddress(InetAddr const& addr) noexcept {
-  sock::Bind(fd_, addr.IsIpv4() ? 
-      sock::to_sockaddr(addr.ToIpv4()) : sock::to_sockaddr(addr.ToIpv6()));
+void Socket::BindAddress(InetAddr const& addr) noexcept {
+  sock::Bind(fd_, addr.ToSockaddr());
 }
 
-int
-Socket::Accpet(InetAddr& addr) noexcept {
+int Socket::Accpet(InetAddr& addr) noexcept {
   struct sockaddr_in6 addr6;
   auto cli_fd = sock::Accept(fd_, &addr6);
   
@@ -37,8 +34,7 @@ Socket::Accpet(InetAddr& addr) noexcept {
   return cli_fd;
 }
 
-void
-Socket::ShutdownWrite() noexcept {
+void Socket::ShutdownWrite() noexcept {
   LOG_TRACE << "Shutdown peer in write direction";
 
   if (sock::ShutdownWrite(fd_)) {
@@ -46,8 +42,7 @@ Socket::ShutdownWrite() noexcept {
   }
 }
 
-void
-Socket::ShutdownTwoDirection() noexcept {
+void Socket::ShutdownTwoDirection() noexcept {
   LOG_TRACE << "Shutdown peer in two dierction(read/write)";
 
   if (sock::ShutdownTwoDirection(fd_)) {

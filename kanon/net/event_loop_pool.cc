@@ -1,12 +1,14 @@
 #include "kanon/net/event_loop_pool.h"
 
+#include <string>
+
 #include "kanon/log/logger.h"
 
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_thread.h"
 
-
 using namespace kanon;
+using namespace std;
 
 EventLoopPool::EventLoopPool(EventLoop* base_loop,
                              std::string const& name)
@@ -22,8 +24,7 @@ EventLoopPool::~EventLoopPool() noexcept {
   assert(started_);
 }
 
-void
-EventLoopPool::StartRun() {
+void EventLoopPool::StartRun() {
   base_loop_->AssertInThread();
 
   // If the function is called not once, warning user
@@ -31,27 +32,25 @@ EventLoopPool::StartRun() {
   started_ = true;
 
   const size_t len = name_.size() + 32;  
-  std::vector<char> buf;
+  string buf;
   buf.reserve(len);
+  loop_threads_.reserve(loop_num_);
 
   for (int i = 0; i != loop_num_; ++i) {
-    ::snprintf(buf.data(), len, "%s[%d]", name_.c_str(), i);
-    auto loopThread = new EventLoopThread{ buf.data() };
-    loop_threads_.emplace_back(std::unique_ptr<EventLoopThread>(loopThread));
-    loops_.emplace_back(loopThread->StartRun());
+    ::snprintf(&*buf.begin(), len, "%s[%d]", name_.c_str(), i);
+    loop_threads_.emplace_back(new EventLoopThread(buf));
+    loop_threads_[i]->StartRun();
   }
-
 }
 
-EventLoop*
-EventLoopPool::GetNextLoop() {
+EventLoop* EventLoopPool::GetNextLoop() {
   base_loop_->AssertInThread();
   assert(started_); 
 
   EventLoop* loop = nullptr;
 
-  if (!loops_.empty()) {
-    loop = loops_[next_];
+  if (!loop_threads_.empty()) {
+    loop = loop_threads_[next_]->GetLoop();
     ++next_;
     if (next_ >= loop_num_) {
       next_ = 0;
@@ -63,17 +62,4 @@ EventLoopPool::GetNextLoop() {
   }
 
   return loop;
-}
-
-auto 
-EventLoopPool::GetLoops() 
--> LoopVector* {
-  base_loop_->AssertInThread();
-  assert(started_);
-
-  if (loops_.empty()) {
-    return nullptr;
-  } else {
-    return &loops_;
-  }
 }

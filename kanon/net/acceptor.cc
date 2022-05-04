@@ -69,8 +69,7 @@ Acceptor::~Acceptor() noexcept {
   ::close(dummyfd_);
 }
 
-void
-Acceptor::Listen() noexcept {
+void Acceptor::Listen() noexcept {
   assert(!listening_);
   loop_->AssertInThread();
   

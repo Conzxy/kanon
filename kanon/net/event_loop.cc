@@ -63,10 +63,10 @@ EventLoop::EventLoop()
 }
 
 EventLoop::EventLoop(bool is_poller)
-  : ownerThreadId_{ CurrentThread::t_tid }
+  : owner_thread_id_{ CurrentThread::t_tid }
   , looping_{ false }
   , quit_{ false }
-  , callingFunctors_{ false }
+  , calling_functors_{ false }
   , is_poller_{ is_poller }
 #ifdef ENABLE_EPOLL
   , poller_{ is_poller_ ?
@@ -175,7 +175,7 @@ void EventLoop::QueueToLoop(FunctorCallback cb) {
   // not complete, but this is in the phase3, if we don't Wakeup(),
   // the next loop must be blocked.
   // \see example/file_transfer/client.cc
-  if (!IsLoopInThread() || callingFunctors_) {
+  if (!IsLoopInThread() || calling_functors_) {
     Wakeup();
   }
 }
@@ -195,24 +195,25 @@ void EventLoop::CallFunctors() {
     functors.swap(functors_);
   }  
 
-  callingFunctors_ = true;
+  calling_functors_ = true;
   for (auto& func : functors) {
     try {
-      assert(func);
-      func();
+      if (func) {
+        func();
+      }
     } catch(std::exception const& ex) {
       LOG_ERROR << "std::exception caught in CallFunctors()";
       LOG_ERROR << "Reason: " << ex.what();  
-      callingFunctors_ = false;
+      calling_functors_ = false;
       KANON_RETHROW;
     } catch(...) {
       LOG_ERROR << "Unknown exception caught in CallFunctors()";
-      callingFunctors_ = false;
+      calling_functors_ = false;
       KANON_RETHROW;
     }
   }
 
-  callingFunctors_ = false;
+  calling_functors_ = false;
 }
 
 void EventLoop::AssertInThread() noexcept {
@@ -221,7 +222,7 @@ void EventLoop::AssertInThread() noexcept {
 }
 
 bool EventLoop::IsLoopInThread() noexcept {
-  return CurrentThread::t_tid == ownerThreadId_;
+  return CurrentThread::t_tid == owner_thread_id_;
 }
 
 void EventLoop::EvRead() noexcept {

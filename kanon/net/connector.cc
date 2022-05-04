@@ -50,7 +50,6 @@ void Connector::Stop() noexcept {
   // (this is called in the phase3 as a callback)
   // Solution:
   // Make connector managed by std::shared_ptr
-  connect_ = false;
 
   loop_->RunInLoop(std::bind(&Connector::StopInLoop, shared_from_this()));
 }
@@ -58,26 +57,30 @@ void Connector::Stop() noexcept {
 void Connector::StopInLoop() noexcept
 { 
   loop_->AssertInThread();
+  connect_ = false;
 
   LOG_TRACE << "Connector is stopping";
   // Only be called when connecting,
   // interrupt reconnecting to peer 
-  SetState(State::kDisconnected);
   if (timer_) loop_->CancelTimer(*timer_);
 
   if (state_ == State::kConnecting) {
     int sockfd = RemoveAndResetChannel();
     sock::Close(sockfd); 
   }
+
+  SetState(State::kDisconnected);
 }
 
 void Connector::Restrat() noexcept {
-  connect_ = true;
+  loop_->RunInLoop([this]() {
+    connect_ = true;
 
-  assert(state_ == kConnected);
-  SetState(State::kDisconnected);
-  retry_interval_ = INIT_RETRY_INTERVAL;
-  StartRun();
+    assert(state_ == kConnected);
+    SetState(State::kDisconnected);
+    retry_interval_ = INIT_RETRY_INTERVAL;
+    StartRun();
+  });
 }
 
 void Connector::Connect() noexcept {

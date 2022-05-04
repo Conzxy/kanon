@@ -20,8 +20,7 @@ class EventLoopThread;
  *   EventLoopThread
  */
 class EventLoopPool : noncopyable {
-  typedef std::vector<std::unique_ptr<EventLoopThread>> LoopThreadVector;
-  typedef std::vector<EventLoop*> LoopVector;
+  using LoopThreadVector = std::vector<std::unique_ptr<EventLoopThread>>;
 public:
   /**
    * \brief Construct a EventLoopPool object
@@ -35,7 +34,7 @@ public:
   void SetLoopNum(int loop_num) noexcept { loop_num_ = loop_num; }
 
   //! Ask whether pool has started
-  bool started() const noexcept { return started_; }
+  bool IsStarted() const noexcept { return started_; }
   
   /**
    * \brief Start run
@@ -49,20 +48,14 @@ public:
    */
   EventLoop* GetNextLoop();
 
-  /**
-   * \brief Get all loops
-   */
-  LoopVector* GetLoops();
 private: 
-  
   EventLoop* base_loop_; //!< caller thread
   bool started_; //!< used for check of invariants
   int loop_num_; //!< The size of pool
   int next_; //!< Index of next IO thread(used for RR)
   
   std::string name_; //!< base name of event loop thread
-  LoopThreadVector loop_threads_; //!< IO threads
-  LoopVector loops_; //!< IO loops
+  LoopThreadVector loop_threads_; //!< IO loopthreads
 };
 
 //!@}

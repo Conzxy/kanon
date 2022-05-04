@@ -185,6 +185,8 @@ public:
   struct sockaddr* ToSockaddr() noexcept
   { return reinterpret_cast<sockaddr*>(&addr_); }
 
+  struct sockaddr const* ToSockaddr() const noexcept
+  { return reinterpret_cast<sockaddr const*>(&addr_); }
   //!@}
 
   //! \name Attribute getter  
