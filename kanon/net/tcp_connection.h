@@ -124,19 +124,34 @@ public:
   void ForceClose() noexcept;
   //!@}
 
-
   //! \name setter
   //!@{
 
   void SetMessageCallback(MessageCallback cb)
   { message_callback_ = std::move(cb); }
 
+  void SetConnectionCallback(ConnectionCallback cb)
+  { connection_callback_ = std::move(cb); }
+
   void SetWriteCompleteCallback(WriteCompleteCallback cb)
   { write_complete_callback_ = std::move(cb); }
   
-  void SetCloseCallback(CloseCallback cb)
-  { close_callback_ = std::move(cb); }
+  void SetHighWaterMarkCallback(HighWaterMarkCallback cb, size_t mark)
+  { high_water_mark_ = mark; high_water_mark_callback_ = std::move(cb); }
+
+  /**
+   * Context can used for binding some information 
+   * about a specific connnection(So, it named context)
+   */
+  void SetContext(Any&& context) { context_ = std::move(context); }
   
+  void SetContext(Any const& context) { context_ = context; } 
+
+  //! Whether disable Negele algorithm
+  void SetNoDelay(bool flag) noexcept;
+  //! Whether disable keep-alive timer
+  void SetKeepAlive(bool flag) noexcept;
+
   /**
    * \brief Disable connection continue read message from kernel space
    *
@@ -157,32 +172,13 @@ public:
    */
   void EnableRead();
 
-  void SetHighWaterMarkCallback(HighWaterMarkCallback cb, size_t mark)
-  { high_water_mark_ = mark; high_water_mark_callback_ = std::move(cb); }
-
-  /**
-   * Context can used for binding some information 
-   * about a specific connnection(So, it named context)
-   */
-  void SetContext(Any&& context) { context_ = std::move(context); }
-  
-  void SetContext(Any const& context) { context_ = context; } 
-
-  //! Whether disable Negele algorithm
-  void SetNoDelay(bool flag) noexcept;
-  //! Whether disable keep-alive timer
-  void SetKeepAlive(bool flag) noexcept;
-
   //!@}
 
   //! \name getter
   //!@{
 
   /**
-   * Accept thread(OR main thread) will dispatch connection to IO thread
-   * to ensure one loop per thread
-   * \return
-   *   The event loop where acceptor in(Usually, this is main thread)
+   * \brief Get the IO loop
    */
   EventLoop* GetLoop() const noexcept
   { return loop_; }  
@@ -237,8 +233,8 @@ private:
   void SendInLoopForStr(std::string& data);
   void SendInLoopForBuf(Buffer& buffer);
 
-  void SetConnectionCallback(ConnectionCallback cb)
-  { connection_callback_ = std::move(cb); }
+  void SetCloseCallback(CloseCallback cb)
+  { close_callback_ = std::move(cb); }
 
   // When TcpServer accept a new connection in newConnectionCallback
   void ConnectionEstablished();
