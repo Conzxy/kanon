@@ -11,10 +11,7 @@
 
 using namespace kanon::protobuf::rpc;
 
-using SimpleRpcClient = KRpcClient<SimpleService::Stub>;
-using SimpleRpcClientPtr = std::shared_ptr<SimpleRpcClient>;
-
-void Done(SimpleRpcClientPtr cli, SimpleResponse* response)
+void Done(KRpcClient* cli, SimpleResponse* response)
 {
   kanon::DeferDelete<SimpleResponse> defer_response(response);
 
@@ -27,9 +24,9 @@ int main()
   kanon::EventLoopThread thread_loop;
   const auto loop = thread_loop.StartRun();
 
-  auto client = std::make_shared<SimpleRpcClient>(loop, InetAddr("127.0.0.1", 9999), "SimpleClient");
+  auto client = kanon::make_unique<KRpcClient>(loop, InetAddr("127.0.0.1", 9999), "SimpleClient");
 
-  client->SetConnectionCallback([client](TcpConnectionPtr const& conn) {
+  client->SetConnectionCallback([&client](TcpConnectionPtr const& conn) {
     client->OnConnection(conn);
     if (!conn->IsConnected()) {
       client->GetLatch().Countdown();
@@ -38,12 +35,12 @@ int main()
 
   client->Connect();
 
-  const auto stub = client->GetStub();
+  const auto stub = client->GetStub<SimpleService::Stub>();
 
   auto request = SimpleRequest();
   request.set_i(1);
   auto response = new SimpleResponse;
-  stub->simple(NULL, &request, response, NewCallback(&Done, client, response));
+  stub->simple(NULL, &request, response, NewCallback(&Done, GetPointer(client), response));
 
   auto& latch = client->GetLatch();
   latch.Wait();
