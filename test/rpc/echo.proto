@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+option cc_generic_services = true;
+
+message EchoArgs {
+  required string msg = 1;
+}
+
+message EchoReply {
+  required string msg = 1;
+}
+
+service EchoService {
+  rpc Echo(EchoArgs) returns(EchoReply);
+}
