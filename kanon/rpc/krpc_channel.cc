@@ -3,6 +3,7 @@
 #include <google/protobuf/service.h>
 #include <google/protobuf/stubs/callback.h>
 
+#include "kanon/net/event_loop.h"
 #include "kanon/net/tcp_connection.h"
 #include "kanon/log/logger.h"
 #include "kanon/util/macro.h"
@@ -52,25 +53,29 @@ void KRpcChannel::CallMethod(
 {
   KANON_UNUSED(controller);
 
-  RpcMessage message;
-  message.set_id(id_);
+  RpcMessage* message = new RpcMessage();
+  message->set_id(id_);
+  id_.fetch_add(1, std::memory_order_relaxed);
 
-  message.set_type(RpcMessage::kRequest);
-  message.set_request(request->SerializeAsString());
+  message->set_type(RpcMessage::kRequest);
+  message->set_request(request->SerializeAsString());
 
   // FIXME fullname()?
-  message.set_method(method->name()); 
-  message.set_service(method->service()->full_name());
+  message->set_method(method->name()); 
+  message->set_service(method->service()->full_name());
 
-  // ! Must emplace <id, call_result> to call_results_ first
-  // ! since mayebe client thread is switched to another thread(e.g. main thread),
-  // ! but there is no match <id, call_result> in map when switched back
-  // O(1) insert since id increase
-  // response and done is provided by client
-  call_results_.emplace_hint(call_results_.end(), message.id(), CallResult{ response, done });
+  conn_->GetLoop()->RunInLoop([=] () {
+    // ! Must emplace <id, call_result> to call_results_ first
+    // ! since mayebe client thread is switched to another thread(e.g. main thread),
+    // ! but there is no match <id, call_result> in map when switched back
+    // O(1) insert since id increase
+    // response and done is provided by client
+    std::unique_ptr<RpcMessage> wrapper(message);
 
-  id_.fetch_add(1, std::memory_order_relaxed);
-  codec_.Send(conn_, &message);
+    call_results_.emplace_hint(call_results_.end(), message->id(), CallResult{ response, done });
+
+    codec_.Send(conn_, message);
+  });
 }
 
 void KRpcChannel::SendRpcResponse(Message* response, uint64_t id)
@@ -114,7 +119,7 @@ void KRpcChannel::OnRpcMessage(
     conn == conn_,
     "The connection from RpcMessage on_message callback must be same with the connnection in KRpcChannel");KANON_UNUSED(conn);
   
-  LOG_INFO << "RpcMessage(Not raw message) receive_time: " << receive_time.ToFormattedString();
+  LOG_DEBUG_KANON << "RpcMessage(Not raw message) receive_time: " << receive_time.ToFormattedString();
   
   KANON_ASSERT(
     message->has_type() && message->has_id(),
@@ -164,7 +169,7 @@ void KRpcChannel::OnRpcMessageForResponse(
 
     {
       // Althouth the move is trivial
-      call_result = std::move(it->second);
+      call_result = it->second;
       call_results_.erase(it); 
     }
 
@@ -174,7 +179,6 @@ void KRpcChannel::OnRpcMessageForResponse(
 
     // done->Run() will delete this itself
     // std::unique_ptr<Closure> done_wrapper(call_result.done);
-    std::unique_ptr<Message> response_wrapper(call_result.response);
 
     const auto res = call_result.response->ParseFromString(message->response());KANON_UNUSED(res);
     
@@ -182,6 +186,7 @@ void KRpcChannel::OnRpcMessageForResponse(
       "There are some error occurred in the parse of  response contents"
       "Server error or probobuf internal error");
 
+    // done manage the lifetime of response
     call_result.done->Run();
   }
   else {
@@ -236,7 +241,8 @@ void KRpcChannel::OnRpcMessageForRequest(
         // request only used in specific method
         // but the response will used in "done" callback
         // then free it in SendRpcResponse
-        auto request = std::unique_ptr<Message>(service->GetRequestPrototype(method).New());
+        auto request = service->GetRequestPrototype(method).New();
+
         // response managed by SendRpcResponse()
         Message* response = service->GetResponsePrototype(method).New();
         
@@ -247,7 +253,13 @@ void KRpcChannel::OnRpcMessageForRequest(
           // e.g.
           // void Foo(std::string);
           // NewCallback(&Foo, "a"); // Don't works
-          service->CallMethod(method, NULL, GetPointer(request), response, 
+          //
+          // The Service::CallMethod is a virtual function,
+          // will call the named overrided function in the concrete 
+          // derived class of Service.
+          //
+          // The request need managed by concrete service function
+          service->CallMethod(method, NULL, request, response, 
               PROTOBUF::NewCallback(this, &KRpcChannel::SendRpcResponse, response, message->id()));
         }
         else {
