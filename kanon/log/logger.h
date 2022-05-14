@@ -15,6 +15,12 @@ namespace kanon {
 // __thread time_t t_lastSecond;
 // __thread char t_timebuf[64];
 
+extern bool g_kanon_log;
+
+inline void SetKanonLog(bool val) noexcept {
+  g_kanon_log = val;
+}
+
 /**
  * \brief Format the log message to specified device
  * 
@@ -150,9 +156,18 @@ void DefaultOutput(char const*, size_t);
   if (kanon::Logger::GetLogLevel() <= kanon::Logger::TRACE) \
     kanon::Logger(__FILE__, __LINE__, kanon::Logger::TRACE, __func__).stream()
 
+#define LOG_TRACE_KANON \
+  if (g_kanon_log) \
+    LOG_TRACE
+
 #define LOG_DEBUG \
   if (kanon::Logger::GetLogLevel() <= kanon::Logger::DEBUG) \
     kanon::Logger(__FILE__, __LINE__, kanon::Logger::DEBUG, __func__).stream()
+
+#define LOG_DEBUG_KANON \
+  if (g_kanon_log) \
+    LOG_DEBUG
+
 #define LOG_INFO \
   if (kanon::Logger::GetLogLevel() <= kanon::Logger::INFO) \
     kanon::Logger(__FILE__, __LINE__, kanon::Logger::INFO).stream()

@@ -15,6 +15,12 @@ namespace kanon {
 static __thread time_t t_lastSecond = 0;
 static __thread char t_timebuf[64] = { 0 };
 
+#ifndef NDEBUG
+  bool g_kanon_log = true;
+#else
+  bool g_kanon_log = false;
+#endif
+
 bool Logger::need_color_ = true;
 
 char const* Logger::s_log_level_names_[Logger::LogLevel::NUM_LOG_LEVEL] = {
@@ -41,12 +47,14 @@ static char const* g_logLevelColor[] = {
 
 static Logger::LogLevel initLogLevel() noexcept
 {
-  if (::getenv("KANON_TRACE"))
+  char* env = nullptr;
+  if ((env = ::getenv("KANON_TRACE")) && strcmp(env, "1") == 0)
     return Logger::LogLevel::TRACE;
-  else if (::getenv("KANON_DEBUG"))
+
+  if ((env = ::getenv("KANON_DEBUG")) && strcmp(env, "1") == 0)
     return Logger::LogLevel::DEBUG;
-  else 
-    return Logger::LogLevel::INFO;
+   
+  return Logger::LogLevel::INFO;
 }
 
 Logger::LogLevel Logger::log_level_ = initLogLevel();
@@ -80,7 +88,7 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
   , line_(line)
 {
   FormatTime();
-  stream_ << CurrentThread::t_tid << " ";
+  stream_ << StringView(CurrentThread::t_tidString, CurrentThread::t_tidLength) << " ";
   stream_ << CurrentThread::t_name << " ";
   if (need_color_) {
     stream_ << g_logLevelColor[level] 
