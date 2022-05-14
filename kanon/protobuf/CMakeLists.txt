@@ -5,5 +5,5 @@ install(TARGETS protobuf_codec DESTINATION lib)
 
 file(GLOB PROTOBUF_INCLUDE ./*.h)
 
-message("PROROBUF_INCLUDE: ${PROTOBUF_INCLUDE}")
+message("protobuf codec include: ${PROTOBUF_INCLUDE}")
 install(FILES ${PROTOBUF_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/protobuf)
