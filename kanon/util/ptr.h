@@ -103,6 +103,12 @@ inline T* down_pointer_cast(F* ptr)
   return reinterpret_cast<T*>(ptr);
 }
 
+template<typename T>
+using DeferDelete = std::unique_ptr<T>;
+
+template<typename T, typename D>
+using DeferDelete2 = std::unique_ptr<T, D>;
+
 } // namespace kanon
 
 #endif
