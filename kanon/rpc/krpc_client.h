@@ -12,15 +12,21 @@ namespace kanon {
 namespace protobuf {
 namespace rpc {
 
-template<typename Stub>
 class KRpcClient : public TcpClient {
 public:
-  using StubPtr = std::shared_ptr<Stub>;
-
   KRpcClient(EventLoop* loop, InetAddr const& addr, std::string const& name);
 
-  StubPtr GetStub() const;
-  
+  template<typename Stub>
+  std::shared_ptr<Stub> GetStub() const
+  {
+    while (!GetConnection() || !GetConnection()->IsConnected()) {
+      connected_cond_.Wait();
+    }
+
+    const auto chan = *AnyCast<KRpcChannel*>(GetConnection()->GetContext());
+    return std::make_shared<Stub>(chan);
+  }
+
   CountDownLatch& GetLatch() const noexcept 
   { 
     if (latch_ == nullptr) {
@@ -40,7 +46,5 @@ private:
 } // namespace rpc
 } // namespace protobuf
 } // namespace kanon
-
-#include "kanon/rpc/krpc_client_impl.h"
 
 #endif
