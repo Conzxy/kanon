@@ -67,7 +67,7 @@ void GenericPbCodec::OnMessage(TcpConnectionPtr const& conn, Buffer& buffer, Tim
   // Use while here since maybe not just one message in buffer
   while (buffer.GetReadableSize() >= kMinMessageLength) {
     const uint32_t size_header = buffer.GetReadBegin32();
-    LOG_DEBUG << "size_header = " << size_header;
+    LOG_DEBUG_KANON << "size_header = " << size_header;
     if (size_header < kChecksumLength || size_header >= kMaxMessageLength) {
       error_callback_(conn, kInvalidLength);
       break;
@@ -118,7 +118,7 @@ auto GenericPbCodec::Parse(char const* buffer, uint32_t size, PROTOBUF::Message&
         ret = kParseError;
       }
       else {
-        LOG_DEBUG << "[parse message] = " << message.DebugString();
+        LOG_DEBUG_KANON << "[parse message] = " << message.DebugString();
       }
     }
     else {
@@ -148,7 +148,7 @@ uint32_t GenericPbCodec::SerializeToBuffer(PROTOBUF::Message const& message, Buf
   auto* begin = reinterpret_cast<uint8_t*>(buffer.GetWriteBegin());
   auto* last = message.SerializeWithCachedSizesToArray(begin);
 
-  LOG_DEBUG << "[payload] = " << message.DebugString();
+  LOG_DEBUG_KANON << "[payload] = " << message.DebugString();
 
   if (last - begin == has_written_bytes) {
     buffer.AdvanceWrite(has_written_bytes);
@@ -168,8 +168,8 @@ bool GenericPbCodec::CheckCheckSum(void const* buffer, int len) noexcept
   ::memcpy(&old_checksum, reinterpret_cast<char const*>(buffer)+len, kChecksumLength);
   old_checksum = sock::ToHostByteOrder32(old_checksum);
 
-  LOG_DEBUG << "new_checksum = " << new_checksum;
-  LOG_DEBUG << "old_checksum = " << old_checksum; 
+  LOG_DEBUG_KANON << "new_checksum = " << new_checksum;
+  LOG_DEBUG_KANON << "old_checksum = " << old_checksum; 
   return new_checksum == old_checksum;
 }
 
@@ -195,10 +195,10 @@ void GenericPbCodec::PrintRawMessage(Buffer& buffer)
 {
   auto view = buffer.ToStringView();
   uint32_t checksum = 0;
-  LOG_DEBUG << "[Size Header] = " << buffer.GetReadBegin32();
-  LOG_DEBUG << "[tag] = " << view.substr(kSizeLength, tag_.size());
+  LOG_DEBUG_KANON << "[Size Header] = " << buffer.GetReadBegin32();
+  LOG_DEBUG_KANON << "[tag] = " << view.substr(kSizeLength, tag_.size());
   
   auto checksum_view = view.substr(buffer.GetReadableSize()-kChecksumLength, kChecksumLength);
   ::memcpy(&checksum, checksum_view.data(), kChecksumLength); 
-  LOG_DEBUG << "[checksum] = " << sock::ToHostByteOrder32(checksum);
+  LOG_DEBUG_KANON << "[checksum] = " << sock::ToHostByteOrder32(checksum);
 }

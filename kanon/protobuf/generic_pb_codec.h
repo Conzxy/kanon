@@ -50,11 +50,11 @@ namespace internal {
  * | checksum| 4B  |  |
  * +---------------+ ----
  * 
- * @note 
+ * \note 
  * 1. checksum compute the (size, tag, payload) content
  * 2. Only the payload is protobuf-format, others are just some trivial binary data
  *
- * @warning 
+ * \warning 
  * The class just an internal class, You should use ProtobufCodec<>
  */
 class GenericPbCodec : noncopyable {
@@ -82,14 +82,14 @@ public:
   
   /**
    * Send @p message into @p conn
-   * @param message Must be some concrete message type
-   * @note message usually is a pointer in heap, so use pointer as non-optional parameter
+   * \param message Must be some concrete message type
+   * \note message usually is a pointer in heap, so use pointer as non-optional parameter
    */
   void Send(TcpConnectionPtr const& conn, PROTOBUF::Message const* message);
   
   /**
    * Decode the raw message, which is protobuf-format binary data
-   * @param buffer Contains the raw binary data
+   * \param buffer Contains the raw binary data
    */
   void OnMessage(TcpConnectionPtr const& conn, Buffer& buffer, TimeStamp receive_time);
 
@@ -100,7 +100,7 @@ public:
 
   /**
    * Deserialize @p buffer to @p message in @p length
-   * @note This is just a wrapper
+   * \note This is just a wrapper
    */
   bool ParseFromBuffer(char const* buffer, int length, PROTOBUF::Message& message);
 
@@ -117,7 +117,7 @@ private: /** Helper */
   /** 
    * adler 
    * An Adler-32 checksum is almost as reliable as a CRC-32 but can be computed much faster.
-   * @see ${USER_PATH}/include/zlib.h, in linux, ${USER_PATH} might be /usr
+   * \see ${USER_PATH}/include/zlib.h, in linux, ${USER_PATH} might be /usr
    */
   static inline uint32_t GetCheckSum(void const* buffer, int len) noexcept;
   static bool CheckCheckSum(void const* buffer, int len) noexcept;
