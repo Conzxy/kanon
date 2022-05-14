@@ -5,11 +5,9 @@
 
 using namespace std;
 using namespace kanon;
-// using namespace kanon::protobuf;
+using namespace kanon::protobuf::rpc;
 
-using SimpleClient = kanon::protobuf::rpc::KRpcClient<SimpleService::Stub>;
-
-void Done(SimpleClient* cli, SimpleResponse* response) {
+void Done(KRpcClient* cli, SimpleResponse* response) {
   DeferDelete<SimpleResponse> defer_response(response);
   LOG_INFO << "response: " << response->i();
 
@@ -31,12 +29,12 @@ int main() {
 
   EventLoopThread loop_thread;
   auto loop = loop_thread.StartRun();
-  vector<std::unique_ptr<SimpleClient>> clis;
+  vector<std::unique_ptr<KRpcClient>> clis;
 
   for (int i = 0; i < 10; ++i) {
-    clis.emplace_back(new SimpleClient(loop, InetAddr("127.0.0.1:9998"), "SimpleClient"));
+    clis.emplace_back(new KRpcClient(loop, InetAddr("127.0.0.1:9998"), "SimpleClient"));
     clis[i]->Connect();
-    auto stub = clis[i]->GetStub();
+    auto stub = clis[i]->GetStub<SimpleService::Stub>();
 
     std::unique_ptr<SimpleRequest> req(new SimpleRequest);
 

@@ -10,9 +10,7 @@
 
 using namespace kanon::protobuf::rpc;
 
-using SimpleRpcClient = KRpcClient<SimpleService::Stub>;
-
-void Done(SimpleRpcClient* cli, SimpleResponse* response)
+void Done(KRpcClient* cli, SimpleResponse* response)
 {
   kanon::DeferDelete<SimpleResponse> defer_response(response);
 
@@ -25,11 +23,11 @@ int main()
   kanon::EventLoopThread thread_loop;
   const auto loop = thread_loop.StartRun();
 
-  SimpleRpcClient client(loop, InetAddr("127.0.0.1", 9998), "SimpleClient");
+  KRpcClient client(loop, InetAddr("127.0.0.1", 9998), "SimpleClient");
 
   client.Connect();
 
-  const auto stub = client.GetStub();
+  const auto stub = client.GetStub<SimpleService::Stub>();
 
   auto request = SimpleRequest();
   request.set_i(1);
