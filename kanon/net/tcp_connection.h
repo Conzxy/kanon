@@ -143,7 +143,7 @@ public:
    * Context can used for binding some information 
    * about a specific connnection(So, it named context)
    */
-  void SetContext(Any&& context) { context_ = std::move(context); }
+  void SetContext(Any&& context = {}) { context_ = std::move(context); }
   
   void SetContext(Any const& context) { context_ = context; } 
 
@@ -310,7 +310,7 @@ private:
 // It is called when connection established and closed.
 // Log message abont peer and local simply(trace level only)
 inline void DefaultConnectionCallback(TcpConnectionPtr const& conn) {
-  LOG_TRACE << conn->GetLocalAddr().ToIpPort() << "->"
+  LOG_TRACE_KANON << conn->GetLocalAddr().ToIpPort() << "->"
     << conn->GetPeerAddr().ToIpPort() << " "
     << (conn->IsConnected() ? "UP" : "DOWN");
 }

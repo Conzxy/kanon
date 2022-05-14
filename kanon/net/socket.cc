@@ -35,7 +35,7 @@ int Socket::Accpet(InetAddr& addr) noexcept {
 }
 
 void Socket::ShutdownWrite() noexcept {
-  LOG_TRACE << "Shutdown peer in write direction";
+  LOG_TRACE_KANON << "Shutdown peer in write direction";
 
   if (sock::ShutdownWrite(fd_)) {
     LOG_SYSERROR << "Shutdown write error";
@@ -43,7 +43,7 @@ void Socket::ShutdownWrite() noexcept {
 }
 
 void Socket::ShutdownTwoDirection() noexcept {
-  LOG_TRACE << "Shutdown peer in two dierction(read/write)";
+  LOG_TRACE_KANON << "Shutdown peer in two dierction(read/write)";
 
   if (sock::ShutdownTwoDirection(fd_)) {
     LOG_SYSERROR << "Shutdown read/write error";

@@ -18,11 +18,11 @@ Connector::Connector(
   , state_{ State::kDisconnected }
   , connect_{ true }
 {
-  LOG_DEBUG << "Connector is constructed";
+  LOG_DEBUG_KANON << "Connector is constructed";
 }
 
 Connector::~Connector() noexcept {
-  LOG_DEBUG << "Connector is destructed";
+  LOG_DEBUG_KANON << "Connector is destructed";
   // user should call stop explicitly when reconnecting...
   assert(!channel_);
 } 
@@ -59,7 +59,7 @@ void Connector::StopInLoop() noexcept
   loop_->AssertInThread();
   connect_ = false;
 
-  LOG_TRACE << "Connector is stopping";
+  LOG_TRACE_KANON << "Connector is stopping";
   // Only be called when connecting,
   // interrupt reconnecting to peer 
   if (timer_) loop_->CancelTimer(*timer_);
@@ -145,7 +145,7 @@ void Connector::CompleteConnect(int sockfd) noexcept {
             if (new_connection_callback_) 
               new_connection_callback_(sockfd);
 
-            LOG_TRACE << "Connection is established successfully";
+            LOG_TRACE_KANON << "Connection is established successfully";
           } else {
             sock::Close(sockfd);
           }
@@ -158,7 +158,7 @@ void Connector::CompleteConnect(int sockfd) noexcept {
         int sockfd = RemoveAndResetChannel();
         int err = sock::GetSocketError(sockfd);
         if (err) {
-          LOG_TRACE << "SO_ERROR = " << err << " " 
+          LOG_TRACE_KANON << "SO_ERROR = " << err << " " 
             << strerror_tl(err);
         }
         
@@ -179,7 +179,7 @@ void Connector::Retry(int sockfd) noexcept {
   if (connect_) {
     double delay_sec = std::min<uint32_t>(retry_interval_, MAX_RETRY_INTERVAL) / 1000.0;
 
-    LOG_INFO << "Client will reconnect to " << serv_addr_.ToIpPort()
+    LOG_TRACE_KANON << "Client will reconnect to " << serv_addr_.ToIpPort()
              << " after " << delay_sec << " seconds";
 
     timer_ = loop_->RunAfter([this]() {

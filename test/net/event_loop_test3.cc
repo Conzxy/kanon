@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     //LogFile<> log_file(::basename(argv[0]), 20000000);
 
     //Logger::SetFlushCallback([&log_file](){
-        //log_file.flush();
+        //log_file.Flush();
     //});
 
     //Logger::SetOutputCallback([&log_file](char const* data, size_t num){

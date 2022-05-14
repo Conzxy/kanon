@@ -18,7 +18,7 @@ Channel::Channel(EventLoop* loop, int fd)
   , events_handling_{ false }
   , loop_{ loop }
 { 
-  LOG_TRACE << "Channel fd = " << fd_ << " created";
+  LOG_TRACE_KANON << "Channel fd = " << fd_ << " created";
 }
 
 Channel::~Channel() noexcept
@@ -33,8 +33,8 @@ Channel::~Channel() noexcept
 void Channel::HandleEvents(TimeStamp receive_time) {
   events_handling_ = true;
   
-  LOG_TRACE << "Event Receive Time: " << receive_time.ToFormattedString(true);  
-  LOG_TRACE << "fd = " << fd_ << ", revent(result event) : {" << Revents2String() << "}";
+  LOG_TRACE_KANON << "Event Receive Time: " << receive_time.ToFormattedString(true);  
+  LOG_TRACE_KANON << "fd = " << fd_ << ", revent(result event) : {" << Revents2String() << "}";
   
 
   /*

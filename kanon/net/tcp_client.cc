@@ -22,7 +22,7 @@ TcpClient::TcpClient(
   , conn_{ nullptr }
   , mutex_{ }
 {
-  LOG_INFO << "TcpClient-[" << name_ << "]" << " constructed";
+  LOG_TRACE_KANON << "TcpClient-[" << name_ << "]" << " constructed";
 
   connector_->SetNewConnectionCallback([this, &serv_addr](int sockfd) {
     if (conn_) { return ; }
@@ -73,7 +73,7 @@ TcpClient::TcpClient(
 } 
 
 TcpClient::~TcpClient() noexcept {
-  LOG_INFO << "TcpClient-[" << name_ << "]" << " destructed";
+  LOG_TRACE_KANON << "TcpClient-[" << name_ << "]" << " destructed";
 
   bool is_unique = false;
   TcpConnectionPtr conn;

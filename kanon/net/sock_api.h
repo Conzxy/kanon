@@ -92,6 +92,8 @@ int CreateNonBlockAndCloExecSocket(bool ipv6) noexcept;
 inline void Close(int fd) noexcept {
   if (::close(fd) < 0) {
     LOG_SYSFATAL << "close socket error";
+  } else {
+    LOG_DEBUG_KANON << "close fd = " << fd;
   }
 }
 

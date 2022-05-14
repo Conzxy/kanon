@@ -12,12 +12,12 @@ namespace kanon {
 Poller::Poller(EventLoop* loop)
   : PollerBase(loop)
 {
-  LOG_TRACE << "Poller is created";
+  LOG_TRACE_KANON << "Poller is created";
 }
 
 Poller::~Poller() noexcept
 {
-  LOG_TRACE << "Poller is destroyed";
+  LOG_TRACE_KANON << "Poller is destroyed";
 }
 
 TimeStamp Poller::Poll(int ms, ChannelVec& active_channels) noexcept {
@@ -30,7 +30,7 @@ TimeStamp Poller::Poll(int ms, ChannelVec& active_channels) noexcept {
   TimeStamp now{ TimeStamp::Now() };
 
   if (ret > 0) {
-    LOG_TRACE << ret << " events are ready";
+    LOG_TRACE_KANON << ret << " events are ready";
     uint32_t ev_num = ret;
 
     for (auto const& pollfd : pollfds_) {
@@ -54,7 +54,7 @@ TimeStamp Poller::Poll(int ms, ChannelVec& active_channels) noexcept {
       }
     }
   } else if (ret == 0) {
-    LOG_TRACE << "none events are ready";
+    LOG_TRACE_KANON << "none events are ready";
   } else {
     if (ret != EINTR) {
       LOG_SYSERROR << "Poll() error occurred";

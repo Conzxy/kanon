@@ -38,12 +38,12 @@ Epoller::Epoller(EventLoop* loop)
   , epoll_fd_{ detail::CreateEpollFd() }
   , events_{ kEventInitNums }
 {
-  LOG_TRACE << "Epoller is created";
+  LOG_TRACE_KANON << "Epoller is created";
 }
 
 Epoller::~Epoller() noexcept {
   ::close(epoll_fd_);
-  LOG_TRACE << "Epoller is destroyed";
+  LOG_TRACE_KANON << "Epoller is destroyed";
 }
 
 TimeStamp Epoller::Poll(int ms, ChannelVec& active_channels) {
@@ -58,7 +58,7 @@ TimeStamp Epoller::Poll(int ms, ChannelVec& active_channels) {
   TimeStamp now{ TimeStamp::Now() };
 
   if (ev_nums > 0) {
-    LOG_TRACE << ev_nums << " events are ready";
+    LOG_TRACE_KANON << ev_nums << " events are ready";
     FillActiveChannels(ev_nums, active_channels);
     
     // since epoll_wait does not expand space and 
@@ -69,7 +69,7 @@ TimeStamp Epoller::Poll(int ms, ChannelVec& active_channels) {
       events_.resize(ev_nums << 1);
     }
   } else if (ev_nums == 0) {
-    LOG_TRACE << "none events ready";
+    LOG_TRACE_KANON << "none events ready";
   } else {
     // use saved_errno to avoid misunderstand error
     if (saved_errno != EINTR) {
@@ -141,7 +141,7 @@ void Epoller::UpdateEpollEvent(int op, Channel* ch) noexcept {
     ev.events |= EPOLLET;
   }
 
-  LOG_TRACE << "epoll_ctl op =" << detail::Op2Str(op) 
+  LOG_TRACE_KANON << "epoll_ctl op =" << detail::Op2Str(op) 
     << " fd: " << fd << " {" << Channel::Ev2String(ev.events) << "}";
   
   // In this way, can get channel accroding to fd in O(1)
@@ -163,7 +163,7 @@ void Epoller::RemoveChannel(Channel* ch) {
   
   int fd = ch->GetFd();
 
-  LOG_TRACE << "Remove fd = " << fd;
+  LOG_TRACE_KANON << "Remove fd = " << fd;
 
   auto index = ch->GetIndex();
   
