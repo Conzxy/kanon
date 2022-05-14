@@ -11,3 +11,9 @@ GenLib(protobuf_rpc ${RPC_SRC})
 
 target_link_libraries(protobuf_rpc protobuf_codec)
 install(TARGETS protobuf_rpc DESTINATION lib)
+
+file(GLOB RPC_INCLUDE ./*.h)
+list(APPEND RPC_INCLUDE ${PROJECT_BINARY_DIR}/kanon/rpc/rpc.pb.h)
+
+message("RPC_INCLUDE: ${RPC_INCLUDE}")
+install(FILES ${RPC_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/rpc)

@@ -47,8 +47,9 @@ public:
 
   void done_of_simple(SimpleResponse* response)
   {
-    LOG_INFO << response->i();
+    kanon::DeferDelete<SimpleResponse> defer_response(response);
 
+    LOG_INFO << response->i();
     client_.Disconnect();
   }
 
@@ -62,7 +63,7 @@ int main()
 {
   EventLoop loop{};
 
-  InetAddr addr("127.0.0.1", 9999);
+  InetAddr addr("127.0.0.1", 9998);
   SimpleClient client(&loop, addr);
 
   client.Connect();

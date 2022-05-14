@@ -14,6 +14,8 @@ public:
       SimpleResponse* response,
       google::protobuf::Closure* done) override
   {
+    kanon::DeferDelete<SimpleRequest const> defer_request(request);
+
     assert(request->has_i());
     response->set_i(request->i() * 10);
 
@@ -22,15 +24,24 @@ public:
 
 };
 
-int main()
+int main(int argc, char* argv[])
 {
+  if (argc < 2) {
+    LOG_ERROR << "Usage: " << argv[0] << " port";
+    return 0;
+  }
+
   EventLoop loop{};
-  InetAddr addr(9999);
-  KRpcServer server(&loop, addr, "simple rpc server", true);
+
+  InetAddr addr(::atoi(argv[1]));
+  KRpcServer server(&loop, addr, "simple rpc server");
 
   SimpleServiceImpl simple_service{};
   server.AddServices(&simple_service);
 
   server.StartRun();
   loop.StartLoop();
+
+  LOG_INFO << "Shutdown protobuf lib";
+  PROTOBUF::ShutdownProtobufLibrary();
 }

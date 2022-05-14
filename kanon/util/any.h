@@ -93,13 +93,13 @@ private:
 
   /**
    * @class HolderBase
-   * @brief 
+   * \brief 
    * HolderBase is a dummy base class.
    * Use it we can erase the type from Holder<>.
    * Also, to call the correct function from HolderBase*,
    * we need declare (pure) virtual function.
    * This is the unavoidable cost of "type erase" technique.
-   * @see Holder further
+   * \see Holder further
    */
   class HolderBase {
   public:
@@ -109,7 +109,7 @@ private:
     virtual ~HolderBase() noexcept = default; 
 
     /**
-     * @brief 
+     * \brief 
      * Since we can't get static type from HolderBase,
      * we need RTTI(run time type identify) to determine type cast if safe
      */ 
@@ -124,8 +124,8 @@ private:
 
   /**
    * @class Holder
-   * @tparam V the type of value which we want to store
-   * @brief 
+   * \tparam V the type of value which we want to store
+   * \brief 
    * This is actual implemetation class
    * it store the value and implematation some useful interface from its base class
    */
