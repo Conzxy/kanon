@@ -14,6 +14,8 @@ using SimpleRpcClient = KRpcClient<SimpleService::Stub>;
 
 void Done(SimpleRpcClient* cli, SimpleResponse* response)
 {
+  kanon::DeferDelete<SimpleResponse> defer_response(response);
+
   LOG_INFO << "Response's i = " << response->i();
   cli->Disconnect();
 }
@@ -23,7 +25,7 @@ int main()
   kanon::EventLoopThread thread_loop;
   const auto loop = thread_loop.StartRun();
 
-  SimpleRpcClient client(loop, InetAddr("127.0.0.1", 9999), "SimpleClient");
+  SimpleRpcClient client(loop, InetAddr("127.0.0.1", 9998), "SimpleClient");
 
   client.Connect();
 

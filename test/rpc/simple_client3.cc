@@ -16,6 +16,8 @@ using SimpleRpcClientPtr = std::shared_ptr<SimpleRpcClient>;
 
 void Done(SimpleRpcClientPtr cli, SimpleResponse* response)
 {
+  kanon::DeferDelete<SimpleResponse> defer_response(response);
+
   LOG_INFO << "Response's i = " << response->i();
   cli->Disconnect();
 }

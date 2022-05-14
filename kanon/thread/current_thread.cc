@@ -40,7 +40,9 @@ void cacheTid() noexcept
 {
   if( __builtin_expect(t_tid == 0, 1) ) {
     t_tid = gettid();
-    strcpy(t_tidString, lexical_cast<char const*>(t_tid));
+    auto view = lexical_cast<StringView>(t_tid);
+    t_tidLength = view.size();
+    strncpy(t_tidString, view.data(), view.size());
   }
 }
 
