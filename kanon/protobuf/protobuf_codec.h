@@ -28,7 +28,7 @@ class ProtobufCodec : noncopyable {
   using ErrorCallback = Codec::ErrorCallback;
 public:
   /**
-   * @warning 
+   * \warning 
    * ConcreteMessage::default_instance() return type is ConcreteMessage&
    * but in @link https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.message?hl=en#MessageFactory.GetPrototype, the invariant in MessageFactory::generated_factory(), give the following:
    * MessageFactory::generated_factory()->GetPrototype(
