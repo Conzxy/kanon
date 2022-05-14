@@ -6,7 +6,10 @@ add_custom_command(
 
 include_directories(${PROJECT_BINARY_DIR}) # i.e. kanon/build
 
-set(RPC_SRC rpc.pb.cc krpc_channel.cc krpc_server.cc)
+aux_source_directory(. RPC_SRC)
+list(APPEND RPC_SRC rpc.pb.cc)
+message("rpc sources: ${RPC_SRC}")
+
 GenLib(protobuf_rpc ${RPC_SRC})
 
 target_link_libraries(protobuf_rpc protobuf_codec)
@@ -15,5 +18,5 @@ install(TARGETS protobuf_rpc DESTINATION lib)
 file(GLOB RPC_INCLUDE ./*.h)
 list(APPEND RPC_INCLUDE ${PROJECT_BINARY_DIR}/kanon/rpc/rpc.pb.h)
 
-message("RPC_INCLUDE: ${RPC_INCLUDE}")
+message("rpc header files: ${RPC_INCLUDE}")
 install(FILES ${RPC_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/rpc)
