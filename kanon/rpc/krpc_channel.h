@@ -2,12 +2,12 @@
 #define KANON_KRPC_RPCHANNLE_H_
 
 #include <atomic>
+#include <unordered_map>
 
 // ProtobufCodec<> need class definition for following reasons:
 // 1. std::is_base_of<>
 // 2. constructor of ConcreMessage
 #include <google/protobuf/service.h>
-
 #include "kanon/net/callback.h"
 #include "kanon/rpc/rpc.pb.h"
 #include "kanon/util/noncopyable.h"
@@ -19,13 +19,16 @@ namespace rpc {
 
 extern char const krpc_tag[];
 
+/**
+ * 
+ */
 class KRpcChannel : public noncopyable, public ::google::protobuf::RpcChannel {
   using Codec = ProtobufCodec<RpcMessage, krpc_tag>;
   using ErrorCode = RpcMessage::ErrorCode;
   // using RpcMessagePtr = std::unique_ptr<RpcMessage>;
   using RpcMessagePtr = RpcMessage*;
 public:
-  using ServiceMap = std::map<std::string, PROTOBUF::Service*>;
+  using ServiceMap = std::unordered_map<std::string, PROTOBUF::Service*>;
 
   /** Used for client */
   KRpcChannel();
@@ -37,7 +40,12 @@ public:
   /** Used for server */ 
   void SetServices(ServiceMap const& services) noexcept { services_ = &services; }
 
-  /** Called by Stub(RpcChannel wrapper) i.e. client */
+  /** 
+   * \param request the lifetime is managed by user
+   * \param response the lifetime is managed by user(common, delete in the done callback)
+   * \note
+   *    Called by Stub(RpcChannel wrapper) i.e. client 
+   */
   void CallMethod(
     PROTOBUF::MethodDescriptor const* method,
     PROTOBUF::RpcController* controller,
@@ -46,6 +54,17 @@ public:
     PROTOBUF::Closure* done) override;
 
 private:
+  /**
+   * This call the Service::CallMethod(), the logic is 
+   * fill the response according to the request
+   * defined in the derived class of Service.
+   *
+   * The lifetime of request is managed by user.
+   * The lifetime of response is managed by SendRpcResponse().
+   *
+   * This allow user fill request and call SendRpcResponse()
+   * in the other thread
+   */
   void OnRpcMessageForRequest(
     TcpConnectionPtr const& conn, 
     RpcMessagePtr message,
@@ -76,7 +95,6 @@ private:
 private:
   /**
    * response and done are setted by client
-   * done should manage the life-time of response, since it is created in heap
    */
   struct CallResult {
     PROTOBUF::Message* response;
@@ -100,7 +118,7 @@ private:
    * response and done is filled by client
    * ! Used for client side
    */
-  std::map<int, CallResult> call_results_;
+  std::unordered_map<int, CallResult> call_results_;
 };
 
 } // namespace rpc
