@@ -16,7 +16,7 @@ public:
     EventLoop* loop,
     InetAddr const& addr,
     StringArg name,
-    bool reuseport);
+    bool reuseport = false);
 
   ~KRpcServer();
 
