@@ -45,7 +45,7 @@ private:
  * so the life time of string(or character) depend on user
  * 
  * If you know Rust, this is like fat pointer
- * @see std::stringview(C+++17)
+ * \see std::stringview(C+++17)
  */
 class StringView
 {
@@ -300,7 +300,7 @@ public:
   /**
    * Finds the first character equal to one of characters 
    * in the given character sequence
-   * @return 
+   * \return 
    * the index of the first occurrence of any character of the sequence, 
    * if not found, return npos
    */
@@ -326,8 +326,8 @@ public:
   /**
    * Finds the last character equal to one of characters 
    * in the given character sequence(i.e. character range)
-   * @param pos the end position of the search range
-   * @return 
+   * \param pos the end position of the search range
+   * \return 
    * the index of the last occurrence of any character of the sequence, 
    * if not found, return npos
    */

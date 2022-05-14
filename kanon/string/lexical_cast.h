@@ -3,7 +3,6 @@
 
 #include <string.h>
 #include <string>
-#include <iostream>
 
 #include "kanon/util/optional.h"
 #include "kanon/util/arithmetic_type.h"

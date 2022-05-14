@@ -44,13 +44,13 @@ TcpConnection::TcpConnection(EventLoop*  loop,
   channel_->SetCloseCallback(std::bind(
     &TcpConnection::HandleClose, this));
 
-  LOG_TRACE << "TcpConnection::ctor [" << name_ << "] created";
+  LOG_TRACE_KANON << "TcpConnection::ctor [" << name_ << "] created";
   
 }
 
 TcpConnection::~TcpConnection() noexcept {
   assert(state_ == kDisconnected);
-  LOG_TRACE << "TcpConnection::dtor [" << name_ << "] destroyed";
+  LOG_TRACE_KANON << "TcpConnection::dtor [" << name_ << "] destroyed";
 }
 
 void TcpConnection::ConnectionEstablished() {
@@ -64,25 +64,26 @@ void TcpConnection::ConnectionEstablished() {
   // is set by user or default.
   channel_->EnableReading();  
 
-  LOG_TRACE << "Connection [" << name_ << "] is established";
+  LOG_TRACE_KANON << "Connection [" << name_ << "] is established";
   connection_callback_(shared_from_this());
 }
 
 void TcpConnection::ConnectionDestroyed() {
   // ! Must be called in phase 3(QueueToLoop())
   loop_->AssertInThread();
-
+  
+  LOG_TRACE_KANON << "Connection [" << name_ << "]" << " destoryed";
   // This may be called by TcpServer dtor or close_callback_(see TcpServer)
   // if close_callback_ has be called, just remove channel;  
   if (state_ == kConnected) {
     channel_->DisableAll();
     state_ = kDisconnected;
 
-    LOG_TRACE << "Connection [" << name_ << "] has destroyed";
+    LOG_TRACE_KANON << "Connection [" << name_ << "] has destroyed";
     // Because ConnectionDestroyed maybe async call
     // Don't pass raw pointer
     connection_callback_(shared_from_this());
-  }  
+  }
 
   assert(state_ == kDisconnected);
 
@@ -123,12 +124,12 @@ void TcpConnection::HandleLtRead(TimeStamp recv_time) {
   } else if (n == 0) {
     // Peer close the connection
     // Note: Don't distinguish the shutdown(WR) and close()
-    LOG_TRACE << "Peer close connection";
+    LOG_TRACE_KANON << "Peer close connection";
     HandleClose();
   } else {
     assert(n > 0 && n != static_cast<size_t>(-1));
 
-    LOG_DEBUG << "Read " << n << " bytes from [Connection: " << name_
+    LOG_DEBUG_KANON << "Read " << n << " bytes from [Connection: " << name_
               << ", fd: " << channel_->GetFd() << "]";
 
     if (message_callback_) {
@@ -171,10 +172,10 @@ void TcpConnection::HandleEtRead(TimeStamp recv_time)
       }
     }
 
-    LOG_DEBUG << "Read " << readn << " bytes from [Connection: " << name_
+    LOG_DEBUG_KANON << "Read " << readn << " bytes from [Connection: " << name_
               << ", fd: " << channel_->GetFd() << "]";
     if (readn == 0) {
-      LOG_DEBUG << "Peer close connection";
+      LOG_DEBUG_KANON << "Peer close connection";
       HandleClose();
       break;
     }
@@ -203,7 +204,7 @@ void TcpConnection::HandleWrite()
   //    (e.g. TcpServer desctroyed)
   if (!channel_->IsWriting()) {
     assert(state_ == kDisconnected);
-    LOG_TRACE << "This Connection: " << name_ << " is down";
+    LOG_TRACE_KANON << "This Connection: " << name_ << " is down";
     return ;
   }
 
@@ -223,10 +224,6 @@ void TcpConnection::HandleLtWrite() {
     * 2. Actively write(e.g. output_buffer_ provided by user)
     */
 
-  // FIXME example 
-  // Here shouldn't use socket_->GetFd(),
-  // because socket maybe has destroyed when peer close early
-
   // The first write don't get EAGAIN
   // If the first write don't write entire message, the second will return EAGAIN
   // Otherwise, there is no need to call the second call of write().
@@ -235,13 +232,13 @@ void TcpConnection::HandleLtWrite() {
             output_buffer_.GetReadBegin(),
             output_buffer_.GetReadableSize());
 
-  LOG_TRACE << "Write " << n << " bytes to [Connection: " << name_
+  LOG_TRACE_KANON << "Write " << n << " bytes to [Connection: " << name_
             << ", fd: " << channel_->GetFd() << "]";
 
   if (n > 0) {
     output_buffer_.AdvanceRead(n);
 
-    LOG_TRACE << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
+    LOG_TRACE_KANON << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
     if (output_buffer_.GetReadableSize() == 0) {
       if (write_complete_callback_) {
         // We delay the callback to phase 3
@@ -285,12 +282,16 @@ void TcpConnection::HandleLtWrite() {
 void TcpConnection::CallWriteCompleteCallback()
 {
   assert(channel_->IsWriting());
+
   if (write_complete_callback_(shared_from_this())) {
-    LOG_TRACE << "Last chunk in the pipeline write";
-    channel_->DisableWriting();
+    LOG_TRACE_KANON << "Last chunk in the pipeline write";
+    // The write_complete_callback_ maybe disable writing in the SendInLoop()
+    if (channel_->IsWriting()) {
+      channel_->DisableWriting();
+    }
   }
   else {
-    LOG_TRACE << "Not last chunk int the pipeline wirte()[don't disable wirting]";
+    LOG_TRACE_KANON << "Not last chunk int the pipeline wirte()[don't disable wirting]";
   }
 }
 
@@ -314,7 +315,7 @@ void TcpConnection::HandleEtWrite()
       }
     }
 
-    LOG_TRACE << "Write " << writen << " bytes to [Connection: " << name_
+    LOG_TRACE_KANON << "Write " << writen << " bytes to [Connection: " << name_
               << ", fd: " << channel_->GetFd() << "]";
 
     output_buffer_.AdvanceRead(writen);
@@ -323,7 +324,7 @@ void TcpConnection::HandleEtWrite()
   }
 
   if (output_buffer_.HasReadable()) {
-    LOG_TRACE << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
+    LOG_TRACE_KANON << "Output Buffer remaining = " << output_buffer_.GetReadableSize();
     // To write entire message, we need resigter write event again
     channel_->EnableWriting();
   }
@@ -355,7 +356,7 @@ void TcpConnection::HandleClose() {
   
   state_ = kDisconnected;
   
-  LOG_DEBUG << "The connection [" << name_ << "] is disconnected";
+  LOG_DEBUG_KANON << "The connection [" << name_ << "] is disconnected";
   // ! You can't remove channel in event handling phase.
   // ! Instead, close_callback_ should delay the remove to
   // ! functor calling phase
@@ -420,7 +421,7 @@ void TcpConnection::Send(void const* data, size_t len) {
     }
   }
   else {
-    LOG_TRACE << "Connection [" << name_ << "](fd = " << channel_->GetFd() << ") is down\n"
+    LOG_TRACE_KANON << "Connection [" << name_ << "](fd = " << channel_->GetFd() << ") is down\n"
               << "state(" << State2String() << "), stop send";
   }
 }
@@ -449,7 +450,7 @@ void TcpConnection::Send(Buffer& buf) {
     }
   }
   else {
-    LOG_TRACE << "Connection [" << name_ << "](fd = " << channel_->GetFd() << ") is down\n"
+    LOG_TRACE_KANON << "Connection [" << name_ << "](fd = " << channel_->GetFd() << ") is down\n"
               << "state(" << State2String() << "), stop send";
   }
 }
@@ -468,7 +469,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
   size_t remaining = len;
   
 
-  LOG_TRACE << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
+  LOG_TRACE_KANON << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
   // Although Send() has checked state_ is kConnected
   // But connection also can be closed in the phase 2 
   // when this is called in phase 3
@@ -533,7 +534,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
     n = sock::Write(channel_->GetFd(), data, len);
 
     if (n >= 0) {
-      LOG_TRACE << "Write " << n << " bytes";
+      LOG_TRACE_KANON << "Write " << n << " bytes";
       if (static_cast<size_t>(n) != len) {
         remaining -= n;  
       } else {
@@ -543,6 +544,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
         }
 
         if (channel_->IsWriting()) {
+          LOG_TRACE_KANON << "Write complete but in writing";
           channel_->DisableWriting();
         }
         
@@ -571,7 +573,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
       // });
     }
 
-    LOG_TRACE << "Remaining content length = " << remaining;    
+    LOG_TRACE_KANON << "Remaining content length = " << remaining;    
     output_buffer_.Append(static_cast<char const*>(data)+n, remaining);
     if (!channel_->IsWriting()) {
       channel_->EnableWriting();
@@ -580,7 +582,7 @@ void TcpConnection::SendInLoop(void const* data, size_t len) {
 }
 
 void TcpConnection::SendInLoopForBuf(Buffer& buffer) {
-  LOG_TRACE << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
+  LOG_TRACE_KANON << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
 
   if (state_ != kConnected) {
     LOG_WARN << "This connection" << name_ << "] is not connected, don't send any message";
@@ -597,10 +599,10 @@ void TcpConnection::SendInLoopForBuf(Buffer& buffer) {
       output_buffer_.GetReadableSize());
 
     if (n >= 0) {
-      LOG_TRACE << "Write length = " << n;
+      LOG_TRACE_KANON << "Write length = " << n;
       output_buffer_.AdvanceRead(n);
       if (static_cast<size_t>(0) != output_buffer_.GetReadableSize()) {
-        LOG_TRACE << "Remaining length = " << output_buffer_.GetReadableSize();
+        LOG_TRACE_KANON << "Remaining length = " << output_buffer_.GetReadableSize();
 
         if (output_buffer_.GetReadableSize() >= high_water_mark_ &&
             high_water_mark_callback_) {

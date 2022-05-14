@@ -56,7 +56,7 @@ EventLoop* EventLoopPool::GetNextLoop() {
       next_ = 0;
     }
 
-    LOG_TRACE << "Next event loop Index = " << next_;
+    LOG_TRACE_KANON << "Next event loop Index = " << next_;
   } else {
     loop = base_loop_;
   }

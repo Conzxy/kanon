@@ -21,7 +21,7 @@ unsigned int2Str(char* buf, T integer);
 unsigned ptrToHexStr(char* buf, uintptr_t p);
 
 /**
- * @tparam SZ size of buffer
+ * \tparam SZ size of buffer
  * Presents a fixed-size buffer
  * 
  * This is an internal class

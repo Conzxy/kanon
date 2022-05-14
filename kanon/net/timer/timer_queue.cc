@@ -24,7 +24,7 @@ static inline int CreateTimerFd() noexcept {
                   CLOCK_MONOTONIC,
                   TFD_NONBLOCK | TFD_CLOEXEC);
 
-  LOG_TRACE << "Timer Fd: " << timerfd << " created";
+  LOG_TRACE_KANON << "Timer Fd: " << timerfd << " created";
 
   if (timerfd < 0) {
     LOG_SYSERROR << "::timer_create() error occurred";
@@ -56,7 +56,7 @@ static inline struct timespec GetTimerInterval(double interval) noexcept {
 
 static inline void PrintItimerspec(struct itimerspec const& spec) {
 #ifndef NDEBUG
-  LOG_DEBUG << "Reset the expiration(sec, nsec): (" 
+  LOG_DEBUG_KANON << "Reset the expiration(sec, nsec): (" 
             << spec.it_value.tv_sec << ", "
             << spec.it_value.tv_nsec << ")";
 #endif
@@ -81,7 +81,7 @@ static inline void SetTimerFd(int timerfd, Timer const& timer, bool set_interval
     LOG_SYSERROR << "::timerfd_settime() error occurred";
   }
   else {
-    LOG_TRACE << "Reset successfully";
+    LOG_TRACE_KANON << "Reset successfully";
   }
 }
 
@@ -93,7 +93,7 @@ static inline void ReadTimerFd(int timerfd) noexcept {
     LOG_SYSERROR << "::read() of timerfd error occurred";
   }
   else {
-    LOG_TRACE << "Read " << n << " bytes";
+    LOG_TRACE_KANON << "Read " << n << " bytes";
   }
 }
 
@@ -135,7 +135,7 @@ TimerId TimerQueue::AddTimer(
 }
 
 void TimerQueue::CancelTimer(TimerId id) {
-  LOG_DEBUG << "CancelTimer: "
+  LOG_DEBUG_KANON << "CancelTimer: "
     << "TimerId = " << id.seq_;
 
   loop_->RunInLoop([this, id]() {
@@ -170,7 +170,7 @@ bool TimerQueue::Emplace(Timer* timer) {
   active_timers_.emplace(timer->sequence(), timer);
   timers_.emplace(timer->expiration(), TimerPtr(timer));
 
-  LOG_TRACE << "Now total timer count = " << timers_.size();  
+  LOG_TRACE_KANON << "Now total timer count = " << timers_.size();  
   return ret;
 }
 
@@ -239,8 +239,8 @@ auto TimerQueue::GetExpiredTimers(TimeStamp time) -> TimerVector {
     });
 
   timers_.erase(timers_.begin(), expired_end);
-  LOG_DEBUG << "Expired time =  " << time.ToFormattedString(true);  
-  LOG_DEBUG << "Expired timer count = " << expireds.size();
+  LOG_DEBUG_KANON << "Expired time =  " << time.ToFormattedString(true);  
+  LOG_DEBUG_KANON << "Expired timer count = " << expireds.size();
   
   for (auto& expired_timer : expireds) {
     //if (!expired_timer.second->repeat())
@@ -268,7 +268,7 @@ void TimerQueue::ResetTimers(TimerVector& expireds, TimeStamp now) {
     }
   }
   
-  LOG_DEBUG << "Reset timer_map size: " << timers_.size();
+  LOG_DEBUG_KANON << "Reset timer_map size: " << timers_.size();
 
   if (!timers_.empty()) {
     next_expire = timers_.begin()->second.get();

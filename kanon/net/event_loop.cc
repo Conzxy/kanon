@@ -26,7 +26,7 @@ namespace detail {
 static inline int CreateEventFd() noexcept {
   int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
-  LOG_TRACE << "eventfd: " << evfd << " created";
+  LOG_TRACE_KANON << "eventfd: " << evfd << " created";
 
   if (evfd < 0) {
     LOG_SYSERROR << "eventfd() error occurred";
@@ -81,7 +81,7 @@ EventLoop::EventLoop(bool is_poller)
 { 
 
   ev_channel_->SetReadCallback([this](TimeStamp receive_time){
-    LOG_TRACE << "EventFd receive_time: " << receive_time.ToFormattedString(true);
+    LOG_TRACE_KANON << "EventFd receive_time: " << receive_time.ToFormattedString(true);
     this->EvRead();
   });
 
@@ -91,7 +91,7 @@ EventLoop::EventLoop(bool is_poller)
 
   ev_channel_->EnableReading();
 
-  LOG_TRACE << "EventLoop " << this << " created";
+  LOG_TRACE_KANON << "EventLoop " << this << " created";
 }
 
 EventLoop::~EventLoop()
@@ -100,7 +100,7 @@ EventLoop::~EventLoop()
   // 1. If in loop, call it by user instead of library
   // 2. If not in loop, call it by EventLoopThread so
   //    it don't considered by user.
-  LOG_TRACE << "EventLoop " << this << " destroyed";
+  LOG_TRACE_KANON << "EventLoop " << this << " destroyed";
 
   assert(!looping_);
 }
@@ -112,7 +112,7 @@ void EventLoop::StartLoop() {
   
   looping_ = true;
   
-  LOG_TRACE << "EventLoop " << this << " loop start";
+  LOG_TRACE_KANON << "EventLoop " << this << " loop start";
 
   std::vector<Channel*> activeChannels;
 
@@ -128,7 +128,7 @@ void EventLoop::StartLoop() {
     activeChannels.clear();
   }
 
-  LOG_TRACE << "EventLoop " << this << " loop stop";
+  LOG_TRACE_KANON << "EventLoop " << this << " loop stop";
   
   looping_ = false;
 }
@@ -236,7 +236,7 @@ void EventLoop::Wakeup() noexcept {
 void EventLoop::Quit() noexcept {
   quit_ = true;
 
-  LOG_DEBUG << "EventLoop is quiting";
+  LOG_DEBUG_KANON << "EventLoop is quiting";
 
   // If in the IO thread, call Wakeup() in Quit() is not necessary,
   // because it only few cases can call Quit() successfully
@@ -269,13 +269,13 @@ void EventLoop::SetEdgeTriggerMode() noexcept
     auto ptr = kanon::down_pointer_cast<Epoller>(poller_.get());
     KANON_ASSERT(ptr, "This must be a Epoller*");
     ptr->SetEdgeTriggertMode();
-    LOG_TRACE << "The Poller will working in edge-trigger mode";
+    LOG_TRACE_KANON << "The Poller will working in edge-trigger mode";
   }
   else {
-    LOG_TRACE << "poll(2) can't set to edge-trigger mode, the only mode is level-trigger";
+    LOG_TRACE_KANON << "poll(2) can't set to edge-trigger mode, the only mode is level-trigger";
   }
 #else
-  LOG_TRACE << "poll(2) can't set to edge-trigger mode, the only mode is level-trigger";
+  LOG_TRACE_KANON << "poll(2) can't set to edge-trigger mode, the only mode is level-trigger";
 #endif
 }
 
