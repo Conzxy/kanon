@@ -16,6 +16,11 @@
 #include "kanon/net/channel.h"
 #include "kanon/net/macro.h"
 
+// To avoid swap out this process to disk
+// Don't set timeout parameter of poll()/epoll_wait()
+// to negative or zero
+#define POLLTIME 10000 // 10s
+
 namespace kanon {
 
 namespace detail {
@@ -107,8 +112,7 @@ EventLoop::~EventLoop()
 
 void EventLoop::StartLoop() {
   assert(!looping_);
-  //assert(!quit_);
-  this->AssertInThread();
+  AssertInThread();
   
   looping_ = true;
   
@@ -189,6 +193,10 @@ void EventLoop::RemoveChannel(Channel* ch) {
 }
 
 void EventLoop::CallFunctors() {
+  if (quit_) {
+    return ;
+  }
+
   decltype(functors_) functors;
   {
     MutexGuard dummy{ lock_ };
@@ -214,15 +222,6 @@ void EventLoop::CallFunctors() {
   }
 
   calling_functors_ = false;
-}
-
-void EventLoop::AssertInThread() noexcept {
-  if (!this->IsLoopInThread())
-    this->AbortNotInThread();
-}
-
-bool EventLoop::IsLoopInThread() noexcept {
-  return CurrentThread::t_tid == owner_thread_id_;
 }
 
 void EventLoop::EvRead() noexcept {
