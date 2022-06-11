@@ -175,37 +175,38 @@ public:
   void Append(void const* p, size_t len) {
     Append(static_cast<char const*>(p), len);
   }  
-  
+
+#define Append_Macro(size) \
+  void Append##size(uint##size##_t i) { \
+    auto ni = sock::ToNetworkByteOrder##size(i); \
+    Append(&ni, sizeof ni); \
+  }
+
   /**
    * \brief Append 64bit unsigned integer to buffer
    * \note
    *   Convert @p i to network byte order automatically
    */ 
-  void Append64(uint64_t i) {
-    auto ni = sock::ToNetworkByteOrder64(i);
-    Append(&ni, sizeof ni);
-  }  
-  
+  Append_Macro(64)  
+
   /**
    * \brief Append 32bit unsigned integer to buffer
    * \note
    *   Convert @p i to network byte order automatically
    */ 
-  void Append32(uint32_t i) {
-    auto ni = sock::ToNetworkByteOrder32(i);
-    Append(&ni, sizeof ni);
-  }
+  Append_Macro(32)
 
   /**
    * \brief Append 16bit unsigned integer to buffer
    * \note
    *   Convert @p i to network byte order automatically
    */ 
-  void Append16(uint16_t i) {
-    auto ni = sock::ToNetworkByteOrder16(i);
-    Append(&ni, sizeof ni);
+  Append_Macro(16)
+
+  void Append8(uint8_t i) {
+    Append(&i, sizeof i);
   }
-  
+
   //!@} 
  
   //! \name prepend operation
@@ -231,98 +232,115 @@ public:
   }
 
   /**
-   * \brief Append 16bit unsigned integer to buffer
+   * \brief Prepend 8bit unsigned integer to buffer
    * \note
-   *   Convert @p i to network byte order automatically
+   *   No need to convert @p i to network byte order
    */ 
-  void Prepend16(uint16_t i) {
-    auto ni = sock::ToNetworkByteOrder16(i);
-    Prepend(&ni, sizeof ni);  
+  void Prepend8(uint8_t i) {
+    Prepend(&i, sizeof i);
+  }
+
+#define Prepend_Macro(size) \
+  void Prepend##size(uint##size##_t i) { \
+    auto ni = sock::ToNetworkByteOrder##size(i); \
+    Prepend(&ni, sizeof ni); \
   }
 
   /**
-   * \brief Append 32 unsigned integer to buffer
+   * \brief Prepend 16bit unsigned integer to buffer
    * \note
    *   Convert @p i to network byte order automatically
    */ 
-  void Prepend32(uint32_t i) {
-    auto ni = sock::ToNetworkByteOrder32(i);
-    Prepend(&ni, sizeof ni);  
-  }
+  Prepend_Macro(16)
 
   /**
-   * \brief Append 64bit unsigned integer to buffer
+   * \brief Prepend 32 unsigned integer to buffer
    * \note
    *   Convert @p i to network byte order automatically
    */ 
-  void Prepend64(uint64_t i) {
-    auto ni = sock::ToNetworkByteOrder64(i);
-    Prepend(&ni, sizeof ni);  
-  }
+  Prepend_Macro(32)
+
+  /**
+   * \brief Prepend 64bit unsigned integer to buffer
+   * \note
+   *   Convert @p i to network byte order automatically
+   */ 
+  Prepend_Macro(64)
+
   //!@}
  
   //! \name Prepend size getter
   //!@{
-  
+
+#define GetReadBegin_Macro(size) \
+  uint##size##_t GetReadBegin##size() const noexcept { \
+    uint##size##_t i; \
+    ::memcpy(&i, GetReadBegin(), sizeof i); \
+    return sock::ToHostByteOrder##size(i); \
+  }
+
+  /**
+   * \brief Get the 8bit unsigned integer in the prepend region
+   * \note
+   *   Returned value no need to be converted to host byte order
+   */
+  uint8_t GetReadBegin8() const noexcept {
+    uint8_t i;
+    ::memcpy(&i, GetReadBegin(), sizeof i);
+
+    return i;
+  }  
+
   /**
    * \brief Get the 16bit unsigned integer in the prepend region
    * \note
    *   Returned value has been converted to host byte order automatically
    */
-  uint16_t GetReadBegin16() const noexcept {
-    uint16_t i;
-    ::memcpy(&i, GetReadBegin(), sizeof i);
-      
-    return sock::ToHostByteOrder16(i);
-  }
+  GetReadBegin_Macro(16)
 
   /**
    * \brief Get the 32bit unsigned integer in the prepend region
    * \note
    *   Returned value has been converted to host byte order automatically
    */
-  uint32_t GetReadBegin32() const noexcept {
-    uint32_t i;
-    ::memcpy(&i, GetReadBegin(), sizeof i);
-      
-    return sock::ToHostByteOrder32(i);
-  }
+  GetReadBegin_Macro(32)
 
   /**
    * \brief Get the 64bit unsigned integer in the prepend region
    * \note
    *   Returned value has been converted to host byte order automatically
    */
-  uint64_t GetReadBegin64() const noexcept {
-    uint64_t i;
-    ::memcpy(&i, GetReadBegin(), sizeof i);
-      
-    return sock::ToHostByteOrder64(i);
+  GetReadBegin_Macro(64)
+
+#define Read_Macro(size) \
+  uint##size##_t Read##size() noexcept { \
+    auto ret = GetReadBegin##size(); \
+    AdvanceRead##size(); \
+    return ret; \
   }
-  
+
+  /**
+   * \brief Read the 8bit unsigned integer in the prepend region
+   * \note
+   *   Compared to GetReadBegin8(), this will advance read pointer
+   */
+  Read_Macro(8)
+
   /**
    * \brief Read the 16bit unsigned integer in the prepend region
    * \note
    *   Returned value has been converted to host byte order automatically.\n
    *   Compared to GetReadBegin16(), this will advance read pointer
    */
-  uint16_t Read16() noexcept {
-    auto ret = GetReadBegin16();
-    AdvanceRead16();
-    return ret;
-  }
-  
+  Read_Macro(16) 
+
   /**
    * \brief Read the 32bit unsigned integer in the prepend region
    * \note
    *   Returned value has been converted to host byte order automatically.\n
    *   Compared to GetReadBegin32(), this will advance read pointer
    */
-  uint32_t Read32() noexcept {
-    auto ret = GetReadBegin32();
-    AdvanceRead32();
-    return ret;
-  }
+  Read_Macro(32)
 
   /**
    * \brief Read the 64bit unsigned integer in the prepend region
@@ -330,11 +348,7 @@ public:
    *   Returned value has been converted to host byte order automatically.\n
    *   Compared to GetReadBegin64(), this will advance read pointer
    */
-  uint64_t Read64() noexcept {
-    auto ret = GetReadBegin64();
-    AdvanceRead64();
-    return ret;
-  }
+  Read_Macro(64)
 
   //!@}
  
@@ -362,6 +376,10 @@ public:
   void AdvanceAll() noexcept
   { AdvanceRead(GetReadableSize()); } 
 
+#define AdvanceRead_Macro(size) \
+  void AdvanceRead##size() noexcept \
+  { AdvanceRead(sizeof(uint##size##_t)); }  
+
   /**
    * \brief Advance read region in sizeof(uint64_t)
    * \note
@@ -369,21 +387,23 @@ public:
    *   that support 32bit only, you can't just write AdvanceRead(8).
    *   It is better call this in such cases.
    */  
-  void AdvanceRead64() noexcept
-  { AdvanceRead(sizeof(uint64_t)); }  
+  AdvanceRead_Macro(64)
 
   /**
    * \brief Advance read region in sizeof(uint32_t)
    */
-  void AdvanceRead32() noexcept
-  { AdvanceRead(sizeof(uint32_t)); }
+  AdvanceRead_Macro(32)
 
   /**
    * \brief Advance read region in sizeof(uint16_t)
    */
-  void AdvanceRead16() noexcept
-  { AdvanceRead(sizeof(uint16_t)); }
-  
+  AdvanceRead_Macro(16) 
+
+  /**
+   * \brief Advance read region in sizeof(uint8_t)
+   */
+  AdvanceRead_Macro(8)
+
   //! Advance write pointer in @p n 
   void AdvanceWrite(size_type n) noexcept {
     assert(n <= GetWritableSize());
@@ -435,7 +455,6 @@ public:
   }
   
   //!@}
- 
   
   //! \name metadata getter
   //!@{

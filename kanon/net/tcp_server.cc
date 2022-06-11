@@ -4,7 +4,7 @@
 #include "kanon/util/ptr.h"
 
 #include "kanon/net/inet_addr.h"
-#include "kanon/net/tcp_connection.h"
+#include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_pool.h"
 #include "kanon/net/acceptor.h"
@@ -48,11 +48,11 @@ TcpServer::TcpServer(EventLoop* loop,
   , ip_port_{ listen_addr.ToIpPort() }
   , name_{ name }
   , acceptor_{ kanon::make_unique<Acceptor>(loop_, listen_addr, reuseport) }
+  , connection_callback_(&DefaultConnectionCallback)
   , next_conn_id{ 1 }
   , pool_{ kanon::make_unique<EventLoopPool>(loop, static_cast<char const*>(name)) }
   , start_once_{ ATOMIC_FLAG_INIT }
 {
-  SetConnectionCallback(&DefaultConnectionCallback);
 
   g_loop = loop_;
   ::signal(SIGINT, &SigIntHandler);
@@ -106,7 +106,6 @@ TcpServer::TcpServer(EventLoop* loop,
     io_loop->RunInLoop([conn]() {
       conn->ConnectionEstablished();
     });
-
   });
 }
 
@@ -138,7 +137,7 @@ void TcpServer::StartRun() noexcept {
     // start IO loop
     pool_->StartRun();
     loop_->RunInLoop([this]() {
-      LOG_TRACE_KANON << "Listening in " << ip_port_;
+      LOG_INFO << "Listening in " << ip_port_;
       acceptor_->Listen();
     });
   }
