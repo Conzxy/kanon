@@ -3,7 +3,7 @@
 #include "kanon/net/event_loop.h"
 #include "kanon/net/inet_addr.h"
 #include "kanon/net/connector.h"
-#include "kanon/net/tcp_connection.h"
+#include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/sock_api.h"
 
 using namespace kanon;

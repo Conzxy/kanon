@@ -8,7 +8,7 @@ Buffer::Buffer(size_type init_size)
   : read_index_{ kBufferPrefixSize }
   , write_index_{ kBufferPrefixSize }
 {
-  data_.resize(kBufferPrefixSize + init_size);
+  data_.resize(kBufferPrefixSize+init_size);
   static_assert(kBufferPrefixSize == 8, "Buffer prefix size must be 8");
   assert(GetReadableSize() == 0 && "Buffer init readable_size must be 0");
 }
@@ -24,17 +24,13 @@ Buffer::ReadFd(int fd, int& saved_errno) {
   vec[0].iov_len = GetWritableSize();
 
   vec[1].iov_base = extra_buf;
-
-  // FIXME Allow user specify this size
   vec[1].iov_len = sizeof extra_buf;
-  
-  // If GetWritableSize() less than extra_buf, we use two block,
-  // then we can read 128k-1 at most.
-  // Otherwise, we can read GetWritableSize() at most
-  //
-  // If user can't consume contents in input buffer immediately,
-  // it will make the input buffer too full
-  //
+
+  // To ensure the size of read buffer be 64k at least 
+  // If the WritableSize() >= 64k, no need use extra_buf,
+  // avoid copy extra buffer to kernel space
+  // 
+  // If writable size is sizeof(extra_buf) - 1, we can read 128k-1 at most
   size_t vec_count = GetWritableSize() < sizeof extra_buf ? 2 : 1;
 
   auto cache_writable_size = GetWritableSize();

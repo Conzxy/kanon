@@ -35,7 +35,7 @@ class EventLoopPool;
  *   InetAddr listen_addr{ 9999 };
  *   TcpServer echo_server(&loop, listen_addr, "Echo Server");
  *   echo_server.SetMessageCallback([](TcpConnnectionPtr const& conn, Buffer& buffer, TimeStamp recv_time) {
- *      
+ *      // ...
  *   });
  *
  *   echo_server.SetLoopNum(1); // start with 1 IO event loop, this is option 
