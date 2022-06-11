@@ -11,7 +11,6 @@ namespace kanon {
 enum EventStatus {
   kNew = -1, // event is never added to events table
   kAdded = 1, // event has added
-  kDeleted, // event has removed
 };
 
 namespace detail {
@@ -106,12 +105,7 @@ void Epoller::UpdateChannel(Channel* ch) {
     UpdateEpollEvent(EPOLL_CTL_ADD, ch);
     ch->SetIndex(kAdded);
   } else { // ch->GetIndex() = kAdded
-    if (ch->IsNoneEvent()) {
-      UpdateEpollEvent(EPOLL_CTL_DEL, ch);
-      ch->SetIndex(kNew);
-    } else { 
-      UpdateEpollEvent(EPOLL_CTL_MOD, ch);
-    }
+    UpdateEpollEvent(EPOLL_CTL_MOD, ch);
   }
 }
 
@@ -148,13 +142,8 @@ void Epoller::UpdateEpollEvent(int op, Channel* ch) noexcept {
   ev.data.ptr = static_cast<void*>(ch);
 
   if (::epoll_ctl(epoll_fd_, op, ch->GetFd(), &ev)) {
-    if (op == EPOLL_CTL_DEL) {
-      LOG_SYSERROR << "epoll_ctl() op =" << detail::Op2Str(op)
-        << " fd = " << fd;
-    } else {
-      LOG_SYSFATAL << "epoll_ctl() op =" << detail::Op2Str(op) 
-        << " fd = " << fd;
-    }
+    LOG_SYSFATAL << "epoll_ctl() op =" << detail::Op2Str(op) 
+      << " fd = " << fd;
   }
 }
 
