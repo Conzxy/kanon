@@ -174,7 +174,6 @@ public:
  
   void SetIndex(int index) noexcept { index_ = index; }
   void SetRevents(int event) noexcept { revents_ = event; }
-  void SetLogHup(bool flag) noexcept { log_hup_ = flag; }
 
   //!@} // setter
 
@@ -194,6 +193,15 @@ private:
 private:
   int fd_; //!< File descriptor that is being monitored
   int events_; //!< Events that fd interests
+
+  /** 
+   * In fact, revents_ is used in the HandleEvents() only.
+   * But to simplify the poller structure, poller don't call HandleEvents(),
+   * instead of filling the ready events, thus revnets_ is necessary.
+   * 
+   * In other hand, HandleEvents() maybe remove `struct pollfd` entry from Poller when traversing the 
+   * Poller::pollfds_, modify the size of it! This is wrong and trigger segment fault.
+   */
   int revents_; //!< Received(Occurred) events
   
   /**
@@ -211,11 +219,7 @@ private:
   EventCallback close_callback_;
   EventCallback error_callback_;
 
-  /**
-   * For logging message when connection is hupping
-   */
-  bool log_hup_;
-
+#ifndef NDEBUG
   /**
    * For assert
    *
@@ -223,7 +227,8 @@ private:
    * This force TcpConnection::RemoveConnection to call 
    */
   bool events_handling_;
-  
+#endif  
+
   /** 
    * A channel must be tied with a event loop to
    * ensure the hanler must be called in one loop.

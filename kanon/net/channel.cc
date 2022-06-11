@@ -14,8 +14,9 @@ Channel::Channel(EventLoop* loop, int fd)
   , events_{ 0 }
   , revents_{ 0 }
   , index_{ -1 }
-  , log_hup_{ true }
+#ifndef NDEBUG
   , events_handling_{ false }
+#endif
   , loop_{ loop }
 { 
   LOG_TRACE_KANON << "Channel fd = " << fd_ << " created";
@@ -23,16 +24,20 @@ Channel::Channel(EventLoop* loop, int fd)
 
 Channel::~Channel() noexcept
 {
+#ifndef NDEBUG
   // In the handling events phase, close_callback_ remove the connection(i.e. channel),
   // it is unsafe, we should remove it in next phase(calling functor phase)
   KANON_ASSERT(!events_handling_, 
     "Events are being handled when Channel is destoyed.\n"
     "Advice: You should call EventLoop::QueueToLoop() to delay remove");
+#endif
 }
 
 void Channel::HandleEvents(TimeStamp receive_time) {
+#ifndef NDEBUG
   events_handling_ = true;
-  
+#endif 
+
   LOG_TRACE_KANON << "Event Receive Time: " << receive_time.ToFormattedString(true);  
   LOG_TRACE_KANON << "fd = " << fd_ << ", revent(result event) : {" << Revents2String() << "}";
   
@@ -47,9 +52,7 @@ void Channel::HandleEvents(TimeStamp receive_time) {
    * \see https://stackoverflow.com/questions/56177060/pollhup-vs-pollrdhup
    */
   if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
-    if (log_hup_) {
-      LOG_WARN << "fd = " << fd_ << " POLLHUP happened";
-    }
+    LOG_WARN << "fd = " << fd_ << " POLLHUP happened";
 
     if (close_callback_) close_callback_();
   }
@@ -83,7 +86,9 @@ void Channel::HandleEvents(TimeStamp receive_time) {
     if (write_callback_) write_callback_();
   }
 
+#ifndef NDEBUG
   events_handling_ = false;
+#endif
 }
 
 void Channel::Update() {
