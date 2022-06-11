@@ -16,7 +16,6 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
 {
   socket_.SetReuseAddr(true);
   socket_.SetReusePort(reuseport);
-  socket_.SetNoDelay(true);
   socket_.BindAddress(addr);
   
   // set listen channel read callback(accept peer end)
