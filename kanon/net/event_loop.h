@@ -20,7 +20,6 @@ class TimerQueue;
 class Channel;
 class PollerBase;
 
-#define POLLTIME 10000 // 10 seconds
 
 /**
  * \ingroup net
@@ -171,8 +170,8 @@ public:
    * \note Although release version, it also work
    * \warning This is a interval API, user no need to call it
    */
-  void AssertInThread() noexcept;
-  bool IsLoopInThread() noexcept;
+  void AssertInThread() noexcept { if (!IsLoopInThread()) AbortNotInThread(); }
+  bool IsLoopInThread() noexcept { return CurrentThread::t_tid == owner_thread_id_; }
   //! \endcond
 private:
   /**
