@@ -72,6 +72,7 @@ private:
   using Event = struct epoll_event;
   
   int epoll_fd_; //!< fd of epoller()
+  bool is_et_mode_ = false; //<! Whether is working in ET mode
 
   /**
    * The events in the epoll_event as two role:
@@ -89,7 +90,6 @@ private:
    */
   std::vector<Event> events_; //<! array contains ready events 
 
-  bool is_et_mode_ = false; //<! Whether is working in ET mode
 };
 
 //!@}
