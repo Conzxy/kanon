@@ -4,6 +4,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/net/callback.h"
 #include "kanon/string/string_view.h"
+#include "kanon/net/connection/tcp_connection.h"
 
 namespace kanon {
 
@@ -16,8 +17,7 @@ public:
   // using StringMessageCallback =
   //   std::function<void(TcpConnectionPtr const&, std::string const&, TimeStamp)>;
 
-  using MessageCallback = 
-    std::function<void(TcpConnectionPtr const&, std::vector<char>&, TimeStamp)>;
+  using MessageCallback = std::function<void(TcpConnectionPtr const&, Buffer&, TimeStamp)>;
 
   LengthHeaderCodec();
   explicit LengthHeaderCodec(MessageCallback cb);
@@ -26,6 +26,7 @@ public:
   { max_accept_len_ = len; }
 
   void Send(TcpConnectionPtr const& conn, StringView msg);
+  void Send(TcpConnectionPtr const& conn, OutputBuffer& buffer);
   void OnMessage(TcpConnectionPtr const& conn,
                  Buffer& buf, 
                  TimeStamp recv_time);
