@@ -30,7 +30,7 @@ foreach (kanon_test_source ${KANON_TEST_BENCH_SOURCES})
     add_executable(${kanon_test_filename} EXCLUDE_FROM_ALL ${kanon_test_source})
   endif (${BUILD_ALL_TESTS})
 
-  target_link_libraries(${kanon_test_filename} kanon_net kanon_base gtest benchmark)
+  target_link_libraries(${kanon_test_filename} kanon_net kanon_base benchmark gtest)
   set_target_properties(${kanon_net_filename}
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
