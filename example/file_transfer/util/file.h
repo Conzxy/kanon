@@ -43,7 +43,7 @@ public:
 
   bool Open(std::string const& filename, int mode = kRead)
   {
-    return Open(filename.data(), mode);
+    return Open(filename.c_str(), mode);
   }
 
   bool Open(char const* filename, int mode = kRead);
