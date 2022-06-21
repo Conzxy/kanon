@@ -11,7 +11,7 @@
 
 #include "kanon/net/callback.h"
 #include "kanon/net/inet_addr.h"
-#include "kanon/net/buffer.h"
+#include "kanon/buffer/linear_buffer.h"
 #include "kanon/buffer/chunk_list.h"
 
 namespace kanon {
@@ -21,7 +21,7 @@ class Channel;
 
 class EventLoop;
 
-using InputBuffer = Buffer;
+using InputBuffer = buffer::LinearBuffer;
 using OutputBuffer = ChunkList;
 
 template<typename D>
@@ -45,7 +45,7 @@ class ConnectionBase
   using WriteCompleteCallback = std::function<bool(ConnectionPtr const&)>;
   using HighWaterMarkCallback = std::function<void(ConnectionPtr const&, size_t)>;
   using CloseCallback         = std::function<void(ConnectionPtr const&)>;
-  using MessageCallback       = std::function<void(ConnectionPtr const&, Buffer&, TimeStamp)>;
+  using MessageCallback       = std::function<void(ConnectionPtr const&, InputBuffer&, TimeStamp)>;
 
 public:
   ConnectionBase(EventLoop* loop, std::string const& name, int sockfd);
@@ -59,7 +59,7 @@ public:
    *
    * \note Not thread-safe but in loop
    */
-  void Send(Buffer& buf);    
+  void Send(InputBuffer& buf);    
 
   /**
    * \brief Send message stored in the chunklist from the external
@@ -200,7 +200,7 @@ protected:
   void SendInLoop(void const* data, size_t len);
   void SendInLoop(StringView data);
   void SendInLoopForStr(std::string& data);
-  void SendInLoopForBuf(Buffer& buffer);
+  void SendInLoopForBuf(InputBuffer& buffer);
   void SendInLoopForChunkList(OutputBuffer& buffer);
 
   char const* State2String() const noexcept;
@@ -214,9 +214,6 @@ protected:
 
   InputBuffer input_buffer_; //!< Store the message peer sent
 
-  /**
-   * TODO(conzxy/output_buffer) use linked list to achieve zero-copy
-   */
   OutputBuffer output_buffer_; //!< Store the message local sent
   
   /**

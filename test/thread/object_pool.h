@@ -10,11 +10,11 @@ namespace kanon {
 
 #define HashMap std::unordered_map
 
-// @note ObjectPool and Object refer to each other
+// \note ObjectPool and Object refer to each other
 // use weak_ptr always better choice
 // 1) weak_ptr unlikely shared_ptr, it not increment reference count
 // 2) avoid circular reference
-// a better handler @see object-pool2.h
+// a better handler \see object-pool2.h
 template<typename K, typename T>
 class ObjectPool 
   : public std::enable_shared_from_this<ObjectPool<K, T>>  

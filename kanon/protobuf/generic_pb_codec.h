@@ -27,9 +27,6 @@ class Message;
 } // namespace google
 
 namespace kanon { 
-
-class Buffer;
-
 namespace protobuf {
 
 // FIXME Should use std::shared_ptr?

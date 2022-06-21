@@ -9,7 +9,6 @@
 
 #include "kanon/net/callback.h"
 #include "kanon/net/inet_addr.h"
-#include "kanon/net/buffer.h"
 #include "connection_base.h"
 
 namespace kanon {

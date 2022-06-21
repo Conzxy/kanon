@@ -31,6 +31,7 @@ static void BENCHMARK_Buffer(benchmark::State& state, int n=1) {
       buffer.Append(g_buf, uid(dre));
     }
   }
+
   ::free(g_buf);
 }
 

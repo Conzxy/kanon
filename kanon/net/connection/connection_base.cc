@@ -448,7 +448,7 @@ void ConnectionBase<D>::Send(StringView data) {
 }
 
 template<typename D>
-void ConnectionBase<D>::Send(Buffer& buf) {
+void ConnectionBase<D>::Send(InputBuffer& buf) {
   if (state_ == kConnected) {
     if (loop_->IsLoopInThread()) {
       // No need to call swap() even even though output_buffer_ is empty.
@@ -456,7 +456,7 @@ void ConnectionBase<D>::Send(Buffer& buf) {
       // in output_buffer_
       SendInLoopForBuf(buf);
     } else {
-      Buffer buffer;
+      InputBuffer buffer;
       buffer.swap(buf);
 
       // The reason for use std::bind instead of lambda is
@@ -624,7 +624,7 @@ void ConnectionBase<D>::SendInLoop(void const* data, size_t len) {
 }
 
 template<typename D>
-void ConnectionBase<D>::SendInLoopForBuf(Buffer& buffer) {
+void ConnectionBase<D>::SendInLoopForBuf(InputBuffer& buffer) {
   LOG_TRACE_KANON << "Connection: [" << name_ << "], fd = " << channel_->GetFd();
 
   if (state_ != kConnected) {

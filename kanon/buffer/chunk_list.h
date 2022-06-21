@@ -1,8 +1,6 @@
 #ifndef KANON_NET_CHUNK_LIST_H
 #define KANON_NET_CHUNK_LIST_H
 
-#include <array>
-
 #include "kanon/string/string_view.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/mem.h"
