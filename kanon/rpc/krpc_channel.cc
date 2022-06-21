@@ -4,7 +4,7 @@
 #include <google/protobuf/stubs/callback.h>
 
 #include "kanon/net/event_loop.h"
-#include "kanon/net/tcp_connection.h"
+#include "kanon/net/connection/tcp_connection.h"
 #include "kanon/log/logger.h"
 #include "kanon/util/macro.h"
 

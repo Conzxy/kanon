@@ -1,22 +1,22 @@
-#include "kanon/net/buffer.h"
+#include "linear_buffer.h"
 
 #include <sys/uio.h>
 
-using namespace kanon;
+using namespace kanon::buffer;
 
-Buffer::Buffer(size_type init_size)
-  : read_index_{ kBufferPrefixSize }
-  , write_index_{ kBufferPrefixSize }
+LinearBuffer::LinearBuffer(size_type init_size)
+  : read_index_{ BUFFER_PREFIX_SIZE }
+  , write_index_{ BUFFER_PREFIX_SIZE }
 {
-  data_.resize(kBufferPrefixSize+init_size);
-  static_assert(kBufferPrefixSize == 8, "Buffer prefix size must be 8");
-  assert(GetReadableSize() == 0 && "Buffer init readable_size must be 0");
+  data_.Grow(BUFFER_PREFIX_SIZE+init_size);
+  static_assert(BUFFER_PREFIX_SIZE == 8, "LinearBuffer prefix size must be 8");
+  assert(GetReadableSize() == 0 && "LinearBuffer init readable_size must be 0");
 }
 
-Buffer::~Buffer() = default;
+LinearBuffer::~LinearBuffer() = default;
 
-Buffer::size_type
-Buffer::ReadFd(int fd, int& saved_errno) {
+LinearBuffer::size_type
+LinearBuffer::ReadFd(int fd, int& saved_errno) {
   char extra_buf[65536]; // 64k
 
   struct iovec vec[2];
@@ -50,15 +50,17 @@ Buffer::ReadFd(int fd, int& saved_errno) {
 }
 
 void
-Buffer::Shrink(size_type n) {
-  Buffer tmp;
-  tmp.MakeSpace(GetReadableSize() + n);
-  tmp.Append(ToStringView());
-  swap(tmp);
+LinearBuffer::Shrink(size_type n) {
+  // LinearBuffer tmp;
+  // tmp.MakeSpace(GetReadableSize() + n);
+  // tmp.Append(ToStringView());
+  // swap(tmp);
+ 
+  data_.Shrink(n);
 }
 
 void
-Buffer::MakeSpace(size_type len) {
+LinearBuffer::MakeSpace(size_type len) {
   if (len <= GetWritableSize()) {
     return ;
   }
@@ -66,7 +68,7 @@ Buffer::MakeSpace(size_type len) {
   // If all unused space size < len + prefix size,
   // we have to expand buffer.
   // Otherwise, we can modify the layout of buffer:
-  // Reuse the space between kBufferPrefixSize and read_index
+  // Reuse the space between BUFFER_PREFIX_SIZE and read_index
   // +----------+-+---------------+
   // |          | |               |
   // +----------+-+---------------+
@@ -76,19 +78,24 @@ Buffer::MakeSpace(size_type len) {
   // | | |                        |
   // +-+-+------------------------+
   //
-  if (len >  GetPrependableSize() - kBufferPrefixSize + GetWritableSize()) {
-    data_.resize(write_index_ + len);
+  if (len >  GetPrependableSize() - BUFFER_PREFIX_SIZE + GetWritableSize()) {
+  #if 0
+    size_t at_least_size = write_index_ + len;
+    data_.Grow((at_least_size >= data_.size()) ? at_least_size : data_.size() * 2);
+  #else
+    data_.Grow(write_index_ + len);
+  #endif
     
-    // if (GetPrependableSize() < kBufferPrefixSize) {
+    // if (GetPrependableSize() < BUFFER_PREFIX_SIZE) {
     //   // It should be discarded
-    //   auto r = read_index_ + kBufferPrefixSize - GetPrependableSize(); 
+    //   auto r = read_index_ + BUFFER_PREFIX_SIZE - GetPrependableSize(); 
     //   std::copy(offset(r), offset(r+GetReadableSize()), 
-    //       offset(kBufferPrefixSize));
+    //       offset(BUFFER_PREFIX_SIZE));
     // }
   } else {
     // FIXME The assert is needed?
     KANON_ASSERT(
-      kBufferPrefixSize <= read_index_,
+      BUFFER_PREFIX_SIZE <= read_index_,
      "read_index_ should after prefix size"
      "i.e. message size should prepend at last");
 
@@ -96,8 +103,8 @@ Buffer::MakeSpace(size_type len) {
 
     std::copy(offset(read_index_),
               offset(write_index_),
-              offset(kBufferPrefixSize));
-    read_index_ = kBufferPrefixSize;
+              offset(BUFFER_PREFIX_SIZE));
+    read_index_ = BUFFER_PREFIX_SIZE;
     write_index_ = read_index_ + readable;
     
     assert(readable == GetReadableSize());

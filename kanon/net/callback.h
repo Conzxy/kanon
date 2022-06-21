@@ -9,16 +9,19 @@
 namespace kanon {
 
 class TcpConnection;
-class Buffer;
 
+namespace buffer {
+class LinearBuffer;
+}
+
+using Buffer                = buffer::LinearBuffer;
 using TcpConnectionPtr      = std::shared_ptr<TcpConnection>;
-
 using ConnectionCallback    = std::function<void(TcpConnectionPtr const&)>;
 using WriteCompleteCallback = std::function<bool(TcpConnectionPtr const&)>;
 using HighWaterMarkCallback = std::function<void(TcpConnectionPtr const&, size_t)>;
 using CloseCallback         = std::function<void(TcpConnectionPtr const&)>;
-using MessageCallback       = std::function<void(TcpConnectionPtr const&, Buffer&, TimeStamp stamp)>;
 using TimerCallback         = std::function<void()>;
+using MessageCallback       = std::function<void(TcpConnectionPtr const&, buffer::LinearBuffer&, TimeStamp stamp)>;
 
 // The maximum number of used parameter is 3
 using std::placeholders::_1;

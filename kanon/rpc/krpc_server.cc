@@ -1,6 +1,6 @@
 #include "krpc_server.h"
 
-#include "kanon/net/tcp_connection.h"
+#include "kanon/net/connection/tcp_connection.h"
 #include "kanon/util/any.h"
 
 using namespace kanon::protobuf::rpc;
