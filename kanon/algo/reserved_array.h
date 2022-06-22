@@ -1,6 +1,15 @@
 #ifndef _KANON_ALGO_RESERVED_ARRAY_H_
 #define _KANON_ALGO_RESERVED_ARRAY_H_
 
+#ifdef _DEBUG_RESERVED_ARRAY_
+  #include <iostream>
+  #include <stdio.h>
+  
+  #define DLOG(...) printf(__VA_ARGS__);
+#else
+  #define DLOG(...) 
+#endif
+
 #include <memory>
 #include <utility>
 #include <assert.h>
@@ -92,7 +101,6 @@ class ReservedArray : protected Alloc {
   {
   }
   
-  // FIXME Exception handling 
   explicit ReservedArray(size_type n) 
     : data_(AllocTraits::allocate(*this, n))
     , end_(data_+n)
@@ -104,7 +112,7 @@ class ReservedArray : protected Alloc {
     try {
       zstl::UninitializedDefaultConstruct(data_, end_);
     } catch (...) {
-      AllocTraits::deallocate(*this, data_, n); 
+      AllocTraits::deallocate(*this, data_, n);
       data_ = end_ = nullptr;
       throw;
     }
@@ -115,13 +123,30 @@ class ReservedArray : protected Alloc {
     , end_(data_+other.size())
   {
     try {
-      zstl::UninitializedDefaultConstruct(data_, end_);
+      std::uninitialized_copy(other.begin(), other.end(), data_);
     } catch (...) {
       AllocTraits::deallocate(*this, data_, other.size());
       data_ = end_ = nullptr;
       throw;
     }
   } 
+  
+  ReservedArray& operator=(ReservedArray const& other) {
+    if (&other == this) {
+      return *this;
+    } 
+
+    if (size() == other.size()) {
+      // 为了保证exception-safe：
+      // 对于throw拷贝赋值运算符的类类型分配新内存区域进行copy
+      // 而对no throw的直接复用原有内存区域copy
+      CopyAssignmentForSizeEqual<value_type>(other);
+    } else {
+      CopyAssignmentForSizeNotEqual<value_type>(other);
+    }
+
+    return *this;
+  }
 
   ReservedArray(ReservedArray&& other) noexcept 
     : data_(other.data_)
@@ -135,21 +160,16 @@ class ReservedArray : protected Alloc {
   }
 
   ~ReservedArray() noexcept {
-    size_type const size = end_ - data_;
-    for (size_type i = 0; i < size; ++i) {
-      AllocTraits::destroy(*this, data_+i);
-    }
-
-    AllocTraits::deallocate(*this, data_, size);
+    zstl::DestroyRange(data_, end_);
+    AllocTraits::deallocate(*this, data_, size());
   }
   
-
   void Grow(size_type n) {
     if (n <= GetSize()) { return; }
 
     Reallocate<value_type>(n);
-  } 
-  
+  }
+
 
   void Shrink(size_type n) {
     if (n >= GetSize()) { return; }
@@ -192,7 +212,8 @@ class ReservedArray : protected Alloc {
   void Reallocate(size_type n) {
       // Failed to call the reallocate(),
       // the old memory block is not freed
-      const auto old_size = size();
+      DLOG("size(before realloc): %zu\n", size());
+      DLOG("%p\n", this);
       auto tmp = this->reallocate(data_, n);
 
       if (tmp == NULL) {
@@ -204,7 +225,8 @@ class ReservedArray : protected Alloc {
       
       // reallocate无法保证异常安全
       // 因为data_的内存区域可能已被释放 
-      zstl::UninitializedDefaultConstruct(tmp+old_size, tmp+n);
+      DLOG("default consturct [%zu, %zu)\n", size(), n);
+      zstl::UninitializedDefaultConstruct(tmp+size(), tmp+n);
 
       data_ = tmp;
       end_ = data_ + n;
@@ -236,18 +258,16 @@ class ReservedArray : protected Alloc {
 
   template<typename U, zstl::enable_if_t<can_reallocate<U>::value, char> =0>
   void Shrink_impl(size_type n) {
+    // destroy一般来说是no throw的
+    DLOG("destroy: [%zu, %zu)\n", n, size());
+    zstl::DestroyRange(data_+n, end_);
+
     auto tmp = this->reallocate(data_, n);
 
     if (tmp == NULL) {
       throw std::bad_alloc{};
     }
     
-    const auto old_size = size();
-
-    // destroy一般来说是no throw的
-    for (size_type i = n; i < old_size; ++i) {
-      AllocTraits::destroy(*this, data_+i);
-    }
 
     data_ = tmp;
     end_ = data_ + n;
@@ -261,23 +281,80 @@ class ReservedArray : protected Alloc {
     } 
 
     auto new_end = new_data;
-    const auto count = size() - n; 
 
     try {
       new_end = zstl::UninitializedMoveIfNoexcept(data_, data_+n, new_end);
-
-      for (size_t i = 0; i < count; ++i) {
-        AllocTraits::destroy(*this, data_+n+i);
-      }
     } catch (...) {
       AllocTraits::deallocate(*this, new_data, n);
       throw;
     }
 
+    for (auto beg = data_ + n; beg != end_; ++beg) {
+      AllocTraits::destroy(*this, beg);
+    }
+
     AllocTraits::deallocate(*this, data_, GetSize());
+
     data_ = new_data;
     end_ = new_end;
   }
+  
+  template<typename U, typename=zstl::enable_if_t<std::is_nothrow_copy_assignable<U>::value>>
+  void CopyAssignmentForSizeEqual(ReservedArray const& other) {
+    std::copy(other.begin(), other.end(), begin()); 
+  }
+
+  template<typename U, zstl::enable_if_t<!std::is_nothrow_copy_assignable<U>::value, int> =0>
+  void CopyAssignmentForSizeEqual(ReservedArray const& other) {
+    // swap是no throw的，因此如果拷贝构造抛出了异常
+    // 不会导致this被改动（或破坏）
+    ReservedArray(other).swap(*this);
+  }
+  
+  template<typename U> 
+  using cond = zstl::conjunction<can_reallocate<U>, std::is_nothrow_copy_assignable<U>, std::is_nothrow_constructible<U>>;
+
+  template<typename U, typename=zstl::enable_if_t<cond<U>::value>>
+  void CopyAssignmentForSizeNotEqual(ReservedArray const& other) {
+    auto tmp = this->reallocate(data_, other.size());
+
+    if (tmp == NULL) {
+      throw std::bad_alloc{};
+    }
+
+    if (other.size() > size()) {
+      std::copy(other.begin(), other.begin()+size(), tmp);
+      std::uninitialized_copy(other.begin()+size(), other.end(), tmp+size());
+    } else {
+      std::copy(other.begin(), other.end(), tmp);
+      zstl::DestroyRange(tmp+other.size(), tmp+size());
+    }
+
+    data_ = tmp;
+    end_ = data_ + other.size();
+  } 
+
+  template<typename U, zstl::enable_if_t<!cond<U>::value, int> =0>
+  void CopyAssignmentForSizeNotEqual(ReservedArray const& other) {
+    auto data = AllocTraits::allocate(*this, other.size());
+  
+    if (data == NULL) {
+      throw std::bad_alloc{};
+    }
+
+    try {
+      std::uninitialized_copy(other.begin(), other.end(), data);
+    } catch (...) {
+      AllocTraits::deallocate(*this, data, other.size());
+      throw;
+    }
+    
+    zstl::DestroyRange(data_, end_); 
+    AllocTraits::deallocate(*this, data_, size());
+
+    data_ = data;
+    end_ = data + other.size();
+  } 
 
   T* data_;
   T* end_;

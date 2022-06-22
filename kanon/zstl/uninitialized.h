@@ -47,6 +47,20 @@ II UninitializedDefaultConstruct(II first, II last) {
   return last;
 }
 
+template<typename II, typename=zstl::enable_if_t<!std::is_trivial<iter_value_t<II>>::value>>
+void DestroyRange(II first, II last) {
+  using ValueType = iter_value_t<II>;
+  for (; first != last; ++first) {
+    first->~ValueType();
+  }
+}
+
+template<typename II, zstl::enable_if_t<std::is_trivial<iter_value_t<II>>::value, int> =0>
+void DestroyRange(II first, II last) {
+  (void)first;
+  (void)last;
+}
+
 } // zstl
 
 #endif // _ZSTL_UNINITIALIZED_H_
