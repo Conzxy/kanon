@@ -74,6 +74,10 @@ public:
   void SetNewConnectionCallback(NewConnectionCallback cb) noexcept
   { new_connection_callback_ = std::move(cb); }
 
+  InetAddr const& GetServerAddr() const noexcept {
+    return serv_addr_;
+  }
+
 private:
   void SetState(State s) noexcept { state_ = s; }
 

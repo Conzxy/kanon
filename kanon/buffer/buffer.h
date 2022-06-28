@@ -1,5 +1,5 @@
-#ifndef KANON_BUFFER_LINEAR_BUFFER_H
-#define KANON_BUFFER_LINEAR_BUFFER_H
+#ifndef KANON_BUFFER_BUFFER_H
+#define KANON_BUFFER_BUFFER_H
 
 #include <stdint.h>
 
@@ -11,8 +11,6 @@
 
 namespace kanon {
 
-namespace buffer {
-
 //! \addtogroup buffer
 //!@{
 
@@ -20,7 +18,7 @@ namespace buffer {
  * \brief Simple continuous buffer that split three region
  *
  * It provide for byte stream with operation such as append and prepend.
- * LinearBuffer layout:
+ * Buffer layout:
  * | prepend region | readable region | writable region |
  *   * prepend region ensure 8 byte at least to let user fill packet size but no need to move space.
  *   * readable region is where the data is stored.
@@ -30,7 +28,7 @@ namespace buffer {
  *   The buffer don't actively shrink capacity.\n
  *   User should call Shrink() explicitly
  */
-class LinearBuffer {
+class Buffer {
   using data_type = algo::ReservedArray<char>;
 
   static constexpr int BUFFER_INIT_SIZE = 1024;
@@ -42,11 +40,11 @@ public:
   using const_pointer = data_type::const_pointer;
   
   /**
-   * \brief Construct a LinearBuffer object
+   * \brief Construct a Buffer object
    * \param init_size The initialized size of write region
    */
-  explicit LinearBuffer(size_type init_size = BUFFER_INIT_SIZE);
-  ~LinearBuffer();
+  explicit Buffer(size_type init_size = BUFFER_INIT_SIZE);
+  ~Buffer();
   
   //! \name conversion
   //!@{ 
@@ -501,7 +499,7 @@ public:
   
   //!@}
  
-  void swap(LinearBuffer& other) noexcept {
+  void swap(Buffer& other) noexcept {
     std::swap(write_index_, other.write_index_);
     std::swap(read_index_, other.read_index_);
     std::swap(data_, other.data_);
@@ -536,7 +534,6 @@ private:
 
 //!@}
 
-} // namespace buffer
 } // namespace kanon
 
-#endif // KANON_BUFFER_LINEAR_BUFFER_H
+#endif // KANON_BUFFER_BUFFER_H

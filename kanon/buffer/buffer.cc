@@ -1,22 +1,22 @@
-#include "linear_buffer.h"
+#include "buffer.h"
 
 #include <sys/uio.h>
 
-using namespace kanon::buffer;
+using namespace kanon;
 
-LinearBuffer::LinearBuffer(size_type init_size)
+Buffer::Buffer(size_type init_size)
   : read_index_{ BUFFER_PREFIX_SIZE }
   , write_index_{ BUFFER_PREFIX_SIZE }
 {
   data_.Grow(BUFFER_PREFIX_SIZE+init_size);
-  static_assert(BUFFER_PREFIX_SIZE == 8, "LinearBuffer prefix size must be 8");
-  assert(GetReadableSize() == 0 && "LinearBuffer init readable_size must be 0");
+  static_assert(BUFFER_PREFIX_SIZE == 8, "Buffer prefix size must be 8");
+  assert(GetReadableSize() == 0 && "Buffer init readable_size must be 0");
 }
 
-LinearBuffer::~LinearBuffer() = default;
+Buffer::~Buffer() = default;
 
-LinearBuffer::size_type
-LinearBuffer::ReadFd(int fd, int& saved_errno) {
+Buffer::size_type
+Buffer::ReadFd(int fd, int& saved_errno) {
   char extra_buf[65536]; // 64k
 
   struct iovec vec[2];
@@ -50,8 +50,8 @@ LinearBuffer::ReadFd(int fd, int& saved_errno) {
 }
 
 void
-LinearBuffer::Shrink(size_type n) {
-  // LinearBuffer tmp;
+Buffer::Shrink(size_type n) {
+  // Buffer tmp;
   // tmp.MakeSpace(GetReadableSize() + n);
   // tmp.Append(ToStringView());
   // swap(tmp);
@@ -60,7 +60,7 @@ LinearBuffer::Shrink(size_type n) {
 }
 
 void
-LinearBuffer::MakeSpace(size_type len) {
+Buffer::MakeSpace(size_type len) {
   if (len <= GetWritableSize()) {
     return ;
   }
