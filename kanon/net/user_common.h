@@ -4,13 +4,12 @@
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_thread.h"
 #include "kanon/net/connection/tcp_connection.h"
-#include "kanon/buffer/chunk_list.h"
-#include "kanon/buffer/linear_buffer.h"
 #include "kanon/net/inet_addr.h"
 
 using kanon::EventLoop;
 using kanon::EventLoopThread;
 using kanon::TcpConnectionPtr;
+using kanon::TcpConnection;
 using kanon::Buffer;
 using kanon::InetAddr;
 using kanon::TimeStamp;

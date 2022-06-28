@@ -72,6 +72,10 @@ TcpClient::TcpClient(
   });
 } 
 
+InetAddr const& TcpClient::GetServerAddr() const noexcept {
+  return connector_->GetServerAddr();
+}
+
 TcpClient::~TcpClient() noexcept {
   LOG_TRACE_KANON << "TcpClient-[" << name_ << "]" << " destructed";
 

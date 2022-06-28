@@ -21,13 +21,18 @@ set(CXX_FLAGS
  -Wno-switch
  -Wno-format-security
  -Werror
+ # enable reallocate non-trivial class type with "can_reallocate = true" and no throw default ctor
+ -Wno-class-memaccess
+ # stringview stlen()
+ -Wno-stringop-truncation
+ -Wno-stringop-overflow
  #-Wconversion
  #-Wshadow
  -Wwrite-strings # in fact, this is default specified
  #cxx standard 
  -std=c++11
  -pthread
-	
+  	
  # linker opt
  -rdynamic
  # machine opt

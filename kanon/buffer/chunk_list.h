@@ -46,7 +46,7 @@ public:
     write_index_ += len;
   }
 
-  StringView ToStringView() noexcept {
+  StringView ToStringView() const noexcept {
     return StringView(GetBuf()+read_index_, write_index_-read_index_);
   }
 
@@ -57,7 +57,7 @@ public:
   size_t GetReadableSize() const noexcept { return write_index_ - read_index_; }
   size_t GetWritableSize() const noexcept { return max_size_ - write_index_; }
   size_t GetMaxSize() const noexcept { return max_size_; }
-
+  
   void Reset() noexcept {
     read_index_ = write_index_ = 0;
   }
@@ -96,6 +96,9 @@ class ChunkList final {
   using ListType = zstl::ForwardList<Chunk>;
 
 public:
+  using iterator = ListType::iterator;
+  using const_iterator = ListType::const_iterator;
+
   using SizeType = ListType::size_type;
 
   // The ForwardList is an internel class
@@ -147,18 +150,29 @@ public:
   PrependInt_Macro(32)
   PrependInt_Macro(64)
 
-#define ReadInt_Macro(size) \
-  uint##size##_t Read##size() noexcept { \
-    assert(buffers_.front().GetReadableSize() == sizeof(uint##size##_t)); \
-    assert(buffers_.front().GetMaxSize() == sizeof(uint##size##_t)); \
+#define GetReadBeginInt_Macro(size) \
+  uint##size##_t GetReadBegin##size() noexcept { \
+    assert(buffers_.front().GetReadableSize() >= sizeof(uint##size##_t)); \
     return sock::ToHostByteOrder##size(*reinterpret_cast<uint##size##_t*>(buffers_.front().GetReadBegin())); \
   }
 
-  uint8_t Read8() noexcept {
-    assert(buffers_.front().GetReadableSize() == sizeof(uint8_t));
+  uint8_t GetReadBegin8() noexcept {
+    assert(buffers_.front().GetReadableSize() >= sizeof(uint8_t));
     return *reinterpret_cast<uint8_t*>(buffers_.front().GetReadBegin());
   } 
-
+  
+  GetReadBeginInt_Macro(16)
+  GetReadBeginInt_Macro(32)
+  GetReadBeginInt_Macro(64)
+  
+#define ReadInt_Macro(size) \
+  uint##size##_t Read##size() noexcept { \
+    auto ret = GetReadBegin##size(); \
+    AdvanceRead(sizeof(uint##size##_t)); \
+    return ret; \
+  }
+  
+  ReadInt_Macro(8)
   ReadInt_Macro(16)
   ReadInt_Macro(32)
   ReadInt_Macro(64)
@@ -174,11 +188,37 @@ public:
 
   bool IsEmpty() const noexcept { return buffers_.empty(); }
   bool HasReadable() const noexcept { return !IsEmpty(); }
+  
 
   Chunk* GetFirstChunk() noexcept { return &buffers_.front(); }
   Chunk const* GetFirstChunk() const noexcept { return &buffers_.front(); }
   Chunk* GetLastChunk() noexcept { return &buffers_.back(); }
   Chunk const* GetLastChunk() const noexcept { return &buffers_.back(); }
+
+  iterator begin() noexcept {
+    return buffers_.begin();
+  }
+
+  iterator end() noexcept {
+    return buffers_.end();
+  }
+
+  const_iterator begin() const noexcept {
+    return buffers_.begin();
+  }
+
+  const_iterator end() const noexcept {
+    return buffers_.end();
+  }
+
+  const_iterator cbegin() const noexcept {
+    return buffers_.begin();
+  }
+
+  const_iterator cend() const noexcept {
+    return buffers_.end();
+  }
+
   SizeType WriteFd(int fd, int& saved_errno) noexcept;
   SizeType WriteFd(int fd) noexcept { int saved_errno; return WriteFd(fd, saved_errno); }
   void swap(ChunkList& other) noexcept {

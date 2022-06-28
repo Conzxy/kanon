@@ -6,7 +6,7 @@
 class EchoServer : public TcpServer {
 public:
   explicit EchoServer(EventLoop& loop)
-    : TcpServer(&loop, InetAddr(9999), "Echo Server")
+    : TcpServer(&loop, InetAddr(9998), "Echo Server")
   { 
     SetMessageCallback(
       [](kanon::TcpConnectionPtr const& conn,

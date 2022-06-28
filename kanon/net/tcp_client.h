@@ -60,6 +60,8 @@ public:
    */
   void Stop() noexcept;
 
+  InetAddr const& GetServerAddr() const noexcept;
+
   /**
    * Enable the client retry connect when client
    * is closed by peer(But if you call disconnect

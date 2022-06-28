@@ -5,7 +5,6 @@
 #include "kanon/log/logger.h"
 #include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/endian_api.h"
-#include "kanon/buffer/linear_buffer.h"
 
 using namespace kanon;
 using namespace kanon::protobuf::internal;

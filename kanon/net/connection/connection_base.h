@@ -11,7 +11,7 @@
 
 #include "kanon/net/callback.h"
 #include "kanon/net/inet_addr.h"
-#include "kanon/buffer/linear_buffer.h"
+#include "kanon/buffer/buffer.h"
 #include "kanon/buffer/chunk_list.h"
 
 namespace kanon {
@@ -21,7 +21,7 @@ class Channel;
 
 class EventLoop;
 
-using InputBuffer = buffer::LinearBuffer;
+using InputBuffer = Buffer;
 using OutputBuffer = ChunkList;
 
 template<typename D>
