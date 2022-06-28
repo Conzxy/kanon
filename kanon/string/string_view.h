@@ -354,7 +354,7 @@ public:
     return npos;
   }
 
-  size_type find_first_not_of(StringView v, size_type pos = 0)
+  size_type find_first_not_of(StringView v, size_type pos = 0) const noexcept
   {
     for(; pos < len_; ++pos){
       if(!charInRange(data_[pos], v))
@@ -363,16 +363,16 @@ public:
     return npos;
   }
   
-  size_type find_first_not_of(char c, size_type pos = 0)
+  size_type find_first_not_of(char c, size_type pos = 0) const noexcept
   {
     for(; pos < len_; ++pos){
-      if(data_[pos] == c)
+      if(data_[pos] != c)
         return pos;
     }
     return npos;
   }
 
-  size_type find_last_not_of(StringView v, size_type pos = npos)
+  size_type find_last_not_of(StringView v, size_type pos = npos) const noexcept
   {
     int i = static_cast<int>(std::min(len_ - 1, pos));
 
@@ -384,7 +384,7 @@ public:
     return npos;
   }
 
-  size_type find_last_not_of(char c, size_type pos = npos)
+  size_type find_last_not_of(char c, size_type pos = npos) const noexcept
   {
     int i = static_cast<int>(std::min(len_ - 1, pos));
 
