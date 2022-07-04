@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include "kanon/log/logger.h"
+
 using namespace kanon;
 
 static constexpr unsigned BUF_SIZE = 65536;
@@ -103,8 +105,10 @@ TEST(chunk_list, Prepend) {
   EXPECT_EQ(buffer2.GetChunkSize(), 2);
   EXPECT_EQ(buffer2.GetReadableSize(), 14);
   EXPECT_EQ(buffer2.Read16(), buffer2.GetReadableSize() - sizeof(uint16_t));
-  buffer2.AdvanceRead(sizeof(uint16_t));
-  EXPECT_TRUE(buffer2.GetFirstChunk()->ToStringView() == "Conzxy KANON");  
+  EXPECT_EQ(buffer2.GetChunkSize(), 1);
+  EXPECT_TRUE(buffer2.GetFirstChunk()->ToStringView() == "Conzxy KANON");
+
+  LOG_DEBUG << buffer2.GetFirstChunk()->ToStringView();
   buffer2.AdvanceReadAll();
   EXPECT_TRUE(buffer2.IsEmpty());
 }
@@ -119,7 +123,6 @@ TEST(chunk_list, move) {
   EXPECT_EQ(buffer2.GetChunkSize(), 2);
   EXPECT_EQ(buffer2.GetReadableSize(), 14);
   EXPECT_EQ(buffer2.Read16(), buffer2.GetReadableSize() - sizeof(uint16_t));
-  buffer2.AdvanceRead(sizeof(uint16_t));
   EXPECT_TRUE(buffer2.GetFirstChunk()->ToStringView() == "Conzxy KANON");  
   buffer2.AdvanceReadAll();
   EXPECT_TRUE(buffer2.IsEmpty());
