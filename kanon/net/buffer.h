@@ -2,6 +2,6 @@
 #define _KANON_NET_BUFFER_H_
 
 #include "callback.h"
-#include "kanon/buffer/linear_buffer.h"
+#include "kanon/buffer/buffer.h"
 
 #endif // _KANON_NET_BUFFER_H_
