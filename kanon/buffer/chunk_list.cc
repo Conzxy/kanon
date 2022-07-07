@@ -198,3 +198,4 @@ auto ChunkList::GetFreeChunk() noexcept -> ListType::Iterator {
 }
 
 } // namespace kanon
+
