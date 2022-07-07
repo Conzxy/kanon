@@ -4,8 +4,8 @@
 #include <memory>
 #include <assert.h>
 
-#include "forward_list/iterator.h"
-#include "forward_list/type_traits.h"
+#include "kanon/zstl/iterator.h"
+#include "kanon/zstl/type_traits.h"
 
 #include "forward_list/node_def.h"
 #include "forward_list/forward_list_iterator.h"

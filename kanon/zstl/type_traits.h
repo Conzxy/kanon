@@ -1,5 +1,5 @@
-#ifndef STL_SUPPLEMENT_TYPE_TRAITS_H
-#define STL_SUPPLEMENT_TYPE_TRAITS_H
+#ifndef _ZSTL_TYPE_TRAITS_H_
+#define _ZSTL_TYPE_TRAITS_H_
 
 #include <functional>
 #include <type_traits>
@@ -76,4 +76,4 @@ struct type_identity : T {};
 
 }
 
-#endif // STL_SUPPLEMENT_TYPE_TRAITS_H
+#endif

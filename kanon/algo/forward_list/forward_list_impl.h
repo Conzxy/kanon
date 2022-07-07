@@ -5,15 +5,15 @@
 #include "../forward_list.h"
 #endif 
 
-#include "kanon/util/macro.h"
-
-#include "algorithm.h"
 #include <algorithm>
 #include <utility>
 
 #ifdef FORWARD_LIST_DEBUG
 #include <iostream>
 #endif
+
+#include "algorithm.h"
+#include "kanon/util/macro.h"
 
 #define FORWARD_LIST_TEMPLATE ForwardList<T, A>
 
