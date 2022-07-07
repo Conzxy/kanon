@@ -1,9 +1,8 @@
-#pragma once
 #ifndef FORWARD_LIST_FORWARD_LIST_ITERATOR_H
 #define FORWARD_LIST_FORWARD_LIST_ITERATOR_H
 
 #include "node_def.h"
-#include "iterator.h"
+#include "kanon/zstl/iterator.h"
 
 namespace zstl {
 

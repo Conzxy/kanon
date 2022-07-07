@@ -1,5 +1,5 @@
-#ifndef STL_SUPPLEMENT_MACROS_H
-#define STL_SUPPLEMENT_MACROS_H
+#ifndef _ZSTL_MACROS_H_
+#define _ZSTL_MACROS_H_
 
 #if __cplusplus >= 201103L
 #define CXX_STANDARD_11
@@ -25,4 +25,4 @@
 #define ZSTL_CONSTEXPR inline
 #endif
 
-#endif // STL_SUPPLEMENT_MACROS_H
+#endif
