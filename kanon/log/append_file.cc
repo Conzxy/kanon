@@ -36,7 +36,7 @@ AppendFile::~AppendFile() noexcept {
     ::fclose(fp_);
 }
 
-void AppendFile::Append(char const* data, size_t num) noexcept {
+void AppendFile::_Append(char const* data, size_t num) noexcept {
   size_t written = 0;
 
   do {
