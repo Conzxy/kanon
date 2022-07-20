@@ -15,7 +15,7 @@
 | thread | Pthread：`互斥锁`（mutex），`条件变量`（condition），以及基于此实现的`CountdownLatch`等 | /kanon/thread |
 | string | `string_view`的11等价实现，字符流和格式化流等 | /kanon/string |
 | util | `std::optional`，`make_unique()`的11等价实现，`noncopyable`等 | /kanon/util |
-| algo | 支持O(1) append的单链表，支持`reallocate`的预分配数组等 | /kanon/algo
+| algo | 支持O(1) append的单链表，支持`reallocate`的预分配数组等 | /kanon/algo |
 | ... | ... | ... |
 
 更多的可以通过源码了解。
@@ -24,10 +24,11 @@
 对于网络库而言，想必对其使用的**读写缓冲区**(read/write buffer)很感兴趣，因为涉及**收发信息**(receive/send message)的性能。
 
 | 缓冲 | 描述 | 相关文件 |
+| -- | -- | -- |
 | kanon::Buffer | **读**缓冲，支持*prepend size header*的**连续**容器，由于是基于`kanon::ReservedArray`实现的，因此比基于`std::vector`的性能要好 | algo/reserved_array.h, buffer/buffer.h,cc | 
 | kanon::ChunkList | **写**缓冲，**固定页面**的单链表（支持O(1) append)，分配的节点除非用户主动收缩，否则不释放，自然也支持*prepend size header*（因为每个节点本身就支持可变长度），细节参考相关文件 | algo/forward_list.h, algo/forward_list/\*, buffer/chunk_list.h,cc |
 
-之所以这么设计，是因为接受的信息一般需要**解析**/**反序列化**(parse/deserialize)，因此如果不是连续的，那么得付出拼接完整信息的额外开销（overhead），这是划不来的，所以采用特化的连续容器。
+之所以这么设计，是因为接受的信息一般需要**解析**/**反序列化**(parse/deserialize)，因此如果不是连续的，那么得付出拼接完整信息的额外开销（overhead），这是划不来的，所以采用特化的连续容器。<br>
 而对于发送消息，我们并不关心其完整性，因此采用*基于节点*的非连续容器，即单链表可以避免因连续容器再分配带来的*memcpy*的开销。
 实际上，通过`ReservedArray`实现的`Buffer`在一些情况下是可以进行*原地再分配*的(inplace reallocate)，因此*benchmark*的结果表现略优于`ChunkList`，但根据现实的*工作负载*(workload)来考虑，写缓冲还是考虑用`ChunkList`，在我看来，这至少不是个坏主意(Bad IDEA)。
 
