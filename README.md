@@ -1,34 +1,47 @@
-# Kanon
-```
- _  __                       
-| |/ /                       
-| ' / __ _ _ __   ___  _ __  
-|  < / _` | '_ \ / _ \| '_ \ 
-| . \ (_| | | | | (_) | | | |
-|_|\_\__,_|_| |_|\___/|_| |_|
-```
+# kanon
 ## Introduction
-`Kanon` is an event-driven network library written in `C++11`(Support `TCP` only). The library must be be used in `linux` or `unix-like` platform(since depends on the API of them).
-Therefore, the event-handling is synchronized-unblocking(`poll()` or `epoll()`). Due to this feature, it is natural to implement the network module of library in the `reactor` design pattern. Also in order to take the advantage of the mutil-core machine, the library can start many thread, and the main thread accept connection, other threads(**IO threads**) handle IO events, that including receiving messages, processing messages, sending messages, etc. This is called as `multi-reactor`.
+`kanon`是一个`C++11`编写的基于**事件驱动**(event-driven)的网络库(network libaray)。<br>
+具体来说，该库基于`Reactor`模式，其网络模型是`同步非阻塞`（synchronized-unblocking），依赖的的API是：`poll()`(unix-like/linux)，`epoll`(linux)。<br>
+但是，实际上该库是暴露**回调注册接口**来处理各种IO事件，因此在使用上是类似`异步`的，这也是事件驱动的一个体现和优势。
 
-In addition, the library also implements other useful components:
-* **log module**(terminal/file/async logging)
-* **thread module**(Pthread: mutex, condition variable, etc.)
-* **string module**(lexical_stream, string_view, etc.)
-* **util module**(down_pointer_cast, make_unique(c++11), etc.)
+除此之外，为了充分利用*多核优势*，该库支持启动多个线程，而*主线程仅接受(accept)连接*，而这些线程处理*IO事件*，因此一般这些线程称作`IO线程`。
 
-These modules can be reuse in other places also.
+该库目前不考虑跨平台，因为`Windows`的网络API不贴近`Reactor`，兼容的话要承担一定的额外开销，同时，对现在的我而言也没这个必要。
+
+另外，该库也实现了其他有用的组件，它们也是构成网络库的一部分，但对于编写应用程序的其他*非网络模块*也是十分有用的:
+| 模块 | 描述 | 相关文件 |
+| -- | -- | -- |
+| log | 支持输出到`终端`（terminal）/`文件`(*同步*或**异步**）| /kanon/log |
+| thread | Pthread：`互斥锁`（mutex），`条件变量`（condition），以及基于此实现的`CountdownLatch`等 | /kanon/thread |
+| string | `string_view`的11等价实现，字符流和格式化流等 | /kanon/string |
+| util | `std::optional`，`make_unique()`的11等价实现，`noncopyable`等 | /kanon/util |
+| algo | 支持O(1) append的单链表，支持`reallocate`的预分配数组等 | /kanon/algo
+| ... | ... | ... |
+
+更多的可以通过源码了解。
+
+## Buffer
+对于网络库而言，想必对其使用的**读写缓冲区**(read/write buffer)很感兴趣，因为涉及**收发信息**(receive/send message)的性能。
+
+| 缓冲 | 描述 | 相关文件 |
+| kanon::Buffer | **读**缓冲，支持*prepend size header*的**连续**容器，由于是基于`kanon::ReservedArray`实现的，因此比基于`std::vector`的性能要好 | algo/reserved_array.h, buffer/buffer.h,cc | 
+| kanon::ChunkList | **写**缓冲，**固定页面**的单链表（支持O(1) append)，分配的节点除非用户主动收缩，否则不释放，自然也支持*prepend size header*（因为每个节点本身就支持可变长度），细节参考相关文件 | algo/forward_list.h, algo/forward_list/\*, buffer/chunk_list.h,cc |
+
+之所以这么设计，是因为接受的信息一般需要**解析**/**反序列化**(parse/deserialize)，因此如果不是连续的，那么得付出拼接完整信息的额外开销（overhead），这是划不来的，所以采用特化的连续容器。
+而对于发送消息，我们并不关心其完整性，因此采用*基于节点*的非连续容器，即单链表可以避免因连续容器再分配带来的*memcpy*的开销。
+实际上，通过`ReservedArray`实现的`Buffer`在一些情况下是可以进行*原地再分配*的(inplace reallocate)，因此*benchmark*的结果表现略优于`ChunkList`，但根据现实的*工作负载*(workload)来考虑，写缓冲还是考虑用`ChunkList`，在我看来，这至少不是个坏主意(Bad IDEA)。
+
+写缓冲支持size header的O(1) prepend，在我看来是个很不错的想法，在处理二进制协议时，这是十分有必要的，因此`Buffer`和`ChunkList`都支持这个特性。
 
 ## Build
-The library is built by `cmake`.
+`kanon`是通过`cmake`构筑的。因此你应该先安装`cmake`。
 
-The cmake minimum version I set is **3.10**, but I don't know which command is also allowed under 3.10. But it is best that you ensure the cmake version is 3.10 at least.
-
-If you use `Ubuntu` OS, you can install cmake by following command:
+如果你使用的是`Ubuntu` OS，那么可以通过以下命令安装：
 ```shell
 $ sudo apt install cmake
 ```
-Then, build `kanon` by following commands:
+
+然后通过以下命令构筑该库：
 ```shell
 # ${USER_ROOT_DIR} is ~ usually.
 $ cd ${USER_ROOT_DIR}/kanon
@@ -42,35 +55,27 @@ $ cmake ..
 # You can set it according to the core number of your machine
 $ cmake --build . --target all -j 2
 ```
-
-* The default generator is `Unix Makefiles`, you can change it to other also.For example, `Ninja` which I'm using.
-The command line argument as following:
+另外，你也可以通过项目根目录的shell脚本构筑：
 ```shell
-cmake -G Ninja ...
+$ export KANON_BUILD_PATH=...
+$ chmod u+x build.sh
+$ ./build.sh
 ```
 
-* The default build type is **Release**, if you want to build **Debug** mode, you can input following command:
+构筑完成后，你可以安装该库：
 ```shell
-$ cmake .. -D CMAKE_BUILD_TYPE=Debug ...
-```
-
-* The default output directory of library is `${USER_ROOT_DIR}/kanon/build/lib`.
-* The output directory of tests is `${USER_ROOT_DIR}/kanon/build/test`
-* The output directory of examples is `${USER_ROOT_DIR}/kanon/build/examples`
-
-After build, you can install headers to `/usr/include/`, and install libraries to `/usr/lib` default.
-```shell
-# In ${USER_ROOT_DIR}/kanon/build
+# In */kanon/build
 $ cmake --install .
 ```
-You can change the install directory of libraries to other by the following command:
+
+注意，默认安装目录是`/usr/include/`（头文件），`/usr/lib`（库文件）。你可以更改：
 ```shell
-# ${INSTALL_DIR_YOU_WANT} is the install directory of lib you want
-$ cmake --install . --prefix ${INSTALL_DIR_YOU_WANT}
+$ cmake --install . --prefix INSTALL_DIRECTORY 
 ```
+
 ## Example
-The simple example is [daytime](https://www.ietf.org/rfc/rfc867.txt) server.
-According the daytime protocol, we just register the **OnConnection** callback.
+一个简单的例子是[daytime](https://www.ietf.org/rfc/rfc867.txt)服务器。<br>
+根据`daytime`协议，我们仅需要注册`OnConnection`回调即可。
 ```cpp
 void OnConnection(TcpConnectionPtr const& conn)
 {
@@ -81,11 +86,11 @@ void OnConnection(TcpConnectionPtr const& conn)
   conn->Send(GetDaytime());
 }
 ```
-Besides, you also can register OnMessage callback to process message from peer, etc. You can know them in [tcp_connection.h](https://github.com/Conzxy/kanon/blob/master/kanon/net/tcp_connection.h).
-Other examples in [example](https://github.com/Conzxy/kanon/tree/master/example) directory.
+除此之外，你也可以注册`OnMessage`回调以处理信息（比如请求等），还有其他回调你也可以参考[tcp_connection.h](https://github.com/Conzxy/kanon/blob/master/kanon/net/tcp_connection.h)。
 
+其他的例子可以参考[example](https://github.com/Conzxy/kanon/tree/master/example) 目录。
 ## Document
-Document is produced by Doxygen(incomplete)
+目前仅有网络模块的API文档，是通过`Doxygen`生成的。
 
-The website is: http://47.99.92.230:9999/<br>
-(Powered by [kanon_httpd](https://github.com/Conzxy/kanon_httpd))
+Website: http://47.99.92.230/
+（由[kanon_httpd](https://github.com/Conzxy/kanon_httpd)支持）
