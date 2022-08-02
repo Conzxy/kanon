@@ -160,6 +160,8 @@ unsigned int2Str(char* buf, T integer) {
   static char const* pzero = digits + 9;
 
   char* end = buf;
+  
+  bool negative = integer < 0;
 
   do {
     T left = integer % 10;
@@ -167,7 +169,7 @@ unsigned int2Str(char* buf, T integer) {
     *(end++) = *(pzero + left);
   } while (integer != 0);
   
-  if (integer < 0)
+  if (negative)
     *(end++) = '-';
 
   *end = 0;
