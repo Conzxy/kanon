@@ -7,7 +7,6 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
-
 namespace kanon {
 
 class AppendFile : noncopyable
@@ -23,6 +22,8 @@ public:
 
   size_t writtenBytes() const noexcept
   { return writtenBytes_; }
+  
+  FILE* fp() const noexcept { return fp_; }
 
 private:
   size_t write(char const* data, size_t num) noexcept

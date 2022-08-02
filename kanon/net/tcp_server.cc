@@ -24,8 +24,9 @@ inline void SignalHandler(int signo, int expected, char const* msg) noexcept {
     LOG_INFO << "The event loop is quiting...";
     g_loop->Quit();
   }
-
+  
   LOG_INFO << "The server exit successfully";
+  exit(0);
 }
 
 inline void SigKillHandler(int signo) noexcept {
