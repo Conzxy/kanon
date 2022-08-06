@@ -73,7 +73,7 @@ namespace kanon {
 class InetAddr {
 public:
   using Port = uint16_t;
-
+  
   /**
    * \brief Construct address from the hostname and service(port)
    * \param hostname
@@ -92,9 +92,11 @@ public:
    * \param port
    *   A 16-bit decimal number, which is used for binding socket
    * \param loopback
-   * 
+   *   Bind the loopback address, otherwise bind to the wildcard
+   *   (client can access the host via any ip address belonging to
+   *    the machine)
    * \param v6
-   *   As a Ipv6 address if ths machine support
+   *   As a Ipv6 address if machine support
    * \warning
    *   This must be used for server
    */ 

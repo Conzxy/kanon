@@ -120,7 +120,7 @@ public:
 
   static void SetColor(bool c) noexcept { need_color_ = c; }
   static LogLevel GetLogLevel() noexcept { return log_level_; }
-  static void SetLogLevel(LogLevel GetLogLevel) noexcept { log_level_ = GetLogLevel; }
+  static void SetLogLevel(LogLevel level) noexcept { log_level_ = level; }
   static OutputCallback GetOutputCallback() noexcept { return output_callback_; }
   static void SetOutputCallback(OutputCallback output) noexcept { output_callback_ = output; }
   static FlushCallback GetFlushCallback() noexcept { return flush_callback_; }
