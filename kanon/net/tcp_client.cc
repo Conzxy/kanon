@@ -5,6 +5,7 @@
 #include "kanon/net/connector.h"
 #include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/sock_api.h"
+#include "kanon/net/user_client.h"
 
 using namespace kanon;
 
@@ -24,52 +25,6 @@ TcpClient::TcpClient(
 {
   LOG_TRACE_KANON << "TcpClient-[" << name_ << "]" << " constructed";
 
-  connector_->SetNewConnectionCallback([this, &serv_addr](int sockfd) {
-    if (conn_) { return ; }
-
-    auto new_conn = TcpConnection::NewTcpConnection(loop_, name_, sockfd, sock::GetLocalAddr(sockfd), serv_addr);
-
-    new_conn->SetMessageCallback(message_callback_);
-    new_conn->SetWriteCompleteCallback(write_complete_callback_);
-    new_conn->SetConnectionCallback(connection_callback_);
-  
-    // If we directly contruct and set new connection,
-    // that is dangerous! we may be get a half-completed connection.
-    {
-      MutexGuard guard{ mutex_ };
-      conn_ = new_conn;
-    }
-
-    // RemoveConnection
-    conn_->SetCloseCallback([this](TcpConnectionPtr const& conn) {
-      loop_->AssertInThread();
-      // passive close connection
-      assert(conn == conn_);
-      assert(conn->GetLoop() == loop_);
-
-
-      // Like TcpServer, we remove connection from TcpClient 
-      {
-        MutexGuard guard{ mutex_ };
-        conn_.reset();
-      } 
-  
-      // ! In event handling phase, don't remove channel(disable is allowed)
-      // ! conn must be copied(\see TcoConnection::HandleClose())
-      loop_->QueueToLoop([conn] () {
-        conn->ConnectionDestroyed();
-      });
-
-      // If user does not call Disconnect() and
-      // support restart when passive close occurred
-      if (connect_ && retry_) {
-        connector_->Restrat();
-      }
-    });
-  
-    // enable reading
-    conn_->ConnectionEstablished();
-  });
 } 
 
 InetAddr const& TcpClient::GetServerAddr() const noexcept {
@@ -135,3 +90,61 @@ void TcpClient::Stop() noexcept {
   connector_->Stop();
 }
 
+void TcpClient::Init() {
+  connector_->SetNewConnectionCallback(std::bind(TcpClient::NewConnection, _1, GetServerAddr(), shared_from_this()));
+}
+
+void TcpClient::NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr cli) {
+  if (cli->conn_) { return ; }
+
+  auto new_conn = TcpConnection::NewTcpConnection(cli->loop_, cli->name_, sockfd, sock::GetLocalAddr(sockfd), serv_addr);
+
+  new_conn->SetMessageCallback(cli->message_callback_);
+  new_conn->SetWriteCompleteCallback(cli->write_complete_callback_);
+  new_conn->SetConnectionCallback(cli->connection_callback_);
+
+  // If we directly contruct and set new connection,
+  // that is dangerous! we may be get a half-completed connection.
+  {
+    MutexGuard guard{ cli->mutex_ };
+    cli->conn_ = new_conn;
+  }
+
+  // RemoveConnection
+  cli->conn_->SetCloseCallback([cli](TcpConnectionPtr const& conn) {
+    cli->loop_->AssertInThread();
+    // passive close connection
+    assert(conn == cli->conn_);
+    assert(conn->GetLoop() == cli->loop_);
+
+
+    // Like TcpServer, we remove connection from TcpClient 
+    {
+      MutexGuard guard{ cli->mutex_ };
+      cli->conn_.reset();
+    } 
+
+    // ! In event handling phase, don't remove channel(disable is allowed)
+    // ! conn must be copied(\see TcoConnection::HandleClose())
+    cli->loop_->QueueToLoop([conn] () {
+      conn->ConnectionDestroyed();
+    });
+
+    // If user does not call Disconnect() and
+    // support restart when passive close occurred
+    if (cli->connect_ && cli->retry_) {
+      cli->connector_->Restrat();
+    }
+  });
+
+  // enable reading
+  cli->conn_->ConnectionEstablished();
+}
+
+TcpClientPtr kanon::NewTcpClient(EventLoop *loop, InetAddr const &serv_addr, std::string const &name, bool compact) {
+  auto ret = compact ? 
+             std::make_shared<TcpClient>(loop, serv_addr, name) :
+             std::shared_ptr<TcpClient>(new TcpClient(loop, serv_addr, name));
+  ret->Init();
+  return ret;
+}

@@ -2,10 +2,12 @@
 #define KANON_NET_TCPCLIENT_H
 
 #include <atomic>
+#include <memory>
 
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/ptr.h"
+
 #include "kanon/thread/mutex_lock.h"
 
 #include "kanon/net/callback.h"
@@ -17,6 +19,9 @@ class EventLoop;
 class InetAddr;
 class Channel;
 
+class TcpClient;
+using TcpClientPtr = std::shared_ptr<TcpClient>;
+
 //! \addtogroup client
 //!@{
 
@@ -27,7 +32,9 @@ class Channel;
  * get the connection to send message.
  * \note Public class
  */
-class TcpClient : noncopyable {
+class TcpClient : noncopyable 
+                , public std::enable_shared_from_this<TcpClient> {
+
 public:
   /**
    * \param loop evnet loop(usually not main thread)
@@ -48,7 +55,7 @@ public:
 
   void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
   { write_complete_callback_ = std::move(cb); }
-
+  
   //! Active connect
   void Connect() noexcept;
   //! Active close
@@ -97,6 +104,15 @@ public:
 
   //!@}
 private:
+  friend TcpClientPtr NewTcpClient(EventLoop*, InetAddr const&, std::string const&, bool);
+  
+  /* Register the callback
+   * since can't do it in the ctor */
+  void Init();
+  
+  /* Callback of Connector::NewConnection */
+  static void NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr cli);
+
   EventLoop* loop_;
   std::shared_ptr<Connector> connector_;
 
@@ -118,6 +134,15 @@ private:
   TcpConnectionPtr conn_ GUARDED_BY(mutex_);
   mutable MutexLock mutex_;
 };
+
+/**
+ * \brief Create a tcp client in correct approach
+ * \param compact Call std::make_shared if true otherwise just new trivially
+ */
+TcpClientPtr NewTcpClient(EventLoop *loop,
+                          InetAddr const &serv_add,
+                          std::string const &name = {},
+                          bool compact=true);
 
 //!@}
 } // namespace kanon

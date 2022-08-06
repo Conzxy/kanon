@@ -7,5 +7,6 @@
 #include "kanon/net/user_common.h"
 
 using kanon::TcpClient;
+using kanon::TcpClientPtr;
 
 #endif // KANON_NET_USER_CLIENT_H
