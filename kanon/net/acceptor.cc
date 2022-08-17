@@ -54,7 +54,12 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
     }
   });
 
-  channel_.EnableReading();
+  // Can't call Channel::EnableReading() in the ctor
+  // Construct a server in the other loop is allowed.
+  // e.g.
+  // EventLoopThread loop_thr;
+  // TcpServer server(loop_thr.StartRun(), addr); // Oops!
+  // server.StartRun();
 }
 
 Acceptor::~Acceptor() noexcept {
@@ -74,4 +79,5 @@ void Acceptor::Listen() noexcept {
   
   sock::Listen(socket_.GetFd());
   listening_ = true;
+  channel_.EnableReading();
 }
