@@ -14,7 +14,7 @@
 
 using namespace kanon;
 
-EventLoop* g_loop = nullptr;
+static EventLoop* g_loop = nullptr;
 
 inline void SignalHandler(int signo, int expected, char const* msg) noexcept {
   assert(signo == expected);
@@ -108,6 +108,7 @@ TcpServer::TcpServer(EventLoop* loop,
       conn->ConnectionEstablished();
     });
   });
+
 }
 
 TcpServer::~TcpServer() noexcept
@@ -136,8 +137,19 @@ void TcpServer::StartRun() noexcept {
   // EventLoopPool::StartRun() can only be called once
   if (start_once_.test_and_set(std::memory_order_relaxed) == false) {
     // start IO loop
-    pool_->StartRun();
     loop_->RunInLoop([this]() {
+      // Boot the loop pool in the binded loop
+      // to avoid block the thread that call StartRun()
+      // e.g.
+      // EventLoop loop;
+      // TcpServer server(&loop, addr);
+      // Server.StartRun();
+      // EventLoopThread loop_thr("Thread2");
+      // TcpServer server2(loop_thr.StartRun());
+      // server2.StartRun(); // initialize in the other thread
+      //
+      // Through base_loop_->AssertInLoop() force it.
+      pool_->StartRun();
       LOG_INFO << "Listening in " << ip_port_;
       acceptor_->Listen();
     });
