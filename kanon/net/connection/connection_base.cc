@@ -456,14 +456,11 @@ void ConnectionBase<D>::Send(InputBuffer& buf) {
       // in output_buffer_
       SendInLoopForBuf(buf);
     } else {
-      InputBuffer buffer;
-      buffer.swap(buf);
-
       // The reason for use std::bind instead of lambda is
       // lambda expression doesn't support move capture in
       // C++11, we can't move resource in the capture list 
       loop_->QueueToLoop(std::bind(
-        &ConnectionBase<D>::SendInLoopForBuf, this->shared_from_this(), std::move(buffer)
+        &ConnectionBase<D>::SendInLoopForBuf, this->shared_from_this(), std::move(buf)
       ));
     }
   }
@@ -484,10 +481,7 @@ void ConnectionBase<D>::Send(OutputBuffer& buffer) {
   if (loop_->IsLoopInThread()) {
     SendInLoopForChunkList(buffer); 
   } else {
-    OutputBuffer tmp_buffer;
-    tmp_buffer.swap(buffer);
-
-    loop_->QueueToLoop(std::bind(&ConnectionBase::SendInLoopForChunkList, this->shared_from_this(), std::move(tmp_buffer)));
+    loop_->QueueToLoop(std::bind(&ConnectionBase::SendInLoopForChunkList, this->shared_from_this(), std::move(buffer)));
   }
 
 }

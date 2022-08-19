@@ -104,9 +104,29 @@ public:
   // The ForwardList is an internel class
   ChunkList() = default;
   ~ChunkList() noexcept = default;
+  
+  // Explicit copy API to avoid implicit copy
+ 
+  ChunkList Clone() {
+    ChunkList ret;
+    new (&ret.buffers_) ListType(buffers_);
+    new (&ret.free_buffers_) ListType(free_buffers_);
+    return ret;
+  }
 
-  ChunkList(ChunkList const&) = default;
-  ChunkList& operator=(ChunkList const& other) = default;
+  void CopyAssign(ChunkList const &rhs) {
+    buffers_ = rhs.buffers_;
+    free_buffers_ = rhs.free_buffers_;
+    *this = rhs; 
+  }
+  
+  // Disable implicit copy
+  // Dummy copy special function to move 
+  // chunklist to callable
+  // since std::function requires callable must be copyable
+  // (type erasure need "virtual" copy constructor to support copy)
+  ChunkList(ChunkList const&) { assert(false); }
+  ChunkList& operator=(ChunkList const&) { assert(false); return *this; }
   ChunkList(ChunkList&& other) noexcept = default;
   ChunkList& operator=(ChunkList&& other) noexcept = default;
 
@@ -231,6 +251,7 @@ public:
   static SizeType GetSingleChunkSize() noexcept { return CHUNK_SIZE; }
 
 private:
+
   bool PutToFreeChunk() noexcept;
   ListType::Iterator GetFreeChunk() noexcept;
 
