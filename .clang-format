@@ -1,0 +1,118 @@
+#BasedOnStyle: Google
+# 成员访问符的编译
+# 0表示一个tab
+AccessModifierOffset: -1
+
+# 小括号对齐，用于对齐函数参数和实参
+AlignAfterOpenBracket: Align
+
+# 指针和引用都是void *p形式
+PointerAlignment: Right
+
+# 宏换行符的对齐方式
+# - Right: 最右对齐，所有宏都统一
+# - Left: 左对齐，每个宏只统一自己的
+# - DontAlign: 不对齐
+AlignEscapedNewlines: Right
+
+# 尾后注释对齐
+# e.g.
+# int a_;    //
+# int long_; //
+AlignTrailingComments: true
+
+# 实参不能填充一行，让实参都放在下一行
+# false:
+# function_call(a,
+#               b,
+#               c)
+#
+AllowAllArgumentsOnNextLine: false
+
+# 类似AllowAllArgumentsOnNextLine，但针对参数
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# 1. while(true) {} 
+# 2. while(true) { continue; }
+# 合并第一个和第二个 -- Always
+# 仅合并第一个 -- Empty
+# 不合并 -- Never
+AllowShortBlocksOnASingleLine: Never
+
+# 短语句case放在一行
+# 有时候对齐会更好看，故关闭
+AllowShortCaseLabelsOnASingleLine: false
+
+# version 11
+# AllowShortEnumsOnASingleLine: false
+
+# 短函数如果能单行填充，则合并为单行
+AllowShortFunctionsOnASingleLine: All
+
+# 只有当没有else的时候才将if和单语句放在同一行
+AllowShortIfStatementsOnASingleLine: WithoutElse
+
+# 合并所有短lambda
+AllowShortLambdasOnASingleLine: All
+
+# 仅类外定义的返回类型单独一行
+# 由于单独一行如果类型名很短会很多余，因此不强制设置
+#AlwaysBreakAfterReturnType: TopLevelDefinitions
+
+AlwaysBreakBeforeMultilineStrings: false
+
+# 设为false可以令实参要么一行塞满要么分散为每行一个实参
+# 有时候实参比较短，也会很难看
+BinPackArguments: true
+
+# 类似BinPackParameters
+# 我不打算将参数弄得很分散，因为是具名参数
+BinPackParameters: true
+
+# template<>与模板声明必须换行
+AlwaysBreakTemplateDeclarations: Yes
+
+# 80个字符一行是比较令人舒适和便于阅读的
+ColumnLimit: 80
+
+# 构造函数初始值列表缩进
+ConstructorInitializerIndentWidth: 2
+
+# 分隔每个数据成员的初始化
+BreakConstructorInitializers: BeforeComma
+
+# 运算符后断开操作数，操作数对齐
+BreakBeforeBinaryOperators: None
+
+# true:
+# cond
+# ? first
+# : second
+BreakBeforeTernaryOperators: true
+
+# 同构造函数
+BreakInheritanceList: BeforeComma
+
+BreakStringLiterals: true
+
+# 如何分隔大括号
+BreakBeforeBraces: Custom # 定制化
+BraceWrapping:
+  # 函数大括号换行 - true
+  AfterFunction: true
+  AfterCaseLabel: false
+  AfterClass: false
+  # 仅条件表达式分行时{换行
+  AfterControlStatement: MultiLine
+  AfterEnum: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  # extern "C"
+  AfterExternBlock: false
+  # catch不换行
+  BeforeCatch: false
+  # BeforeLambdaBody: false
+  # do while中的while不换行
+  # BeforeWhile: false
+
