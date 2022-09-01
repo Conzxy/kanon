@@ -1,8 +1,8 @@
-#include "kanon/rpc/krpc_server.h"
+#include "kanon/rpc/rpc_server.h"
 #include "kanon/net/user_server.h"
 
 #include "kanon/util/macro.h"
-#include "simple.pb.h"
+#include "pb/simple.pb.h"
 
 using namespace kanon::protobuf::rpc;
 
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
   EventLoop loop{};
 
   InetAddr addr(::atoi(argv[1]));
-  KRpcServer server(&loop, addr, "simple rpc server");
+  RpcServer server(&loop, addr, "simple rpc server");
 
   SimpleServiceImpl simple_service{};
   server.AddServices(&simple_service);

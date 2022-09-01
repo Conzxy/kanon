@@ -1,10 +1,10 @@
-#include "echo.pb.h"
+#include "pb/echo.pb.h"
 #include "kanon/log/logger.h"
 #include "kanon/net/tcp_server.h"
 #include "kanon/util/ptr.h"
 
 #include <google/protobuf/service.h>
-#include <kanon/rpc/krpc_server.h>
+#include <kanon/rpc/rpc_server.h>
 #include <kanon/net/user_server.h>
 
 using namespace kanon;
@@ -37,7 +37,7 @@ public:
   }
 
 private:
-  KRpcServer server_;
+  RpcServer server_;
 };
 
 int main() {

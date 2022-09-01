@@ -1,41 +1,80 @@
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "kanon/net/user_client.h"
 #include "kanon/util/ptr.h"
-#include <kanon/rpc/krpc_client.h>
 
-#include "echo.pb.h"
+#include "kanon/thread/count_down_latch.h"
+#include <kanon/rpc/rpc_channel.h>
+
+#include "pb/echo.pb.h"
 
 using namespace kanon;
 using namespace kanon::protobuf::rpc;
 
-void Done(KRpcClient* cli, EchoReply* reply) {
-  LOG_INFO << "reply: " << reply->msg();
-  std::cout << "Type a message: ";
-  std::cout.flush();
-}
+class EchoClient : noncopyable {
+ public:
+  EchoClient(EventLoop *loop, InetAddr const &addr)
+    : cli_(NewTcpClient(loop, addr))
+    , latch_(1)
+    , chan_()
+    , stub_(&chan_)
+  {
+    cli_->SetConnectionCallback([this](TcpConnectionPtr const &conn) {
+      if (conn->IsConnected()) {
+        chan_.SetConnection(conn);
+        latch_.Countdown();
+      }
+    });
+  }
 
-int main() {
+  void Connect()
+  {
+    cli_->Connect();
+    latch_.Wait();
+  }
+
+  void Disconnect()
+  {
+    cli_->Disconnect();
+  }
+
+  EchoService::Stub &GetStub()
+  {
+    return stub_;
+  }
+
+ private:
+  TcpClientPtr cli_;
+  mutable CountDownLatch latch_;
+  RpcChannel chan_;
+  EchoService::Stub stub_;
+};
+
+int main()
+{
   EventLoopThread thr_loop;
-  
+
   auto loop = thr_loop.StartRun();
 
-  KRpcClient cli(loop, InetAddr("127.0.0.1:9998"), "Echo Client");
-
+  EchoClient cli(loop, InetAddr("127.0.0.1:9998"));
   cli.Connect();
 
-  auto stub = cli.GetStub<EchoService::Stub>();
-  
+  auto &stub = cli.GetStub();
+
   EchoArgs args;
-  EchoReply reply; 
+  EchoReply reply;
   std::string msg;
-  
+
   std::cout << "Type a message: ";
   while (std::cin >> msg) {
     args.set_msg(msg);
-    stub->Echo(NULL, &args, &reply, PROTOBUF::NewCallback(&Done, &cli, &reply));
+    stub.Echo(NULL, &args, &reply, PROTOBUF::NewCallable([&reply]() {
+                LOG_INFO << "reply: " << reply.msg();
+                std::cout << "Type a message: ";
+                std::cout.flush();
+              }));
   }
-  
+
   cli.Disconnect();
 }
