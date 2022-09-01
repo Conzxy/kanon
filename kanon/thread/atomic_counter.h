@@ -17,13 +17,13 @@ class AtomicCounter : noncopyable {
 
   T operator=(T const val) noexcept {
     Set(val);
-    return this->Val();
+    return this->GetVal()();
   }
 
-  AtomicCounter(Self &&other) noexcept : count_(other.Val()) {}
+  AtomicCounter(Self &&other) noexcept : count_(other.GetVal()()) {}
 
   Self &operator=(Self &&other) noexcept {
-    Set(other.Val());
+    Set(other.GetVal());
     return *this;
   }
 
