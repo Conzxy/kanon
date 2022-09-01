@@ -92,10 +92,11 @@ private:
  *   copyable and moveable
  */
 class ChunkList final {
-  static constexpr unsigned CHUNK_SIZE = 4096;
   using ListType = zstl::ForwardList<Chunk>;
 
 public:
+  static constexpr unsigned CHUNK_SIZE = 4096;
+
   using iterator = ListType::iterator;
   using const_iterator = ListType::const_iterator;
 
