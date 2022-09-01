@@ -8,6 +8,8 @@
 #include "kanon/net/sock_api.h"
 #include "kanon/algo/fixed_vector.h"
 
+#include "kanon/util/macro.h"
+
 #ifdef IOV_MAX
   static constexpr unsigned IOVEC_MAX = IOV_MAX;
 #else
@@ -77,7 +79,8 @@ void ChunkList::Append(void const *data, size_t len) {
       free_buffer->Append(buf, len);
       return; 
     }
-  }  
+  }
+  KANON_ASSERT(GetLastChunk()->GetWritableSize() != CHUNK_SIZE, "The last chunk must not be empty");
 }
 
 void ChunkList::AdvanceRead(size_t len) {
@@ -187,6 +190,11 @@ void ChunkList::ReserveFreeChunk(size_t chunk_size) {
   for (size_t i = 0; i < diff; ++i) {
     free_buffers_.emplace_front();
   }
+}
+
+void ChunkList::ReserveWriteChunk(size_t chunk_size) {
+  while (chunk_size--)
+    buffers_.push_back(buffers_.create_node_size(CHUNK_SIZE));
 }
 
 auto ChunkList::GetFreeChunk() noexcept -> ListType::Iterator {

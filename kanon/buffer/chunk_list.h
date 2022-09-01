@@ -36,8 +36,20 @@ public:
     assert(read_index_ <= write_index_);
   }
 
+  /* len is signed integer
+     allow back write index */
+  void AdvanceWrite(int len) noexcept {
+    assert(write_index_ <= max_size_);
+    write_index_ += len;
+    assert(write_index_ <= max_size_);
+  }
+
   void AdvanceReadAll() noexcept {
     AdvanceRead(GetReadableSize());
+  }
+
+  void AdvanceWriteAll() noexcept {
+    AdvanceWrite(GetWritableSize());
   }
 
   void Append(void const* data, size_t len) noexcept {
@@ -202,6 +214,7 @@ public:
   void AdvanceReadAll() { AdvanceRead(GetReadableSize()); }
   void Shrink(size_t chunk_size);
   void ReserveFreeChunk(size_t chunk_size);
+  void ReserveWriteChunk(size_t chunk_size);
 
   SizeType GetChunkSize() const noexcept { return buffers_.size(); }
   SizeType GetFreeChunkSize() const noexcept { return free_buffers_.size(); }
