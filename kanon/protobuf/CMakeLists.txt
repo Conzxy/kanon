@@ -1,5 +1,8 @@
-GenLib(protobuf_codec generic_pb_codec.cc)
-target_link_libraries(protobuf_codec protobuf z)
+set(XXHASH_DIR ${THIRD_PARTY_DIR}/xxHash)
+file(GLOB XXHASH_SRC ${XXHASH_DIR}/*.c)
+GenLib(protobuf_codec generic_pb_codec.cc chunk_stream.cc ${XXHASH_SRC})
+target_include_directories(protobuf_codec PRIVATE ${THIRD_PARTY_DIR})
+target_link_libraries(protobuf_codec protobuf)
 
 install(TARGETS protobuf_codec DESTINATION lib)
 

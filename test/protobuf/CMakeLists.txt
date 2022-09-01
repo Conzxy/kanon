@@ -1,11 +1,11 @@
-function (register_rpc_test filename_we)
+function (register_protobuf_test filename_we)
   if (${BUILD_ALL_TESTS})
     add_executable(${filename_we} ${filename_we}.cc ${ARGN})
   else ()
     message(STATUS "${filename_we} excluded from target all")
     add_executable(${filename_we} EXCLUDE_FROM_ALL ${filename_we}.cc ${ARGN})
   endif (${BUILD_ALL_TESTS})
-  target_link_libraries(${filename_we} protobuf_rpc kanon_base kanon_net)
+  target_link_libraries(${filename_we} protobuf_codec kanon_base kanon_net)
   set_target_properties(${filename_we}
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
@@ -14,13 +14,13 @@ function (register_rpc_test filename_we)
 endfunction ()
 
 if (NOT ${BUILD_ALL_TESTS})
-  message(STATUS "[The rpc tests are excluded from build of target all]")
+  message(STATUS "[The protobuf tests are excluded from build of target all]")
 endif (NOT ${BUILD_ALL_TESTS}) 
 
-file(GLOB RPC_TEST_SRC *.cc)
-file(GLOB PB_SRC pb/*.pb.cc)
+file(GLOB PROTO_TEST_SRC *.cc)
+file(GLOB PB_SRC ../rpc/pb/*.pb.cc)
 
-foreach (rpc_test_src ${RPC_TEST_SRC})
-  get_filename_component(rpc_test_filename ${rpc_test_src} NAME_WE)
-  register_rpc_test(${rpc_test_filename} ${PB_SRC})
+foreach (proto_test_src ${PROTO_TEST_SRC})
+  get_filename_component(proto_test_src ${proto_test_src} NAME_WE)
+  register_protobuf_test(${proto_test_src} ${PB_SRC})
 endforeach()

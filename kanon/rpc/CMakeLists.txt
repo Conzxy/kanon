@@ -4,6 +4,7 @@ add_custom_command(
   ARGS --cpp_out . ${CMAKE_CURRENT_SOURCE_DIR}/rpc.proto -I${CMAKE_CURRENT_SOURCE_DIR}
   VERBATIM)
 
+
 include_directories(${PROJECT_BINARY_DIR}) # i.e. kanon/build
 
 aux_source_directory(. RPC_SRC)
