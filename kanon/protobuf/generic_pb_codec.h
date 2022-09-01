@@ -3,7 +3,6 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <zlib.h> // adler32
 
 #include <functional>
 #include <memory>
@@ -14,6 +13,7 @@
 #include "kanon/net/endian_api.h"
 #include "kanon/string/string_view.h"
 #include "kanon/util/noncopyable.h"
+
 
 #define PROTOBUF ::google::protobuf
 
@@ -48,7 +48,7 @@ namespace internal {
  * +---------------+ ----
  *
  * \note
- * 1. checksum compute the (size, tag, payload) content
+ * 1. checksum compute the (tag, payload) content
  * 2. Only the payload is protobuf-format, others are just some trivial binary
  * data
  *
@@ -159,28 +159,6 @@ class GenericPbCodec : noncopyable {
   ErrorCallback error_callback_;
 };
 
-uint32_t GenericPbCodec::GetCheckSum(void const *buffer, int len) noexcept
-{
-  /**
-   * ZEXTERN uLong ZEXPORT adler32 OF((uLong adler, const Bytef *buf, uInt
-   * len));
-   *
-   * The first parameter used for updating, initial value is 0 usually.
-   *
-   * Update a running Adler-32 checksum with the bytes buf[0..len-1] and
-   * return the updated checksum.  If buf is Z_NULL, this function returns the
-   * required initial value for the checksum.
-   *
-   * Example:
-   * uLong adler = adler32(0L, Z_NULL, 0);
-   * while (read_buffer(buffer, length) != EOF) {
-   *   adler = adler32(adler, buffer, length);
-   * }
-   * if (adler != original_adler) error();
-   */
-  return static_cast<uint32_t>(
-      ::adler32(0, reinterpret_cast<Bytef const *>(buffer), len));
-}
 
 } // namespace internal
 
