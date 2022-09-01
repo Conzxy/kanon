@@ -26,6 +26,17 @@ public:
   void Reset(int count) noexcept
   { count_ = count; }
 
+  void Add(int count) noexcept {
+    count_ -= count;
+  }
+
+  void Minus(int count) noexcept {
+    count_ -= count;
+  }
+
+  void Incr() noexcept { Add(1); }
+  void Decr() noexcept { Minus(1); }
+
   int GetCount() const noexcept
   { return count_; }
 
