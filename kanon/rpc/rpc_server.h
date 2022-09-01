@@ -3,29 +3,29 @@
 
 #include <google/protobuf/message.h>
 
-#include "krpc_channel.h"
+#include "rpc_channel.h"
 #include "kanon/net/tcp_server.h"
 
 namespace kanon {
 namespace protobuf {
 namespace rpc {
 
-class KRpcServer : public TcpServer {
+class RpcServer : public TcpServer {
 public:
-  KRpcServer(
+  RpcServer(
     EventLoop* loop,
     InetAddr const& addr,
     StringArg name,
     bool reuseport = false);
 
-  ~KRpcServer();
+  ~RpcServer();
 
   inline void AddServices(PROTOBUF::Service* service);
 private:
-  KRpcChannel::ServiceMap services_;
+  RpcChannel::ServiceMap services_;
 };
 
-void KRpcServer::AddServices(PROTOBUF::Service* service)
+void RpcServer::AddServices(PROTOBUF::Service* service)
 {
   services_.emplace(service->GetDescriptor()->full_name(), service);
 }
