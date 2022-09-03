@@ -10,7 +10,6 @@
 #include "kanon/net/user_client.h"
 #include "kanon/rpc/rpc_channel.h"
 #include "kanon/thread/count_down_latch.h"
-
 #include "pb/simple.pb.h"
 
 using namespace kanon::protobuf::rpc;
@@ -49,12 +48,12 @@ struct TestCallable {
 
   TestCallable(TestCallable const &)
   {
-    printf("TestCallable copy ctor: %d\n", __LINE__);
+    printf("TestCallable copy ctor\n");
   }
 
   TestCallable(TestCallable &&)
   {
-    printf("TestCallable move ctor: %d\n", __LINE__);
+    printf("TestCallable move ctor\n");
   }
 
   void operator()() {}
@@ -143,9 +142,9 @@ int main()
   }));
 #endif
 
-  stub.simple(NULL, &request, response, PROTOBUF::NewCallable(TestCallable()));
+  stub.simple(NULL, &request, response, NewCallable(TestCallable()));
   stub.simple(NULL, &request, response,
-              PROTOBUF::NewCallable([&latch, response]() {
+              NewCallable([&latch, response]() {
                 kanon::DeferDelete<SimpleResponse> defer_response(response);
 
                 LOG_INFO << "Response's i = " << response->i();
@@ -160,13 +159,13 @@ int main()
 
   std::promise<int> prm;
   stub.simple(NULL, &request2, &response2,
-              PROTOBUF::NewCallable([&prm, &response2, &client]() {
+              NewCallable([&prm, &response2]() {
                 // Test if the set_value() will block this thread
                 sleep(1);
                 prm.set_value(response2.i());
-                client.SyncDisconnect();
                 LOG_INFO << "Disconnect successfully";
               }));
 
   LOG_INFO << "future: " << prm.get_future().get();
+  client.Disconnect();
 }

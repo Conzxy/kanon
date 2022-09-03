@@ -12,6 +12,7 @@
 #include "kanon/rpc/rpc.pb.h"
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/util/noncopyable.h"
+#include "callable.h"
 
 #include <google/protobuf/service.h>
 
