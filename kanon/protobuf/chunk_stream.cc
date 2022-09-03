@@ -10,13 +10,9 @@ bool ChunkStream::Next(void **data, int *size)
   {
     chunk_list_.ReserveWriteChunk(1);
     last_chunk = chunk_list_.GetLastChunk();
-    *data = last_chunk->GetWriteBegin();
-    *size = ChunkList::CHUNK_SIZE;
-  } else {
-    *data = last_chunk->GetWriteBegin();
-    *size = last_chunk->GetWritableSize();
-    assert(*size == ChunkList::CHUNK_SIZE);
   }
+  *data = last_chunk->GetWriteBegin();
+  *size = last_chunk->GetWritableSize();
   last_chunk->AdvanceWriteAll();
   return true;
 }
