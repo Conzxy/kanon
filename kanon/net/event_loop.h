@@ -134,7 +134,15 @@ public:
    *   A TimerId object used for removing timer from event loop
    */
   TimerId RunAfter(TimerCallback cb, double delay) {
-    return this->RunAt(std::move(cb), AddTime(TimeStamp::Now(), delay));
+    return RunAt(std::move(cb), AddTime(TimeStamp::Now(), delay));
+  }
+  
+  TimerId RunAfterMs(TimerCallback cb, uint64_t delay) {
+    return RunAt(std::move(cb), AddTimeMs(TimeStamp::Now(), delay));
+  }
+
+  TimerId RunAfterUs(TimerCallback cb, uint64_t delay) {
+    return RunAt(std::move(cb), AddTimeUs(TimeStamp::Now(), delay));
   }
 
   /**

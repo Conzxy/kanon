@@ -67,6 +67,14 @@ inline TimeStamp AddTime(TimeStamp x, double seconds) noexcept {
   return TimeStamp(x.GetMicrosecondsSinceEpoch() + static_cast<int64_t>(seconds * TimeStamp::kMicrosecondsPerSeconds_));
 }
 
+inline TimeStamp AddTimeUs(TimeStamp x, uint64_t us) noexcept {
+  return TimeStamp(x.GetMicrosecondsSinceEpoch() + us);
+}
+
+inline TimeStamp AddTimeMs(TimeStamp x, uint64_t ms) noexcept {
+  return AddTimeUs(x, ms * 1000);
+}
+
 } // namespace kanon
 
 #endif // KANON_TIMESTAMP_H
