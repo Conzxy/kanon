@@ -149,7 +149,10 @@ void TcpServer::StartRun() noexcept {
       // server2.StartRun(); // initialize in the other thread
       //
       // Through base_loop_->AssertInLoop() force it.
-      pool_->StartRun();
+      if (pool_->GetLoopNum() == 0) {
+        init_cb_(loop_);
+      }
+      pool_->StartRun(init_cb_);
       LOG_INFO << "Listening in " << ip_port_;
       acceptor_->Listen();
     });

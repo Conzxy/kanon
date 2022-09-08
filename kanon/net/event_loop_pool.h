@@ -2,8 +2,9 @@
 #define KANON_NET_EVENTLOOP_POOL_H
 
 #include <string>
+#include <memory>
+#include <vector>
 
-#include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_thread.h"
 
 namespace kanon {
@@ -21,6 +22,7 @@ class EventLoopThread;
  */
 class EventLoopPool : noncopyable {
   using LoopThreadVector = std::vector<std::unique_ptr<EventLoopThread>>;
+  using ThreadInitCallback = EventLoopThread::ThreadInitCallback;
 public:
   /**
    * \brief Construct a EventLoopPool object
@@ -32,7 +34,8 @@ public:
   
   //! Set pool size 
   void SetLoopNum(int loop_num) noexcept { loop_num_ = loop_num; }
-
+  int GetLoopNum() const noexcept { return loop_num_; }
+  
   //! Ask whether pool has started
   bool IsStarted() const noexcept { return started_; }
   
@@ -41,8 +44,9 @@ public:
    * \warning 
    *   Should be called once
    */
-  void StartRun(); 
-  
+  void StartRun(ThreadInitCallback const &cb); 
+  void StartRun() { StartRun({}); }  
+
   /**
    * \brief Get the next event loop in the pool based on RR(round-robin) scheduling algorithm
    */

@@ -24,7 +24,7 @@ EventLoopPool::~EventLoopPool() noexcept {
   assert(started_);
 }
 
-void EventLoopPool::StartRun() {
+void EventLoopPool::StartRun(ThreadInitCallback const &cb) {
   base_loop_->AssertInThread();
 
   // If the function is called not once, warning user
@@ -39,7 +39,7 @@ void EventLoopPool::StartRun() {
   for (int i = 0; i != loop_num_; ++i) {
     ::snprintf(&*buf.begin(), len, "%s[%d]", name_.c_str(), i);
     loop_threads_.emplace_back(new EventLoopThread(buf));
-    loop_threads_[i]->StartRun();
+    loop_threads_[i]->StartRun(cb);
   }
 }
 

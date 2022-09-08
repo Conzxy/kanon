@@ -9,6 +9,7 @@
 #include "kanon/string/string_view.h"
 #include "kanon/thread/atomic.h"
 #include "kanon/thread/mutex_lock.h"
+#include "event_loop_thread.h"
 
 #include "kanon/net/callback.h"
 
@@ -44,6 +45,8 @@ class EventLoopPool;
  * \note Public class
  */
 class TcpServer : noncopyable {
+  using ThreadInitCallback = EventLoopThread::ThreadInitCallback;
+
 public:
   /**
    * \param reuseport 
@@ -57,7 +60,11 @@ public:
 
   //! Set the number of IO loop
   void SetLoopNum(int num) noexcept;
-
+  
+  void SetThreadInitCallback(ThreadInitCallback cb)
+  {
+    init_cb_ = std::move(cb);
+  } 
   /**
    * Start all IO thread to loop
    * then listen and accept connection to IO loop
@@ -107,7 +114,12 @@ private:
   std::unique_ptr<EventLoopPool> pool_;
 
   std::atomic_flag start_once_;
-
+  
+  /* We don't take the ThreadInitCallback as the parameter type of 
+   * StartRun() since it maybe called asynchronously.
+   * We must store it first
+   */
+  ThreadInitCallback init_cb_;
   MutexLock lock_conn_;
 }; 
 

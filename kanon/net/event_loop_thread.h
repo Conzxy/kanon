@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "kanon/thread/thread.h"
-#include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/condition.h"
+#include "kanon/thread/mutex_lock.h"
+#include "kanon/thread/thread.h"
 #include "kanon/util/macro.h"
 
 namespace kanon {
@@ -21,24 +21,38 @@ class EventLoop;
  *   This is used for IO thread
  */
 class EventLoopThread : noncopyable {
-public:
-  EventLoopThread(std::string const& = std::string{});
+ public:
+  using ThreadInitCallback = std::function<void(EventLoop *)>;
+
+  EventLoopThread(std::string const & = std::string{});
   ~EventLoopThread() noexcept;
-  
+
   /**
    * \brief Start a new thread and start event loop
    * \note
-   *   Must be called in main thread  
+   *   Must be called in main thread
    */
-  EventLoop* StartRun();
-  EventLoop* GetLoop() noexcept { return loop_; }
-  EventLoop const* GetLoop() const noexcept { return loop_; }
-private:
-  // Start loop in background thread(IO thread usually)
-  void BackGroundStartLoop();
+  EventLoop *StartRun()
+  {
+    return StartRun({});
+  }
 
-  EventLoop* loop_;
-  
+  EventLoop *StartRun(ThreadInitCallback const &init_cb);
+  EventLoop *GetLoop() noexcept
+  {
+    return loop_;
+  }
+  EventLoop const *GetLoop() const noexcept
+  {
+    return loop_;
+  }
+
+ private:
+  // Start loop in background thread(IO thread usually)
+  void BackGroundStartLoop(ThreadInitCallback const &init_cb);
+
+  EventLoop *loop_;
+
   MutexLock mutex_;
   Condition cond_ GUARDED_BY(mutex_);
 
