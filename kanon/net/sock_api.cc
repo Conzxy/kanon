@@ -1,17 +1,17 @@
 #include "kanon/net/sock_api.h"
 
 #include <assert.h>
-#include <string.h>
-#include <stdio.h>
 #include <linux/version.h>
 #include <netinet/tcp.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "kanon/net/endian_api.h"
 
 using namespace kanon;
 
-void
-sock::ToIp(char* buf, size_t size, sockaddr const* addr) {
+void sock::ToIp(char *buf, size_t size, sockaddr const *addr)
+{
   if (addr->sa_family == AF_INET) {
     assert(size >= INET_ADDRSTRLEN);
     auto addr4 = sockaddr_cast<sockaddr_in const>(addr);
@@ -23,20 +23,19 @@ sock::ToIp(char* buf, size_t size, sockaddr const* addr) {
   }
 }
 
-void
-sock::ToIpPort(char* buf, size_t size, sockaddr const* addr) {
-  buf[0] = '[';
-  ToIp(buf+1, size, addr);
+void sock::ToIpPort(char *buf, size_t size, sockaddr const *addr)
+{
+  ToIp(buf, size, addr);
   auto len = ::strlen(buf);
   auto addr4 = sockaddr_cast<sockaddr_in const>(addr);
-  ::snprintf(buf+len, size-len, ";%hu]", sock::ToHostByteOrder16(addr4->sin_port));
+  ::snprintf(buf + len, size - len, ":%hu",
+             sock::ToHostByteOrder16(addr4->sin_port));
 }
 
-void
-sock::SetNonBlockAndCloExec(int fd) noexcept {
+void sock::SetNonBlockAndCloExec(int fd) noexcept
+{
   auto ret = ::fcntl(fd, F_GETFL, 0);
-  if (ret < 0)
-    LOG_SYSFATAL << "fail to get file status flag";
+  if (ret < 0) LOG_SYSFATAL << "fail to get file status flag";
 
   ret |= (O_NONBLOCK | O_CLOEXEC);
   ret = ::fcntl(fd, F_SETFL, ret);
@@ -48,8 +47,8 @@ sock::SetNonBlockAndCloExec(int fd) noexcept {
 #define NO_SOCKTYPE // SOCK_NONBLOCK, SOCK_CLOEXEC
 #endif
 
-int
-sock::CreateSocket(bool ipv6) noexcept {
+int sock::CreateSocket(bool ipv6) noexcept
+{
   int sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sockfd < 0) {
     LOG_SYSFATAL << "create new socket fd error";
@@ -59,47 +58,46 @@ sock::CreateSocket(bool ipv6) noexcept {
   return sockfd;
 }
 
-int
-sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept {
+int sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept
+{
   int sockfd;
 #ifdef NO_SOCKTYPE
   sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sockfd < 0) goto error_handle;
   SetNonBlockAndCloExec(sockfd);
 #else
-  sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, 
-            SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
-            IPPROTO_TCP);
+  sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET,
+                    SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
   if (sockfd < 0) goto error_handle;
 #endif
-  
+
   return sockfd;
 
 error_handle:
   LOG_SYSFATAL << "create new socket fd error";
 
   return -1;
-  
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 28) 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 28)
 #define NO_ACCEPT4
 #endif
 
-int
-sock::Accept(int fd, sockaddr_in6* addr) noexcept {
+int sock::Accept(int fd, sockaddr_in6 *addr) noexcept
+{
   socklen_t socklen = sizeof(struct sockaddr_in6);
-          
+
   int cli_sock;
 #ifdef NO_ACCEPT4
   cli_sock = ::accept(fd, sock::to_sockaddr(addr), &socklen);
   SetNonBlockAndCloExec(cli_sock);
 #else
-  cli_sock = ::accept4(fd, sock::to_sockaddr(addr), &socklen, O_NONBLOCK | O_CLOEXEC);
+  cli_sock =
+      ::accept4(fd, sock::to_sockaddr(addr), &socklen, O_NONBLOCK | O_CLOEXEC);
 #endif
 
   if (cli_sock < 0) {
-    switch(errno) {
+    switch (errno) {
     case EAGAIN: // In linux, EAGAIN = EWOULDBLOCK
     case ECONNABORTED:
     case EINTR:
@@ -125,28 +123,27 @@ sock::Accept(int fd, sockaddr_in6* addr) noexcept {
   return cli_sock;
 }
 
-void
-sock::SetReuseAddr(int fd, int flag) noexcept {
-  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, static_cast<socklen_t>(sizeof flag));
+void sock::SetReuseAddr(int fd, int flag) noexcept
+{
+  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag,
+                          static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) {
     LOG_SYSERROR << "setsockopt error(SO_REUSEADDR)";
-  }
-  else {
+  } else {
     LOG_INFO << "SO_REUSEADDR option is set to " << static_cast<bool>(flag);
   }
 }
 
-
-void
-sock::SetReusePort(int fd, int flag) noexcept {
+void sock::SetReusePort(int fd, int flag) noexcept
+{
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 9, 0)
-  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &flag, static_cast<socklen_t>(sizeof flag));
+  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &flag,
+                          static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) {
     LOG_SYSERROR << "setsockopt error(SO_REUSEPORT)";
-  }
-  else {
+  } else {
     LOG_INFO << "SO_REUSEPORT option is set to " << static_cast<bool>(flag);
   }
 #else
@@ -154,26 +151,26 @@ sock::SetReusePort(int fd, int flag) noexcept {
 #endif
 }
 
-void
-sock::SetNoDelay(int fd, int flag) noexcept {
-  auto ret = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, static_cast<socklen_t>(sizeof flag));
+void sock::SetNoDelay(int fd, int flag) noexcept
+{
+  auto ret = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag,
+                          static_cast<socklen_t>(sizeof flag));
 
-  if (ret < 0)
-    LOG_SYSERROR << "set sockopt error(tcp: nodelay)";
-
+  if (ret < 0) LOG_SYSERROR << "set sockopt error(tcp: nodelay)";
 }
 
-void
-sock::SetKeepAlive(int fd, int flag) noexcept {
-  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &flag, static_cast<socklen_t>(sizeof flag));
+void sock::SetKeepAlive(int fd, int flag) noexcept
+{
+  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &flag,
+                          static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) {
     LOG_SYSERROR << "set sockeopt error(socket: keepalive)";
   }
 }
 
-int
-sock::GetSocketError(int fd) noexcept {
+int sock::GetSocketError(int fd) noexcept
+{
   int optval;
   auto len = static_cast<socklen_t>(sizeof optval);
 
@@ -184,8 +181,8 @@ sock::GetSocketError(int fd) noexcept {
   }
 }
 
-struct sockaddr_in6
-sock::GetLocalAddr(int fd) noexcept {
+struct sockaddr_in6 sock::GetLocalAddr(int fd) noexcept
+{
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -197,8 +194,8 @@ sock::GetLocalAddr(int fd) noexcept {
   return addr;
 }
 
-struct sockaddr_in6
-sock::GetPeerAddr(int fd) noexcept {
+struct sockaddr_in6 sock::GetPeerAddr(int fd) noexcept
+{
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -210,8 +207,8 @@ sock::GetPeerAddr(int fd) noexcept {
   return addr;
 }
 
-bool
-sock::IsSelfConnect(int sockfd) noexcept {
+bool sock::IsSelfConnect(int sockfd) noexcept
+{
   const auto local = sock::GetLocalAddr(sockfd);
   const auto peer = GetPeerAddr(sockfd);
 
@@ -219,11 +216,11 @@ sock::IsSelfConnect(int sockfd) noexcept {
     auto local4 = sockaddr_cast<struct sockaddr_in const>(&local);
     auto peer4 = sockaddr_cast<struct sockaddr_in const>(&peer);
 
-    return local4->sin_port == peer4->sin_port && 
-      local4->sin_addr.s_addr == peer4->sin_addr.s_addr;
+    return local4->sin_port == peer4->sin_port &&
+           local4->sin_addr.s_addr == peer4->sin_addr.s_addr;
   } else {
     // sin6_addr not a simple 32bit unsigned integer
     return local.sin6_port == peer.sin6_port &&
-      !memcmp(&local.sin6_addr, &peer.sin6_addr, sizeof(local.sin6_addr));
+           !memcmp(&local.sin6_addr, &peer.sin6_addr, sizeof(local.sin6_addr));
   }
 }

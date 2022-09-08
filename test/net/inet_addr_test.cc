@@ -4,29 +4,29 @@
 
 using namespace kanon;
 
-TEST(InetAddr, resolve) {
-  auto addrs = InetAddr::Resolve("www.baidu.com", "http");
+TEST(InetAddr, resolve)
+{
+  std::cout << "====="
+            << "Client resolve"
+            << "=====\n";
+  auto addrs = InetAddr::Resolve("www.baidu.com", "80");
 
-  for (auto& addr : addrs) {
-    std::cout << addr.ToIpPort() << '\n';
-  }
-
-  std::cout << "=====" << "Client resolve" << "=====\n";
-  addrs = InetAddr::Resolve("www.baidu.com", "http");
-
-  for (auto& addr : addrs) {
+  for (auto &addr : addrs) {
     std::cout << addr.ToIpPort() << "\n";
   }
 
-  std::cout << "=====" << "Server resolve" << "=====\n";
-  addrs = InetAddr::Resolve("www.baidu.com", "80", InetAddr::kServer);
+  std::cout << "====="
+            << "Server resolve"
+            << "=====\n";
+  addrs = InetAddr::Resolve("www.baidu.com", "80", true);
 
-  for (auto& addr : addrs) {
+  for (auto &addr : addrs) {
     std::cout << addr.ToIpPort() << "\n";
   }
 }
 
-TEST(InetAddr, ctor) {
+TEST(InetAddr, ctor)
+{
   InetAddr addr("www.baidu.com", "http");
 
   std::cout << addr.ToIpPort() << "\n";
@@ -35,7 +35,7 @@ TEST(InetAddr, ctor) {
 
   std::cout << addr2.ToIpPort() << "\n";
 
-  InetAddr addr3("[3ff2::0:8:1fff]:80");
+  InetAddr addr3("3ff2::0:8:1fff:80");
 
   std::cout << addr3.ToIpPort() << "\n";
 
@@ -44,8 +44,9 @@ TEST(InetAddr, ctor) {
   std::cout << addr4.ToIpPort() << "\n";
 }
 
-int main(int argc, char* argv[]) {
-    testing::InitGoogleTest();
+int main(int argc, char *argv[])
+{
+  testing::InitGoogleTest();
 
-    return RUN_ALL_TESTS();
+  return RUN_ALL_TESTS();
 }

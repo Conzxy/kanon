@@ -5,6 +5,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdint.h>
+#include <exception>
+#include <string>
 
 #include "kanon/util/macro.h"
 #include "kanon/string/string_view.h"
@@ -58,6 +60,21 @@
 struct addrinfo;
 
 namespace kanon {
+
+class InetAddrException : public std::exception {
+ public:
+  explicit InetAddrException(StringView msg)
+    : msg_(msg.ToString())
+  {
+  }
+  
+  char const *what() const noexcept override
+  {
+    return msg_.c_str();
+  }
+ private:
+  std::string msg_;
+};
 
 /**
  * \addtogroup net
@@ -118,7 +135,7 @@ public:
    * \param address 
    *   Peer address including ip address and port number
    *     - Ipv4 IP address:port
-   *     - [Ipv6 IP address]:port   
+   *     - Ipv6 IP address:port   
    *     - hostname:port
    */
   explicit InetAddr(StringView address);
@@ -147,9 +164,7 @@ public:
    * \brief Convert to string that represent ip and port
    * \return
    *   A string represent ip address and port number.
-   *   The form is [ip address;port number].
-   *   The reason for don't use ":" to split two parts
-   *   is ipv6 contains ":".
+   *   The form is ip address:port number
    */
   std::string ToIpPort() const;
 
