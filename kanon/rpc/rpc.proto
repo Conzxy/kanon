@@ -11,6 +11,7 @@ enum ErrorCode {
   kNoMethod        = 3;
   kInvalidRequest  = 4;
   kInvalidResponse = 5;
+  kCancelRpc = 6; /* For client cancel rpc */
 }
 
 enum MessageType {
@@ -25,4 +26,5 @@ enum MessageType {
   optional bytes request    = 5;
   optional bytes response   = 6;
   optional ErrorCode error  = 7 [default = kNoError];
+  optional uint64 timeout   = 8;
 }

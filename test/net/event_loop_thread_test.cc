@@ -13,4 +13,13 @@ int main() {
     p_loop->Quit();
     LOG_INFO << "Loop has quited";
   }
+
+  EventLoopThread ev_loop_thread2;
+  p_loop = ev_loop_thread2.StartRun([](EventLoop *io_loop) {
+    LOG_INFO << "EventLoopThread2";
+  });
+  
+  assert(p_loop);
+
+  p_loop->Quit();
 }

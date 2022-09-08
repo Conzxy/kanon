@@ -9,18 +9,16 @@
 #include "kanon/util/macro.h"
 
 #include "rpc_channel.h"
+#include "rpc_controller.h"
 
 using PROTOBUF::Closure;
 using PROTOBUF::Message;
 using PROTOBUF::MethodDescriptor;
-using PROTOBUF::RpcController;
 using PROTOBUF::Service;
 
 using namespace kanon::protobuf::rpc;
 
 static char const *GetRpcErrorString(RpcMessage::ErrorCode error) noexcept;
-
-char const kanon::protobuf::rpc::krpc_tag[] = "krpc";
 
 RpcChannel::RpcChannel() = default;
 
@@ -44,13 +42,16 @@ void RpcChannel::ErrorHandle(uint64_t id, ErrorCode error_code)
 }
 
 void RpcChannel::CallMethod(MethodDescriptor const *method,
-                             RpcController *controller, Message const *request,
-                             Message *response, Closure *done)
+                            PROTOBUF::RpcController *controller,
+                            Message const *request, Message *response,
+                            Closure *done)
 {
-  KANON_UNUSED(controller);
+  RpcController *contr = kanon::down_pointer_cast<RpcController>(controller);
 
   RpcMessage message;
-  message.set_id(id_);
+  auto id = id_.load(std::memory_order_relaxed);
+  ;
+  message.set_id(id);
   id_.fetch_add(1, std::memory_order_relaxed);
 
   message.set_type(RpcMessage::kRequest);
@@ -61,20 +62,40 @@ void RpcChannel::CallMethod(MethodDescriptor const *method,
   message.set_service(method->service()->full_name());
 
   conn_->GetLoop()->RunInLoop(std::bind(&RpcChannel::SendRpcRequest, this,
-                                        std::move(message), response, done));
+                                        std::move(message), response, done,
+                                        contr));
 }
 
-void RpcChannel::SendRpcRequest(RpcMessage const &message, Message *response,
-                                 Closure *done)
+void RpcChannel::SendRpcRequest(RpcMessage &message, Message *response,
+                                Closure *done, RpcController *controller)
 {
-  // ! Must emplace <id, call_result> to call_results_ first
-  // ! since mayebe client thread is switched to another thread(e.g. main
-  // thread), ! but there is no match <id, call_result> in map when switched
-  // back O(1) insert since id increase response and done is provided by
-  // client
-  call_results_.emplace_hint(call_results_.end(), message.id(),
-                             CallResult{response, done});
+  // Must insert <id, outstanding_call> into outstanding_calls_ first
+  // There are maybe server response reach but outstanding_call is not
+  // registered.
+  //
+  // O(1) insert since id increase response and done is provided
+  // by client
+  //
+  // If done is NULL, indicates the user don't expect response
+  // i.e. void return procedure
+  if (done) {
+    // outstanding_calls_.emplace_hint(outstanding_calls_.end(), message.id(),
+    //                                 OutstandingCall{response, done});
+    outstanding_calls_.emplace(message.id(),
+                               OutstandingCall{response, done});
+  } else {
+    KANON_ASSERT(!response, "Notifiction(done is NULL) no need to set response");
+  }
+
+  if (controller->timeout() != INVALID_TIMEOUT)
+    message.set_timeout(controller->timeout());
   codec_.Send(conn_, &message);
+
+  if (controller->timeout() != INVALID_TIMEOUT) {
+    auto id = message.id();
+    conn_->GetLoop()->RunAfterMs([this, id]() { outstanding_calls_.erase(id); },
+                                 controller->timeout());
+  }
 }
 
 void RpcChannel::SendRpcResponse(Message *response, uint64_t id)
@@ -112,7 +133,7 @@ static char const *GetRpcErrorString(RpcMessage::ErrorCode error) noexcept
 }
 
 void RpcChannel::OnRpcMessage(TcpConnectionPtr const &conn,
-                               RpcMessagePtr message, TimeStamp receive_time)
+                              RpcMessagePtr message, TimeStamp receive_time)
 {
   KANON_ASSERT(conn == conn_,
                "The connection from RpcMessage on_message callback must be "
@@ -137,14 +158,14 @@ void RpcChannel::OnRpcMessage(TcpConnectionPtr const &conn,
 }
 
 void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
-                                          RpcMessagePtr message,
-                                          TimeStamp stamp)
+                                         RpcMessagePtr message, TimeStamp stamp)
 {
   /**
    * Receive the response from the RpcServer
    * 0. Check error, response
    * 0.1. If error is setted, log error and abort
-   * 1. Get the response and done callback from the call_results_ and remove it
+   * 1. Get the response and done callback from the outstanding_calls_ and
+   * remove it
    * 2. Fill(/Parse) the response
    * 3. Call done with the response, it will process the response
    */
@@ -154,32 +175,39 @@ void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
                  "Server Internal error or unknown error");
 
     const uint64_t id = message->id();
+
     KANON_ASSERT(id <= id_, "The id in response should be not greater than the "
                             "id_ maintained by client");
 
     // Thread safe since the CallMethod()
-    // insert the call_results in the loop.
-    CallResult call_result{nullptr, nullptr};
+    // insert the outstanding_calls in the loop.
+    OutstandingCall outstanding_call{nullptr, nullptr};
 
-    auto it = call_results_.find(id);
+    auto it = outstanding_calls_.find(id);
 
-    KANON_ASSERT(it != call_results_.end(),
-                 "The call_result must be setted before the RpcMessage "
-                 "on_message Callback");
+    // KANON_ASSERT(it != outstanding_calls_.end(),
+    //              "The outstanding_call must be setted before the RpcMessage "
+    //              "on_message Callback");
 
-    call_result = it->second;
-    call_results_.erase(it);
+    // If timeout is setted, may the done is erased
+    if (it == outstanding_calls_.end()) {
+      return;
+    }
+    outstanding_call = it->second;
+    outstanding_calls_.erase(it);
 
     // done and response is setted by client
-    KANON_ASSERT(call_result.response != nullptr,
+    KANON_ASSERT(outstanding_call.response != nullptr,
                  "response must be setted by client");
-    KANON_ASSERT(call_result.done != nullptr, "done must be setted by client");
+    KANON_ASSERT(outstanding_call.done != nullptr,
+                 "done must be setted by client");
 
     // done->Run() will delete this itself
     // i.e. self-delete
-    // std::unique_ptr<Closure> done_wrapper(call_result.done);
+    // std::unique_ptr<Closure> done_wrapper(outstanding_call.done);
 
-    const auto res = call_result.response->ParseFromString(message->response());
+    const auto res =
+        outstanding_call.response->ParseFromString(message->response());
     KANON_UNUSED(res);
 
     KANON_ASSERT(
@@ -187,10 +215,10 @@ void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
              "Server error or probobuf internal error");
 
     // done manage the lifetime of response
-    call_result.done->Run();
+    outstanding_call.done->Run();
   } else {
     // Response with error setted
-    const auto n = call_results_.erase(message->id());
+    const auto n = outstanding_calls_.erase(message->id());
     KANON_UNUSED(n);
     assert(n == 1);
 
@@ -201,7 +229,7 @@ void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
 }
 
 void RpcChannel::OnRpcMessageForRequest(TcpConnectionPtr const &conn,
-                                         RpcMessagePtr message, TimeStamp stamp)
+                                        RpcMessagePtr message, TimeStamp stamp)
 {
   /**
    * Receive the request message from RpcClient
@@ -257,8 +285,13 @@ void RpcChannel::OnRpcMessageForRequest(TcpConnectionPtr const &conn,
           // derived class of Service.
           //
           // The request need managed by concrete service function
+          RpcController *controller = new RpcController;
+          if (message->has_timeout()) {
+            controller->SetTimeout(message->timeout());
+            LOG_DEBUG << "timeout=" << controller->timeout() << " Ms";
+          }
           service->CallMethod(
-              method, NULL, request, response,
+              method, controller, request, response,
               PROTOBUF::NewCallback(this, &RpcChannel::SendRpcResponse,
                                     response, message->id()));
         } else {

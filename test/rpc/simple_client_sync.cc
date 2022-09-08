@@ -4,7 +4,8 @@
 #include "kanon/log/logger.h"
 #include "kanon/net/event_loop_thread.h"
 #include "kanon/rpc/rpc_channel.h"
-#include "kanon//net/user_client.h"
+#include "kanon/net/user_client.h"
+#include "kanon/rpc/rpc_controller.h"
 
 #include "pb/simple.pb.h"
 
@@ -37,13 +38,18 @@ class SimpleClient : noncopyable {
         auto response = new SimpleResponse;
         // stub_.simple(NULL, &request, response,
         //              NewCallback(&Done, this, response));
-        stub_.simple(NULL, &request, response, NewCallback(&Done2, cli_.get(), response));
+        RpcController *controller = new RpcController();
+        controller->SetTimeout(500);
+        stub_.simple(controller, &request, response, NewCallback(&Done2, cli_.get(), response));
+        delete controller;
       }
     });
   }
 
   void Connect() { cli_->Connect(); }
   void Disconnect() { cli_->Disconnect(); }
+
+  EventLoop *GetLoop() noexcept { return cli_->GetLoop(); }
  private:
   TcpClientPtr cli_;
   RpcChannel chan_;
@@ -56,6 +62,7 @@ void Done(SimpleClient *cli, SimpleResponse *response)
 
   LOG_INFO << "Response's i = " << response->i();
   cli->Disconnect();
+  cli->GetLoop()->Quit();
 }
 
 int main()

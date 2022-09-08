@@ -7,12 +7,13 @@
 // ProtobufCodec<> need class definition for following reasons:
 // 1. std::is_base_of<>
 // 2. constructor of ConcreMessage
+#include "callable.h"
 #include "kanon/net/callback.h"
 #include "kanon/protobuf/protobuf_codec.h"
 #include "kanon/rpc/rpc.pb.h"
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/util/noncopyable.h"
-#include "callable.h"
+#include "rpc_codec.h"
 
 #include <google/protobuf/service.h>
 
@@ -20,7 +21,7 @@ namespace kanon {
 namespace protobuf {
 namespace rpc {
 
-extern char const krpc_tag[];
+class RpcController;
 
 /**
  *
@@ -28,7 +29,7 @@ extern char const krpc_tag[];
 class RpcChannel
   : public noncopyable
   , public ::google::protobuf::RpcChannel {
-  using Codec = ProtobufCodec<RpcMessage, krpc_tag>;
+  using Codec = RpcCodec;
   using ErrorCode = RpcMessage::ErrorCode;
   // using RpcMessagePtr = std::unique_ptr<RpcMessage>;
   using RpcMessagePtr = RpcMessage *;
@@ -64,8 +65,8 @@ class RpcChannel
    * Wrapper of the callback that running in the loop
    * since c++11 don't allow variable initialization in capture list
    */
-  void SendRpcRequest(RpcMessage const &message, PROTOBUF::Message *response,
-                      PROTOBUF::Closure *done);
+  void SendRpcRequest(RpcMessage &message, PROTOBUF::Message *response,
+                      PROTOBUF::Closure *done, RpcController *controller);
   /**
    * This call the Service::CallMethod(), the logic is
    * fill the response according to the request
@@ -119,18 +120,19 @@ class RpcChannel
    * Store the done since this is a asynchronous callback
    *
    */
-  struct CallResult {
+  struct OutstandingCall {
     PROTOBUF::Message *response;
     PROTOBUF::Closure *done;
   };
 
   /**
-   * CallResult is a pair of <response, done>
+   * OutstandingCall is a pair of <response, done>
    * response and done is filled by client
    * ! Used for client side
    */
-  std::unordered_map<int, CallResult>
-      call_results_; // GUARDED_BY call_result_lock_
+  std::unordered_map<int, OutstandingCall> outstanding_calls_;
+
+  std::unordered_map<int, OutstandingCall> canceling_calls_;
 };
 
 } // namespace rpc

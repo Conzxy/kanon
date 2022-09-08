@@ -9,12 +9,16 @@ using namespace kanon::protobuf::rpc;
 class SimpleServiceImpl : public SimpleService {
 public:
   void simple(
-      google::protobuf::RpcController* ,
+      google::protobuf::RpcController* controller,
       SimpleRequest const* request,
       SimpleResponse* response,
       google::protobuf::Closure* done) override
   {
     kanon::DeferDelete<SimpleRequest const> defer_request(request);
+    sleep(1);
+    if (controller->IsCanceled()) {
+      return;
+    }
 
     assert(request->has_i());
     response->set_i(request->i() * 10);
