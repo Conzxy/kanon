@@ -233,6 +233,7 @@ void EventLoop::Wakeup() noexcept {
 }
 
 void EventLoop::Quit() noexcept {
+  if (quit_) return;
   quit_ = true;
 
   LOG_DEBUG_KANON << "EventLoop is quiting";
