@@ -366,7 +366,6 @@ void ConnectionBase<D>::HandleClose() {
   // Connected ==> read event handling
   // Disconnecting ==> call ForceClose()
   assert(state_ == kConnected || state_ == kDisconnecting);
-  
   state_ = kDisconnected;
   
   LOG_DEBUG_KANON << "The connection [" << name_ << "] is disconnected";
@@ -406,14 +405,17 @@ void ConnectionBase<D>::ShutdownWrite() noexcept {
 
 template<typename D>
 void ConnectionBase<D>::ForceClose() noexcept {
-  if (state_ == kConnected) {
+  // If connection is not established or 
+  // disconnected,
+  // ForceClose() do nothing.
+  if (state_ == kConnected || state_ == kDisconnecting) {
     state_ = kDisconnecting;
-  }
 
-  loop_->RunInLoop([this]() {
-    loop_->AssertInThread();
-    HandleClose(); 
-  });
+    loop_->RunInLoop([this]() {
+      loop_->AssertInThread();
+      HandleClose(); 
+    });
+  }
 }
 
 template<typename D>
