@@ -21,6 +21,8 @@ static __thread char t_timebuf[64] = { 0 };
   bool g_kanon_log = false;
 #endif
 
+bool g_all_log = true;
+
 bool Logger::need_color_ = true;
 
 char const* Logger::s_log_level_names_[Logger::LogLevel::NUM_LOG_LEVEL] = {
