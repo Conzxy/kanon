@@ -19,7 +19,7 @@
 
 namespace kanon {
  
-#ifdef CXX_STANDARD_17
+#if defined(CXX_STANDARD_17) && defined(USE_STD_OPTIONAL)
 #include <optional>
   using std::optional;
 
