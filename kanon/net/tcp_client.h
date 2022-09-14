@@ -111,7 +111,7 @@ private:
   void Init();
   
   /* Callback of Connector::NewConnection */
-  static void NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr cli);
+  static void NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr const &cli);
 
   EventLoop* loop_;
   std::shared_ptr<Connector> connector_;

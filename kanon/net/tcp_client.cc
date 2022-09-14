@@ -94,9 +94,10 @@ void TcpClient::Init() {
   connector_->SetNewConnectionCallback(std::bind(TcpClient::NewConnection, _1, GetServerAddr(), shared_from_this()));
 }
 
-void TcpClient::NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr cli) {
+void TcpClient::NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr const &cli) {
   if (cli->conn_) { return ; }
-
+  
+  LOG_TRACE << " New connection fd = " << sockfd;
   auto new_conn = TcpConnection::NewTcpConnection(cli->loop_, cli->name_, sockfd, sock::GetLocalAddr(sockfd), serv_addr);
 
   new_conn->SetMessageCallback(cli->message_callback_);
@@ -107,7 +108,7 @@ void TcpClient::NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPt
   // that is dangerous! we may be get a half-completed connection.
   {
     MutexGuard guard{ cli->mutex_ };
-    cli->conn_ = new_conn;
+    cli->conn_ = std::move(new_conn);
   }
 
   // RemoveConnection
@@ -122,6 +123,7 @@ void TcpClient::NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPt
     {
       MutexGuard guard{ cli->mutex_ };
       cli->conn_.reset();
+      LOG_INFO << conn->GetName() << " has removed";
     } 
 
     // ! In event handling phase, don't remove channel(disable is allowed)
