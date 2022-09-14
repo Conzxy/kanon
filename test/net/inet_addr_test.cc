@@ -42,6 +42,10 @@ TEST(InetAddr, ctor)
   InetAddr addr4("www.baidu.com:80");
 
   std::cout << addr4.ToIpPort() << "\n";
+
+  InetAddr addr5("localhost:8080");
+
+  std::cout << addr5.ToIpPort() << "\n";
 }
 
 int main(int argc, char *argv[])

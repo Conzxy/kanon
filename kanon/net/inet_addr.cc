@@ -65,16 +65,17 @@ InetAddr::InetAddr(StringView addr)
   if (last_colon_pos == StringView::npos)
     throw InetAddrException("This a invalid address(No colon separator)");
 
-  auto port_sv = addr.substr_range(last_colon_pos + 1);
+  auto port_sv = addr.substr(last_colon_pos + 1);
   auto host = addr.substr_range(0, last_colon_pos);
   auto port = StringViewTo32(port_sv);
+
   if (!port || *port < 0 || *port >= (1 << 16))
     throw InetAddrException("Contains a invalid port number");
 
   if (host.find(':') != StringView::npos) {
     // Ipv6 address
     // Only Ipv6 address can hold colon in the host part
-    sock::FromIpPort(host.ToString(), port, addr6_);
+    sock::FromIpPort(host.ToString(), *port, addr6_);
   } else {
     bool is_ip4 = true;
 
@@ -106,7 +107,7 @@ InetAddr::InetAddr(StringView addr)
     }
 
     if (is_ip4)
-      sock::FromIpPort(host.ToString(), port, addr_);
+      sock::FromIpPort(host.ToString(), *port, addr_);
     else {
       auto const hostname = host.ToString();
       auto const service = port_sv.ToString();
