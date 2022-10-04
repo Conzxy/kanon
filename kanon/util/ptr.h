@@ -109,6 +109,38 @@ using DeferDelete = std::unique_ptr<T>;
 template<typename T, typename D>
 using DeferDelete2 = std::unique_ptr<T, D>;
 
+/**
+ * std::make_shared requires the constructor of the object
+ * must be public(i.e. accessed).
+ * In fact, the allocator_traits<Alloc>::construct() requires it.
+ * (YOU can discover this through checking the error message produced by compiler)
+ *
+ * No matter any case, because the specfic implementation is not cross
+ * compiler, we can't make them to be the friend of object.
+ *
+ * Use a empty class and derived from the desired class,
+ * declares the constructor of it to be protected, then 
+ * derived class can access.
+ *
+ * To reuse the logic, use template and scoped class.
+ * \see https://stackoverflow.com/a/56676533
+ */
+template <typename T, typename... Args>
+inline std::shared_ptr<T> MakeSharedFromProtected(Args&&... args)
+{
+  struct ProtectedProxy : public T {
+    /* Here, must declares the type of arguments be Args&&.
+     * If arguments is a prvalue, the type of template argument
+     * is T, therefore, it will be copied instead of moved
+     */
+    ProtectedProxy(Args&&... args) 
+      : T(std::forward<Args>(args)...)
+    {}
+  };
+
+  return std::make_shared<ProtectedProxy>(std::forward<Args>(args)...);
+}
+
 } // namespace kanon
 
 #endif
