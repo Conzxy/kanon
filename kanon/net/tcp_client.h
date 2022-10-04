@@ -35,7 +35,7 @@ using TcpClientPtr = std::shared_ptr<TcpClient>;
 class TcpClient : noncopyable 
                 , public std::enable_shared_from_this<TcpClient> {
 
-public:
+ protected:
   /**
    * \param loop evnet loop(usually not main thread)
    * \param serv_addr Address of server that you want to connect
@@ -45,6 +45,7 @@ public:
             InetAddr const& serv_addr,
             std::string const& name = {});
 
+ public:
   ~TcpClient() noexcept;
 
   void SetConnectionCallback(ConnectionCallback cb) noexcept
@@ -57,15 +58,15 @@ public:
   { write_complete_callback_ = std::move(cb); }
   
   //! Active connect
-  void Connect() noexcept;
+  void Connect();
   //! Active close
-  void Disconnect() noexcept;
+  void Disconnect();
 
   /**
    * \brief Stop connecting to the server
    * \note Only useful when connection isn't established successfully
    */
-  void Stop() noexcept;
+  void Stop();
 
   InetAddr const& GetServerAddr() const noexcept;
 
@@ -83,7 +84,7 @@ public:
   /**
    * \brief Get the connection
    * 
-   * I don't implemete this through condition variable
+   * I don't implement this through condition variable
    * to make caller thread sleeping when connection is not 
    * established since it will block the caller thread.
    * To GUI program, this is might not good behavior.
@@ -103,15 +104,15 @@ public:
   EventLoop* GetLoop() noexcept { return loop_; }
 
   //!@}
-private:
+ private:
   friend TcpClientPtr NewTcpClient(EventLoop*, InetAddr const&, std::string const&, bool);
-  
+
   /* Register the callback
    * since can't do it in the ctor */
   void Init();
   
   /* Callback of Connector::NewConnection */
-  static void NewConnection(int sockfd, InetAddr const &serv_addr, TcpClientPtr const &cli);
+  static void NewConnection(int sockfd, InetAddr const &serv_addr, std::weak_ptr<TcpClient> const &cli);
 
   EventLoop* loop_;
   std::shared_ptr<Connector> connector_;
@@ -123,12 +124,14 @@ private:
   MessageCallback message_callback_;
   WriteCompleteCallback write_complete_callback_;
 
-  // For active close connection
-  // Shutdown write and set connect_ to false
-  std::atomic<bool> connect_;
-
-  // For passive close connection
-  // If peer close connection, then restart
+  /*
+   * For passive close connection.
+   * If peer close connection, then restart connecting.
+   * 
+   * If connect_ is false, indicates the user 
+   * close peer actively or connector is disabled.
+   * In such case, retry don't work.
+   */
   std::atomic<bool> retry_;
 
   TcpConnectionPtr conn_ GUARDED_BY(mutex_);
@@ -137,7 +140,7 @@ private:
 
 /**
  * \brief Create a tcp client in correct approach
- * \param compact Call std::make_shared if true otherwise just new trivially
+ * \param compact Call std::make_shared if true, otherwise use `new` operator
  */
 TcpClientPtr NewTcpClient(EventLoop *loop,
                           InetAddr const &serv_add,
