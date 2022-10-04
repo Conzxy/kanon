@@ -13,6 +13,10 @@ namespace kanon {
 
 /**
  * Accept any type object and store it in this object(Sure, it is constructed in heap)
+ *
+ * \warning
+ *  The object must be copyable.
+ *  If you want to store move-only object, should use `UniqueAny`(\see unique_any.h)
  */
 class Any final {
 public:
@@ -20,7 +24,20 @@ public:
     : holder_(nullptr)
   {
   }
-
+  
+  /*
+   * The reason why `Any` requires the object must be copyable is that the instantiation of Holder<> 
+   * will also instantiate the clone() member function.
+   * Then clone() will detect whether the copy member of the object is deleted(disabled).
+   * 
+   * YOU may confuse, because the instantiation of the member function of class template 
+   * is lazy(or implicit), why clone() definition is instantiated although it is not called ever?
+   *
+   * Notice, the clone() is a virtual function, the virtual call mechanism requires the virtual function
+   * actually exists as a linkable entity(i.e. as a entry in the virtual table)
+   * 
+   * \see <<C++ templates 2nd>> 14.2.2
+   */
   template<typename V,
     typename std::enable_if<!std::is_same<Any, typename std::decay<V>::type>::value, char>::type = 0>
   Any(V&& val)
@@ -92,7 +109,6 @@ private:
   friend V* UnsafeAnyCast(Any const& from);
 
   /**
-   * @class HolderBase
    * \brief 
    * HolderBase is a dummy base class.
    * Use it we can erase the type from Holder<>.
@@ -116,14 +132,13 @@ private:
     virtual std::type_info const& type() const = 0;
     
     /**
-     * @berif 
+     * \berif 
      * Since HolderBase have not value field
      */
     virtual HolderBase* clone(HolderBase* holder) = 0;
   };
 
   /**
-   * @class Holder
    * \tparam V the type of value which we want to store
    * \brief 
    * This is actual implemetation class
@@ -135,16 +150,28 @@ private:
   public:
     Holder() = default;
   
-    ~Holder() noexcept = default;
+    /* Don't mark noexcept */
+    ~Holder() = default;
 
     Holder(V const& v)
       : holder_{ v }
     { }
 
+    Holder &operator=(Holder const &o)
+    {
+      holder_ = o;
+    }
+
+    /* Don't mark noexcept */
     Holder(V&& v)
       : holder_{ std::move(v) }
     { }
     
+    Holder &operator=(Holder &&o)
+    {
+      holder_ = std::move(o);
+    }
+
     std::type_info const& type() const KANON_OVERRIDE {
       return typeid(V);
     }
