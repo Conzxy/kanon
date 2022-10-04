@@ -35,7 +35,7 @@ TEST(InetAddr, ctor)
 
   std::cout << addr2.ToIpPort() << "\n";
 
-  InetAddr addr3("3ff2::0:8:1fff:80");
+  InetAddr addr3("[3ff2::0:8:1fff]:80");
 
   std::cout << addr3.ToIpPort() << "\n";
 

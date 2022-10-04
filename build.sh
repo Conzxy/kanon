@@ -1,7 +1,14 @@
 #!/bin/bash
-cd $KANON_BUILD_PATH
+cd ~/kanon/build
 
-cmake .. -DCMAKE_BUILD_TYPE=Release &&
-cmake --build . --target all -j 2
+BUILD_TYPE="Debug"
+if [ "$1" == "Release" ]
+then
+  BUILD_TYPE="Release"
+fi
+
+cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE &&
+cmake --build . --target all -j 8 &&
+sudo cmake --install .
 
 
