@@ -35,19 +35,16 @@ namespace kanon {
  */
 class TcpConnection : public ConnectionBase<TcpConnection> {
   using Base = ConnectionBase<TcpConnection>;
-public:
-  ~TcpConnection() noexcept;
 
-  /**
-   * Shouldn't call this. To call NewTcpConnection(). \n
-   * Can't set this be private member
-   * since std::make_shared<> need access ctor
-   */
+ protected:
   TcpConnection(EventLoop* loop,
                 std::string const& name,
                 int sockfd,
                 InetAddr const& local_addr,
                 InetAddr const& peer_addr);
+
+ public:
+  ~TcpConnection() noexcept;
 
   /**
    * \brief Create a TcpConnection instance correctly
@@ -64,7 +61,7 @@ public:
                                            InetAddr const& local_addr,
                                            InetAddr const& peer_addr)
 
-  { return std::make_shared<TcpConnection>(loop, name, sockfd, local_addr, peer_addr); }
+  { return kanon::MakeSharedFromProtected<TcpConnection>(loop, name, sockfd, local_addr, peer_addr); }
 
   //! Whether disable Negele algorithm
   void SetNoDelay(bool flag) noexcept;
@@ -76,7 +73,7 @@ public:
 
   InetAddr const& GetPeerAddr() const noexcept
   { return peer_addr_; }
-private:
+ private:
   InetAddr const local_addr_;
   InetAddr const peer_addr_;
 };
