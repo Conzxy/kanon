@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <functional>
+#include <string>
 
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"

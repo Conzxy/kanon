@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <functional>
 #include <utility>
+#include <string>
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
