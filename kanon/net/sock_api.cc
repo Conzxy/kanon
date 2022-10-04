@@ -25,8 +25,15 @@ void sock::ToIp(char *buf, size_t size, sockaddr const *addr)
 
 void sock::ToIpPort(char *buf, size_t size, sockaddr const *addr)
 {
+  if (addr->sa_family == AF_INET6) {
+    buf[0] = '[';
+    buf++;
+    size--;
+  } 
   ToIp(buf, size, addr);
   auto len = ::strlen(buf);
+  if (addr->sa_family == AF_INET6)
+    buf[len++] = ']';
   auto addr4 = sockaddr_cast<sockaddr_in const>(addr);
   ::snprintf(buf + len, size - len, ":%hu",
              sock::ToHostByteOrder16(addr4->sin_port));
@@ -188,7 +195,7 @@ struct sockaddr_in6 sock::GetLocalAddr(int fd) noexcept
   ::memset(&addr, 0, sizeof addr);
 
   if (::getsockname(fd, sock::to_sockaddr(&addr), &len)) {
-    LOG_SYSERROR << "fail to get local address by getsockname";
+    LOG_SYSERROR << "fail to get local address by getsockname()";
   }
 
   return addr;
@@ -201,16 +208,45 @@ struct sockaddr_in6 sock::GetPeerAddr(int fd) noexcept
   ::memset(&addr, 0, sizeof addr);
 
   if (::getpeername(fd, sock::to_sockaddr(&addr), &len)) {
-    LOG_SYSERROR << "fail to get local address by getsockname";
+    LOG_SYSERROR << "fail to get peer address by getpeername()";
   }
 
   return addr;
 }
 
+static bool GetLocalAddrSafe(int fd, struct sockaddr_in6 &addr) noexcept
+{
+  socklen_t len = sizeof addr;
+  ::memset(&addr, 0, sizeof addr);
+
+  if (::getsockname(fd, sock::to_sockaddr(&addr), &len)) {
+    LOG_SYSERROR << "fail to get peer address by getsockname()";
+    return false;
+  }
+  return true;
+}
+
+static bool GetPeerAddrSafe(int fd, struct sockaddr_in6 &addr) noexcept
+{
+  socklen_t len = sizeof addr;
+  ::memset(&addr, 0, sizeof addr);
+  if (::getpeername(fd, sock::to_sockaddr(&addr), &len)) {
+    LOG_SYSERROR << "fail to get peer address by getpeerkname()";
+    return false;
+  }
+  return true;
+}
+
 bool sock::IsSelfConnect(int sockfd) noexcept
 {
-  const auto local = sock::GetLocalAddr(sockfd);
-  const auto peer = GetPeerAddr(sockfd);
+  struct sockaddr_in6 local;
+  struct sockaddr_in6 peer;
+  const auto local_ok = GetLocalAddrSafe(sockfd, local);
+  const auto peer_ok = GetPeerAddrSafe(sockfd, peer);
+
+  // Connection is not established ever
+  // This is not a error of self-connect
+  if (!local_ok || !peer_ok) return false;
 
   if (local.sin6_family == AF_INET) {
     auto local4 = sockaddr_cast<struct sockaddr_in const>(&local);
