@@ -6,7 +6,9 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/ptr.h"
-#include "kanon/util/any.h"
+// #include "kanon/util/any.h"
+// #include "kanon/util/unique_any.h"
+#include "kanon/util/raw_any.h"
 #include "kanon/log/logger.h"
 
 #include "kanon/net/callback.h"
@@ -36,7 +38,8 @@ class ConnectionBase
     kDisconnecting,
     kDisconnected,
   };
-
+  
+  using ContextType = RawAny;
   D& GetDerived() noexcept { return static_cast<D&>(*this); }
   D const& GetDerived() const noexcept { return static_cast<D const&>(*this); }
 
@@ -113,10 +116,17 @@ public:
   /**
    * Context can used for binding some information 
    * about a specific connnection(So, it named context)
+   *
+   * \warning
+   *  The context don't manage the resource or lifetime of 
+   *  stored object.
+   *
+   *  YOU must free it manaually(e.g. through GetContext())
    */
-  void SetContext(Any&& context = {}) { context_ = std::move(context); }
-  
-  void SetContext(Any const& context) { context_ = context; } 
+  void SetContext(ContextType context) noexcept
+  {
+    context_ = context;
+  }
 
   /**
    * \brief Disable connection continue read message from kernel space
@@ -159,10 +169,10 @@ public:
   bool IsConnected() const noexcept
   { return state_ == kConnected; }
 
-  Any& GetContext() noexcept
+  ContextType& GetContext() noexcept
   { return context_; }
   
-  Any const& GetContext() const noexcept
+  ContextType const& GetContext() const noexcept
   { return context_; }
 
   std::string const& GetName() const noexcept
@@ -257,8 +267,7 @@ protected:
    * Context can used for binding some information 
    * about a specific connnection(So, it named context)
    */
-  Any context_;
-  
+  RawAny context_; 
   State state_; //!< Internal useage
 };
 
