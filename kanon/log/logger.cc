@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "kanon/thread/current_thread.h"
 
@@ -33,7 +34,7 @@ char const* Logger::s_log_level_names_[Logger::LogLevel::NUM_LOG_LEVEL] = {
   "ERROR",
   "FATAL",
   "SYS_ERROR",
-  "SYS_FAYAL",
+  "SYS_FATAL",
 };
 
 static char const* g_logLevelColor[] = {
@@ -50,12 +51,15 @@ static char const* g_logLevelColor[] = {
 static Logger::LogLevel initLogLevel() noexcept
 {
   char* env = nullptr;
+  if ((env = ::getenv("KANON_NDEBUG")) && strcmp(env, "1") == 0)
+    return Logger::LogLevel::INFO;
+
   if ((env = ::getenv("KANON_TRACE")) && strcmp(env, "1") == 0)
     return Logger::LogLevel::TRACE;
 
   if ((env = ::getenv("KANON_DEBUG")) && strcmp(env, "1") == 0)
     return Logger::LogLevel::DEBUG;
-   
+  
   return Logger::LogLevel::INFO;
 }
 
