@@ -47,3 +47,9 @@ GenTest(KANON_TEST_SOURCES kanon_net kanon_base  gtest gtest_main)
 GenTest(KANON_BENCH_SOURCES kanon_net kanon_base benchmark benchmark_main)
 add_subdirectory(rpc)
 add_subdirectory(protobuf)
+
+set (BUILD_PERF_TEST OFF CACHE BOOL "Build performance test file")
+
+if (${BUILD_PERF_TEST})
+  add_subdirectory(perf)
+endif ()
