@@ -1,4 +1,5 @@
 # kanon
+
 ## Introduction
 `kanon`是一个`C++11`编写的基于**事件驱动**(event-driven)的网络库(network libaray)。<br>
 具体来说，该库基于`Reactor`模式，其网络模型是`同步非阻塞`（synchronized-unblocking），依赖的的API是：`poll()`(unix-like/linux)，`epoll`(linux)。<br>
@@ -95,3 +96,4 @@ void OnConnection(TcpConnectionPtr const& conn)
 
 Website: http://47.99.92.230/
 （由[kanon_httpd](https://github.com/Conzxy/kanon_httpd)支持）
+

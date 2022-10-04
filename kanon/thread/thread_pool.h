@@ -1,6 +1,5 @@
 #ifndef KANON_THREAD_THREADPOOL
 #define KANON_THREAD_THREADPOOL
-
 #include <queue>
 #include <functional>
 #include <string>

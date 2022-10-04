@@ -52,8 +52,8 @@ AllowShortFunctionsOnASingleLine: All
 # 只有当没有else的时候才将if和单语句放在同一行
 AllowShortIfStatementsOnASingleLine: WithoutElse
 
-# 合并所有短lambda
-AllowShortLambdasOnASingleLine: All
+# 仅合并空lambda
+AllowShortLambdasOnASingleLine: Empty
 
 # 仅类外定义的返回类型单独一行
 # 由于单独一行如果类型名很短会很多余，因此不强制设置
@@ -97,22 +97,26 @@ BreakStringLiterals: true
 
 # 如何分隔大括号
 BreakBeforeBraces: Custom # 定制化
+
 BraceWrapping:
   # 函数大括号换行 - true
   AfterFunction: true
   AfterCaseLabel: false
   AfterClass: false
-  # 仅条件表达式分行时{换行
+  # 控制语句后面的大括号不换行
   AfterControlStatement: MultiLine
+  BeforeElse: false
   AfterEnum: false
   AfterNamespace: false
   AfterStruct: false
   AfterUnion: false
+  
   # extern "C"
   AfterExternBlock: false
-  # catch不换行
-  BeforeCatch: false
+  BeforeCatch: true
   # BeforeLambdaBody: false
   # do while中的while不换行
   # BeforeWhile: false
+
+IndentCaseLabels: true
 
