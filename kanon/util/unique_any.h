@@ -17,7 +17,7 @@ namespace kanon {
  * Removing some members related to copy of `Any` to make it supports
  * move-only object, the `UniqueAny` owns the object(unique semantic).
  */
-class UniqueAny {
+class UniqueAny final {
 public:
   UniqueAny() 
     : holder_(nullptr)
