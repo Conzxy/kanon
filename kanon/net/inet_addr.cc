@@ -55,6 +55,7 @@ InetAddr::InetAddr(StringView ip, Port port)
 
 InetAddr::InetAddr(StringView addr)
 {
+#if 0
   // Address format:
   // host-part:port-part
 
@@ -114,6 +115,39 @@ InetAddr::InetAddr(StringView addr)
       new (this) InetAddr(hostname, service);
     }
   }
+#else
+  if (std::isalpha(addr[0])) {
+    // Hostname
+    auto colon_pos = addr.find(':');
+    if (colon_pos != StringView::npos) {
+      auto const hostname = addr.substr(0, colon_pos).ToString();
+      auto const service = addr.substr(colon_pos+1).ToString();
+      *this = InetAddr(hostname, service);
+      return;
+    }
+  }
+  else if (std::isalnum(addr[0]) && addr.find('.') != StringView::npos) {
+    // Ipv4 address
+    auto colon_pos = addr.find(':');
+    if (colon_pos != StringView::npos) {
+      auto const ip = addr.substr(0, colon_pos).ToString();
+      auto const port = addr.substr(colon_pos+1).ToString();
+      sock::FromIpPort(ip, ::atoi(port.c_str()), addr_);
+      return;
+    }
+  }
+  else if (addr[0] == '[') {
+    auto right_pos = addr.find(']');
+    if (right_pos != StringView::npos) {
+      auto const ip = addr.substr_range(1, right_pos).ToString();
+      auto const port = addr.substr(right_pos+2).ToString();
+      sock::FromIpPort(ip.c_str(), ::atoi(port.c_str()), addr6_);
+      return;
+    }
+  }
+
+  throw InetAddrException("This a invalid address");
+#endif
 }
 
 InetAddr::InetAddr(StringArg hostname, StringArg service)

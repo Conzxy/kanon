@@ -1,4 +1,5 @@
 #ifndef KANON_INET_ADDR_H
+
 #define KANON_INET_ADDR_H
 
 #include <vector>
@@ -135,7 +136,7 @@ public:
    * \param address 
    *   Peer address including ip address and port number
    *     - Ipv4 IP address:port
-   *     - Ipv6 IP address:port   
+   *     - [Ipv6 IP address]:port   
    *     - hostname:port
    */
   explicit InetAddr(StringView address);
@@ -164,7 +165,9 @@ public:
    * \brief Convert to string that represent ip and port
    * \return
    *   A string represent ip address and port number.
-   *   The form is ip address:port number
+   *   The form is one of the following:
+   *   - ipv4 address:port number
+   *   - [ipv6 address]:port number
    */
   std::string ToIpPort() const;
 
