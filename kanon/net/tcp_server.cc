@@ -20,25 +20,28 @@ inline void SignalHandler(int signo, int expected, char const* msg) noexcept {
   assert(signo == expected);
   LOG_INFO << msg;
 
+
   if (g_loop) {
     LOG_INFO << "The event loop is quiting...";
     g_loop->Quit();
   }
   
   LOG_INFO << "The server exit successfully";
-  exit(0);
 }
 
 inline void SigKillHandler(int signo) noexcept {
   SignalHandler(signo, SIGKILL, "Catching SIGKILL, force kill the server");
+  exit(1);
 }
 
 inline void SigIntHandler(int signo) noexcept {
   SignalHandler(signo, SIGINT, "Catching SIGINT(i.e. User type Ctrl+c), server is exiting");
+  exit(0);
 }
 
 inline void SigTermHandler(int signo) noexcept {
   SignalHandler(signo, SIGTERM, "Catching SIGTERM(e.g. kill(1)), server is terminated");
+  exit(1);
 }
 
 TcpServer::TcpServer(EventLoop* loop,
