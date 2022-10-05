@@ -87,5 +87,11 @@ message(STATUS "BUILD_ALL_TESTS = ${BUILD_ALL_TESTS}")
 message(STATUS "BUILD_ALL_EXAMPLES = ${BUILD_ALL_EXAMPLES}")
 
 add_subdirectory(kanon)
-add_subdirectory(test)
+
+set (BUILD_TESTS OFF CACHE BOOL "Build tests(Consider test directory)")
+
+if (${BUILD_TESTS})
+  add_subdirectory(test)
+endif ()
+
 add_subdirectory(example)
