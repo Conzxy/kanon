@@ -11,7 +11,7 @@ namespace zstl {
  * It satisfy the requirements of Forward Iterator
  */
 template<typename T>
-struct ForwardListIterator : std::iterator<std::forward_iterator_tag, T> {
+struct ForwardListIterator {
   using BaseNode     = forward_list_detail::BaseLinkedNode;
   using Node         = forward_list_detail::LinkedNode<T>;
   using ValueType    = T;
@@ -21,6 +21,14 @@ struct ForwardListIterator : std::iterator<std::forward_iterator_tag, T> {
   using ConstPointer = T const*;
   using Self         = ForwardListIterator;
   using Header       = forward_list_detail::Header;
+
+  using pointer = T*;
+  using const_pointer = T const*;
+  using value_type = T;
+  using reference = T&;
+  using const_reference = T const&;
+  using iterator_category = std::forward_iterator_tag;
+  using difference_type = std::ptrdiff_t;
 
   ForwardListIterator(BaseNode* node=nullptr) 
    : node_{ node }
@@ -57,7 +65,7 @@ private:
 };
 
 template<typename T>
-struct ForwardListConstIterator : std::iterator<std::forward_iterator_tag, T> {
+struct ForwardListConstIterator {
   using BaseNode     = forward_list_detail::BaseLinkedNode;
   using Node         = forward_list_detail::LinkedNode<T>;
   using ValueType    = T;
@@ -68,6 +76,14 @@ struct ForwardListConstIterator : std::iterator<std::forward_iterator_tag, T> {
   using Self         = ForwardListConstIterator;
   using Header       = forward_list_detail::Header;
   
+  using pointer = T const*;
+  using const_pointer = T const*;
+  using value_type = T;
+  using reference = T const&;
+  using const_reference = T const&;
+  using iterator_category = std::forward_iterator_tag;
+  using difference_type = std::ptrdiff_t;
+
   ForwardListConstIterator(ForwardListIterator<T> it)
    : node_(it.extract())
   {
