@@ -11,6 +11,8 @@
 #include "kanon/net/inet_addr.h"
 #include "connection_base.h"
 
+#include <memory>
+
 namespace kanon {
 
 //! \addtogroup net
@@ -55,13 +57,44 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
    * \param local_addr local address
    * \param peer_addr peer or remote address
    */
+  template <typename Alloc>
+  static TcpConnectionPtr NewTcpConnection(EventLoop* loop, 
+                                           std::string const& name,
+                                           int sockfd,
+                                           InetAddr const& local_addr,
+                                           InetAddr const& peer_addr,
+                                           Alloc const &a)
+  { return kanon::AllocateSharedFromProtected<TcpConnection>(a, loop, name, sockfd, local_addr, peer_addr); }
+  
   static TcpConnectionPtr NewTcpConnection(EventLoop* loop, 
                                            std::string const& name,
                                            int sockfd,
                                            InetAddr const& local_addr,
                                            InetAddr const& peer_addr)
+  { return NewTcpConnection(loop, name, sockfd, local_addr, peer_addr, std::allocator<TcpConnection>()); }
 
-  { return kanon::MakeSharedFromProtected<TcpConnection>(loop, name, sockfd, local_addr, peer_addr); }
+  static TcpConnectionPtr NewTcpConnectionRaw(EventLoop* loop, 
+                                              std::string const& name,
+                                              int sockfd,
+                                              InetAddr const& local_addr,
+                                              InetAddr const& peer_addr)
+  {
+    return TcpConnectionPtr(new TcpConnection(loop, name, sockfd, local_addr, peer_addr), [](TcpConnection *ptr) {
+        LOG_TRACE << "Don't delete the connection to reuse";
+    });
+  }
+  
+  // void InplaceConstruct(EventLoop* loop,
+  //                       std::string const& name,
+  //                       int sockfd,
+  //                       InetAddr const& local_addr,
+  //                       InetAddr const& peer_addr)
+  // {
+  //   new (this) TcpConnection(loop, name, sockfd, local_addr, peer_addr);
+  // }
+  
+
+
 
   //! Whether disable Negele algorithm
   void SetNoDelay(bool flag) noexcept;

@@ -4,6 +4,7 @@
 file(GLOB_RECURSE KANON_BASE_SRC 
   string/*.cc
   log/*.cc
+  mem/*.cc
   process/*.cc
   thread/*.cc
   util/*.cc

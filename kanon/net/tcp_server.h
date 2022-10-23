@@ -6,6 +6,8 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 #include "kanon/util/type.h"
+#include "kanon/mem/fixed_chunk_memory_pool.h"
+// #include "kanon/util/object_pool.h"
 #include "kanon/string/string_view.h"
 #include "kanon/thread/atomic.h"
 #include "kanon/thread/mutex_lock.h"
@@ -60,7 +62,19 @@ public:
 
   //! Set the number of IO loop
   void SetLoopNum(int num) noexcept;
-  
+
+#if 0
+  void SetPoolSize(size_t sz)
+  {
+    conn_pool_.SetSize(sz);
+  }
+
+  void SetPoolLimit(size_t limit)
+  {
+    conn_pool_.SetLimit(limit);
+  }
+#endif
+
   void SetThreadInitCallback(ThreadInitCallback cb)
   {
     init_cb_ = std::move(cb);
@@ -91,8 +105,23 @@ public:
   
   EventLoop* GetLoop() noexcept
   { return loop_; }
+  
+  //!@}
+  //
+  //! \name Connection Pool
+  //!@{
+  void EnablePool(bool enable)
+  {
+    enable_pool_ = enable;
+  }
+
+  void SetChunkPerBlock(size_t n) noexcept
+  {
+    conn_pool_.SetChunkPerBlock(n);
+  }
 
   //!@}
+
 private:
   typedef std::unordered_map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
 
@@ -106,21 +135,44 @@ private:
   MessageCallback message_callback_;
   WriteCompleteCallback write_complete_callback_;
   
-  /* Store the connections */
+  /** Store the connections */
   ConnectionMap connections_;
 
   /* Multi-Reactor */
+
   uint32_t next_conn_id;
   std::unique_ptr<EventLoopPool> pool_;
-
-  std::atomic_flag start_once_;
   
-  /* We don't take the ThreadInitCallback as the parameter type of 
+  /** Ensure the StartRun() be called only once */
+  std::atomic<bool> start_once_;
+
+  /** Enable the connection pool to caching memory */
+  std::atomic<bool> enable_pool_;
+  
+  /**
+   * We don't take the ThreadInitCallback as the parameter type of 
    * StartRun() since it maybe called asynchronously.
    * We must store it first
    */
   ThreadInitCallback init_cb_;
   MutexLock lock_conn_;
+  
+  /*
+   * conn_pool_ is not a good choice to reuse connection 
+   * since the memory allocation and deallocation is managed 
+   * by std::shared_ptr<>
+   *
+   * The better approach is use memory pool as a allocator,
+   * and call std::allocate_shared(allocator, args...) to control
+   * the memory management
+   */
+  /* ObjectPoolArray<TcpConnection* const> conn_pool_; */
+
+  /**
+   * Fixed chunk memory pool.
+   * The chunk size is sizeof(TcpConnection).
+   */
+  FixedChunkMemoryPool conn_pool_;
 }; 
 
 //!@}

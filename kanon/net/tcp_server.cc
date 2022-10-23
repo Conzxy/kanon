@@ -9,6 +9,8 @@
 #include "kanon/net/event_loop_pool.h"
 #include "kanon/net/acceptor.h"
 
+#include "kanon/mem/object_pool_allocator.h"
+
 #include <signal.h>
 #include <atomic>
 
@@ -55,9 +57,10 @@ TcpServer::TcpServer(EventLoop* loop,
   , connection_callback_(&DefaultConnectionCallback)
   , next_conn_id{ 1 }
   , pool_{ kanon::make_unique<EventLoopPool>(loop, static_cast<char const*>(name)) }
-  , start_once_{ ATOMIC_FLAG_INIT }
+  , start_once_{ false }
+  , enable_pool_{ false }
+  , conn_pool_{ 10 }
 {
-
   g_loop = loop_;
   ::signal(SIGINT, &SigIntHandler);
   ::signal(SIGTERM, &SigTermHandler);
@@ -74,9 +77,30 @@ TcpServer::TcpServer(EventLoop* loop,
     auto conn_name = name_ + buf;
     
     auto io_loop = pool_->GetNextLoop();
-
     auto local_addr = sock::GetLocalAddr(cli_sock);
-    auto conn = TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
+
+#if 0
+    TcpConnectionPtr conn;
+    if (conn_pool_.IsEnabled()) {
+      TcpConnection *raw_conn;
+      if (conn_pool_.Pop(raw_conn)) {
+        raw_conn->InplaceConstruct(io_loop, conn_name, cli_sock, local_addr, cli_addr);
+        conn.reset(raw_conn);
+      } else {
+        conn = TcpConnection::NewTcpConnectionRaw(io_loop, conn_name, cli_sock, local_addr, cli_addr); 
+      }
+    } else {
+      conn = TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
+    }
+#else
+    LOG_TRACE << "Pool block num = " << conn_pool_.GetBlockNum();
+    LOG_TRACE << "Pool usage = " << conn_pool_.GetUsage(sizeof(TcpConnection));
+    LOG_TRACE << "The number of alive connections: " << connections_.size();
+
+    auto conn = enable_pool_ ? 
+      TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr, ObjectPoolAllocator<void>(conn_pool_)) :
+      TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);
+#endif
 
     {
     MutexGuard guard(lock_conn_);
@@ -94,6 +118,7 @@ TcpServer::TcpServer(EventLoop* loop,
       {
       MutexGuard guard(lock_conn_);
       n = connections_.erase(conn->GetName());
+      LOG_TRACE << "The number of alive connections(closing): " <<  connections_.size();
       }
 
       assert(n == 1);
@@ -103,6 +128,18 @@ TcpServer::TcpServer(EventLoop* loop,
       // and delay the ConnectionDestroyed() in calling functor phase.
       io_loop->QueueToLoop([conn]() {
           conn->ConnectionDestroyed();
+#if 0
+          if (conn.use_count() != 1) return;
+          if (conn_pool_.IsFull()) {
+            LOG_TRACE << "Delete the connection since pool is full";
+            delete conn.get();
+          } else {
+            LOG_TRACE << "Push the connection to pool";
+            auto raw_conn = conn.get();
+            raw_conn->~TcpConnection();
+            conn_pool_.Push(raw_conn);
+          }
+#endif
       });
     });
     
@@ -138,7 +175,7 @@ void TcpServer::StartRun() noexcept {
   // If the other thread also call this function,
   // may be call this more than once.
   // EventLoopPool::StartRun() can only be called once
-  if (start_once_.test_and_set(std::memory_order_relaxed) == false) {
+  if (!start_once_) {
     // start IO loop
     loop_->RunInLoop([this]() {
       // Boot the loop pool in the binded loop
@@ -158,6 +195,7 @@ void TcpServer::StartRun() noexcept {
       pool_->StartRun(init_cb_);
       LOG_INFO << "Listening in " << ip_port_;
       acceptor_->Listen();
+      start_once_ = true;
     });
   }
 }

@@ -46,3 +46,8 @@
 2022-10-04 Conzxy
  * Add: 添加`MakeSharedFromProtected()`工具函数，令TcpConnection，TcpClient，Connector的构造函数为protected，避免用户误用，强制使用`NewXXX()`函数进行正确的对象创建。
  * 调整Connector，TcpClient部分代码（和添加注释）
+
+2022-10-20 Conzxy
+ * Add: 添加`FixedChunkMemoryPool`，将对象的内存缓存到固定分块的内存池中，从而可以尽量减少调用`malloc()`的次数和减少内存碎片（主要是外部碎片）出现的概率，
+   避免服务器程序长时间运行内存降不下来（e.g. TcpConnection，\*Session（用户自定义））
+ * Add: TcpServer支持设置连接内存池（自然，也可以采用通常的`malloc()/free()`）

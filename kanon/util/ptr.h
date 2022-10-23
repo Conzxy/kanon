@@ -141,6 +141,21 @@ inline std::shared_ptr<T> MakeSharedFromProtected(Args&&... args)
   return std::make_shared<ProtectedProxy>(std::forward<Args>(args)...);
 }
 
+template <typename T, typename Alloc, typename... Args>
+inline std::shared_ptr<T> AllocateSharedFromProtected(Alloc const &alloc, Args&&... args)
+{
+  struct ProtectedProxy : public T {
+    /* Here, must declares the type of arguments be Args&&.
+     * If arguments is a prvalue, the type of template argument
+     * is T, therefore, it will be copied instead of moved
+     */
+    ProtectedProxy(Args&&... args) 
+      : T(std::forward<Args>(args)...)
+    {}
+  };
+
+  return std::allocate_shared<ProtectedProxy>(alloc, std::forward<Args>(args)...);
+}
 } // namespace kanon
 
 #endif
