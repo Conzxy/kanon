@@ -17,6 +17,8 @@ if (NOT ${BUILD_ALL_TESTS})
   message(STATUS "[The kanon test and bench files are excluded from the build of target all]")
 endif (NOT ${BUILD_ALL_TESTS})
 
+include_directories(${CMAKE_CURRENT_DIR})
+
 ############################################
 # generate test and bench program
 ############################################
@@ -43,7 +45,7 @@ macro (GenTest SRC)
   endforeach (kanon_test_source ${KANON_TEST_SOURCES})
 endmacro()
 
-GenTest(KANON_TEST_SOURCES kanon_net kanon_base  gtest gtest_main)
+GenTest(KANON_TEST_SOURCES kanon_net kanon_base  gtest gtest_main gc)
 GenTest(KANON_BENCH_SOURCES kanon_net kanon_base benchmark benchmark_main)
 add_subdirectory(rpc)
 add_subdirectory(protobuf)
