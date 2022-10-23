@@ -15,6 +15,12 @@ TEST(InetAddr, resolve)
     std::cout << addr.ToIpPort() << "\n";
   }
 
+  addrs = InetAddr::Resolve("localhost", "9999", false);
+
+  for (auto &addr : addrs) {
+    std::cout << addr.ToIpPort() << "\n";
+  }
+
   std::cout << "====="
             << "Server resolve"
             << "=====\n";
@@ -23,29 +29,28 @@ TEST(InetAddr, resolve)
   for (auto &addr : addrs) {
     std::cout << addr.ToIpPort() << "\n";
   }
+
 }
 
 TEST(InetAddr, ctor)
 {
   InetAddr addr("www.baidu.com", "http");
-
   std::cout << addr.ToIpPort() << "\n";
 
   InetAddr addr2("127.0.0.1:80");
-
   std::cout << addr2.ToIpPort() << "\n";
 
   InetAddr addr3("[3ff2::0:8:1fff]:80");
-
   std::cout << addr3.ToIpPort() << "\n";
 
   InetAddr addr4("www.baidu.com:80");
-
   std::cout << addr4.ToIpPort() << "\n";
 
   InetAddr addr5("localhost:8080");
-
   std::cout << addr5.ToIpPort() << "\n";
+   
+  InetAddr addr6("localhost:9999");
+  std::cout << addr6.ToIpPort() << "\n";
 }
 
 int main(int argc, char *argv[])

@@ -126,11 +126,15 @@ InetAddr::InetAddr(StringView addr)
       return;
     }
   }
-  else if (std::isalnum(addr[0]) && addr.find('.') != StringView::npos) {
+  else if ((std::isalnum(addr[0]) && addr.find('.') != StringView::npos) ||
+           addr[0] == '*')
+  {
     // Ipv4 address
     auto colon_pos = addr.find(':');
     if (colon_pos != StringView::npos) {
-      auto const ip = addr.substr(0, colon_pos).ToString();
+      auto ip = addr.substr(0, colon_pos).ToString();
+      // ip must be dotted decimal presentation
+      if (ip == "*") ip = "0.0.0.0";
       auto const port = addr.substr(colon_pos+1).ToString();
       sock::FromIpPort(ip, ::atoi(port.c_str()), addr_);
       return;
@@ -152,7 +156,7 @@ InetAddr::InetAddr(StringView addr)
 
 InetAddr::InetAddr(StringArg hostname, StringArg service)
 {
-  const auto addrs = Resolve(hostname, service);
+  const auto addrs = Resolve(hostname, service, false);
 
   if (addrs.empty())
     throw InetAddrException("There is no matched hostname or service");
@@ -196,12 +200,14 @@ std::vector<InetAddr> InetAddr::Resolve(StringArg hostname, StringArg service,
 
   // Looks up ipv4 and ipv6 address
   // AI_V4MAPPED:
+  // (Only useful when .ai_family is specified as AF_INET6)
+  // If there are no IPv6 address could be found,
+  // return Ipv4-mapped IPv6 address in the list instead.
   //
-
   // AI_ADDRCONFIG:
-  // control return ipv4 address
-  // only when ipv4 address is configured in local system
-  // so does ipv6, this is useful on IPv4 only system.
+  // return ipv4 address only when ipv4 address is configured in local system
+  // so does ipv6, this is useful on IPv4 only system since no IPv6 address return
+  // then connect(2) and bind(2) don't fail infinitely.
 
   // AI_NUMERICSERV:
   // service must be a decimal port number instead service name
