@@ -65,9 +65,9 @@ static inline void PrintItimerspec(struct itimerspec const& spec) {
 static inline void SetTimerFd(int timerfd, Timer const& timer, bool set_interval = false) noexcept {
   struct itimerspec new_value;
   MemoryZero(new_value.it_interval);
+
   // since we use expiration time to sort timer
   // so interval is useless
-
   if (set_interval && timer.repeat()) {
     new_value.it_interval = GetTimerInterval(timer.interval());
   }
@@ -114,6 +114,12 @@ TimerQueue::TimerQueue(EventLoop* loop)
   timer_channel_->EnableReading();
 }
 
+TimerQueue::~TimerQueue() noexcept
+{
+  for (auto &timer_seq : timers_) {
+    delete timer_seq.first;
+  }
+}
 
 TimerId TimerQueue::AddTimer(
   Timer::TimerCallback cb, 
@@ -135,41 +141,32 @@ TimerId TimerQueue::AddTimer(
 }
 
 void TimerQueue::CancelTimer(TimerId id) {
-  LOG_DEBUG_KANON << "CancelTimer: "
-    << "TimerId = " << id.seq_;
-
+  LOG_DEBUG_KANON << "CancelTimer: " << "TimerId = " << id.seq_;
   loop_->RunInLoop([this, id]() {
     loop_->AssertInThread();
     
-    const auto active_timer = active_timers_.find(ActiveTimer(
-      id.seq_, id.timer_));
-    if (active_timers_.end() != active_timer) {
-      active_timers_.erase(active_timer);
-      timers_.erase(TimerEntry(
-        id.timer_->expiration(), MakeUniquePtrAsKey(id.timer_)));
-    } 
-    else if (calling_timer_) {
+    const auto active_timer_iter = timers_.find({ id.timer_, id.seq_});
+
+    if (timers_.end() != active_timer_iter) {
+      timers_.erase(active_timer_iter);
+    } else if (calling_timer_) {
       // Self-cancel
       // \see ProcessAllExpiredTimers()
-      canceling_timers_.emplace(id.seq_, id.timer_);
+      canceling_timers_.emplace(id.timer_, id.seq_);
     }
   });
 }
 
 bool TimerQueue::Emplace(Timer* timer) {
-  assert(timers_.size() == active_timers_.size());
-  
   auto earliest_timer_iter = timers_.begin();
   auto ret = false;
 
   if (timers_.empty() || 
-    timer->expiration() < earliest_timer_iter->first) {
+    timer->expiration() < earliest_timer_iter->first->expiration()) {
     ret = true;
   }
 
-  active_timers_.emplace(timer->sequence(), timer);
-  timers_.emplace(timer->expiration(), TimerPtr(timer));
-
+  timers_.emplace(timer, timer->sequence());
   LOG_TRACE_KANON << "Now total timer count = " << timers_.size();  
   return ret;
 }
@@ -221,11 +218,13 @@ auto TimerQueue::GetExpiredTimers(TimeStamp time) -> TimerVector {
 
   // Get the first timer which does not expired
   // i.e. the after position of the last timer which has expired
+  
+  // Dummy key
+  // The useful member is .expiration
+  Timer dummy_key({}, time, 0.0);
 
-  auto expired_end = timers_.lower_bound(TimerEntry(
-    time, MakeUniquePtrAsKey<Timer>(
-      reinterpret_cast<Timer*>(UINTPTR_MAX) ) ) );
-
+  // UINT64_MAX > any Sequence
+  auto expired_end = timers_.lower_bound({ &dummy_key, UINT64_MAX });
   // [begin(), expired_end) are all timers which has expired 
   std::transform(
     timers_.begin(),
@@ -234,20 +233,15 @@ auto TimerQueue::GetExpiredTimers(TimeStamp time) -> TimerVector {
     [](TimerSetValue const& x) -> TimerPtr {
       // The return value of TimerSet::iterator is const key_type
       // So, argument type must be const& and need const_cast<>
-      return TimerPtr(const_cast<TimerPtr&>(x.second).release());
+      // return TimerPtr(const_cast<TimerPtr&>(x.second).release());
       // return std::move(const_cast<TimerSetValue&>(x).second);
+      return x.first;
     });
 
   timers_.erase(timers_.begin(), expired_end);
   LOG_DEBUG_KANON << "Expired time =  " << time.ToFormattedString(true);  
   LOG_DEBUG_KANON << "Expired timer count = " << expireds.size();
   
-  for (auto& expired_timer : expireds) {
-    //if (!expired_timer.second->repeat())
-    active_timers_.erase(ActiveTimer(
-      expired_timer->sequence(), GetPointer(expired_timer)));
-  }  
-    
   return expireds;
 }
 
@@ -259,19 +253,20 @@ void TimerQueue::ResetTimers(TimerVector& expireds, TimeStamp now) {
       // If timer is repeat, we should restart it
       // but if it in such case as self-cancel,
       // we shouldn't restart it and do nothing.
-      if (canceling_timers_.find(ActiveTimer(
-        timer->sequence(), GetPointer(timer)) ) 
+      if (canceling_timers_.find({ timer, timer->sequence() })
           == canceling_timers_.end()) {
         timer->restart(now);
-        Emplace(timer.release());
+        Emplace(timer);
       }
+    } else {
+      delete timer;
     }
   }
   
   LOG_DEBUG_KANON << "Reset timer_map size: " << timers_.size();
 
   if (!timers_.empty()) {
-    next_expire = timers_.begin()->second.get();
+    next_expire = timers_.begin()->first;
   }
 
   if (next_expire) {

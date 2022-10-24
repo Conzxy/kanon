@@ -38,6 +38,7 @@ public:
    * \param loop EventLoop object
    */  
   explicit TimerQueue(EventLoop* loop);
+  ~TimerQueue() noexcept;
 
   /**
    * \brief Add a timer to TimerQueue
@@ -59,10 +60,67 @@ public:
   void CancelTimer(TimerId const id);
 
 private:
-  using TimerPtr      = KeyUniquePtr<Timer>;
-  using ActiveTimer   = std::pair<uint64_t,  Timer*>;
-  using TimerEntry    = std::pair<TimeStamp, TimerPtr>;
-  using TimerSet      = std::set<TimerEntry>;
+  /*
+   * Don't use std::unique_ptr as key before C++14
+   * even though KeyUniquePtr is satisfied.
+   * 
+   * KeyUniquePtr ocuppy 16 bytes(I don't like)
+   */
+
+  // using TimerPtr      = KeyUniquePtr<Timer>;
+  
+  /*
+   * From the use of sequence, move the sequence to the timers, we no need to maintain two
+   * mirror set(almost identical)
+   */
+
+  // using ActiveTimer   = std::pair<uint64_t,  Timer*>;
+  using TimerPtr      = Timer*;
+  using TimerEntry    = std::pair<TimerPtr, uint64_t>;
+
+  struct TimerEntryCompare {
+    // FIXME In C++14, use heterogeneous lookup
+#if defined(CXX_STANDARD_14) && 0
+    // Any type is also OK.
+    // SFINAE only interested in type definition instead specific type
+    using is_transparent = void;
+    
+    struct Helper {
+      using Key = std::pair<TimeStamp, uint64_t>
+      Key key;
+
+      Helper(TimeEntry const &te)
+        : key(te.first->expiratoin(), te.second)
+      {}
+
+      Helper(Key const &k)
+        : key(k)
+      {}
+      
+      // For retriving all expired timers
+      Helper(TimeStamp ts)
+        : key(ts, UINT64_MAX)
+      {}
+    };
+
+    inline bool operator()(Helper const &x, Heler const &y) const noexcept
+    {
+      return x.key < y.key;
+    }
+#else
+    inline bool operator()(TimerEntry const &x, TimerEntry const &y) const noexcept
+    {
+      int res = (x.first->expiration().GetMicrosecondsSinceEpoch() - y.first->expiration().GetMicrosecondsSinceEpoch());
+      if (res == 0) {
+        return x.second < y.second;
+      }
+      return res < 0;
+    }
+#endif
+
+  };
+
+  using TimerSet      = std::set<TimerEntry, TimerEntryCompare>;
   using TimerSetValue = TimerSet::value_type;
   using TimerVector   = std::vector<TimerPtr>;
 
@@ -120,7 +178,7 @@ private:
    * assert(p == p2); // Don't abort!
    * ```
    *
-   * We can suppose OS will reuse the deleted memory space.
+   * We can suppose allocator(e.g. libc's malloc) will reuse the deleted memory space.
    *   - For repeated timer, it is ok, since we don't remove 
    *     timer actively.
    *   - For once timer, we must remove timer, and the new 
@@ -131,7 +189,7 @@ private:
    *  more exact, but we need provide a predicate like 
    *  std::pair<> to sort it, thus, just reuse std::pair<> :D)
    */
-  std::set<ActiveTimer> active_timers_; //!< Detect a timer if is active
+  // std::set<ActiveTimer> active_timers_; //!< Detect a timer if is active
 
   /**
    * Self-cancel indicates user cancel a timer in
@@ -149,7 +207,7 @@ private:
    * The all timers are not reset, and before the next phase of 
    * calling callback will be cleared.
    */
-  std::set<ActiveTimer> canceling_timers_; //!< Store the self-cancel timer to avoid reset
+  std::set<TimerEntry> canceling_timers_; //!< Store the self-cancel timer to avoid reset
   
   EventLoop* loop_; //!< Ensure one loop per thread
 };

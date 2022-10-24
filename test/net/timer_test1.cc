@@ -9,7 +9,15 @@ EventLoop* g_loop;
 int main() {
   EventLoop loop;
   g_loop = &loop;
-    
+  
+  loop.RunAfter([]() {
+    LOG_INFO << "RunAfter 1s";
+  }, 1.0);
+  
+  loop.RunAt([]() {
+    LOG_INFO << "RunAt current_time + 1s";
+  }, TimeStamp::Now() + TimeStamp::Second(1));
+
   Thread thr([]() {
     EventLoop loop1;
     g_loop->RunEvery([]() {

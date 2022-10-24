@@ -29,25 +29,26 @@ public:
     : callback_{ std::move(cb) }
     , expiration_{ expiration }
     , interval_{ interval }
-    , repeat_{ interval > 0.0 }
     , sequence_{ s_counter_.GetAndAdd(1) }
   { }
 
   TimeStamp expiration() const noexcept { return expiration_; }
   double interval() const noexcept { return interval_; }
-  bool repeat() const noexcept { return repeat_; }
+  bool repeat() const noexcept { return interval_ > 0.0; }
   uint64_t sequence() const noexcept { return sequence_; }
 private:
   void run() {
     callback_();
   }
 
-  void restart(TimeStamp now) noexcept;
+  void restart(TimeStamp now) noexcept
+  {
+    expiration_ = AddTime(now, interval_);
+  }
 
   TimerCallback callback_;
   TimeStamp expiration_; 
   double interval_;
-  bool repeat_; 
   uint64_t sequence_;
 
   static AtomicCounter64 s_counter_;
