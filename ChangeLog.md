@@ -51,3 +51,13 @@
  * Add: 添加`FixedChunkMemoryPool`，将对象的内存缓存到固定分块的内存池中，从而可以尽量减少调用`malloc()`的次数和减少内存碎片（主要是外部碎片）出现的概率，
    避免服务器程序长时间运行内存降不下来（e.g. TcpConnection，\*Session（用户自定义））
  * Add: TcpServer支持设置连接内存池（自然，也可以采用通常的`malloc()/free()`）
+
+2022-10-24 Conzxy
+ * Fix: `Buffer`的`Shrink()`逻辑有问题
+ * Update: 重新整理`timer`模块的逻辑，修改`Timer`和`TimerQueue`的具体实现，将无用的部分剪掉了：
+   * Timer: repeat没必要用一个额外的布尔值来表示，直接判断`interval > 0.0`即可
+   * TimerQueue: 由于终究得用到原子计数器（序号源），因此将`active_timers`去掉了，`timers`用序号代替冗余的时间戳。
+ * Update: 修剪了`TimeStamp`，使定时器接口更易使用
+   * 删除无用函数：`IsValid()`, `ToValid()`
+   * 添加运算符重载：支持与double(seconds)，TimeStamp::Second，TimeStamp::Millisecond，TimeStamp::Microsecond的+/-运算（无关位置）以及取反(nagation)
+   * 支持`strptime()`格式字符串获取TimeStamp（实际就是`strptime()`的wrapper）
