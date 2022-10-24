@@ -55,8 +55,19 @@ Buffer::Shrink(size_type n) {
   // tmp.MakeSpace(GetReadableSize() + n);
   // tmp.Append(ToStringView());
   // swap(tmp);
- 
-  data_.Shrink(n);
+  if (read_index_ != BUFFER_PREFIX_SIZE)
+  {
+    std::copy(offset(read_index_), offset(write_index_),
+              offset(BUFFER_PREFIX_SIZE));
+  }
+
+#ifndef NDEBUG
+  if (read_index_ == write_index_) {
+    assert(read_index_ == BUFFER_PREFIX_SIZE);
+  }
+#endif
+
+  data_.Shrink(GetReadableSize() + n);
 }
 
 void
@@ -79,6 +90,7 @@ Buffer::MakeSpace(size_type len) {
   // +-+-+------------------------+
   //
   if (len >  GetPrependableSize() - BUFFER_PREFIX_SIZE + GetWritableSize()) {
+    // FIXME Need copy [readable region] to the BUFFER_PREFIX_SIZE?
   #if 0
     size_t at_least_size = write_index_ + len;
     data_.Grow((at_least_size >= data_.size()) ? at_least_size : data_.size() * 2);
