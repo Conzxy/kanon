@@ -1,6 +1,8 @@
 #include "time_stamp.h"
 
+#include <string.h>
 #include <sys/time.h>
+#include <time.h>
 #include <inttypes.h>
 
 namespace kanon {
@@ -26,7 +28,8 @@ std::string TimeStamp::ToFormattedString(bool isShowMicroseconds) const {
 
   auto seconds = static_cast<time_t>(microseconds_ / kMicrosecondsPerSeconds_);
   struct tm tm;
-  gmtime_r(&seconds, &tm);
+  // gmtime_r(&seconds, &tm);
+  localtime_r(&seconds, &tm);
   
   if (isShowMicroseconds) {
     int microseconds = static_cast<int>(microseconds_ % kMicrosecondsPerSeconds_);
@@ -42,6 +45,22 @@ std::string TimeStamp::ToFormattedString(bool isShowMicroseconds) const {
   }
 
   return buf;
+}
+
+TimeStamp TimeStamp::FromTimeStr(char const *format, std::string const &rep, bool *ok)
+{
+  struct tm tm;
+  memset(&tm, 0, sizeof tm);
+  // Must init
+  if (!strptime(rep.c_str(), format, &tm)) {
+    if (ok) {
+      *ok = false;
+      return TimeStamp(0);
+    }
+  }
+  time_t t = mktime(&tm);
+  if (ok) *ok = true;
+  return TimeStamp(t * TimeStamp::kMicrosecondsPerSeconds_);
 }
 
 } // namespace kanon
