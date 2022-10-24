@@ -57,7 +57,8 @@
  * Update: 重新整理`timer`模块的逻辑，修改`Timer`和`TimerQueue`的具体实现，将无用的部分剪掉了：
    * Timer: repeat没必要用一个额外的布尔值来表示，直接判断`interval > 0.0`即可
    * TimerQueue: 由于终究得用到原子计数器（序号源），因此将`active_timers`去掉了，`timers`用序号代替冗余的时间戳。
+   * `canceling_timer_`: std::set<> ==> std::unordered_set<>
  * Update: 修剪了`TimeStamp`，使定时器接口更易使用
    * 删除无用函数：`IsValid()`, `ToValid()`
-   * 添加运算符重载：支持与double(seconds)，TimeStamp::Second，TimeStamp::Millisecond，TimeStamp::Microsecond的+/-运算（无关位置）以及取反(nagation)
+   * 添加运算符重载：支持与double(seconds)，TimeStamp::Second，TimeStamp::Millisecond，TimeStamp::Microsecond的`+/-`运算（无关位置）以及`取反(nagation)`
    * 支持`strptime()`格式字符串获取TimeStamp（实际就是`strptime()`的wrapper）
