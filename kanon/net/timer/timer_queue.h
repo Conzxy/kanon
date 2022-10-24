@@ -2,6 +2,7 @@
 #define KANON_NET_TIMER_TIMERQUEUE_H
 
 #include <set>
+#include <unordered_set>
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/ptr.h"
@@ -9,6 +10,8 @@
 #include "kanon/net/timer/timer.h"
 #include "kanon/net/timer/timer_id.h"
 #include "kanon/net/channel.h"
+
+#include <third-party/xxHash/xxhash.h>
 
 namespace kanon {
 
@@ -207,7 +210,15 @@ private:
    * The all timers are not reset, and before the next phase of 
    * calling callback will be cleared.
    */
-  std::set<TimerEntry> canceling_timers_; //!< Store the self-cancel timer to avoid reset
+  struct TimerEntryHash {
+    inline uint64_t operator()(TimerEntry const &x) const noexcept
+    {
+      return XXH64(&x.first, sizeof x.first, time(NULL)) ^ 
+             (XXH64(&x.second, sizeof x.second, time(NULL)) << 1);
+    }
+  };
+
+  std::unordered_set<TimerEntry, TimerEntryHash> canceling_timers_; //!< Store the self-cancel timer to avoid reset
   
   EventLoop* loop_; //!< Ensure one loop per thread
 };

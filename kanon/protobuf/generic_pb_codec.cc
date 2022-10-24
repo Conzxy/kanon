@@ -7,7 +7,7 @@
 #include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/endian_api.h"
 
-#include <xxHash/xxhash.h>
+#include <third-party/xxHash/xxhash.h>
 
 using namespace kanon;
 using namespace kanon::protobuf::internal;

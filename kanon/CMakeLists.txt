@@ -1,6 +1,10 @@
 ##########################################################
 # Get the kanon source files
 ##########################################################
+set(XXHASH_DIR ${THIRD_PARTY_DIR}/xxHash)
+
+file(GLOB XXHASH_SRC ${XXHASH_DIR}/*.c)
+
 file(GLOB_RECURSE KANON_BASE_SRC 
   string/*.cc
   log/*.cc
@@ -11,6 +15,8 @@ file(GLOB_RECURSE KANON_BASE_SRC
   algo/*.cc
   buffer/*.cc
 )
+
+list(APPEND KANON_BASE_SRC ${XXHASH_SRC})
 
 file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
 
