@@ -139,7 +139,7 @@ public:
    *     - [Ipv6 IP address]:port   
    *     - hostname:port
    */
-  explicit InetAddr(StringView address);
+  InetAddr(StringView address);
 
   /**
    * \brief Compatible with C struct sockaddr_in
