@@ -28,9 +28,24 @@ message(STATUS "kanon net source files: ${KANON_NET_SRC}")
 # User can set generate shared libraries as following command
 # cd build && cmake .. -D BUILD_SHARED_LIBS=ON
 ##########################################################
+# In other platform(eg. windows), generating base library only.
 GenLib(kanon_base ${KANON_BASE_SRC})
-GenLib(kanon_net ${KANON_NET_SRC})
-target_link_libraries(kanon_net kanon_base)
+
+if (UNIX AND NOT APPLE)
+  message(STATUS "Kanon on unix/linux/solaris/... platform")
+  set(KANON_ON_UNIX 1)
+else ()
+  set(AKNON_ON_UNIX 0)
+endif ()
+
+if (WIN32)
+  message(STATUS "Kanon on windows")
+endif ()
+
+if (${KANON_ON_UNIX})
+  GenLib(kanon_net ${KANON_NET_SRC})
+  target_link_libraries(kanon_net kanon_base)
+endif ()
 
 ###########################################################
 # Install the library to /usr/lib
