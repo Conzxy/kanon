@@ -1,24 +1,28 @@
 #ifndef KANON_THREAD_H
 #define KANON_THREAD_H
 
+#include "kanon/util/macro.h"
+
+#ifdef KANON_ON_UNIX
 #include <pthread.h>
+#else
+#include <thread>
+#endif
+
 #include <functional>
 #include <utility>
 #include <string>
 
 #include "kanon/util/noncopyable.h"
-#include "kanon/util/macro.h"
-
 #include "kanon/thread/atomic_counter.h"
 #include "kanon/thread/current_thread.h"
 
 namespace kanon{
 
 namespace detail {
-
 void* Run(void* arg);
-
 }
+
 // Since std::thread use "type erase" to erase these type
 // that are function type and the parameter types.
 // The technique use the base class and (pure) virtual member function
@@ -38,6 +42,7 @@ public:
   // including functions(or function pointers), function object,
   // and lambda object.
   using Threadfunc = std::function<void()>;
+  using ThreadId = uint64_t;
 public:
   Thread(std::string const& name = {});
 
@@ -77,7 +82,7 @@ public:
   std::string GetName() const noexcept
   { return name_; }
 
-  pthread_t GetPthreadId() const noexcept
+  ThreadId GetPthreadId() const noexcept
   { return pthreadId_; }
 
 private:
@@ -88,9 +93,12 @@ private:
   Threadfunc  func_;
   bool    is_started_;
   bool    is_joined_;
-  pthread_t  pthreadId_;
+  ThreadId  pthreadId_;
   std::string name_;
 
+#if !defined(KANON_ON_UNIX)
+  std::thread thr_;
+#endif
   static AtomicCounter32 numCreated_;
 };
 

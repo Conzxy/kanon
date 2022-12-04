@@ -1,10 +1,15 @@
 #ifndef KANON_MUTEXLOCK_H
 #define KANON_MUTEXLOCK_H
 
+#include "kanon/util/macro.h"
+
+#ifdef KANON_ON_UNIX
 #include <pthread.h>
+#else
+#include <mutex>
+#endif
 
 #include "kanon/util/noncopyable.h"
-#include "kanon/util/macro.h"
 
 #include "kanon/thread/pthread_macro.h"
 #include "kanon/thread/current_thread.h" 
@@ -83,13 +88,23 @@ namespace kanon{
 
 class CAPABILITY("mutexlock") MutexLock : noncopyable
 {
+#ifdef KANON_ON_UNIX
+  using MutexT = pthread_mutex_t;
+#else
+  using MutexT = std::mutex;
+#endif
+
 public:
-  MutexLock(){
+  MutexLock() {
+#ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_init(&mutex_, NULL));
+#endif
   }
   
-  ~MutexLock(){
+  ~MutexLock() {
+#ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_destroy(&mutex_));
+#endif
   }
   
   bool IsLockedInThisThread() {
@@ -102,24 +117,54 @@ public:
 
   void Lock() ACQUIRE() {
     assignHolder();
+#ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_lock(&mutex_));
+#else
+    mutex_.lock();
+#endif
   }
-
-  void TryLock() {
-    TCHECK(pthread_mutex_trylock(&mutex_));
-    unassignHolder();
+  
+  /**
+   * \return
+   *  true -- lock successfully
+   *  false -- lock already owned by others
+   */
+  bool TryLock() {
+    auto success = true;
+#ifdef KANON_ON_UNIX
+    auto err = pthread_mutex_trylock(&mutex_);
+    if (err == EBUSY) {
+      success = false;
+    } else {
+      TCHECK(err);
+    }
+#else
+    success = mutex_.try_lock();
+#endif
+    if (success)
+      unassignHolder();
+    return success;
   }
 
   void Unlock() RELEASE() {
+#ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_unlock(&mutex_));
+#else
+    mutex_.unlock();
+#endif
     unassignHolder();
   }
 
-  void TimedLock(timespec const* tout){
-    TCHECK(pthread_mutex_timedlock(&mutex_, tout));
+  // TODO Implement this
+  // std::mutex don't support timedlock
+  // Please use std::timed_mutex
+#if 0
+  void TimedLock(timespec const& tout){
+    TCHECK(pthread_mutex_timedlock(&mutex_, &tout));
   }
+#endif
 
-  pthread_mutex_t& GetMutex(){
+  MutexT& GetMutex(){
     return mutex_;
   }
 
@@ -146,8 +191,13 @@ private:
   void unassignHolder() noexcept
   { holder_ = 0; }
 private:
+
+#ifdef KANON_ON_UNIX
   pthread_mutex_t mutex_;
-  pid_t holder_;
+#else
+  std::mutex mutex_;
+#endif
+  int holder_;
 };
 
 //pthread_mutex_t simple RAII wrapper

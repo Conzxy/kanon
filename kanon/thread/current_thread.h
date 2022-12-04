@@ -11,10 +11,12 @@ namespace CurrentThread {
 // __thread can declare thread-independent variable(only POD-type)
 //
 // for logging
-extern __thread int t_tid;
-extern __thread char t_tidString[32]; 
-extern __thread int t_tidLength;
-extern __thread char const* t_name;
+
+// FIXME pid_t?
+extern thread_local int t_tid;
+extern thread_local char t_tidString[32]; 
+extern thread_local int t_tidLength;
+extern thread_local char const* t_name;
 
 void cacheTid() noexcept;
 

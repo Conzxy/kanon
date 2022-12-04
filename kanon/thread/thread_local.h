@@ -1,11 +1,16 @@
 #ifndef KANON_THREAD_THREAD_LOCAL__
 #define KANON_THREAD_THREAD_LOCAL__
 
+#ifdef KANON_ON_UNIX
 #include "pthread_macro.h"
 #include <pthread.h>
+#endif
+
 #include <utility> // forward
 
 namespace kanon {
+
+#ifdef KANON_ON_UNIX
 
 template <typename T>
 class ThreadLocal {
@@ -51,6 +56,9 @@ class ThreadLocal {
 
   pthread_key_t key_;
 };
+
+#endif
+
 } // namespace kanon
 
 #endif // KANON_THREAD_THREAD_LOCAL__

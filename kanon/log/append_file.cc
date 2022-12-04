@@ -1,7 +1,13 @@
 #include "kanon/log/append_file.h"
 
+#include "kanon/util/macro.h"
+
+#ifdef KANON_ON_UNIX
 #include <sys/stat.h>
 #include <unistd.h>
+#elif defined(KANON_ON_WIN)
+#include <direct.h>
+#endif
 
 #include "kanon/log/logger.h"
 
@@ -19,8 +25,18 @@ AppendFile::AppendFile(StringArg filename)
 
     auto filename_view = StringView(filename.data());
     const std::string dir = filename_view.substr(0, filename_view.rfind('/')).ToString();
+    auto ret = 0;
 
-    if (::mkdir(dir.data(), S_IRUSR) ) {
+#ifdef KANON_ON_UNIX
+    ret = ::mkdir(dir.data(), S_IRUSR);
+#elif defined(KANON_ON_WIN)
+    ret = ::_mkdir(dir.data()); 
+#else
+    // TODO Use c++17 file system API
+    ::fprintf("TODO: Call the directory creation function in specific platform!");
+    ::abort();
+#endif
+    if (ret != 0) {
       ::fprintf(stderr, "Failed to create a directory: %s\n", dir.data());  
       ::fflush(stderr);
       ::abort();
