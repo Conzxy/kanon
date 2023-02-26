@@ -22,7 +22,8 @@ void cacheTid() noexcept;
 
 inline int tid() noexcept
 {
-  if( __builtin_expect(t_tid == 0, 0) )
+  //if( __builtin_expect(t_tid == 0, 0) )
+  if (t_tid == 0)
     cacheTid();
   return t_tid;
 }

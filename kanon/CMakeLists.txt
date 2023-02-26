@@ -61,7 +61,11 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 
-install(TARGETS kanon_base kanon_net DESTINATION lib)
+
+install(TARGETS kanon_base DESTINATION lib)
+if (${KANON_ON_UNIX})
+  install(TARGET kanon_net DESTINATION lib)
+endif ()
 
 set(KANON_INSTALL_INCLUDE_PREFIX "/usr/include/kanon")
 file(GLOB LOG_INCLUDE log/*.h)

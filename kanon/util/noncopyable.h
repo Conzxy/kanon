@@ -42,7 +42,7 @@ private:
   class_name& operator=(class_name const&) = delete;
 #else
 # define DISABLE_EVIL_COPYABLE(class_name) \
- private:
+ private: \
   class_name(class_name const& ) {} \
   class_name& operator=(class_name const&) {}
 #endif // __cplusplus >= 201103L

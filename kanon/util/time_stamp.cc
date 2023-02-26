@@ -30,7 +30,6 @@ std::string TimeStamp::ToFormattedString(bool isShowMicroseconds) const {
   struct tm tm;
   // gmtime_r(&seconds, &tm);
   localtime_r(&seconds, &tm);
-  
   if (isShowMicroseconds) {
     int microseconds = static_cast<int>(microseconds_ % kMicrosecondsPerSeconds_);
     
