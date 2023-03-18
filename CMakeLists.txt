@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-project(kanon)
+include(cmake/utils.cmake)
+
+kanon_extract_version()
+
+project(kanon VERSION ${KANON_VERSION} LANGUAGES CXX)
+
+message(STATUS "Building kanon: ${KANON_VERSION}")
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
- 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS  "/DWIN32 /D_WINDOWS /W0 /GR /EHsc")
   set(CMAKE_CXX_FLAGS_DEBUG   "/MDd /Zi /Ob0 /Od /RTC1")
@@ -88,30 +93,46 @@ set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third-party)
 # it explitly, and the build of static libraries is an option.
 set(BUILD_STATIC_LIBS OFF CACHE BOOL "Build static libraries")
 
-macro (GenLib lib)
-  #if (NOT ${BUILD_SHARED_LIBS})
-  if (${BUILD_STATIC_LIBS})
-    message(STATUS "Build static library: ${lib}")
-    add_library(${lib} STATIC ${ARGN})
-    set_target_properties(${lib}
-      PROPERTIES
-      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    )
-  else ()
-    message(STATUS "Build shared library: ${lib}")
-    add_library(${lib} SHARED ${ARGN})
-    set_target_properties(${lib}
-      PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    )
-  endif (${BUILD_STATIC_LIBS})
-endmacro ()
+
 
 # message(STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
 message(STATUS "BUILD_ALL_TESTS = ${BUILD_ALL_TESTS}")
 message(STATUS "BUILD_ALL_EXAMPLES = ${BUILD_ALL_EXAMPLES}")
 
+option(KANON_INSTALL "Generate the install target" ${KANON_MAIN_PROJECT})
+
 add_subdirectory(kanon)
+
+include(GNUInstallDirs)
+
+if (KANON_INSTALL)
+  message(STATUS "Generating (kanon) install files...")
+  set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/kanonConfig.cmake.in")
+  set(project_config_out "${CMAKE_CURRENT_BINARY}/kanonConfig.cmake")
+  set(config_targets_file "kanonConfigTargets.cmake")
+  set(version_config_file "${CMAKE_CURRENT_BINARY}/kanonConfigVersion.cmake")
+  set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/kanon")
+
+  install(
+    TARGETS kanon
+    EXPORT kanon
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESITNATION ${CMAKE_INSTALL_BINDIR}
+  )
+  export(
+      TARGETS kanon
+      NAMESPACE kanon::
+      FILE "${CMAKE_CURRENT_BINARY}/${config_targets_file}")
+  install(EXPORT kanon DESTINATION ${export_dest_dir} NAMESPACE kanon:: FILE ${config_targets_file})
+
+  include(CMakePackageConfigHelpers)
+  configure_package_config_file("${project_config_in}" "${project_config_out} INSTALL_DESTINATION ${export_dest_dir}")
+  write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
+  install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+endif ()
+    
+#add_subdirectory(kanon)
 
 set (BUILD_TESTS OFF CACHE BOOL "Build tests(Consider test directory)")
 
