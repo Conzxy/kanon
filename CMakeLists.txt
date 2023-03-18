@@ -114,7 +114,7 @@ if (KANON_INSTALL)
   set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/kanon")
 
   install(
-    TARGETS kanon
+    TARGETS kanon_base kanon_net
     EXPORT kanon
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -123,13 +123,13 @@ if (KANON_INSTALL)
   )
 
   export(
-      TARGETS kanon
+      TARGETS kanon_base kanon_net
       NAMESPACE kanon::
       FILE "${CMAKE_CURRENT_BINARY}/${config_targets_file}")
   install(EXPORT kanon DESTINATION ${export_dest_dir} NAMESPACE kanon:: FILE ${config_targets_file})
 
   include(CMakePackageConfigHelpers)
-  configure_package_config_file("${project_config_in}" "${project_config_out} INSTALL_DESTINATION ${export_dest_dir}")
+  configure_package_config_file("${project_config_in}" "${project_config_out}" INSTALL_DESTINATION "${export_dest_dir}")
   write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
   install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
 endif ()

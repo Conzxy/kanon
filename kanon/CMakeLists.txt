@@ -20,8 +20,8 @@ list(APPEND KANON_BASE_SRC ${XXHASH_SRC})
 
 file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
 
-message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
-message(STATUS "kanon net source files: ${KANON_NET_SRC}")
+#message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
+#message(STATUS "kanon net source files: ${KANON_NET_SRC}")
 
 ##########################################################
 # Generate kanon base and net library
