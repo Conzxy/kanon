@@ -30,6 +30,7 @@ message(STATUS "kanon net source files: ${KANON_NET_SRC}")
 ##########################################################
 # In other platform(eg. windows), generating base library only.
 GenLib(kanon_base ${KANON_BASE_SRC})
+set_target_properties(kanon_base PROPERTIES PUBLIC_HEADER ${KANON_BASE_SRC})
 
 if (UNIX AND NOT APPLE)
   message(STATUS "Kanon on unix/linux/solaris/... platform")
@@ -45,6 +46,7 @@ endif ()
 if (${KANON_ON_UNIX})
   GenLib(kanon_net ${KANON_NET_SRC})
   target_link_libraries(kanon_net kanon_base)
+  set_target_properties(kanon_net PROPERTIES PUBLIC_HEADER ${KANON_NET_SRC})
 endif ()
 
 ###########################################################
@@ -78,7 +80,7 @@ file(GLOB NET_TIMER_INCLUDE net/timer/*.h)
 file(GLOB NET_CONNECTION_INCLUDE net/connection/*.h)
 file(GLOB XXHASH_INCLUDE ${THIRD_PARTY_DIR}/xxHash/*.h)
 
-if (KANON_INSTALL)
+if (0)
   install(FILES ${LOG_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/log)
   install(FILES ${PROCESS_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/process)
   install(FILES ${STRING_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/string)
