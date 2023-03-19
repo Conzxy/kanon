@@ -6,9 +6,9 @@ ChatClient::ChatClient(kanon::EventLoop* loop,
                        InetAddr const& server_addr) 
   : TcpClient { loop, server_addr, "Chat Client" }
   , codec_{ [this](TcpConnectionPtr const& conn,
-      std::string const& msg,
+      Buffer& msg,
       TimeStamp receive_time) {
-    this->OnStringMessage(conn, msg, receive_time);
+    this->OnStringMessage(conn, msg.ToStringView().ToString(), receive_time);
   } }
   , latch_{ 1 }
 {
@@ -58,3 +58,7 @@ void ChatClient::Connect() {
   ::puts("connected!");
 }
 
+void ChatClient::Disconnect()
+{
+  TcpClient::Disconnect();
+}

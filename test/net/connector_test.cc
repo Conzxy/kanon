@@ -42,8 +42,8 @@ TEST(connector, stop) {
   auto loop = loop_thread.StartRun();
   InetAddr serv_addr{ "127.0.0.1", g_port++ };
 
-  std::shared_ptr<Connector> connector = std::make_shared<Connector>(loop, serv_addr);
-
+  //std::shared_ptr<Connector> connector = std::make_shared<Connector>(loop, serv_addr);
+  auto connector = Connector::NewConnector(loop, serv_addr);
   connector->StartRun();
   connector->Stop();
 }
@@ -54,7 +54,8 @@ TEST(connector, restart) {
   auto loop = loop_thread.StartRun();
   InetAddr serv_addr{ "127.0.0.1", g_port++ };
 
-  std::shared_ptr<Connector> connector = std::make_shared<Connector>(loop, serv_addr);
+  //std::shared_ptr<Connector> connector = std::make_shared<Connector>(loop, serv_addr);
+  auto connector = Connector::NewConnector(loop, serv_addr);
 
   connector->Stop();
   connector->StartRun();

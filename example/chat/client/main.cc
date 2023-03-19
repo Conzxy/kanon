@@ -2,14 +2,15 @@
 
 #include <iostream>
 
+#include "kanon/log/logger.h"
+#include "kanon/log/async_log.h"
 #include "kanon/net/event_loop_thread.h"
-#include "kanon/log/async_log_trigger.h"
 
 using namespace kanon;
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  AsyncLogTrigger::instance(::basename(argv[0]), 20000, "/root/.log/");
+  SetupAsyncLog(::basename(argv[0]), 20000, "/root/.log/");
 
   EventLoopThread loop_thread{ };
   InetAddr serv_addr{ "127.0.0.1", 9999 };

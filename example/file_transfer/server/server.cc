@@ -9,7 +9,7 @@ FileTransferServer::FileTransferServer(EventLoop& loop, uint16_t port)
 {
   SetConnectionCallback([](TcpConnectionPtr const& conn) {
     if (conn->IsConnected()) {
-      conn->SetContext(new FileTransferSession(conn.get()));
+      conn->SetContext(*(new FileTransferSession(conn.get())));
     } else {
       delete *kanon::AnyCast<FileTransferSession*>(conn->GetContext());
     }

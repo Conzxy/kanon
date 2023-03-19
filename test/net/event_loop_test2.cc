@@ -25,7 +25,7 @@ int main() {
   Channel timer_channel(&loop, timerfd);
 
   timer_channel.EnableReading();
-  timer_channel.set_read_callback([](){
+  timer_channel.SetReadCallback([](TimeStamp recv_tm){
       LOG_INFO << "timer out";
   });
 

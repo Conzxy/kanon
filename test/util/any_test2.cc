@@ -3,5 +3,5 @@
 
 int main()
 {
-  kanon::Any obj(std::unique_ptr<int>(new int));
+  //kanon::Any obj(std::unique_ptr<int>(new int));
 }

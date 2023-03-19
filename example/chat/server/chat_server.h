@@ -6,14 +6,14 @@
 
 #include <list>
 
-class ChatServer : kanon::TcpServer {
+class ChatServer : public kanon::TcpServer {
 public:
   explicit ChatServer(EventLoop& loop)
     : TcpServer{ &loop, InetAddr(9999), "Chat Server" }
     , codec_{ [this](TcpConnectionPtr const& conn,
-                     std::string const& msg,
+                     Buffer &msg,
                      TimeStamp receive_time) { 
-      this->OnStringMessage(conn, msg, receive_time);
+      this->OnStringMessage(conn, msg.RetrieveAllAsString(), receive_time);
     } }
   { 
     SetConnectionCallback([this](kanon::TcpConnectionPtr const& conn) {
@@ -27,7 +27,7 @@ public:
     });
   }
     
-  void StartRun(); 
+  //void StartRun(); 
 
   void OnConnection(TcpConnectionPtr const& conn);
   void OnStringMessage(TcpConnectionPtr const& conn,

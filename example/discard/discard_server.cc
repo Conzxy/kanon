@@ -1,4 +1,4 @@
-#include "kanon/log/async_log_trigger.h"
+#include "kanon/log/logger.h"
 
 #include "kanon/net/tcp_server.h"
 #include "kanon/net/event_loop.h"

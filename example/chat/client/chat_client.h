@@ -6,7 +6,7 @@
 
 #include "example/length_codec/codec.h"
 
-class ChatClient : TcpClient {
+class ChatClient : public TcpClient {
 public:
   explicit ChatClient(EventLoop* loop, InetAddr const& server_addr);
 

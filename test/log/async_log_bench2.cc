@@ -21,9 +21,7 @@ LogFile_bench(State& state) {
 
 static inline void
 AsyncLog_bench(State& state) {
-  AsyncLog al("async_log", 200000, "/root/.log/async-log-bench2/");
-
-  SetupAsyncLog(al);
+  SetupAsyncLog("async_log", 200000, "/root/.log/async-log-bench2/");
   for (auto _ : state) {
     LOG_INFO << "AsyncLogBench2";
   }

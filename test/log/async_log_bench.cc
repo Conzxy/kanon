@@ -46,8 +46,7 @@ LogFile_bench_impl(int num) {
 
 static inline void
 AsyncLog_bench(int num) {
-  AsyncLog log("async_log", 200000, "/root/.log/async-log-bench");
-  SetupAsyncLog(log);
+  SetupAsyncLog("async_log", 200000, "/root/.log/async-log-bench");
   ::detail::AsyncLog_bench_impl(num);
 }
 
