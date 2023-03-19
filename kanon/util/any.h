@@ -48,7 +48,7 @@ public:
   }
   
   Any(Any const& rhs)
-    : holder_{ rhs.empty() ? nullptr : rhs.holder_->clone(rhs.holder_) }
+    : holder_{ rhs.empty() ? nullptr : rhs.holder_->clone() }
   { }
   
   Any(Any&& rhs) noexcept
@@ -135,7 +135,7 @@ private:
      * \berif 
      * Since HolderBase have not value field
      */
-    virtual HolderBase* clone(HolderBase* holder) = 0;
+    virtual HolderBase* clone() = 0;
   };
 
   /**
@@ -156,7 +156,7 @@ private:
     Holder(V const& v)
       : holder_{ v }
     { }
-
+    
     Holder &operator=(Holder const &o)
     {
       holder_ = o;
@@ -176,9 +176,8 @@ private:
       return typeid(V);
     }
 
-    Holder* clone(HolderBase* holder) KANON_OVERRIDE {
-      assert(holder);
-      return new Holder{ *static_cast<Holder<V>*>(holder) };
+    Holder* clone() KANON_OVERRIDE {
+      return new Holder{ holder_ };
     }
 
     V holder_;
