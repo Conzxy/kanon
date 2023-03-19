@@ -1,6 +1,7 @@
 #ifndef KANON_THREAD_THREAD_LOCAL__
 #define KANON_THREAD_THREAD_LOCAL__
 
+#include "kanon/util/macro.h"
 #ifdef KANON_ON_UNIX
 #include "pthread_macro.h"
 #include <pthread.h>
