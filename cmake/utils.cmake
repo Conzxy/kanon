@@ -24,24 +24,17 @@ function(kanon_extract_version)
     set(KANON_VERSION "${ver_major}.${ver_minor}.${ver_patch}" PARENT_SCOPE)
 endfunction()
 
-macro (GenLib lib)
+function (GenLib lib)
   #if (NOT ${BUILD_SHARED_LIBS})
   if (${BUILD_STATIC_LIBS})
     message(STATUS "Build static library: ${lib}")
     add_library(${lib} STATIC ${ARGN})
-    set_target_properties(${lib}
-      PROPERTIES
-      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    )
   else ()
     message(STATUS "Build shared library: ${lib}")
     add_library(${lib} SHARED ${ARGN})
-    set_target_properties(${lib}
-      PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    )
-  endif (${BUILD_STATIC_LIBS})
-endmacro ()
+  endif ()
+  message(STATUS "Lib ${lib} Sources: ${ARGN}")
+endfunction ()
 
 # Check if kanon is being used directly or via add_subdirectory, but allow overriding
 if(NOT DEFINED KANON_MAIN_PROJECT)

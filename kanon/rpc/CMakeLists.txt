@@ -4,20 +4,16 @@ add_custom_command(
   ARGS --cpp_out . ${CMAKE_CURRENT_SOURCE_DIR}/rpc.proto -I${CMAKE_CURRENT_SOURCE_DIR}
   VERBATIM)
 
+aux_source_directory(. KANON_PROTOBUF_RPC_SRC)
+list(APPEND KANON_PROTOBUF_RPC_SRC rpc.pb.cc)
 
-include_directories(${PROJECT_BINARY_DIR}) # i.e. kanon/build
+GenLib(kanon_protobuf_rpc ${KANON_PROTOBUF_RPC_SRC})
+target_include_directories(kanon_protobuf_rpc PRIVATE ${PROJECT_BINARY_DIR}) # i.e. kanon/build
+target_link_libraries(kanon_protobuf_rpc PUBLIC kanon_protobuf)
 
-aux_source_directory(. RPC_SRC)
-list(APPEND RPC_SRC rpc.pb.cc)
-message("rpc sources: ${RPC_SRC}")
-
-GenLib(protobuf_rpc ${RPC_SRC})
-
-target_link_libraries(protobuf_rpc protobuf_codec)
-install(TARGETS protobuf_rpc DESTINATION lib)
-
-file(GLOB RPC_INCLUDE ./*.h)
+file(GLOB KANON_PROTOBUF_RPC_INCLUDE "./*.h")
 list(APPEND RPC_INCLUDE ${PROJECT_BINARY_DIR}/kanon/rpc/rpc.pb.h)
 
-message("rpc header files: ${RPC_INCLUDE}")
-install(FILES ${RPC_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/rpc)
+if (KANON_INSTALL)
+  install(FILES ${KANON_PROTOBUF_RPC_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/rpc)
+endif ()

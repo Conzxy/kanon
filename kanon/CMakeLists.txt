@@ -1,10 +1,6 @@
 ##########################################################
 # Get the kanon source files
 ##########################################################
-set(XXHASH_DIR ${THIRD_PARTY_DIR}/xxHash)
-
-file(GLOB XXHASH_SRC ${XXHASH_DIR}/*.c)
-
 file(GLOB_RECURSE KANON_BASE_SRC 
   string/*.cc
   log/*.cc
@@ -15,8 +11,6 @@ file(GLOB_RECURSE KANON_BASE_SRC
   algo/*.cc
   buffer/*.cc
 )
-
-list(APPEND KANON_BASE_SRC ${XXHASH_SRC})
 
 file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
 
@@ -29,9 +23,6 @@ file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
 # cd build && cmake .. -D BUILD_SHARED_LIBS=ON
 ##########################################################
 # In other platform(eg. windows), generating base library only.
-GenLib(kanon_base ${KANON_BASE_SRC})
-set_target_properties(kanon_base PROPERTIES PUBLIC_HEADER ${KANON_BASE_SRC})
-
 if (UNIX AND NOT APPLE)
   message(STATUS "Kanon on unix/linux/solaris/... platform")
   set(KANON_ON_UNIX 1)
@@ -43,14 +34,46 @@ if (WIN32)
   message(STATUS "Kanon on windows")
 endif ()
 
-if (${KANON_ON_UNIX})
+file(GLOB LOG_INCLUDE log/*.h)
+file(GLOB PROCESS_INCLUDE process/*.h)
+file(GLOB STRING_INCLUDE string/*.h)
+file(GLOB THREAD_INCLUDE thread/*.h)
+file(GLOB UTIL_INCLUDE util/*.h)
+file(GLOB BUFFER_INCLUDE buffer/*.h)
+file(GLOB ZSTL_INCLUDE zstl/*.h)
+file(GLOB ALGO_INCLUDE algo/*.h)
+file(GLOB MEM_INCLUDE mem/*.h)
+file(GLOB ALGO_FORWARD_LIST_INCLUDE algo/forward_list/*.h)
+set(KANON_BASE_INCLUDE ${LOG_INCLUDE} ${PROCESS_INCLUDE} ${STRING_INCLUDE}
+    ${THREAD_INCLUDE} ${UTIL_INCLUDE} ${BUFFER_INCLUDE} ${ZSTL_INCLUDE} ${ALGO_INCLUDE}
+    ${MEM_INCLUDE} ${ALGO_FORWARD_LIST_INCLUDE})
+
+file(GLOB NET_INCLUDE net/*.h)
+file(GLOB NET_POLL_INCLUDE net/poll/*.h)
+file(GLOB NET_TIMER_INCLUDE net/timer/*.h)
+file(GLOB NET_CONNECTION_INCLUDE net/connection/*.h)
+file(GLOB XXHASH_INCLUDE ${THIRD_PARTY_DIR}/xxHash/*.h)
+set(KANON_NET_INCLUDE ${NET_INCLUDE} ${NET_POLL_INCLUDE} ${NET_TIMER_INCLUDE} ${NET_CONNECTION_INCLUDE}
+    ${XXHASH_INCLUDE})
+
+GenLib(kanon_base ${KANON_BASE_SRC})
+target_include_directories(kanon_base PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+if (KANON_ON_UNIX)
   GenLib(kanon_net ${KANON_NET_SRC})
-  target_link_libraries(kanon_net kanon_base)
-  set_target_properties(kanon_net PROPERTIES PUBLIC_HEADER ${KANON_NET_SRC})
+  target_link_libraries(kanon_net PRIVATE kanon_base)
+  target_link_libraries(kanon_net PRIVATE xxHash::xxhash)
+  target_include_directories(kanon_net PUBLIC
+      "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
+      "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 endif ()
 
+add_library(kanon::kanon_base ALIAS kanon_base)
+add_library(kanon::kanon_net ALIAS kanon_net)
+
 ###########################################################
-# Install the library to /usr/lib
 # Install the headers to /usr/include/*
 #
 # User can install these files by following command:
@@ -63,24 +86,9 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 
-set(KANON_INSTALL_INCLUDE_PREFIX "/usr/include/kanon")
+set(KANON_INSTALL_INCLUDE_PREFIX "${CMAKE_INSTALL_INCLUDEDIR}/kanon")
 
-file(GLOB LOG_INCLUDE log/*.h)
-file(GLOB PROCESS_INCLUDE process/*.h)
-file(GLOB STRING_INCLUDE string/*.h)
-file(GLOB THREAD_INCLUDE thread/*.h)
-file(GLOB UTIL_INCLUDE util/*.h)
-file(GLOB BUFFER_INCLUDE buffer/*.h)
-file(GLOB ZSTL_INCLUDE zstl/*.h)
-file(GLOB ALGO_INCLUDE algo/*.h)
-file(GLOB ALGO_FORWARD_LIST_INCLUDE algo/forward_list/*.h)
-file(GLOB NET_INCLUDE net/*.h)
-file(GLOB NET_POLL_INCLUDE net/poll/*.h)
-file(GLOB NET_TIMER_INCLUDE net/timer/*.h)
-file(GLOB NET_CONNECTION_INCLUDE net/connection/*.h)
-file(GLOB XXHASH_INCLUDE ${THIRD_PARTY_DIR}/xxHash/*.h)
-
-if (0)
+if (KANON_INSTALL)
   install(FILES ${LOG_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/log)
   install(FILES ${PROCESS_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/process)
   install(FILES ${STRING_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/string)
@@ -103,13 +111,10 @@ if (0)
 
 endif()
 
-set(BUILD_PROTOBUF OFF CACHE BOOL "Control if build protobuf module")
-set(BUILD_PROTOBUF_RPC OFF CACHE BOOL "Control if build protobuf-rpc module")
-
-if (${BUILD_PROTOBUF} OR ${BUILD_PROTOBUF_RPC})
+if (KANON_BUILD_PROTOBUF OR KANON_BUILD_PROTOBUF_RPC)
   add_subdirectory(protobuf)
-endif (${BUILD_PROTOBUF} OR ${BUILD_PROTOBUF_RPC})
+endif ()
 
-if (${BUILD_PROTOBUF_RPC})
+if (KANON_BUILD_PROTOBUF_RPC)
   add_subdirectory(rpc)
-endif (${BUILD_PROTOBUF_RPC})
+endif ()
