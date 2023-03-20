@@ -8,7 +8,7 @@ function (conzxy_install)
   set(config_version_file "${CMAKE_CURRENT_BINARY}/${CONZXY_PROJECT}ConfigVersion.cmake")
   set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${CONZXY_PROJECT}")
     
-  # Specify rules about targets
+  # Specify rules of targets
   install(
     TARGETS ${CONZXY_TARGETS}
     EXPORT ${CONZXY_PROJECT}
@@ -16,22 +16,28 @@ function (conzxy_install)
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
   )
-    
+
+  # Export the ConfigTargets.cmake to build directory
+  # To make user use find_package() successfully but don't install, 
+  # you can use export(PACKAGE <name>) command to register build dir to
+  # ~/.cmake/packages/
   export(
       EXPORT ${CONZXY_PROJECT}
       NAMESPACE ${CONZXY_NAMESPACE}::
       FILE "${CMAKE_CURRENT_BINARY_DIR}/${config_targets_filename}")
-  # Install ConfigTargets.cmake
+
+  # Generate and Install ConfigTargets.cmake
   install(EXPORT ${CONZXY_PROJECT} 
       DESTINATION "${export_dest_dir}"
       NAMESPACE ${CONZXY_NAMESPACE}::
       FILE ${config_targets_filename})
     
-  # Install Config.cmake and ConfigVersion.cmake
   include(CMakePackageConfigHelpers)
+  # Generate Config.cmake and ConfigVersion.cmake
   # (<in> <out>)
   configure_package_config_file("${project_config_in_file}" "${project_config_out_file}" 
       INSTALL_DESTINATION "${export_dest_dir}")
   write_basic_package_version_file("${config_version_file}" COMPATIBILITY SameMajorVersion)
+  # Install Config.cmake and ConfigVersion.cmake
   install(FILES "${project_config_out_file}" "${config_version_file}" DESTINATION "${export_dest_dir}")
 endfunction ()
