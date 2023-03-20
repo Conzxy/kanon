@@ -11,6 +11,7 @@ include(cmake/utils.cmake)
 include(cmake/compile_flag.cmake)
 include(cmake/build_type.cmake)
 include(cmake/cache_var.cmake)
+include(cmake/platform.cmake)
 
 # Extract the version from version.h in the top level of include directory
 kanon_extract_version()
@@ -32,7 +33,12 @@ if (KANON_INSTALL)
   set(version_config_file "${CMAKE_CURRENT_BINARY}/kanonConfigVersion.cmake")
   set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/kanon")
     
-  set(kanon_export_targets kanon_base kanon_net)
+  set(kanon_export_targets kanon_base)
+
+  if (KANON_ON_UNIX)
+    list(APPEND kanon_export_targets kanon_net)
+  endif ()
+
   if (KANON_BUILD_PROTOBUF)
     list(APPEND kanon_export_targets kanon_protobuf)
   endif ()
@@ -52,7 +58,7 @@ if (KANON_INSTALL)
       TARGETS ${kanon_export_targets}
       NAMESPACE kanon::
       FILE "${CMAKE_CURRENT_BINARY}/${config_targets_file}")
-  install(EXPORT kanon DESTINATION ${export_dest_dir} NAMESPACE kanon:: FILE ${config_targets_file})
+  install(EXPORT kanon DESTINATION "${export_dest_dir}" NAMESPACE kanon:: FILE ${config_targets_file})
 
   include(CMakePackageConfigHelpers)
   configure_package_config_file("${project_config_in}" "${project_config_out}" INSTALL_DESTINATION "${export_dest_dir}")
