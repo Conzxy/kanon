@@ -12,6 +12,7 @@ include(cmake/compile_flag.cmake)
 include(cmake/build_type.cmake)
 include(cmake/cache_var.cmake)
 include(cmake/platform.cmake)
+include(cmake/install.cmake)
 
 # Extract the version from version.h in the top level of include directory
 kanon_extract_version()
@@ -26,13 +27,6 @@ add_subdirectory(kanon)
 
 if (KANON_INSTALL)
   message(STATUS "Generating (kanon) install files...")
-  include(GNUInstallDirs)
-  set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/kanonConfig.cmake.in")
-  set(project_config_out "${CMAKE_CURRENT_BINARY}/kanonConfig.cmake")
-  set(config_targets_file "kanonConfigTargets.cmake")
-  set(version_config_file "${CMAKE_CURRENT_BINARY}/kanonConfigVersion.cmake")
-  set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/kanon")
-    
   set(kanon_export_targets kanon_base)
 
   if (KANON_ON_UNIX)
@@ -46,24 +40,7 @@ if (KANON_INSTALL)
     list(APPEND kanon_export_targets kanon_protobuf_rpc)
   endif ()
 
-  install(
-    TARGETS ${kanon_export_targets}
-    EXPORT kanon
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  )
-
-  export(
-      TARGETS ${kanon_export_targets}
-      NAMESPACE kanon::
-      FILE "${CMAKE_CURRENT_BINARY}/${config_targets_file}")
-  install(EXPORT kanon DESTINATION "${export_dest_dir}" NAMESPACE kanon:: FILE ${config_targets_file})
-
-  include(CMakePackageConfigHelpers)
-  configure_package_config_file("${project_config_in}" "${project_config_out}" INSTALL_DESTINATION "${export_dest_dir}")
-  write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
-  install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+  conzxy_install(PROJECT kanon NAMESPACE kanon TARGETS ${kanon_export_targets})
 endif ()
     
 # Tests
