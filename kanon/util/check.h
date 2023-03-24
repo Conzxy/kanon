@@ -6,29 +6,24 @@
 #include <string.h>
 #include <errno.h>
 
+#include "kanon/util/macro.h"
+
 namespace kanon {
-
-#ifndef likely 
-#define likely __builtin_expect(!!(x), 1)
-#endif
-
-#ifndef unlikely
-#define unlikely(x) __builtin_expect(!!(x), 0)
-#endif 
 
 // Not need #ret
 // We just see the error of specific errno
-#define ASSERT(ret) \
-  ({if (unlikely((ret) != 0)) \
-   {\
-    char buf[1536]; \
-    ::memset(buf, 0, sizeof buf); \
-    ::snprintf(buf, sizeof buf, "Aborted.\n%s() (Errno: %d, %s) - %s:%d\n", \
-        __func__, ret, ::strerror(ret), __FILE__, __LINE__) ; \
-    ::fputs(buf, stderr); \
-    ::fflush(stderr); \
-    ::abort();\
-   }})
+#define ASSERT(ret)                                                            \
+  ({                                                                           \
+    if (KANON_UNLIKELY((ret) != 0)) {                                          \
+      char buf[1536];                                                          \
+      ::memset(buf, 0, sizeof buf);                                            \
+      ::snprintf(buf, sizeof buf, "Aborted.\n%s() (Errno: %d, %s) - %s:%d\n",  \
+                 __func__, ret, ::strerror(ret), __FILE__, __LINE__);          \
+      ::fputs(buf, stderr);                                                    \
+      ::fflush(stderr);                                                        \
+      ::abort();                                                               \
+    }                                                                          \
+  })
 
 } // namespace kanon
 
