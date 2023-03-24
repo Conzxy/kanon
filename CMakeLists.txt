@@ -25,6 +25,7 @@ add_subdirectory(third-party)
 # Add source directory before install
 add_subdirectory(kanon)
 
+
 if (KANON_INSTALL)
   message(STATUS "Generating (kanon) install files...")
   set(kanon_export_targets kanon_base)

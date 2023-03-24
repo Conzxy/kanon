@@ -11,7 +11,6 @@ file(GLOB_RECURSE KANON_BASE_SRC
   algo/*.cc
   buffer/*.cc
 )
-
 file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
 
 #message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
@@ -44,13 +43,39 @@ file(GLOB XXHASH_INCLUDE ${THIRD_PARTY_DIR}/xxHash/*.h)
 set(KANON_NET_INCLUDE ${NET_INCLUDE} ${NET_POLL_INCLUDE} ${NET_TIMER_INCLUDE} ${NET_CONNECTION_INCLUDE}
     ${XXHASH_INCLUDE})
 
+#aux_source_directory(linux/core KANON_LINUX_CORE_SRC)
+#aux_source_directory(./win/core KANON_WIN_CORE_SRC)
+file(GLOB_RECURSE KANON_LINUX_CORE_SRC linux/core/*.cc)
+file(GLOB_RECURSE KANON_WIN_CORE_SRC win/core/*.cc)
+# This must be a absolute path here!
+set(KANON_LINUX_CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/linux/core)
+set(KANON_WIN_CORE_INCLUDE_DIR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win/core)
+
 set(KANON_LIB_POPULATE_KEYWORD PUBLIC)
+
+if (KANON_ON_WIN)
+  message("Windows core sources: ${KANON_WIN_CORE_SRC}")
+  list(APPEND KANON_BASE_SRC ${KANON_WIN_CORE_SRC})
+endif ()
+
+if (KANON_ON_UNIX)
+  list(APPEND KANON_BASE_SRC ${KANON_LINUX_CORE_SRC})
+endif ()
 
 GenLib(kanon_base ${KANON_BASE_SRC})
 target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
     "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-#add_library(kanon::kanon_base ALIAS kanon_base)
+if (KANON_ON_WIN)
+  target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
+  "$<BUILD_INTERFACE:${KANON_WIN_CORE_INCLUDE_DIR}>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+endif ()
+if (KANON_ON_UNIX)
+  target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
+  "$<BUILD_INTERFACE:${KANON_LINUX_CORE_INCLUDE_DIR}>"
+  "${INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+endif ()
 
 if (KANON_ON_UNIX)
   GenLib(kanon_net ${KANON_NET_SRC})
@@ -59,8 +84,8 @@ if (KANON_ON_UNIX)
   target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
       "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-  #add_library(kanon::kanon_net ALIAS kanon_net)
 endif ()
+
 
 ###########################################################
 # Install the headers to /usr/include/*
