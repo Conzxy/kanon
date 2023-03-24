@@ -26,7 +26,7 @@ endfunction()
 
 function (GenLib lib)
   #if (NOT ${BUILD_SHARED_LIBS})
-  if (${BUILD_STATIC_LIBS})
+  if (KANON_BUILD_STATIC_LIBS)
     message(STATUS "Build static library: ${lib}")
     add_library(${lib} STATIC ${ARGN})
   else ()
