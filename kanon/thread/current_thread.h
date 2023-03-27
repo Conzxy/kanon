@@ -13,29 +13,26 @@ namespace CurrentThread {
 // for logging
 
 // FIXME pid_t?
-extern thread_local int t_tid;
-extern thread_local char t_tidString[32]; 
-extern thread_local int t_tidLength;
-extern thread_local char const* t_name;
+extern KANON_TLS int t_tid;
+extern KANON_TLS char t_tidString[32];
+extern KANON_TLS int t_tidLength;
+extern KANON_TLS char const *t_name;
 
 void cacheTid() noexcept;
 
 inline int tid() noexcept
 {
-  //if( __builtin_expect(t_tid == 0, 0) )
-  if (t_tid == 0)
+  if (KANON_UNLIKELY(t_tid == 0)) {
     cacheTid();
+  }
   return t_tid;
 }
 
-inline char const* tidString() noexcept
-{ return t_tidString; }
+inline char const *tidString() noexcept { return t_tidString; }
 
-inline int tidLength() noexcept
-{ return t_tidLength; }
+inline int tidLength() noexcept { return t_tidLength; }
 
-inline char const* GetName() noexcept
-{ return t_name; }
+inline char const *GetName() noexcept { return t_name; }
 
 bool isMainThread() noexcept;
 
