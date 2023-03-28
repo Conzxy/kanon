@@ -67,12 +67,6 @@ void Connector::CompleteConnect(FdType sockfd)
 
   channel_->SetWriteCallback([this]() {
     FdType sockfd = channel_->GetFd();
-    int flag = 1;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT,
-                   (char const *)&flag, sizeof(flag)))
-    {
-      LOG_SYSERROR << "Failed to setsockopt(SO_UPDATE_CONNECT_CONTEXT)";
-    }
     // NOTICE:
     // OUT maybe occurs with ERR(and HUP).
     // Therefore, the error callback is called before this,
@@ -80,10 +74,25 @@ void Connector::CompleteConnect(FdType sockfd)
     if (state_ == State::kConnecting) {
       ResetChannel();
       int err = sock::GetSocketError(sockfd);
+      int seconds = 0;
+      int bytes = sizeof(seconds);
+      auto iResult = getsockopt(sockfd, SOL_SOCKET, SO_CONNECT_TIME,
+                                (char *)&seconds, (PINT)&bytes);
+      auto can_retry = (iResult != NO_ERROR) || (seconds == (~0));
+      if (can_retry) {
+        Retry(sockfd);
+      }
+      int flag = 1;
+      if (setsockopt(sockfd, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT,
+                     (char const *)&flag, sizeof(flag)))
+      {
+        LOG_SYSERROR << "Failed to setsockopt(SO_UPDATE_CONNECT_CONTEXT)";
+      }
 
       if (err) {
         // Fatal errors have handled in Connect()
         LOG_WARN << "SO_ERROR = " << err << " " << strerror_tl(err);
+        LOG_SYSERROR << "GetOverlappedResult(): ";
         Retry(sockfd);
       } else if (sock::IsSelfConnect(sockfd)) {
         // Self connection happend only when:
@@ -104,7 +113,6 @@ void Connector::CompleteConnect(FdType sockfd)
       } else {
         // new_connection_callback should be seted by client
         SetState(State::kConnected);
-
         if (connect_) {
           if (new_connection_callback_) {
             new_connection_callback_(sockfd);
