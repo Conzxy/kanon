@@ -1,40 +1,25 @@
 #include "chunk_list.h"
 
-#include <sys/uio.h>
-#include <vector>
 #include <limits.h>
 #include <inttypes.h>
 
-#include "kanon/net/sock_api.h"
-#include "kanon/algo/fixed_vector.h"
-
 #include "kanon/util/macro.h"
-
-#ifdef IOV_MAX
-  static constexpr unsigned IOVEC_MAX = IOV_MAX;
-#else
-  static constexpr unsigned IOVEC_MAX = 1024;
-#endif
 
 // #define CHUNK_LIST_DEBUG
 
 #ifdef CHUNK_LIST_DEBUG
-  #include <stdio.h>
+#include <stdio.h>
 
-  #define DLOG(str, ...) \
-    ::printf(str, __VA_ARGS__)
+#define DLOG(str, ...) ::printf(str, __VA_ARGS__)
 #else
-  #define DLOG(str, ...) 
+#define DLOG(str, ...)
 #endif
-
-static size_t RoundUpDivideIn2(size_t x, size_t y) noexcept {
-  return (x == 0) ? 0 : ((x - 1) / y + 1);
-}
 
 namespace kanon {
 
-void ChunkList::Append(void const *data, size_t len) {
-  auto buf = reinterpret_cast<char const*>(data);
+void ChunkList::Append(void const *data, size_t len)
+{
+  auto buf = reinterpret_cast<char const *>(data);
 
   // If buffers_ is not empty, try fill the the last chunk
   if (!buffers_.empty()) {
@@ -46,7 +31,7 @@ void ChunkList::Append(void const *data, size_t len) {
     if (last_block_wsize > 0) {
       if (last_block_wsize >= len) {
         last_block->Append(buf, len);
-        assert(last_block->GetWritableSize() == last_block_wsize-len);
+        assert(last_block->GetWritableSize() == last_block_wsize - len);
         DLOG("len = %zu < writable size of last chunk\n", len);
         return;
       } else {
@@ -56,7 +41,7 @@ void ChunkList::Append(void const *data, size_t len) {
       }
     }
   }
-  
+
   ListType::Iterator free_buffer;
 
   DLOG("%s", "===== Appent to the back of buffers_ =====\n");
@@ -77,13 +62,15 @@ void ChunkList::Append(void const *data, size_t len) {
       buf += CHUNK_SIZE;
     } else {
       free_buffer->Append(buf, len);
-      return; 
+      return;
     }
   }
-  KANON_ASSERT(GetLastChunk()->GetWritableSize() != CHUNK_SIZE, "The last chunk must not be empty");
+  KANON_ASSERT(GetLastChunk()->GetWritableSize() != CHUNK_SIZE,
+               "The last chunk must not be empty");
 }
 
-void ChunkList::AdvanceRead(size_t len) {
+void ChunkList::AdvanceRead(size_t len)
+{
   ListType::Iterator first_block;
 
   while (!IsEmpty()) {
@@ -107,7 +94,8 @@ void ChunkList::AdvanceRead(size_t len) {
   }
 }
 
-auto ChunkList::GetReadableSize() const noexcept -> SizeType {
+auto ChunkList::GetReadableSize() const noexcept -> SizeType
+{
   if (IsEmpty()) {
     return 0;
   } else {
@@ -115,52 +103,24 @@ auto ChunkList::GetReadableSize() const noexcept -> SizeType {
     if (buffers_.size() == 1) {
       return first_chunk->GetReadableSize();
     } else if (buffers_.size() == 2) {
-      return first_chunk->GetReadableSize() + first_chunk.next()->GetReadableSize();
+      return first_chunk->GetReadableSize() +
+             first_chunk.next()->GetReadableSize();
     }
 
     auto last_chunk = buffers_.before_end();
-    return first_chunk->GetMaxSize() != 4096 ? 
-      first_chunk->GetReadableSize()+first_chunk.next()->GetReadableSize()+(GetChunkSize()-3)*CHUNK_SIZE + last_chunk->GetReadableSize():
-      first_chunk->GetReadableSize()+(GetChunkSize()-2)*CHUNK_SIZE + last_chunk->GetReadableSize();
+    return first_chunk->GetMaxSize() != 4096
+               ? first_chunk->GetReadableSize() +
+                     first_chunk.next()->GetReadableSize() +
+                     (GetChunkSize() - 3) * CHUNK_SIZE +
+                     last_chunk->GetReadableSize()
+               : first_chunk->GetReadableSize() +
+                     (GetChunkSize() - 2) * CHUNK_SIZE +
+                     last_chunk->GetReadableSize();
   }
 }
 
-ChunkList::SizeType ChunkList::WriteFd(int fd, int& saved_errno) noexcept {
-  if (GetChunkSize() == 1) {
-    DLOG("%s", "Chunk size = 1, call ::write() directly\n");
-    auto first_chunk = GetFirstChunk();
-    return sock::Write(fd, GetFirstChunk()->GetReadBegin(), first_chunk->GetReadableSize());
-  }
-
-  FixedVector<struct iovec> iovecs(GetChunkSize());
-  auto first_chunk = buffers_.begin();
-  auto cnt = RoundUpDivideIn2(GetChunkSize(), IOVEC_MAX);
-
-  int ret = 0;
-
-  DLOG("%s\n", "===== Write iovecs =====");
-  while (cnt--) {
-    for (auto& x : iovecs) {
-      DLOG("readbegin = %p, readablesize = %zu\n", first_chunk->GetReadBegin(), first_chunk->GetReadableSize());
-      x.iov_base = first_chunk->GetReadBegin();
-      x.iov_len = first_chunk->GetReadableSize();
-      ++first_chunk;
-    }
-
-    auto n = ::writev(fd, iovecs.data(), iovecs.size());
-
-    if (n >= 0) {
-      ret += n;
-    } else {
-      saved_errno = errno;
-      break;
-    }
-  }
-
-  return ret;
-}
-
-bool ChunkList::PutToFreeChunk() noexcept {
+bool ChunkList::PutToFreeChunk() noexcept
+{
   if (buffers_.front().GetMaxSize() != CHUNK_SIZE) {
     return false;
   }
@@ -172,18 +132,24 @@ bool ChunkList::PutToFreeChunk() noexcept {
   return true;
 }
 
-void ChunkList::Shrink(size_t chunk_size) {
-  if (chunk_size >= free_buffers_.size()) { return; }
+void ChunkList::Shrink(size_t chunk_size)
+{
+  if (chunk_size >= free_buffers_.size()) {
+    return;
+  }
 
   auto end = free_buffers_.begin();
-  std::advance(end, free_buffers_.size()-chunk_size);
+  std::advance(end, free_buffers_.size() - chunk_size);
 
   free_buffers_.erase_after(free_buffers_.cbefore_begin(), end);
   assert(free_buffers_.size() == chunk_size);
 }
 
-void ChunkList::ReserveFreeChunk(size_t chunk_size) {
-  if (chunk_size <= free_buffers_.size()) { return; }
+void ChunkList::ReserveFreeChunk(size_t chunk_size)
+{
+  if (chunk_size <= free_buffers_.size()) {
+    return;
+  }
 
   size_t diff = chunk_size - free_buffers_.size();
 
@@ -192,12 +158,14 @@ void ChunkList::ReserveFreeChunk(size_t chunk_size) {
   }
 }
 
-void ChunkList::ReserveWriteChunk(size_t chunk_size) {
+void ChunkList::ReserveWriteChunk(size_t chunk_size)
+{
   while (chunk_size--)
     buffers_.push_back(buffers_.create_node_size(CHUNK_SIZE));
 }
 
-auto ChunkList::GetFreeChunk() noexcept -> ListType::Iterator {
+auto ChunkList::GetFreeChunk() noexcept -> ListType::Iterator
+{
   if (!free_buffers_.empty()) {
     return free_buffers_.extract_front();
   } else {
@@ -206,4 +174,3 @@ auto ChunkList::GetFreeChunk() noexcept -> ListType::Iterator {
 }
 
 } // namespace kanon
-
