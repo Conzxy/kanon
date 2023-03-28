@@ -5,16 +5,17 @@
 #include "kanon/net/event_loop_thread.h"
 #include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/inet_addr.h"
+#include "kanon/net/init.h"
 
+using kanon::Buffer;
+using kanon::ChunkList;
 using kanon::EventLoop;
 using kanon::EventLoopThread;
-using kanon::TcpConnectionPtr;
-using kanon::TcpConnection;
-using kanon::Buffer;
 using kanon::InetAddr;
-using kanon::TimeStamp;
-using kanon::StringView;
 using kanon::OutputBuffer;
-using kanon::ChunkList;
+using kanon::StringView;
+using kanon::TcpConnection;
+using kanon::TcpConnectionPtr;
+using kanon::TimeStamp;
 
 #endif // KANON_NET_USRE_COMMON_H
