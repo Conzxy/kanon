@@ -16,68 +16,77 @@
 
 using namespace kanon;
 
-static EventLoop* g_loop = nullptr;
+static EventLoop *g_loop = nullptr;
 
-inline void SignalHandler(int signo, int expected, char const* msg) noexcept {
+inline void SignalHandler(int signo, int expected, char const *msg) noexcept
+{
   assert(signo == expected);
   LOG_INFO << msg;
-
 
   if (g_loop) {
     LOG_INFO << "The event loop is quiting...";
     g_loop->Quit();
   }
-  
+
   LOG_INFO << "The server exit successfully";
 }
 
-inline void SigKillHandler(int signo) noexcept {
+#ifdef KANON_ON_UNIX
+inline void SigKillHandler(int signo) noexcept
+{
   SignalHandler(signo, SIGKILL, "Catching SIGKILL, force kill the server");
   exit(1);
 }
+#endif
 
-inline void SigIntHandler(int signo) noexcept {
-  SignalHandler(signo, SIGINT, "Catching SIGINT(i.e. User type Ctrl+c), server is exiting");
+inline void SigIntHandler(int signo) noexcept
+{
+  SignalHandler(signo, SIGINT,
+                "Catching SIGINT(i.e. User type Ctrl+c), server is exiting");
   exit(0);
 }
 
-inline void SigTermHandler(int signo) noexcept {
-  SignalHandler(signo, SIGTERM, "Catching SIGTERM(e.g. kill(1)), server is terminated");
+inline void SigTermHandler(int signo) noexcept
+{
+  SignalHandler(signo, SIGTERM,
+                "Catching SIGTERM(e.g. kill(1)), server is terminated");
   exit(1);
 }
 
-TcpServer::TcpServer(EventLoop* loop,
-                     InetAddr const& listen_addr,
-                     StringArg name,
-                     bool reuseport)
-  : loop_{ loop }
-  , ip_port_{ listen_addr.ToIpPort() }
-  , name_{ name }
-  , acceptor_{ kanon::make_unique<Acceptor>(loop_, listen_addr, reuseport) }
+TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
+                     StringArg name, bool reuseport)
+  : loop_{loop}
+  , ip_port_{listen_addr.ToIpPort()}
+  , name_{name}
+  , acceptor_{kanon::make_unique<Acceptor>(loop_, listen_addr, reuseport)}
   , connection_callback_(&DefaultConnectionCallback)
-  , next_conn_id{ 1 }
-  , pool_{ kanon::make_unique<EventLoopPool>(loop, static_cast<char const*>(name)) }
-  , start_once_{ false }
-  , enable_pool_{ false }
-  , conn_pool_{ 10 }
+  , next_conn_id{1}
+  , pool_{kanon::make_unique<EventLoopPool>(loop,
+                                            static_cast<char const *>(name))}
+  , start_once_{false}
+  , enable_pool_{false}
+  , conn_pool_{10}
 {
   g_loop = loop_;
   ::signal(SIGINT, &SigIntHandler);
   ::signal(SIGTERM, &SigTermHandler);
+#ifdef KANON_ON_UNIX
   ::signal(SIGKILL, &SigKillHandler);
+#endif
 
-  acceptor_->SetNewConnectionCallback([this](int cli_sock, InetAddr const& cli_addr) {
-    // Ensure in main thread
-    loop_->AssertInThread();
-    
-    // use eventloop pool and robin-round to choose a IO loop
-    char buf[64];
-    ::snprintf(buf, sizeof buf, "-%s#%u", ip_port_.c_str(), next_conn_id);
-    ++next_conn_id;
-    auto conn_name = name_ + buf;
-    
-    auto io_loop = pool_->GetNextLoop();
-    auto local_addr = sock::GetLocalAddr(cli_sock);
+  acceptor_->SetNewConnectionCallback(
+      [this](int cli_sock, InetAddr const &cli_addr) {
+        // Ensure in main thread
+        loop_->AssertInThread();
+
+        // use eventloop pool and robin-round to choose a IO loop
+        char buf[64];
+        ::snprintf(buf, sizeof buf, "-%s#%u", ip_port_.c_str(), next_conn_id);
+        ++next_conn_id;
+        auto conn_name = name_ + buf;
+
+        auto io_loop = pool_->GetNextLoop();
+        auto local_addr = sock::GetLocalAddr(cli_sock);
 
 #if 0
     TcpConnectionPtr conn;
@@ -93,41 +102,48 @@ TcpServer::TcpServer(EventLoop* loop,
       conn = TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
     }
 #else
-    LOG_TRACE << "Pool block num = " << conn_pool_.GetBlockNum();
-    LOG_TRACE << "Pool usage = " << conn_pool_.GetUsage(sizeof(TcpConnection));
-    LOG_TRACE << "The number of alive connections: " << connections_.size();
+        LOG_TRACE << "Pool block num = " << conn_pool_.GetBlockNum();
+        LOG_TRACE << "Pool usage = "
+                  << conn_pool_.GetUsage(sizeof(TcpConnection));
+        LOG_TRACE << "The number of alive connections: " << connections_.size();
 
-    auto conn = enable_pool_ ? 
-      TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr, ObjectPoolAllocator<void>(conn_pool_)) :
-      TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);
+        auto conn =
+            enable_pool_
+                ? TcpConnection::NewTcpConnection(
+                      io_loop, conn_name, cli_sock, local_addr, cli_addr,
+                      ObjectPoolAllocator<void>(conn_pool_))
+                : TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock,
+                                                  local_addr, cli_addr);
 #endif
 
-    {
-    MutexGuard guard(lock_conn_);
-    connections_[conn_name] = conn;
-    }
+        {
+          MutexGuard guard(lock_conn_);
+          connections_[conn_name] = conn;
+        }
 
-    conn->SetMessageCallback(message_callback_);
-    conn->SetConnectionCallback(connection_callback_);
-    conn->SetWriteCompleteCallback(write_complete_callback_);
-    conn->SetCloseCallback([this](TcpConnectionPtr const& conn) {
-      auto io_loop = conn->GetLoop();
-      io_loop->AssertInThread();
+        conn->SetMessageCallback(message_callback_);
+        conn->SetConnectionCallback(connection_callback_);
+        conn->SetWriteCompleteCallback(write_complete_callback_);
+        conn->SetCloseCallback([this](TcpConnectionPtr const &conn) {
+          auto io_loop = conn->GetLoop();
+          io_loop->AssertInThread();
 
-      int n = 0; KANON_UNUSED(n);
-      {
-      MutexGuard guard(lock_conn_);
-      n = connections_.erase(conn->GetName());
-      LOG_TRACE << "The number of alive connections(closing): " <<  connections_.size();
-      }
+          int n = 0;
+          KANON_UNUSED(n);
+          {
+            MutexGuard guard(lock_conn_);
+            n = connections_.erase(conn->GetName());
+            LOG_TRACE << "The number of alive connections(closing): "
+                      << connections_.size();
+          }
 
-      assert(n == 1);
+          assert(n == 1);
 
-      // !Must call QueueToLoop() here,
-      // we can't destroy the channel_ in the handling events phase,
-      // and delay the ConnectionDestroyed() in calling functor phase.
-      io_loop->QueueToLoop([conn]() {
-          conn->ConnectionDestroyed();
+          // !Must call QueueToLoop() here,
+          // we can't destroy the channel_ in the handling events phase,
+          // and delay the ConnectionDestroyed() in calling functor phase.
+          io_loop->QueueToLoop([conn]() {
+            conn->ConnectionDestroyed();
 #if 0
           if (conn.use_count() != 1) return;
           if (conn_pool_.IsFull()) {
@@ -140,36 +156,34 @@ TcpServer::TcpServer(EventLoop* loop,
             conn_pool_.Push(raw_conn);
           }
 #endif
-      });
-    });
-    
-    // io loop or main loop
-    io_loop->RunInLoop([conn]() {
-      conn->ConnectionEstablished();
-    });
-  });
+          });
+        });
 
+        // io loop or main loop
+        io_loop->RunInLoop([conn]() {
+          conn->ConnectionEstablished();
+        });
+      });
 }
 
 TcpServer::~TcpServer() noexcept
 {
-  // 
-  for (auto& conn_pair : connections_) {
+  //
+  for (auto &conn_pair : connections_) {
     auto conn = conn_pair.second;
     conn_pair.second.reset();
 
     auto io_loop = conn->GetLoop();
     io_loop->RunInLoop([conn]() {
-        conn->ConnectionDestroyed();
+      conn->ConnectionDestroyed();
     });
   }
 }
 
-void TcpServer::SetLoopNum(int num) noexcept {
-  pool_->SetLoopNum(num);
-}
+void TcpServer::SetLoopNum(int num) noexcept { pool_->SetLoopNum(num); }
 
-void TcpServer::StartRun() noexcept {
+void TcpServer::StartRun() noexcept
+{
   // ! Must be thread-safe
   // Scenario:
   // If the other thread also call this function,
@@ -200,6 +214,4 @@ void TcpServer::StartRun() noexcept {
   }
 }
 
-bool TcpServer::IsRunning() noexcept {
-  return acceptor_->Listening();
-}
+bool TcpServer::IsRunning() noexcept { return acceptor_->Listening(); }

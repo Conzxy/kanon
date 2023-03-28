@@ -7,11 +7,13 @@ EventLoop *g_loop = nullptr;
 
 int main()
 {
+  KanonNetInitialize();
+  kanon::Logger::SetLogLevel(Logger::KANON_LL_TRACE);
   EventLoop loop{};
   g_loop = &loop;
 
-  InetAddr serv_addr{"127.0.0.1", 9999};
-  auto client = NewTcpClient(g_loop, serv_addr);
+  InetAddr serv_addr{"47.99.92.230", 9999};
+  auto client = NewTcpClient(g_loop, serv_addr, "TcpClient");
   client->Connect();
 
   client->SetConnectionCallback([](TcpConnectionPtr const &conn) {
@@ -23,10 +25,11 @@ int main()
     }
   });
 
-  client->SetMessageCallback([](TcpConnectionPtr const &conn, Buffer &buffer, TimeStamp) {
-    LOG_INFO << buffer.ToStringView();
-    buffer.AdvanceAll();
-  });
+  client->SetMessageCallback(
+      [](TcpConnectionPtr const &conn, Buffer &buffer, TimeStamp) {
+        LOG_INFO << buffer.ToStringView();
+        buffer.AdvanceAll();
+      });
 
   loop.StartLoop();
 }

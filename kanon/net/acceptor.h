@@ -31,9 +31,10 @@ class EventLoop;
  *   Only used by TcpServer
  */
 class Acceptor : noncopyable {
-public:
-  using NewConnectionCallback = std::function<void(int cli_fd, InetAddr const& cli_addr)>;
-  
+ public:
+  using NewConnectionCallback =
+      std::function<void(int cli_fd, InetAddr const &cli_addr)>;
+
   /**
    * \brief Construct a Acceptor in @p addr
    * \param addr Address that want to listen
@@ -43,17 +44,16 @@ public:
    * then call Socket::BindAddress() to bind \p address
    * and start monitoring read event(i.e. new connection)
    */
-  Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport=false);
+  Acceptor(EventLoop *loop, InetAddr const &addr, bool reuseport = false);
   ~Acceptor() noexcept;
-  
+
   /**
-   * \brief Check whether is listening state 
+   * \brief Check whether is listening state
    * \note
    *  Thread-safe
    */
-  bool Listening() const noexcept
-  { return listening_; }
-  
+  bool Listening() const noexcept { return listening_; }
+
   /**
    * \brief start listening
    *
@@ -61,19 +61,24 @@ public:
    *   Not thread-safe
    *   Ensured by TcpServer
    */
-  void Listen() noexcept;  
+  void Listen() noexcept;
 
   void SetNewConnectionCallback(NewConnectionCallback cb) noexcept
-  { new_connection_callback_ = std::move(cb); }
-private:
-  EventLoop* loop_; //!< Ensure "One loop per thread"
-  Socket socket_; //!< Accept socket
-  Channel channel_; //!< Accept channel
-  
-  std::atomic_bool listening_; //!< Whether start listening
-  int dummyfd_; //!< Avoid busy loop 
+  {
+    new_connection_callback_ = std::move(cb);
+  }
 
-  NewConnectionCallback new_connection_callback_;  
+ private:
+  EventLoop *loop_; //!< Ensure "One loop per thread"
+  Socket socket_;   //!< Accept socket
+  Channel channel_; //!< Accept channel
+
+  std::atomic_bool listening_; //!< Whether start listening
+#ifdef KANON_ON_UNIX
+  int dummyfd_; //!< Avoid busy loop
+#endif
+
+  NewConnectionCallback new_connection_callback_;
 };
 
 //!@}

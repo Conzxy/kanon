@@ -1,6 +1,11 @@
 #ifndef KANON_NET_TCPSERVER_H
 #define KANON_NET_TCPSERVER_H
 
+#include "kanon/util/platform_macro.h"
+#ifdef KANON_ON_WIN
+#include <winsock2.h>
+#endif
+
 #include <unordered_map>
 
 #include "kanon/util/noncopyable.h"
@@ -9,7 +14,7 @@
 #include "kanon/mem/fixed_chunk_memory_pool.h"
 // #include "kanon/util/object_pool.h"
 #include "kanon/string/string_view.h"
-#include "kanon/thread/atomic.h"
+// #include "kanon/thread/atomic.h"
 #include "kanon/thread/mutex_lock.h"
 #include "event_loop_thread.h"
 
@@ -27,21 +32,22 @@ class EventLoopPool;
 
 /**
  * \brief A Tcp server instance
- * 
+ *
  * User don't care of server how to accept connection and other detail. \n
  * Just write business logic in the callback and register it. \n
  * The Server can start mutilple IO event loop(thread）to process events
- * 
+ *
  * example:
  * ```cpp
  *   EventLoop loop{};
  *   InetAddr listen_addr{ 9999 };
  *   TcpServer echo_server(&loop, listen_addr, "Echo Server");
- *   echo_server.SetMessageCallback([](TcpConnnectionPtr const& conn, Buffer& buffer, TimeStamp recv_time) {
+ *   echo_server.SetMessageCallback([](TcpConnnectionPtr const& conn, Buffer&
+ * buffer, TimeStamp recv_time) {
  *      // ...
  *   });
  *
- *   echo_server.SetLoopNum(1); // start with 1 IO event loop, this is option 
+ *   echo_server.SetLoopNum(1); // start with 1 IO event loop, this is option
  *   echo_server.StartRun();
  * ```
  * \note Public class
@@ -49,16 +55,14 @@ class EventLoopPool;
 class TcpServer : noncopyable {
   using ThreadInitCallback = EventLoopThread::ThreadInitCallback;
 
-public:
+ public:
   /**
-   * \param reuseport 
+   * \param reuseport
    */
-  TcpServer(EventLoop* loop,
-            InetAddr const& listen_addr,
-            StringArg name,
-            bool reuseport=false);
-  
-  ~TcpServer() noexcept;  
+  TcpServer(EventLoop *loop, InetAddr const &listen_addr, StringArg name,
+            bool reuseport = false);
+
+  ~TcpServer() noexcept;
 
   //! Set the number of IO loop
   void SetLoopNum(int num) noexcept;
@@ -78,11 +82,11 @@ public:
   void SetThreadInitCallback(ThreadInitCallback cb)
   {
     init_cb_ = std::move(cb);
-  } 
+  }
   /**
    * Start all IO thread to loop
    * then listen and accept connection to IO loop
-   * 
+   *
    * It is harmless although this is called many times.
    * thread-safe
    */
@@ -91,50 +95,50 @@ public:
   //! \name getter
   //!@{
 
-  //! Whether the server is running 
+  //! Whether the server is running
   bool IsRunning() noexcept;
 
   void SetConnectionCallback(ConnectionCallback cb) noexcept
-  { connection_callback_ = std::move(cb); }
+  {
+    connection_callback_ = std::move(cb);
+  }
 
   void SetMessageCallback(MessageCallback cb) noexcept
-  { message_callback_ = std::move(cb); }
+  {
+    message_callback_ = std::move(cb);
+  }
 
   void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
-  { write_complete_callback_ = std::move(cb); }
-  
-  EventLoop* GetLoop() noexcept
-  { return loop_; }
-  
+  {
+    write_complete_callback_ = std::move(cb);
+  }
+
+  EventLoop *GetLoop() noexcept { return loop_; }
+
   //!@}
   //
   //! \name Connection Pool
   //!@{
-  void EnablePool(bool enable)
-  {
-    enable_pool_ = enable;
-  }
+  void EnablePool(bool enable) { enable_pool_ = enable; }
 
-  void SetChunkPerBlock(size_t n) noexcept
-  {
-    conn_pool_.SetChunkPerBlock(n);
-  }
+  void SetChunkPerBlock(size_t n) noexcept { conn_pool_.SetChunkPerBlock(n); }
 
   //!@}
 
-private:
-  typedef std::unordered_map<std::string, kanon::TcpConnectionPtr> ConnectionMap;
+ private:
+  typedef std::unordered_map<std::string, kanon::TcpConnectionPtr>
+      ConnectionMap;
 
-  EventLoop* loop_;
+  EventLoop *loop_;
   std::string const ip_port_;
   std::string const name_;
-  
-  std::unique_ptr<Acceptor> acceptor_;  
+
+  std::unique_ptr<Acceptor> acceptor_;
 
   ConnectionCallback connection_callback_;
   MessageCallback message_callback_;
   WriteCompleteCallback write_complete_callback_;
-  
+
   /** Store the connections */
   ConnectionMap connections_;
 
@@ -142,24 +146,24 @@ private:
 
   uint32_t next_conn_id;
   std::unique_ptr<EventLoopPool> pool_;
-  
+
   /** Ensure the StartRun() be called only once */
   std::atomic<bool> start_once_;
 
   /** Enable the connection pool to caching memory */
   std::atomic<bool> enable_pool_;
-  
+
   /**
-   * We don't take the ThreadInitCallback as the parameter type of 
+   * We don't take the ThreadInitCallback as the parameter type of
    * StartRun() since it maybe called asynchronously.
    * We must store it first
    */
   ThreadInitCallback init_cb_;
   MutexLock lock_conn_;
-  
+
   /*
-   * conn_pool_ is not a good choice to reuse connection 
-   * since the memory allocation and deallocation is managed 
+   * conn_pool_ is not a good choice to reuse connection
+   * since the memory allocation and deallocation is managed
    * by std::shared_ptr<>
    *
    * The better approach is use memory pool as a allocator,
@@ -173,7 +177,7 @@ private:
    * The chunk size is sizeof(TcpConnection).
    */
   FixedChunkMemoryPool conn_pool_;
-}; 
+};
 
 //!@}
 

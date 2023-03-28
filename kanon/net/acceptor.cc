@@ -7,26 +7,28 @@
 
 using namespace kanon;
 
-Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
-  : loop_{ loop }
-  , socket_{ sock::CreateNonBlockAndCloExecSocket(!addr.IsIpv4()) }
-  , channel_{ loop_, socket_.GetFd() }
-  , listening_{ false }
-  , dummyfd_{ ::open("/dev/null", O_RDONLY | O_CLOEXEC) }
+Acceptor::Acceptor(EventLoop *loop, InetAddr const &addr, bool reuseport)
+  : loop_{loop}
+  , socket_{sock::CreateNonBlockAndCloExecSocket(!addr.IsIpv4())}
+  , channel_{loop_, socket_.GetFd()}
+  , listening_{false}
+#ifdef KANON_ON_UNIX
+  , dummyfd_{::open("/dev/null", O_RDONLY | O_CLOEXEC)}
+#endif
 {
   socket_.SetReuseAddr(true);
   socket_.SetReusePort(reuseport);
   socket_.BindAddress(addr);
-  
+
   // set listen channel read callback(accept peer end)
-  // and start observing the read event  
+  // and start observing the read event
   channel_.SetReadCallback([this](TimeStamp stamp) {
     KANON_UNUSED(stamp);
     loop_->AssertInThread();
-    
+
     InetAddr cli_addr;
     auto cli_fd = socket_.Accpet(cli_addr);
-    
+
     if (cli_fd >= 0) {
       if (new_connection_callback_) {
         // dispatching connection to IO thread
@@ -35,19 +37,21 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
         sock::Close(cli_fd);
       }
     } else {
-    // if process limited open fd has reached,
-    // os also accept this fd and put to wait queue
-    // since we take level trigger policy,
-    // so it will cause busy loop
-    // so we should use dummy fd to accept and close it
+      // if process limited open fd has reached,
+      // os also accept this fd and put to wait queue
+      // since we take level trigger policy,
+      // so it will cause busy loop
+      // so we should use dummy fd to accept and close it
       if (errno == EMFILE) {
-        // first close dummy fd, leave a space for fd in wait queue
+// first close dummy fd, leave a space for fd in wait queue
+#ifdef KANON_ON_UNIX
         ::close(dummyfd_);
         // accept the fd
         dummyfd_ = ::accept(socket_.GetFd(), NULL, NULL);
         ::close(dummyfd_);
         // create new dummy fd to use after
-        dummyfd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);  
+        dummyfd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
+#endif
       }
 
       // We don't handle error since sock::Accept() has handled
@@ -62,21 +66,25 @@ Acceptor::Acceptor(EventLoop* loop, InetAddr const& addr, bool reuseport)
   // server.StartRun();
 }
 
-Acceptor::~Acceptor() noexcept {
-  // FIXME 
+Acceptor::~Acceptor() noexcept
+{
+  // FIXME
   loop_->AssertInThread();
 
   listening_ = false;
   // FIXME Need DisableAll()?
   channel_.DisableAll();
   channel_.Remove();
+#ifdef KANON_ON_UNIX
   ::close(dummyfd_);
+#endif
 }
 
-void Acceptor::Listen() noexcept {
+void Acceptor::Listen() noexcept
+{
   assert(!listening_);
   loop_->AssertInThread();
-  
+
   sock::Listen(socket_.GetFd());
   listening_ = true;
   channel_.EnableReading();
