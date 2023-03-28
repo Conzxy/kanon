@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include "kanon/util/macro.h"
-#include "strcasecmp.h"
+#include "kanon/string/strcasecmp.h"
 
 namespace kanon {
 

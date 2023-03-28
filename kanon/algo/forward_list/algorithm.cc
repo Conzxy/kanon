@@ -1,31 +1,30 @@
 #include <assert.h>
 
-#include "kanon/util/macro.h"
 #include "kanon/algo/forward_list/algorithm.h"
+#include "kanon/util/macro.h"
 
 #define FORWARD_LIST_EMPTY (header->next == nullptr)
 
 namespace zstl {
 namespace forward_list_detail {
 
-void push_front(Header* header, BaseLinkedNode* new_node) noexcept
+void push_front(Header *header, BaseLinkedNode *new_node) noexcept
 {
   // Update header_->prev only when list is empty
   if (FORWARD_LIST_EMPTY) {
     assert(header->prev == header);
     header->prev = new_node;
   }
-  
+
   new_node->next = header->next;
   header->next = new_node;
 }
 
-void push_back(Header* header, BaseLinkedNode* new_node) noexcept
+void push_back(Header *header, BaseLinkedNode *new_node) noexcept
 {
   if (header->prev != header) {
     header->prev->next = new_node;
-  }
-  else {
+  } else {
     assert(header->prev == header);
     assert(FORWARD_LIST_EMPTY);
     header->next = new_node;
@@ -34,24 +33,25 @@ void push_back(Header* header, BaseLinkedNode* new_node) noexcept
   header->prev = new_node;
 }
 
-BaseLinkedNode* extract_front(Header* header) noexcept
+BaseLinkedNode *extract_front(Header *header) noexcept
 {
   assert(!FORWARD_LIST_EMPTY);
 
   auto ret = header->next;
   header->next = header->next->next;
-  
+
   if (FORWARD_LIST_EMPTY) {
     header->prev = header;
   }
-  
+
   // Reset returned node, to avoid construct loop in some cases
   ret->next = nullptr;
 
   return ret;
 }
 
-void insert_after(Header* header, BaseLinkedNode* pos, BaseLinkedNode* new_node) noexcept
+void insert_after(Header *header, BaseLinkedNode *pos,
+                  BaseLinkedNode *new_node) noexcept
 {
   // Push to back, update header_->prev
   // If pos == header, and FORWARD_LIST_EMPTY == true
@@ -64,11 +64,12 @@ void insert_after(Header* header, BaseLinkedNode* pos, BaseLinkedNode* new_node)
   pos->next = new_node;
 }
 
-BaseLinkedNode* extract_after(Header* header, BaseLinkedNode* pos) noexcept
+BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *pos) noexcept
 {
   KANON_ASSERT(pos != nullptr, "The position argument must not be end()");
   KANON_ASSERT(!FORWARD_LIST_EMPTY, "ForwardList must be not empty");
-  KANON_ASSERT(pos->next != nullptr, "The next node of the position argument mustn't be nullptr");
+  KANON_ASSERT(pos->next != nullptr,
+               "The next node of the position argument mustn't be nullptr");
 
   auto ret = pos->next;
 
@@ -82,10 +83,10 @@ BaseLinkedNode* extract_after(Header* header, BaseLinkedNode* pos) noexcept
 
   ret->next = nullptr;
   return ret;
-
 }
 
-BaseLinkedNode* extract_after(Header* header, BaseLinkedNode* first, BaseLinkedNode* last) noexcept
+BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *first,
+                              BaseLinkedNode *last) noexcept
 {
   // The length of the range must be 1 at least
   assert(first);
@@ -106,24 +107,25 @@ BaseLinkedNode* extract_after(Header* header, BaseLinkedNode* first, BaseLinkedN
   return nullptr;
 }
 
-void reverse(Header* header) noexcept
+void reverse(Header *header) noexcept
 {
   auto cur = header->next;
-  BaseLinkedNode* prev = nullptr;
+  BaseLinkedNode *prev = nullptr;
 
   auto first_node = header->next;
   header->next = header->prev;
   header->prev = first_node;
 
-  BaseLinkedNode* cur_next = nullptr; KANON_UNUSED(cur_next);
+  BaseLinkedNode *cur_next = nullptr;
+  KANON_UNUSED(cur_next);
 
   while (cur != nullptr) {
     cur_next = cur->next;
     cur->next = prev;
     prev = cur;
-    cur = cur->next;    
+    cur = cur->next;
   }
 }
 
-} 
-} // namespace zstl::forward_list_detial
+} // namespace forward_list_detail
+} // namespace zstl
