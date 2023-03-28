@@ -13,7 +13,7 @@ namespace kanon {
 // Not need #ret
 // We just see the error of specific errno
 #define ASSERT(ret)                                                            \
-  ({                                                                           \
+  {                                                                            \
     if (KANON_UNLIKELY((ret) != 0)) {                                          \
       char buf[1536];                                                          \
       ::memset(buf, 0, sizeof buf);                                            \
@@ -23,7 +23,7 @@ namespace kanon {
       ::fflush(stderr);                                                        \
       ::abort();                                                               \
     }                                                                          \
-  })
+  }
 
 } // namespace kanon
 
