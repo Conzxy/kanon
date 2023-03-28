@@ -2,7 +2,6 @@
 #define KANON_NET_EVENTLOOP_H
 
 #include <vector>
-#include <sys/types.h>
 #include <atomic>
 #include <functional>
 
@@ -10,6 +9,7 @@
 #include "kanon/util/ptr.h"
 #include "kanon/util/macro.h"
 #include "kanon/thread/mutex_lock.h"
+#include "kanon/process/process_info.h"
 
 #include "kanon/net/timer/timer_id.h"
 #include "kanon/net/callback.h"
@@ -19,7 +19,6 @@ namespace kanon {
 class TimerQueue;
 class Channel;
 class PollerBase;
-
 
 /**
  * \ingroup net
@@ -35,11 +34,11 @@ class PollerBase;
  * (1)select/poll/epoll(event dispatching) -> (2) \n
  * (2)handle events(including timerfd) -> (3) \n
  * (3)functors -> (1) \n
- * They constrcut a loop to accept event and handle them, 
+ * They constrcut a loop to accept event and handle them,
  * and also handle the functors that user pushs.
  */
 class EventLoop : noncopyable {
-public:
+ public:
   using FunctorCallback = std::function<void()>;
 
   /**
@@ -64,8 +63,8 @@ public:
 
   /**
    * \brief Quit loop
-   * \note 
-   *   If not in thread, this will call Wakeup(), 
+   * \note
+   *   If not in thread, this will call Wakeup(),
    *   user no need to call it explicitly
    */
   void Quit() noexcept;
@@ -73,8 +72,8 @@ public:
   /**
    * \brief Run functor in the loop
    *
-   * If not in the thread, will call QueueToLoop() 
-   * to wait event loop can process it, otherwise, call 
+   * If not in the thread, will call QueueToLoop()
+   * to wait event loop can process it, otherwise, call
    * it immediately
    * \note Thread-safety
    */
@@ -82,7 +81,7 @@ public:
 
   /**
    * \brief Queue the functor to event loop
-   * \note Thread-safety 
+   * \note Thread-safety
    */
   void QueueToLoop(FunctorCallback);
   //!@}
@@ -92,13 +91,13 @@ public:
    * \brief Remove channel in poller_
    * \warning This is internal API, user don't call it.
    */
-  void RemoveChannel(Channel* ch);
+  void RemoveChannel(Channel *ch);
 
   /**
    * \brief Add or update channel in poller_
    * \warning This is internal API, user don't call it.
    */
-  void UpdateChannel(Channel* ch);
+  void UpdateChannel(Channel *ch);
   //! \endcond
 
   /**
@@ -133,21 +132,24 @@ public:
    * \return
    *   A TimerId object used for removing timer from event loop
    */
-  TimerId RunAfter(TimerCallback cb, double delay) {
+  TimerId RunAfter(TimerCallback cb, double delay)
+  {
     return RunAt(std::move(cb), AddTime(TimeStamp::Now(), delay));
   }
-  
-  TimerId RunAfterMs(TimerCallback cb, uint64_t delay) {
+
+  TimerId RunAfterMs(TimerCallback cb, uint64_t delay)
+  {
     return RunAt(std::move(cb), AddTimeMs(TimeStamp::Now(), delay));
   }
 
-  TimerId RunAfterUs(TimerCallback cb, uint64_t delay) {
+  TimerId RunAfterUs(TimerCallback cb, uint64_t delay)
+  {
     return RunAt(std::move(cb), AddTimeUs(TimeStamp::Now(), delay));
   }
 
   /**
-   * \brief 
-   *   Run callback @p cb at a specific time pointer then 
+   * \brief
+   *   Run callback @p cb at a specific time pointer then
    *   run @p cb in a fixed period
    * \return
    *   A TimerId object used for removing timer from event loop
@@ -155,13 +157,15 @@ public:
   TimerId RunEvery(TimerCallback cb, TimeStamp expiration, double interval);
 
   /**
-   * \brief 
-   *   Run callback @p cb in a fixed period 
+   * \brief
+   *   Run callback @p cb in a fixed period
    * \return
    *   A TimerId object used for removing timer from event loop
    */
-  TimerId RunEvery(TimerCallback cb, double interval) {
-    return this->RunEvery(std::move(cb), AddTime(TimeStamp::Now(), interval), interval);
+  TimerId RunEvery(TimerCallback cb, double interval)
+  {
+    return this->RunEvery(std::move(cb), AddTime(TimeStamp::Now(), interval),
+                          interval);
   }
 
   /**
@@ -178,14 +182,20 @@ public:
    * \note Although release version, it also work
    * \warning This is a interval API, user no need to call it
    */
-  void AssertInThread() noexcept { if (!IsLoopInThread()) AbortNotInThread(); }
-  bool IsLoopInThread() noexcept { return CurrentThread::t_tid == owner_thread_id_; }
+  void AssertInThread() noexcept
+  {
+    if (!IsLoopInThread()) AbortNotInThread();
+  }
+  bool IsLoopInThread() noexcept
+  {
+    return CurrentThread::t_tid == owner_thread_id_;
+  }
   //! \endcond
-private:
+ private:
   /**
    * \brief Wakeup the (e)poller to avoid sleep blocking this thread
-   * 
-   * Write some data to kernel buffer of eventfd to avoid poll 
+   *
+   * Write some data to kernel buffer of eventfd to avoid poll
    * block for long time
    * ((e)poll have to handle and return immediately)
    */
@@ -200,17 +210,18 @@ private:
    * \brief Read callback of eventfd
    */
   void EvRead() noexcept;
-  
+
   //! Abort the program if not satify the "One loop per thread" policy
   void AbortNotInThread() noexcept;
-private:
-  /** 
-   * Used for checking if in this thread 
+
+ private:
+  /**
+   * Used for checking if in this thread
    * when calling the method of EventLoop
    */
-  const pid_t owner_thread_id_; //!< Current thread Id
+  const process::PId owner_thread_id_; //!< Current thread Id
 
-  /* 
+  /*
    * looping_ and callingFunctor_ is not exposed interface for user
    * so them are thread safe
    */
@@ -224,7 +235,7 @@ private:
    * User for controling quit loop
    */
   std::atomic<bool> quit_; //!< Whether this loop will be quited
-  
+
   /**
    * Determining this functors is a self-register functor
    */
@@ -233,20 +244,22 @@ private:
   bool is_poller_; //!< Whther demultipler(poller_) is working in poller()
 
   /**
-   * Used for getting channels(fds) that has readied 
+   * Used for getting channels(fds) that has readied
    */
   std::unique_ptr<PollerBase> poller_; //!< Demultiplexer
 
   std::unique_ptr<Channel> ev_channel_; //!< Used for wakeuping
-  
-  /** Make QueueToLoop() can be called asynchronously, so need lock the functors_ */
+
+  /** Make QueueToLoop() can be called asynchronously, so need lock the
+   * functors_ */
   MutexLock lock_; //!< Protect functors_
-  std::vector<FunctorCallback> functors_ GUARDED_BY(lock_); //!< Store all functors that register before phase3
+  std::vector<FunctorCallback> functors_
+      GUARDED_BY(lock_); //!< Store all functors that register before phase3
 
   std::unique_ptr<TimerQueue> timer_queue_; //!< Used for timer API
 };
 
 //!@}
-} // namespace knaon
+} // namespace kanon
 
 #endif // KANON_NET_EVENTLOOP_H
