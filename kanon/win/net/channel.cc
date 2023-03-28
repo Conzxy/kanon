@@ -50,6 +50,7 @@ void Channel::HandleEvents(TimeStamp receive_time)
                   << receive_time.ToFormattedString(true);
 
   for (auto completion_context : completion_contexts_) {
+    if (!completion_context) continue;
     auto revents = completion_context->event;
     LOG_TRACE_KANON << "fd = " << fd_ << ", Event = " << Ev2String(revents);
 
