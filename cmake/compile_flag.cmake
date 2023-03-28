@@ -1,5 +1,4 @@
-#if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-if (1)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS  "/DWIN32 /D_WINDOWS /W0 /GR /EHsc /Zc:__cplusplus")
   set(CMAKE_CXX_FLAGS_DEBUG   "/MDd /Zi /Ob0 /Od /RTC1 /Zc:__cplusplus")
   set(CMAKE_CXX_FLAGS_RELEASE  "/MD /O2 /Ob2 /DNDEBUG /Zc:__cplusplus")

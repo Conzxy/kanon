@@ -8,10 +8,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 # Include useful module
 include(cmake/utils.cmake)
-include(cmake/compile_flag.cmake)
-include(cmake/build_type.cmake)
-include(cmake/cache_var.cmake)
-include(cmake/platform.cmake)
 include(cmake/install.cmake)
 
 # Extract the version from version.h in the top level of include directory
@@ -19,6 +15,11 @@ kanon_extract_version()
 
 project(kanon VERSION ${KANON_VERSION})
 message(STATUS "Building kanon: ${KANON_VERSION}")
+
+include(cmake/compile_flag.cmake)
+include(cmake/build_type.cmake)
+include(cmake/cache_var.cmake)
+include(cmake/platform.cmake)
 
 # Add third-party before kanon
 add_subdirectory(third-party)
