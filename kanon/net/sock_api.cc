@@ -1,8 +1,19 @@
 #include "kanon/net/sock_api.h"
 
 #include <assert.h>
+
+#ifdef KANON_ON_LINUX
 #include <linux/version.h>
+#endif
+
+#ifdef KANON_ON_UNIX
 #include <netinet/tcp.h>
+#endif
+
+#ifdef KANON_ON_WIN
+#include <mswsock.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 
@@ -29,18 +40,18 @@ void sock::ToIpPort(char *buf, size_t size, sockaddr const *addr)
     buf[0] = '[';
     buf++;
     size--;
-  } 
+  }
   ToIp(buf, size, addr);
   auto len = ::strlen(buf);
-  if (addr->sa_family == AF_INET6)
-    buf[len++] = ']';
+  if (addr->sa_family == AF_INET6) buf[len++] = ']';
   auto addr4 = sockaddr_cast<sockaddr_in const>(addr);
   ::snprintf(buf + len, size - len, ":%hu",
              sock::ToHostByteOrder16(addr4->sin_port));
 }
 
-void sock::SetNonBlockAndCloExec(int fd) noexcept
+void sock::SetNonBlockAndCloExec(FdType fd) noexcept
 {
+#ifdef KANON_ON_UNIX
   auto ret = ::fcntl(fd, F_GETFL, 0);
   if (ret < 0) LOG_SYSFATAL << "fail to get file status flag";
 
@@ -48,13 +59,16 @@ void sock::SetNonBlockAndCloExec(int fd) noexcept
   ret = ::fcntl(fd, F_SETFL, ret);
   if (ret < 0)
     LOG_SYSFATAL << "fail to set file status flag(O_NONBLOCK | O_CLOEXEC)";
+#endif
 }
 
+#ifdef KANON_ON_UNIX
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 27)
 #define NO_SOCKTYPE // SOCK_NONBLOCK, SOCK_CLOEXEC
 #endif
+#endif
 
-int sock::CreateSocket(bool ipv6) noexcept
+FdType sock::CreateSocket(bool ipv6) noexcept
 {
   int sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sockfd < 0) {
@@ -65,76 +79,16 @@ int sock::CreateSocket(bool ipv6) noexcept
   return sockfd;
 }
 
-int sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept
-{
-  int sockfd;
-#ifdef NO_SOCKTYPE
-  sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (sockfd < 0) goto error_handle;
-  SetNonBlockAndCloExec(sockfd);
-#else
-  sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET,
-                    SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
-  if (sockfd < 0) goto error_handle;
-#endif
-
-  return sockfd;
-
-error_handle:
-  LOG_SYSFATAL << "create new socket fd error";
-
-  return -1;
-}
-
+#ifdef KANON_ON_LINUX
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 28)
 #define NO_ACCEPT4
 #endif
-
-int sock::Accept(int fd, sockaddr_in6 *addr) noexcept
-{
-  socklen_t socklen = sizeof(struct sockaddr_in6);
-
-  int cli_sock;
-#ifdef NO_ACCEPT4
-  cli_sock = ::accept(fd, sock::to_sockaddr(addr), &socklen);
-  SetNonBlockAndCloExec(cli_sock);
-#else
-  cli_sock =
-      ::accept4(fd, sock::to_sockaddr(addr), &socklen, O_NONBLOCK | O_CLOEXEC);
 #endif
 
-  if (cli_sock < 0) {
-    switch (errno) {
-    case EAGAIN: // In linux, EAGAIN = EWOULDBLOCK
-    case ECONNABORTED:
-    case EINTR:
-    case EMFILE: // per-process limit on the number of open fd has been reached
-      LOG_SYSERROR << "accept() expected error occurred";
-      break;
-    case EFAULT:
-    case EINVAL:
-    case ENFILE:
-    case ENOTSOCK:
-    case EOPNOTSUPP:
-    case EPROTO:
-    case ENOBUFS:
-    case ENOMEM:
-      LOG_SYSFATAL << "accept() unexpected error occurred";
-      break;
-    default:
-      LOG_SYSFATAL << "accept() unknown error occurred";
-      break;
-    }
-  }
-
-  return cli_sock;
-}
-
-void sock::SetReuseAddr(int fd, int flag) noexcept
+void sock::SetReuseAddr(FdType fd, int flag) noexcept
 {
-  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag,
+  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
-
   if (ret < 0) {
     LOG_SYSERROR << "setsockopt error(SO_REUSEADDR)";
   } else {
@@ -142,8 +96,9 @@ void sock::SetReuseAddr(int fd, int flag) noexcept
   }
 }
 
-void sock::SetReusePort(int fd, int flag) noexcept
+void sock::SetReusePort(FdType fd, int flag) noexcept
 {
+#ifdef KANON_ON_LINUX
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 9, 0)
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &flag,
                           static_cast<socklen_t>(sizeof flag));
@@ -156,19 +111,20 @@ void sock::SetReusePort(int fd, int flag) noexcept
 #else
   LOG_INFO << "linux version less than 3.9, there no reuseport option can set";
 #endif
+#endif
 }
 
-void sock::SetNoDelay(int fd, int flag) noexcept
+void sock::SetNoDelay(FdType fd, int flag) noexcept
 {
-  auto ret = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag,
+  auto ret = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) LOG_SYSERROR << "set sockopt error(tcp: nodelay)";
 }
 
-void sock::SetKeepAlive(int fd, int flag) noexcept
+void sock::SetKeepAlive(FdType fd, int flag) noexcept
 {
-  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &flag,
+  auto ret = ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) {
@@ -176,19 +132,19 @@ void sock::SetKeepAlive(int fd, int flag) noexcept
   }
 }
 
-int sock::GetSocketError(int fd) noexcept
+int sock::GetSocketError(FdType fd) noexcept
 {
   int optval;
   auto len = static_cast<socklen_t>(sizeof optval);
 
-  if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, &optval, &len)) {
+  if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, (char *)&optval, &len)) {
     return errno;
   } else {
     return optval;
   }
 }
 
-struct sockaddr_in6 sock::GetLocalAddr(int fd) noexcept
+struct sockaddr_in6 sock::GetLocalAddr(FdType fd) noexcept
 {
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
@@ -201,7 +157,7 @@ struct sockaddr_in6 sock::GetLocalAddr(int fd) noexcept
   return addr;
 }
 
-struct sockaddr_in6 sock::GetPeerAddr(int fd) noexcept
+struct sockaddr_in6 sock::GetPeerAddr(FdType fd) noexcept
 {
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
@@ -214,7 +170,7 @@ struct sockaddr_in6 sock::GetPeerAddr(int fd) noexcept
   return addr;
 }
 
-static bool GetLocalAddrSafe(int fd, struct sockaddr_in6 &addr) noexcept
+static bool GetLocalAddrSafe(FdType fd, struct sockaddr_in6 &addr) noexcept
 {
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -226,7 +182,7 @@ static bool GetLocalAddrSafe(int fd, struct sockaddr_in6 &addr) noexcept
   return true;
 }
 
-static bool GetPeerAddrSafe(int fd, struct sockaddr_in6 &addr) noexcept
+static bool GetPeerAddrSafe(FdType fd, struct sockaddr_in6 &addr) noexcept
 {
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -237,7 +193,7 @@ static bool GetPeerAddrSafe(int fd, struct sockaddr_in6 &addr) noexcept
   return true;
 }
 
-bool sock::IsSelfConnect(int sockfd) noexcept
+bool sock::IsSelfConnect(FdType sockfd) noexcept
 {
   struct sockaddr_in6 local;
   struct sockaddr_in6 peer;
