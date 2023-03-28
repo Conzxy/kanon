@@ -36,6 +36,8 @@ inline char const *GetName() noexcept { return t_name; }
 
 bool isMainThread() noexcept;
 
+void MainThreadInitialize();
+
 } // namespace CurrentThread
 } // namespace kanon
 

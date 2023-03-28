@@ -34,6 +34,12 @@ struct MainThreadInit {
   }
 };
 
+void MainThreadInitialize()
+{
+  CurrentThread::t_name = "main";
+  CurrentThread::tid();
+}
+
 MainThreadInit mainThreadInit{};
 
 void cacheTid() noexcept
