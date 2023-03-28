@@ -39,12 +39,14 @@ public:
 #endif
   }
 
-  void Wait(){
+  void Wait() {
 #ifdef KANON_ON_UNIX
     MutexLock::UnassignHolder holder(mutex_);
     TCHECK(pthread_cond_wait(&cond_, &mutex_.GetMutex()));
 #else
-    std::unique_lock<std::mutex> lock(mutex_.GetMutex());
+    // Don't lock the associated mutex,
+    // I prefer lock outside
+    std::unique_lock<std::mutex> lock(mutex_.GetMutex(), std::defer_lock_t{});
     // No need to call wait(lock, predicate);
     cond_.wait(lock);
 #endif
