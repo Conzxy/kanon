@@ -1,7 +1,7 @@
 #ifndef KANON_UTIL_MACRO_H
 #define KANON_UTIL_MACRO_H
 
-#define _XKEYCHECK_H
+#include "kanon/util/platform_macro.h"
 
 #define KANON_UNUSED(var) (void)var
 #define KANON_RETHROW throw
@@ -59,24 +59,24 @@
 
 #define KANON_ASSERT(cond, msg) assert((cond) && (msg))
 
-#ifdef __linux__
-#define KANON_ON_LINUX 1
-#endif
-
-#if defined(_WIN32)
-#define KANON_ON_WIN 1
-#endif
-
-#if (defined(__unix__) || defined(__linux__)) && !defined(KANON_TEST_THREAD)
-#define KANON_ON_UNIX 1
-#endif
-
 #if defined(__GUNC__) || defined(__clang__)
 #define KANON_LIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 1)
 #define KANON_UNLIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 0)
 #else
 #define KANON_LIKELY(cond) (cond)
 #define KANON_UNLIKELY(cond) (cond)
+#endif
+
+#if defined(__GUNC__) || defined(__clang__)
+#define KANON_TLS __thread
+#elif defined(_MSC_VER)
+#define KANON_TLS __declspec(thread)
+#else
+#ifdef CXX_STANDARD_11
+#define KANON_TLS thread_local
+#else
+#define KANON_TLS
+#endif
 #endif
 
 #endif // KANON_UTIL_MACRO_H
