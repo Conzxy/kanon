@@ -12,7 +12,6 @@
 #include "kanon/string/string_view.h"
 
 namespace kanon {
-
 namespace process {
 
 StringView PidString() noexcept;
