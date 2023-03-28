@@ -6,25 +6,28 @@
 
 #include "example/length_codec/codec.h"
 
-class ChatClient : public TcpClient {
-public:
-  explicit ChatClient(EventLoop* loop, InetAddr const& server_addr);
+class ChatClient {
+ public:
+  explicit ChatClient(EventLoop *loop, InetAddr const &server_addr);
 
-  void OnStringMessage(TcpConnectionPtr const& conn,
-    std::string const& msg,
-    TimeStamp receive_time);
-  
-  void OnConnection(TcpConnectionPtr const& conn); 
+  void OnStringMessage(TcpConnectionPtr const &conn, std::string const &msg,
+                       TimeStamp receive_time);
+
+  void OnConnection(TcpConnectionPtr const &conn);
 
   void WriteMessage(kanon::StringView msg);
 
   void Connect();
   void Disconnect();
-private:
+
+  void Start();
+
+ private:
+  kanon::TcpClientPtr client_;
   kanon::LengthHeaderCodec codec_;
   kanon::MutexLock mutex_;
   TcpConnectionPtr conn_;
-  
+
   kanon::CountDownLatch latch_;
 };
 
