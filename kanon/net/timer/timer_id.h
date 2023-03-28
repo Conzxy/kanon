@@ -5,6 +5,8 @@
 
 namespace kanon {
 
+class TimerQueue;
+
 //! \addtogroup timer
 //!@{
 
@@ -16,17 +18,25 @@ namespace kanon {
 class TimerId {
   friend class TimerQueue;
 
-public:
-    TimerId() = default;
+ public:
+  TimerId() = default;
 
-    TimerId(Timer* timer)
-        : timer_{ timer }
-        , seq_{ timer->sequence() }
-    { }
+  TimerId(Timer const *timer)
+    : timer_{timer}
+    , seq_{timer->sequence()}
+  {
+  }
 
-private:
-    Timer* timer_;
-    uint64_t seq_;        
+  TimerId(Timer const *timer, void *ctx)
+    : TimerId(timer)
+  {
+    ctx_ = ctx;
+  }
+
+ private:
+  Timer const *timer_;
+  uint64_t seq_;
+  void *ctx_;
 };
 
 //!@}
