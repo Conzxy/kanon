@@ -1,31 +1,32 @@
 #include "kanon/net/socket.h"
 
+#ifdef KANON_ON_UNIX
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 #include <netinet/in.h> // IPPROTO_TCP
+#endif
 
 #include "kanon/log/logger.h"
 #include "kanon/net/inet_addr.h"
 
-
 using namespace kanon;
 
-Socket::~Socket() noexcept {
-  sock::Close(fd_);
-}
+Socket::~Socket() noexcept { sock::Close(fd_); }
 
-void Socket::BindAddress(InetAddr const& addr) noexcept {
+void Socket::BindAddress(InetAddr const &addr) noexcept
+{
   sock::Bind(fd_, addr.ToSockaddr());
 }
 
-int Socket::Accpet(InetAddr& addr) noexcept {
+int Socket::Accpet(InetAddr &addr) noexcept
+{
   struct sockaddr_in6 addr6;
   auto cli_fd = sock::Accept(fd_, &addr6);
-  
+
   if (cli_fd >= 0) {
     if (addr6.sin6_family == AF_INET) {
-      new (&addr) InetAddr(*reinterpret_cast<sockaddr_in*>(&addr6));    
+      new (&addr) InetAddr(*reinterpret_cast<sockaddr_in *>(&addr6));
     } else {
       new (&addr) InetAddr(addr6);
     }
@@ -34,7 +35,8 @@ int Socket::Accpet(InetAddr& addr) noexcept {
   return cli_fd;
 }
 
-void Socket::ShutdownWrite() noexcept {
+void Socket::ShutdownWrite() noexcept
+{
   LOG_TRACE_KANON << "Shutdown peer in write direction";
 
   if (sock::ShutdownWrite(fd_)) {
@@ -42,7 +44,8 @@ void Socket::ShutdownWrite() noexcept {
   }
 }
 
-void Socket::ShutdownTwoDirection() noexcept {
+void Socket::ShutdownTwoDirection() noexcept
+{
   LOG_TRACE_KANON << "Shutdown peer in two dierction(read/write)";
 
   if (sock::ShutdownTwoDirection(fd_)) {

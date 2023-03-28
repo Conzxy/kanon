@@ -4,6 +4,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
+#include "kanon/net/type.h"
 #include "kanon/net/sock_api.h"
 
 namespace kanon {
@@ -18,42 +19,39 @@ class InetAddr;
  * \note
  *   We don't create socket, just store the fd of socket
  *   and use the RAII property to avoid handler(fd) leak
- *   
+ *
  *   Also, this class wrap some API in sock_api.h
  *   that make it easy to use.
- *   
+ *
  *   Internal class
  */
 class Socket : noncopyable {
-public:
-  explicit Socket(int fd)
-    : fd_{ fd }
-  { }
-  
-  ~Socket() noexcept;  
+ public:
+  explicit Socket(FdType fd)
+    : fd_{fd}
+  {
+  }
 
-  // Must be called by server  
-  void BindAddress(InetAddr const& addr) noexcept;
-  int Accpet(InetAddr& addr) noexcept;
+  ~Socket() noexcept;
+
+  // Must be called by server
+  void BindAddress(InetAddr const &addr) noexcept;
+  int Accpet(InetAddr &addr) noexcept;
 
   void ShutdownWrite() noexcept;
   void ShutdownTwoDirection() noexcept;
 
-  void SetReuseAddr(bool flag) noexcept
-  { sock::SetReuseAddr(fd_, flag); }
-  void SetReusePort(bool flag) noexcept
-  { sock::SetReusePort(fd_, flag); }
-  void SetNoDelay(bool flag) noexcept
-  { sock::SetNoDelay(fd_, flag); }
-  void SetKeepAlive(bool flag) noexcept
-  { sock::SetKeepAlive(fd_, flag); }
+  void SetReuseAddr(bool flag) noexcept { sock::SetReuseAddr(fd_, flag); }
+  void SetReusePort(bool flag) noexcept { sock::SetReusePort(fd_, flag); }
+  void SetNoDelay(bool flag) noexcept { sock::SetNoDelay(fd_, flag); }
+  void SetKeepAlive(bool flag) noexcept { sock::SetKeepAlive(fd_, flag); }
 
   // Must be called by client
-  
-  int GetFd() const noexcept
-  { return fd_; }
-private:
-  int fd_;
+
+  int GetFd() const noexcept { return fd_; }
+
+ private:
+  FdType fd_;
 };
 
 //!@}
