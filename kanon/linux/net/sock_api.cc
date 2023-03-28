@@ -70,3 +70,15 @@ FdType sock::Accept(FdType fd, sockaddr_in6 *addr) noexcept
   }
   return cli_sock;
 }
+
+int sock::GetSocketError(FdType fd) noexcept
+{
+  int optval;
+  auto len = static_cast<socklen_t>(sizeof optval);
+
+  if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, (char *)&optval, &len)) {
+    return errno;
+  } else {
+    return optval;
+  }
+}

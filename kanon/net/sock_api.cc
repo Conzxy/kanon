@@ -132,18 +132,6 @@ void sock::SetKeepAlive(FdType fd, int flag) noexcept
   }
 }
 
-int sock::GetSocketError(FdType fd) noexcept
-{
-  int optval;
-  auto len = static_cast<socklen_t>(sizeof optval);
-
-  if (::getsockopt(fd, SOL_SOCKET, SO_ERROR, (char *)&optval, &len)) {
-    return errno;
-  } else {
-    return optval;
-  }
-}
-
 struct sockaddr_in6 sock::GetLocalAddr(FdType fd) noexcept
 {
   struct sockaddr_in6 addr;

@@ -129,28 +129,52 @@ bool sock::WinConnect(FdType fd, sockaddr const *addr,
       return false;
     }
   }
-  OVERLAPPED overlapp_buf;
-  memset(&overlapp_buf, 0, sizeof(overlapp_buf));
-  // DWORD recv_bytes = 0;
 
   bool bRetVal = false;
   if (connect_ex_fn) {
-    sockaddr_in dummy_addr;
-    dummy_addr.sin_family = AF_INET;
-    dummy_addr.sin_addr.s_addr = INADDR_ANY;
-    dummy_addr.sin_port = 0;
-    sock::Bind(fd, (sockaddr *)&dummy_addr);
+    if (addr->sa_family == AF_INET) {
+      sockaddr_in dummy_addr;
+      memset(&dummy_addr, 0, sizeof(dummy_addr));
+      dummy_addr.sin_family = AF_INET;
+      dummy_addr.sin_addr.s_addr = INADDR_ANY;
+      dummy_addr.sin_port = 0;
+      sock::Bind(fd, (sockaddr *)&dummy_addr);
+    } else if (addr->sa_family == AF_INET6) {
+      sockaddr_in6 dummy_addr;
+      memset(&dummy_addr, 0, sizeof(dummy_addr));
+      dummy_addr.sin6_family = AF_INET6;
+      dummy_addr.sin6_addr = in6addr_any;
+      dummy_addr.sin6_port = 0;
+      sock::Bind(fd, (sockaddr *)&dummy_addr);
+    } else {
+      LOG_SYSFATAL << "The address used for connect is not supported";
+    }
 
     // The socket argument of ConnectEx()
     // must bound and disconnected.
     // ie. You should call bind() to make calling
     // ConnectEx() successfully.
+    DWORD send_bytes = 0;
     bRetVal =
         connect_ex_fn(fd, addr,
                       addr->sa_family == AF_INET ? sizeof(struct sockaddr_in)
                                                  : sizeof(struct sockaddr_in6),
-                      nullptr, 0, nullptr, (LPOVERLAPPED)ctx);
+                      nullptr, 0, &send_bytes, (LPOVERLAPPED)ctx);
   }
 
   return bRetVal;
+}
+
+int sock::GetSocketError(FdType fd) noexcept
+{
+  int optval;
+  auto len = static_cast<socklen_t>(sizeof optval);
+
+  auto ret = ::getsockopt(fd, SOL_SOCKET, SO_ERROR, (char *)&optval, &len);
+  if (!ret) {
+    return optval;
+  }
+
+  assert(ret == SOCKET_ERROR);
+  return ::WSAGetLastError();
 }
