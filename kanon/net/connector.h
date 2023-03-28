@@ -9,6 +9,7 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/optional.h"
 #include "kanon/util/ptr.h"
+#include "kanon/net/type.h"
 
 #include "kanon/net/inet_addr.h"
 
@@ -49,12 +50,12 @@ class Connector
   /* Don't restrict to tcp connection,
      user can pack sockfd to other structure
      which is also based connection */
-  typedef std::function<void(int sockfd)> NewConnectionCallback;
+  typedef std::function<void(FdType sockfd)> NewConnectionCallback;
 
  protected:
   Connector(EventLoop *loop, InetAddr const &serv_addr);
- public:
 
+ public:
   static std::shared_ptr<Connector> NewConnector(EventLoop *loop,
                                                  InetAddr const &serv_addr)
   {
@@ -99,6 +100,8 @@ class Connector
 
   InetAddr const &GetServerAddr() const noexcept { return serv_addr_; }
 
+  std::unique_ptr<Channel> channel() noexcept { return std::move(channel_); }
+
  private:
   void SetState(State s) noexcept { state_ = s; }
 
@@ -111,7 +114,7 @@ class Connector
    * - EINTR
    * - EAGAIN
    */
-  void CompleteConnect(int sockfd);
+  void CompleteConnect(FdType sockfd);
 
   /**
    * Retry to connect peer
@@ -124,7 +127,7 @@ class Connector
    *
    * \param sockfd For closeing
    */
-  void Retry(int sockfd);
+  void Retry(FdType sockfd);
 
   /**
    * Disable events and remove channel
