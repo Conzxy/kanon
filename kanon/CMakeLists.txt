@@ -9,9 +9,9 @@ file(GLOB_RECURSE KANON_BASE_SRC
   thread/*.cc
   util/*.cc
   algo/*.cc
-  buffer/*.cc
 )
-file(GLOB_RECURSE KANON_NET_SRC net/*.cc)
+
+file(GLOB_RECURSE KANON_NET_SRC buffer/*.cc net/*.cc)
 
 #message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
 #message(STATUS "kanon net source files: ${KANON_NET_SRC}")
@@ -47,19 +47,26 @@ set(KANON_NET_INCLUDE ${NET_INCLUDE} ${NET_POLL_INCLUDE} ${NET_TIMER_INCLUDE} ${
 #aux_source_directory(./win/core KANON_WIN_CORE_SRC)
 file(GLOB_RECURSE KANON_LINUX_CORE_SRC linux/core/*.cc)
 file(GLOB_RECURSE KANON_WIN_CORE_SRC win/core/*.cc)
+file(GLOB_RECURSE KANON_LINUX_NET_SRC linux/net/*.cc)
+file(GLOB_RECURSE KANON_WIN_NET_SRC win/net/*.cc)
+
 # This must be a absolute path here!
 set(KANON_LINUX_CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/linux/core)
 set(KANON_WIN_CORE_INCLUDE_DIR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win/core)
+set(KANON_LINUX_NET_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/linux/net)
+set(KANON_WIN_NET_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win/net)
 
 set(KANON_LIB_POPULATE_KEYWORD PUBLIC)
 
 if (KANON_ON_WIN)
   message("Windows core sources: ${KANON_WIN_CORE_SRC}")
   list(APPEND KANON_BASE_SRC ${KANON_WIN_CORE_SRC})
+  list(APPEND KANON_NET_SRC ${KANON_WIN_NET_SRC})
 endif ()
 
 if (KANON_ON_UNIX)
   list(APPEND KANON_BASE_SRC ${KANON_LINUX_CORE_SRC})
+  list(APPEND KANON_NET_SRC ${KANON_LINUX_NET_SRC})
 endif ()
 
 GenLib(kanon_base ${KANON_BASE_SRC})
@@ -77,15 +84,18 @@ if (KANON_ON_UNIX)
   "${INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 endif ()
 
-if (KANON_ON_UNIX)
-  GenLib(kanon_net ${KANON_NET_SRC})
-  target_link_libraries(kanon_net PRIVATE kanon_base)
-  target_link_libraries(kanon_net PRIVATE xxHash::xxhash)
+GenLib(kanon_net ${KANON_NET_SRC})
+target_link_libraries(kanon_net PRIVATE kanon_base)
+target_link_libraries(kanon_net PRIVATE xxHash::xxhash)
+target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
+    "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+if (KANON_ON_WIN)
   target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
-      "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
-      "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+  "$<BUILD_INTERFACE:${KANON_WIN_NET_INCLUDE_DIR}>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+  target_link_libraries(kanon_net PRIVATE ws2_32)
 endif ()
-
 
 ###########################################################
 # Install the headers to /usr/include/*
