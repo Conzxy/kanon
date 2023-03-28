@@ -4,76 +4,64 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/time.h>
 #include <time.h>
 
 #include "kanon/thread/current_thread.h"
-
+#include "kanon/util/time.h"
 #include "kanon/log/terminal_color.h"
+
+#ifdef KANON_ON_WIN
+#include <windows.h>
+#include <winbase.h>
+#endif
 
 namespace kanon {
 
-static __thread time_t t_lastSecond = 0;
-static __thread char t_timebuf[64] = { 0 };
+static KANON_TLS time_t t_lastSecond = 0;
+static KANON_TLS char t_timebuf[64] = {0};
 
 #ifndef NDEBUG
-  bool g_kanon_log = true;
+bool g_kanon_log = true;
 #else
-  bool g_kanon_log = false;
+bool g_kanon_log = false;
 #endif
 
 bool g_all_log = true;
 
 bool Logger::need_color_ = true;
 
-char const* Logger::s_log_level_names_[Logger::LogLevel::NUM_LOG_LEVEL] = {
-  "TRACE",
-  "DEBUG",
-  "INFO",
-  "WARN",
-  "ERROR",
-  "FATAL",
-  "SYS_ERROR",
-  "SYS_FATAL",
+char const
+    *Logger::s_log_level_names_[Logger::LogLevel::KANON_LL_NUM_LOG_LEVEL] = {
+        "TRACE", "DEBUG", "INFO",      "WARN",
+        "ERROR", "FATAL", "SYS_ERROR", "SYS_FATAL",
 };
 
-static char const* g_logLevelColor[] = {
-  CYAN,
-  BLUE,
-  GREEN,
-  YELLOW,
-  RED,
-  L_RED,
-  RED,
-  L_RED
-};
+static char const *g_logLevelColor[] = {CYAN, BLUE,  GREEN, YELLOW,
+                                        RED,  L_RED, RED,   L_RED};
 
 static Logger::LogLevel initLogLevel() noexcept
 {
-  char* env = nullptr;
+  char *env = nullptr;
   if ((env = ::getenv("KANON_NDEBUG")) && strcmp(env, "1") == 0)
-    return Logger::LogLevel::INFO;
+    return Logger::LogLevel::KANON_LL_INFO;
 
   if ((env = ::getenv("KANON_TRACE")) && strcmp(env, "1") == 0)
-    return Logger::LogLevel::TRACE;
+    return Logger::LogLevel::KANON_LL_TRACE;
 
   if ((env = ::getenv("KANON_DEBUG")) && strcmp(env, "1") == 0)
-    return Logger::LogLevel::DEBUG;
-  
-  return Logger::LogLevel::INFO;
+    return Logger::LogLevel::KANON_LL_DEBUG;
+
+  return Logger::LogLevel::KANON_LL_INFO;
 }
 
 Logger::LogLevel Logger::log_level_ = initLogLevel();
 
-void DefaultOutput(char const* data, size_t num)
+void DefaultOutput(char const *data, size_t num)
 {
   ::fwrite(data, 1, num, stdout);
 }
 
-void DefaultFlush()
-{
-  ::fflush(stdout);
-}
+void DefaultFlush() { ::fflush(stdout); }
 
 Logger::OutputCallback Logger::output_callback_ = &DefaultOutput;
 Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
@@ -81,11 +69,26 @@ Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
 #define ERRNO_BUFFER_SIZE 1024
 #define TIME_BUFFER_SIZE 64
 
-__thread char t_errorBuf[ERRNO_BUFFER_SIZE];
+KANON_TLS char t_errorBuf[ERRNO_BUFFER_SIZE];
+KANON_TLS char t_lastErrorBuf[ERRNO_BUFFER_SIZE];
 
 // tl = thread local
-char const* strerror_tl(int savedErrno) {
-  return ::strerror_r(savedErrno, t_errorBuf, ERRNO_BUFFER_SIZE);
+char const *strerror_tl(int savedErrno)
+{
+#ifdef KANON_ON_UNIX
+  ::strerror_r(savedErrno, t_errorBuf, ERRNO_BUFFER_SIZE);
+#else
+  ::strerror_s(t_errorBuf, ERRNO_BUFFER_SIZE, savedErrno);
+#endif
+  return t_errorBuf;
+}
+
+char const *win_last_strerror(int win_errno)
+{
+  ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                  NULL, win_errno, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  t_lastErrorBuf, ERRNO_BUFFER_SIZE, NULL);
+  return t_lastErrorBuf;
 }
 
 Logger::Logger(SourceFile file, size_t line, LogLevel level)
@@ -94,65 +97,83 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
   , line_(line)
 {
   FormatTime();
-  stream_ << StringView(CurrentThread::t_tidString, CurrentThread::t_tidLength) << " ";
-  stream_ << CurrentThread::t_name << " ";
+  CurrentThread::tid();
+  stream_ << StringView(CurrentThread::t_tidString, CurrentThread::t_tidLength)
+          << " ";
+  if (CurrentThread::t_name)
+    stream_ << CurrentThread::t_name << " ";
+  else
+    stream_ << "Unnamed ";
+
   if (need_color_) {
-    stream_ << g_logLevelColor[level] 
-        << "[" << s_log_level_names_[level] << "]"
-        << NONE << " ";
-  }
-  else {
+    stream_ << g_logLevelColor[level] << "[" << s_log_level_names_[level] << "]"
+            << NONE << " ";
+  } else {
     stream_ << "[" << s_log_level_names_[level] << "] ";
   }
-
 }
 
-Logger::Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys) 
-  : Logger(basefile, line, level) {
-
+Logger::Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys)
+  : Logger(basefile, line, level)
+{
+  char error_buf[4096];
+#ifdef KANON_ON_UNIX
   auto savedErrno = errno;
   if (savedErrno) {
-    ::snprintf(t_errorBuf, ERRNO_BUFFER_SIZE, "errno: %d, errmsg: %s",
-        savedErrno, strerror_tl(savedErrno));
-    stream_ << t_errorBuf << " ";
+    ::snprintf(error_buf, ERRNO_BUFFER_SIZE, "errno: %d, errmsg: %s",
+               savedErrno, strerror_tl(savedErrno));
   }
+#elif defined(KANON_ON_WIN)
+  auto savedErrno = ::WSAGetLastError();
+  if (savedErrno) {
+    ::snprintf(error_buf, ERRNO_BUFFER_SIZE, "errno: 0x%d, errmsg: %s",
+               savedErrno, win_last_strerror(savedErrno));
+  }
+#endif
+  stream_ << error_buf << " ";
   errno = savedErrno;
 }
 
-Logger::~Logger() noexcept 
+Logger::~Logger() noexcept
 {
   stream_ << " - " << basename_ << ":" << line_ << "\n";
   output_callback_(stream_.data(), stream_.size());
-  
-  if (cur_log_level_ == FATAL || cur_log_level_ == SYS_FATAL) {
+
+  if (cur_log_level_ == KANON_LL_FATAL || cur_log_level_ == KANON_LL_SYS_FATAL)
+  {
     flush_callback_();
     abort();
   }
 }
 
-void Logger::FormatTime() noexcept {
+void Logger::FormatTime() noexcept
+{
   struct timeval tv;
-  ::gettimeofday(&tv, NULL);
-  
+  kanon::GetTimeOfDay(&tv, NULL);
+
   time_t nowSecond = tv.tv_sec;
-  int microsecond= tv.tv_usec;
+  int microsecond = tv.tv_usec;
 
   // Don't use TimeStamp::Now()
   // Cache second to decrease the count of calling sys API.
-  // t_timebuf also cache the result of API, and only update the microsecond part
-  // when second is not changed.
+  // t_timebuf also cache the result of API, and only update the microsecond
+  // part when second is not changed.
   if (nowSecond != t_lastSecond) {
     // cache second
     t_lastSecond = nowSecond;
     struct tm tm;
     // ::gmtime_r(&t_lastSecond, &tm);
+#ifdef KANON_ON_UNIX
     ::localtime_r(&t_lastSecond, &tm);
+#else
+    // FIXME win specific?
+    ::localtime_s(&tm, &t_lastSecond);
+#endif
 
     ::snprintf(t_timebuf, sizeof t_timebuf, "%04d%02d%02d:%02d%02d%02d.%06d",
-        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
-        tm.tm_hour, tm.tm_min, tm.tm_sec,
-        microsecond);
-  
+               tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
+               tm.tm_min, tm.tm_sec, microsecond);
+
     assert(strlen(t_timebuf) == 22);
     stream_ << t_timebuf << " ";
   } else {

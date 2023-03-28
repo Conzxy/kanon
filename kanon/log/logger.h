@@ -21,18 +21,12 @@ extern bool g_all_log;
 /**
  * Enable/Disable the logging of kanon library
  */
-inline void SetKanonLog(bool val) noexcept
-{
-  g_kanon_log = val;
-}
+inline void SetKanonLog(bool val) noexcept { g_kanon_log = val; }
 
 /**
  * Control the logging of logger(i.e. All logs output by kanon)
  */
-inline void EnableAllLog(bool value) noexcept
-{
-  g_all_log = value;
-}
+inline void EnableAllLog(bool value) noexcept { g_all_log = value; }
 
 /**
  * \brief Format the log message to specified device
@@ -69,15 +63,15 @@ class Logger : noncopyable {
    * i.e. Log condiftion is current log level <= XXX
    */
   enum LogLevel {
-    TRACE = 0,
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    FATAL,
-    SYS_ERROR,
-    SYS_FATAL,
-    NUM_LOG_LEVEL,
+    KANON_LL_TRACE = 0,
+    KANON_LL_DEBUG,
+    KANON_LL_INFO,
+    KANON_LL_WARN,
+    KANON_LL_ERROR,
+    KANON_LL_FATAL,
+    KANON_LL_SYS_ERROR,
+    KANON_LL_SYS_FATAL,
+    KANON_LL_NUM_LOG_LEVEL,
   };
 
   // Since __FIEL__ is fullname, including all parent path
@@ -130,23 +124,11 @@ class Logger : noncopyable {
   // Do output and flush
   ~Logger() noexcept;
 
-  LogStream &stream() noexcept
-  {
-    return stream_;
-  }
+  LogStream &stream() noexcept { return stream_; }
 
-  static void SetColor(bool c) noexcept
-  {
-    need_color_ = c;
-  }
-  static LogLevel GetLogLevel() noexcept
-  {
-    return log_level_;
-  }
-  static void SetLogLevel(LogLevel level) noexcept
-  {
-    log_level_ = level;
-  }
+  static void SetColor(bool c) noexcept { need_color_ = c; }
+  static LogLevel GetLogLevel() noexcept { return log_level_; }
+  static void SetLogLevel(LogLevel level) noexcept { log_level_ = level; }
   static OutputCallback GetOutputCallback() noexcept
   {
     return output_callback_;
@@ -155,10 +137,7 @@ class Logger : noncopyable {
   {
     output_callback_ = output;
   }
-  static FlushCallback GetFlushCallback() noexcept
-  {
-    return flush_callback_;
-  }
+  static FlushCallback GetFlushCallback() noexcept { return flush_callback_; }
   static void SetFlushCallback(FlushCallback flush) noexcept
   {
     flush_callback_ = flush;
@@ -173,7 +152,7 @@ class Logger : noncopyable {
 
   void FormatTime() noexcept;
 
-  static char const *s_log_level_names_[NUM_LOG_LEVEL];
+  static char const *s_log_level_names_[KANON_LL_NUM_LOG_LEVEL];
   /**
    * Current Log Level, initial value is INFO
    * You can define environment variable to specify WARN or TRACE
@@ -189,44 +168,49 @@ void DefaultFlush();
 void DefaultOutput(char const *, size_t);
 
 #define LOG_TRACE                                                              \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::TRACE &&                  \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_TRACE &&         \
       kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::TRACE, __func__).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_TRACE, __func__)   \
+      .stream()
 
 #define LOG_TRACE_KANON                                                        \
   if (g_kanon_log) LOG_TRACE
 
 #define LOG_DEBUG                                                              \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::DEBUG &&                  \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_DEBUG &&         \
       kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::DEBUG, __func__).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_DEBUG, __func__)   \
+      .stream()
 
 #define LOG_DEBUG_KANON                                                        \
   if (g_kanon_log) LOG_DEBUG
 
 #define LOG_INFO                                                               \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::INFO && kanon::g_all_log) \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::INFO).stream()
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_INFO &&          \
+      kanon::g_all_log)                                                        \
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_INFO).stream()
 
 #define LOG_WARN                                                               \
   if (kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::WARN).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_WARN).stream()
 
 #define LOG_ERROR                                                              \
   if (kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::ERROR).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_ERROR).stream()
 
 #define LOG_FATAL                                                              \
   if (kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::FATAL).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_FATAL).stream()
 
 #define LOG_SYSERROR                                                           \
   if (kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_ERROR, true).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_SYS_ERROR, true)   \
+      .stream()
 
 #define LOG_SYSFATAL                                                           \
   if (kanon::g_all_log)                                                        \
-  kanon::Logger(__FILE__, __LINE__, kanon::Logger::SYS_FATAL, true).stream()
+  kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_SYS_FATAL, true)   \
+      .stream()
 
 #define FMT_LOG_TRACE(fmt, ...)                                                \
   LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
