@@ -5,6 +5,11 @@
 # it can build shared libraries default even though I don't set 
 # it explitly, and the build of static libraries is an option.
 option(KANON_BUILD_STATIC_LIBS "Build kanon static libraries" OFF)
+if (KANON_BUILD_STATIC_LIBS)
+  set(BUILD_SHARED_LIBS OFF)
+else ()
+  set(BUILD_SHARED_LIBS ON)
+endif ()
 
 # After enable this option and build, you should type `cmake --install`
 # to install files to proper destination actually.
