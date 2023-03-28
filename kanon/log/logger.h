@@ -164,6 +164,10 @@ class Logger : noncopyable {
 };
 
 char const *strerror_tl(int _errno);
+#ifdef KANON_ON_WIN
+char const *win_last_strerror(int win_errno);
+#endif
+
 void DefaultFlush();
 void DefaultOutput(char const *, size_t);
 

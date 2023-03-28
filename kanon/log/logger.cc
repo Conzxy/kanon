@@ -83,13 +83,15 @@ char const *strerror_tl(int savedErrno)
   return t_errorBuf;
 }
 
-char const *win_last_strerror(int win_errno)
+#ifdef KANON_ON_WIN
+char const *kanon::win_last_strerror(int win_errno)
 {
   ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                   NULL, win_errno, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                   t_lastErrorBuf, ERRNO_BUFFER_SIZE, NULL);
   return t_lastErrorBuf;
 }
+#endif
 
 Logger::Logger(SourceFile file, size_t line, LogLevel level)
   : basename_(file.basename_)
