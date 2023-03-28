@@ -17,8 +17,13 @@ typedef unsigned char uchar;
 typedef unsigned long ulong;
 typedef unsigned long long ullong;
 
-typedef size_t isize;
-typedef ssize_t usize;
+typedef size_t usize;
+
+#ifdef _WIN32
+typedef long long isize;
+#elif defined(__linux__) || defined(__unix__)
+typedef ssize_t isize;
+#endif
 
 typedef uint8_t u8;
 typedef uint16_t u16;
