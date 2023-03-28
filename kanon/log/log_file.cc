@@ -2,12 +2,9 @@
 
 namespace kanon {
 
-template<bool T>
-LogFile<T>::LogFile(StringView basename,
-                    size_t roll_size, 
-                    StringView prefix,
-                    size_t log_file_num,
-                    size_t roll_interval,
+template <bool T>
+LogFile<T>::LogFile(StringView basename, size_t roll_size, StringView prefix,
+                    size_t log_file_num, size_t roll_interval,
                     size_t flush_interval)
   : basename_(basename.ToString())
   , roll_size_(roll_size)
@@ -47,8 +44,9 @@ LogFile<T>::LogFile(StringView basename,
   }
 }
 
-template<bool T>
-inline LogFile<T>::~LogFile() noexcept {
+template <bool T>
+inline LogFile<T>::~LogFile() noexcept
+{
   if (log_file_num_ != UINT_MAX) {
     quit_remove_thr_ = true;
     remove_cond_.Notify();
@@ -57,10 +55,11 @@ inline LogFile<T>::~LogFile() noexcept {
   }
 }
 
-template<bool T>
-void LogFile<T>::Append(char const* data, size_t num) noexcept {
+template <bool T>
+void LogFile<T>::Append(char const *data, size_t num) noexcept
+{
   MutexGuardT<MutexPolicy> guard(lock_);
-  
+
   file_->Append(data, num);
 
   if (file_->writtenBytes() > roll_size_) {
@@ -90,20 +89,22 @@ void LogFile<T>::Append(char const* data, size_t num) noexcept {
 
     log_files_dup_.swap(log_files_);
     log_files_.emplace_back(std::move(last_file));
-    
+
     MutexGuard guard(remove_mtx_);
     remove_cond_.Notify();
   }
 }
 
-template<bool T>
-void LogFile<T>::Flush() noexcept {
+template <bool T>
+void LogFile<T>::Flush() noexcept
+{
   MutexGuardT<MutexPolicy> guard(lock_);
   file_->Flush();
 }
 
-template<bool T>
-void LogFile<T>::RollFile() {
+template <bool T>
+void LogFile<T>::RollFile()
+{
   time_t now = ::time(NULL);
   time_t new_start_period = now / roll_interval_;
 
@@ -118,13 +119,14 @@ void LogFile<T>::RollFile() {
   }
 }
 
-template<bool T>
-std::string LogFile<T>::GetLogFilename(time_t& now) {
+template <bool T>
+std::string LogFile<T>::GetLogFilename(time_t &now)
+{
   // Log file name format:
   // basename.timestamp.pid.hostname.log
   std::string filename;
 
-  filename.reserve(basename_.size()+prefix_.size()+128);
+  filename.reserve(basename_.size() + prefix_.size() + 128);
 
   filename += prefix_.data();
 
@@ -135,11 +137,15 @@ std::string LogFile<T>::GetLogFilename(time_t& now) {
   filename += basename_.data();
 
   char timebuf[32];
-  struct tm tm;
   ::tzset();
-  ::localtime_r(&now, &tm);
 
-  ::strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
+  // FIXME Don't call localtime_r() here?
+#if 0
+  struct tm tm;
+  ::localtime_r(&now, &tm);
+#endif
+  auto tm = localtime(&now);
+  ::strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", tm);
 
   filename += timebuf;
   filename += process::PidString().data();
