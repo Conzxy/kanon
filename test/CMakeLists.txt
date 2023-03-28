@@ -33,8 +33,13 @@ macro (GenTest SRC)
   endforeach (kanon_test_source ${KANON_TEST_SOURCES})
 endmacro()
 
-GenTest(KANON_TEST_SOURCES kanon_base kanon_net gtest gtest_main gc)
-GenTest(KANON_BENCH_SOURCES kanon_base kanon_net benchmark benchmark_main gtest gtest_main gc)
+find_package(GTest CONFIG REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
+
+set(KANON_TEST_LIBS kanon_net kanon_base GTest::gtest GTest::gtest_main)
+set(KANON_BENCH_LIBS kanon_net kanon_base benchmark::benchmark benchmark::benchmark_main gtest gtest_main)
+GenTest(KANON_TEST_SOURCES ${KANON_TEST_LIBS})
+GenTest(KANON_BENCH_SOURCES ${KANON_BENCH_LIBS})
 
 if (KANON_BUILD_PROTOBUF)
   add_subdirectory(rpc)
