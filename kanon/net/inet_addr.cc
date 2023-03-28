@@ -2,9 +2,12 @@
 
 #include <cctype>
 #include <memory>
-#include <netdb.h>
 #include <string.h>
+
+#ifdef KANON_ON_UNIX
+#include <netdb.h>
 #include <sys/socket.h>
+#endif
 
 #include "kanon/string/string_view.h"
 #include "kanon/string/string_view_util.h"
@@ -16,7 +19,8 @@
 
 using namespace kanon;
 
-// Must ensure memory layout be same, so as get same offset member in union be right
+// Must ensure memory layout be same, so as get same offset member in union be
+// right
 static_assert(offsetof(sockaddr_in, sin_family) ==
                   offsetof(sockaddr_in6, sin6_family),
               "the offset of family member in sockaddr_in and sockaddr_in6 "
@@ -121,13 +125,12 @@ InetAddr::InetAddr(StringView addr)
     auto colon_pos = addr.find(':');
     if (colon_pos != StringView::npos) {
       auto const hostname = addr.substr(0, colon_pos).ToString();
-      auto const service = addr.substr(colon_pos+1).ToString();
+      auto const service = addr.substr(colon_pos + 1).ToString();
       *this = InetAddr(hostname, service);
       return;
     }
-  }
-  else if ((std::isalnum(addr[0]) && addr.find('.') != StringView::npos) ||
-           addr[0] == '*')
+  } else if ((std::isalnum(addr[0]) && addr.find('.') != StringView::npos) ||
+             addr[0] == '*')
   {
     // Ipv4 address
     auto colon_pos = addr.find(':');
@@ -135,16 +138,15 @@ InetAddr::InetAddr(StringView addr)
       auto ip = addr.substr(0, colon_pos).ToString();
       // ip must be dotted decimal presentation
       if (ip == "*") ip = "0.0.0.0";
-      auto const port = addr.substr(colon_pos+1).ToString();
+      auto const port = addr.substr(colon_pos + 1).ToString();
       sock::FromIpPort(ip, ::atoi(port.c_str()), addr_);
       return;
     }
-  }
-  else if (addr[0] == '[') {
+  } else if (addr[0] == '[') {
     auto right_pos = addr.find(']');
     if (right_pos != StringView::npos) {
       auto const ip = addr.substr_range(1, right_pos).ToString();
-      auto const port = addr.substr(right_pos+2).ToString();
+      auto const port = addr.substr(right_pos + 2).ToString();
       sock::FromIpPort(ip.c_str(), ::atoi(port.c_str()), addr6_);
       return;
     }
@@ -206,8 +208,8 @@ std::vector<InetAddr> InetAddr::Resolve(StringArg hostname, StringArg service,
   //
   // AI_ADDRCONFIG:
   // return ipv4 address only when ipv4 address is configured in local system
-  // so does ipv6, this is useful on IPv4 only system since no IPv6 address return
-  // then connect(2) and bind(2) don't fail infinitely.
+  // so does ipv6, this is useful on IPv4 only system since no IPv6 address
+  // return then connect(2) and bind(2) don't fail infinitely.
 
   // AI_NUMERICSERV:
   // service must be a decimal port number instead service name

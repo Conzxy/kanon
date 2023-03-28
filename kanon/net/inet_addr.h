@@ -1,10 +1,17 @@
 #ifndef KANON_INET_ADDR_H
-
 #define KANON_INET_ADDR_H
 
-#include <vector>
+#include "kanon/util/platform_macro.h"
+
+#ifdef KANON_ON_WIN
+#include <winsock2.h>
+#include <windows.h>
+#include <Ws2tcpip.h>
+#elif defined(KANON_ON_UNIX)
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#endif
+#include <vector>
 #include <stdint.h>
 #include <exception>
 #include <string>
@@ -68,30 +75,33 @@ class InetAddrException : public std::exception {
     : msg_(msg.ToString())
   {
   }
-  
-  char const *what() const noexcept override
-  {
-    return msg_.c_str();
-  }
+
+  char const *what() const noexcept override { return msg_.c_str(); }
+
  private:
   std::string msg_;
 };
 
 /**
  * \addtogroup net
- * \brief Network module, including event loop in reactor mode and tcp server/client, etc
+ * \brief Network module, including event loop in reactor mode and tcp
+ * server/client, etc
  */
 //!@{
 
 /**
  * \brief Represent a internet address(Ipv4 or Ipv6)
- * 
+ *
  * In fact, this is wrapper of sockaddr_in or sockaddr_in6
  */
 class InetAddr {
-public:
+ public:
   using Port = uint16_t;
-  
+#ifdef KANON_ON_WIN
+  using Family = decltype(sockaddr::sa_family);
+#elif defined(KANON_ON_UNIX)
+  using Family = sa_family_t;
+#endif
   /**
    * \brief Construct address from the hostname and service(port)
    * \param hostname
@@ -117,8 +127,8 @@ public:
    *   As a Ipv6 address if machine support
    * \warning
    *   This must be used for server
-   */ 
-  explicit InetAddr(Port port=0, bool loopback=false, bool v6=false);
+   */
+  explicit InetAddr(Port port = 0, bool loopback = false, bool v6 = false);
 
   /**
    * \brief Construct address from ip address and port number
@@ -130,13 +140,13 @@ public:
    *   If want to use hostname and service, don't use this
    */
   InetAddr(StringView ip, Port port);
-  
+
   /**
    * \brief Construct address from address string
-   * \param address 
+   * \param address
    *   Peer address including ip address and port number
    *     - Ipv4 IP address:port
-   *     - [Ipv6 IP address]:port   
+   *     - [Ipv6 IP address]:port
    *     - hostname:port
    */
   InetAddr(StringView address);
@@ -147,8 +157,9 @@ public:
    *   Support implicit coversion
    */
   InetAddr(struct sockaddr_in addr)
-    : addr_{ addr }
-  { }
+    : addr_{addr}
+  {
+  }
 
   /**
    * \brief Compatible with C struct sockaddr_in6
@@ -156,8 +167,9 @@ public:
    *   Support implicit coversion
    */
   InetAddr(struct sockaddr_in6 addr6)
-    : addr6_{ addr6 }
-  { }
+    : addr6_{addr6}
+  {
+  }
 
   //! \name Conversion
   //!@{
@@ -176,52 +188,54 @@ public:
    * \return
    *   A string represent ip address
    */
-  std::string ToIp() const;  
-  
+  std::string ToIp() const;
+
   /**
    * \brief Convert to Ipv4 address(sockaddr_in)
    * \note
    * If this address is not a Ipv4 address in fact,
    * just abort
    */
-  struct sockaddr_in const* ToIpv4() const noexcept
-  { 
+  struct sockaddr_in const *ToIpv4() const noexcept
+  {
     KANON_ASSERT(IsIpv4(), "The InetAddr doesn't represent an ipv4 address");
-    return &addr_; 
+    return &addr_;
   }
-  
+
   /**
    * \brief Convert to Ipv6 address(sockaddr_in6)
    * \note
    * If this address is not a Ipv6 address in fact,
    * just abort.
    */
-  struct sockaddr_in6 const* ToIpv6() const noexcept
-  { 
+  struct sockaddr_in6 const *ToIpv6() const noexcept
+  {
     KANON_ASSERT(!IsIpv4(), "The InetAddr doesn't represent an ipv6 address");
     return &addr6_;
   }
 
-  struct sockaddr* ToSockaddr() noexcept
-  { return reinterpret_cast<sockaddr*>(&addr_); }
+  struct sockaddr *ToSockaddr() noexcept
+  {
+    return reinterpret_cast<sockaddr *>(&addr_);
+  }
 
-  struct sockaddr const* ToSockaddr() const noexcept
-  { return reinterpret_cast<sockaddr const*>(&addr_); }
+  struct sockaddr const *ToSockaddr() const noexcept
+  {
+    return reinterpret_cast<sockaddr const *>(&addr_);
+  }
   //!@}
 
-  //! \name Attribute getter  
+  //! \name Attribute getter
   //!@{
-  
+
   //! Get the inet family
-  sa_family_t GetFamily() const noexcept
-  { return addr_.sin_family; }
-  
-  //! Get the decimal port number 
+  Family GetFamily() const noexcept { return addr_.sin_family; }
+
+  //! Get the decimal port number
   Port GetPort() const noexcept;
-  
-  //! Check whether this is a Ipv4 address 
-  bool IsIpv4() const noexcept
-  { return addr_.sin_family == AF_INET; }
+
+  //! Check whether this is a Ipv4 address
+  bool IsIpv4() const noexcept { return addr_.sin_family == AF_INET; }
   //!@}
 
   //! \name DNS lookup
@@ -235,12 +249,11 @@ public:
    *   This is either a service name(e.g. http) or a decimal port
    *   number(16bit)
    * \param is_server
-   *   If this is specified as true, return the addresses that are 
-   *   suitable for binding, otherwise, return the addresses that 
+   *   If this is specified as true, return the addresses that are
+   *   suitable for binding, otherwise, return the addresses that
    *   are suitable for connecting.
    */
-  static std::vector<InetAddr> Resolve(StringArg hostname, 
-                                       StringArg service, 
+  static std::vector<InetAddr> Resolve(StringArg hostname, StringArg service,
                                        bool is_server = false);
 
   /**
@@ -254,13 +267,11 @@ public:
    *   number(16bit)
    * \param hint see man getaddrinfo
    */
-  static std::vector<InetAddr> Resolve(StringArg hostname, 
-                                       StringArg service,
-                                       struct addrinfo const* hint);
+  static std::vector<InetAddr> Resolve(StringArg hostname, StringArg service,
+                                       struct addrinfo const *hint);
   //!@}
 
-private:
-
+ private:
   /**
    * I don't use sockaddr_storage to implemete it
    * since sockaddr_storage occupy 128 bytes but
