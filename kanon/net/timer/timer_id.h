@@ -21,20 +21,20 @@ class TimerId {
  public:
   TimerId() = default;
 
-  TimerId(Timer const *timer)
+  TimerId(Timer *timer)
     : timer_{timer}
     , seq_{timer->sequence()}
   {
   }
 
-  TimerId(Timer const *timer, void *ctx)
+  TimerId(Timer *timer, void *ctx)
     : TimerId(timer)
   {
     ctx_ = ctx;
   }
 
  private:
-  Timer const *timer_;
+  Timer *timer_;
   uint64_t seq_;
   void *ctx_;
 };
