@@ -46,7 +46,7 @@ jobs:
       # Build your program with the given configuration
       run: |
         cd ${{github.workspace}}/build
-        cmake --build . --parallel $(nproc)
+        cmake --build . --parallel 2 --config ${{env.BUILD_TYPE}}
       shell: pwsh
       
     - name: CMake Install
