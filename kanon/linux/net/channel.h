@@ -163,7 +163,8 @@ class Channel {
 
   //! \name setter
   //!@{
-
+    
+  void SetEvents(int event) noexcept { events_ = event; }
   void SetIndex(int index) noexcept { index_ = index; }
   void SetRevents(int event) noexcept { revents_ = event; }
 
@@ -229,11 +230,6 @@ class Channel {
    * This force TcpConnection::RemoveConnection to call
    */
   bool events_handling_;
-#endif
-
- public:
-#ifdef KANON_ON_WIN
-  size_t transferred_bytes = -1;
 #endif
 };
 
