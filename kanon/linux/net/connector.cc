@@ -1,5 +1,9 @@
 #include "kanon/net/connector.h"
 
+#include "kanon/net/event_loop.h"
+#include "kanon/net/sock_api.h"
+#include "kanon/net/channel.h"
+
 using namespace kanon;
 
 void Connector::Connect()
