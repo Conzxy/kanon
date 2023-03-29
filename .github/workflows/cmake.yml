@@ -39,8 +39,7 @@ jobs:
         ls
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_INCLUDEDIR=${{github.workspace}}/dummy-include \
-        -DCMAKE_INSTALL_LIBDIR=${{github.workspace}}/dummy-lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       shell: bash
     
     - name: CMake Build
