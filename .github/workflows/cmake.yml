@@ -39,18 +39,18 @@ jobs:
         ls
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${{github.workspace}}
-        cmake .. -DCMAKE_INSTALL_INCLUDEDIR=${{github.workspace}}/dummy-include \
+        sudo cmake .. -DCMAKE_INSTALL_PREFIX=${{github.workspace}}
+        sudo cmake .. -DCMAKE_INSTALL_INCLUDEDIR=${{github.workspace}}/dummy-include \
         -DCMAKE_INSTALL_LIBDIR=${{github.workspace}}/dummy-lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       shell: bash
     
     - name: CMake Build
       # Build your program with the given configuration
-      run: cmake --build . --parallel $(nproc)
+      run: sudo cmake --build . --parallel $(nproc)
       
     - name: CMake Install
       run: |
-        cmake --install .
+        sudo cmake --install .
       shell: bash
 
  
