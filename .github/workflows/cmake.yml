@@ -39,7 +39,7 @@ jobs:
         ls
         mkdir build
         cd build
-        cmake .. -LA | grep INSTALL
+        cmake .. -DCMAKE_INSTALL_PREFIX=${{github.workspace}}
         cmake .. -DCMAKE_INSTALL_INCLUDEDIR=${{github.workspace}}/dummy-include \
         -DCMAKE_INSTALL_LIBDIR=${{github.workspace}}/dummy-lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       shell: bash
