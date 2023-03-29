@@ -78,10 +78,25 @@ void Connector::CompleteConnect(FdType sockfd)
       int bytes = sizeof(seconds);
       auto iResult = getsockopt(sockfd, SOL_SOCKET, SO_CONNECT_TIME,
                                 (char *)&seconds, (PINT)&bytes);
-      auto can_retry = (iResult != NO_ERROR) || (seconds == (~0));
+      bool can_retry = false;
+      if (iResult != NO_ERROR) {
+        LOG_SYSERROR << "Failed to call getsockopt(SO_CONNECT_TIME)";
+        can_retry = true;
+      } else {
+        if (seconds == (0xffffffff)) {
+          LOG_DEBUG << "Connection isn't established!";
+          can_retry = true;
+        } else {
+          LOG_DEBUG << "Connection has been established " << seconds
+                    << " seconds"; 
+        }
+      }
+      
       if (can_retry) {
         Retry(sockfd);
+        return;
       }
+
       int flag = 1;
       if (setsockopt(sockfd, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT,
                      (char const *)&flag, sizeof(flag)))
