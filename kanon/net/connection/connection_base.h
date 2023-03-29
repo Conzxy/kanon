@@ -295,10 +295,9 @@ class ConnectionBase
   State state_; //!< Internal useage
 
 #ifdef KANON_ON_WIN
-#endif
-
  public:
   std::vector<WSABUF> wsabufs;
+#endif
 };
 
 //!@}
