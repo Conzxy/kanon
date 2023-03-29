@@ -3,7 +3,7 @@
 
 #ifndef STL_SUP_FORWARD_LIST_H
 #include "../forward_list.h"
-#endif 
+#endif
 
 #include <algorithm>
 #include <utility>
@@ -15,12 +15,13 @@
 #include "algorithm.h"
 #include "kanon/util/macro.h"
 
+#define FORWARD_LIST_TEMPLATE_LIST template <typename T, typename A>
 #define FORWARD_LIST_TEMPLATE ForwardList<T, A>
 
 namespace zstl {
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::resize(SizeType n, ValueType const& val)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::resize(SizeType n, ValueType const &val)
 {
   if (size() <= n) {
     auto diff = n - size();
@@ -28,8 +29,7 @@ void FORWARD_LIST_TEMPLATE::resize(SizeType n, ValueType const& val)
     while (diff--) {
       push_back(val);
     }
-  }
-  else {
+  } else {
     auto it = zstl::advance_iter(before_begin(), n);
 
     while (it.next() != end()) {
@@ -38,8 +38,8 @@ void FORWARD_LIST_TEMPLATE::resize(SizeType n, ValueType const& val)
   }
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::assign(SizeType count, ValueType const& value)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::assign(SizeType count, ValueType const &value)
 {
   Iterator beg;
   for (beg = before_begin(); count != 0 && beg.next() != end(); ++beg) {
@@ -47,39 +47,39 @@ void FORWARD_LIST_TEMPLATE::assign(SizeType count, ValueType const& value)
     AllocTraits::construct(*this, &*beg.next(), value);
     --count;
   }
-  
-  // count > size() 
+
+  // count > size()
   if (count > 0) {
-    while(count--) {
+    while (count--) {
       push_front(value);
     }
-  }
-  else if (count < 0) {
+  } else if (count < 0) {
     // count < size()
     while (beg.next() != end()) {
-      erase_after(beg); 
+      erase_after(beg);
     }
   }
 }
 
-template<typename T, typename A>
-template<typename InputIterator, typename>
+FORWARD_LIST_TEMPLATE_LIST
+template <typename InputIterator, typename>
 void FORWARD_LIST_TEMPLATE::assign(InputIterator first, InputIterator last)
 {
   Iterator beg;
-  for (beg = before_begin(); beg.next() != end() && first != last; ++beg, ++first) {
+  for (beg = before_begin(); beg.next() != end() && first != last;
+       ++beg, ++first)
+  {
     AllocTraits::destroy(*this, &*beg.next());
     AllocTraits::construct(*this, &*beg.next(), *first);
   }
-  
-  // size() < distance(first, last) 
+
+  // size() < distance(first, last)
   if (beg.next() == end()) {
     while (first != last) {
       // insert_after(beg, *first);
       push_back(*first++);
-    }  
-  }
-  else if (first == last) {
+    }
+  } else if (first == last) {
     // size() > distance(first, last)
     while (beg.next() != end()) {
       erase_after(beg);
@@ -87,30 +87,29 @@ void FORWARD_LIST_TEMPLATE::assign(InputIterator first, InputIterator last)
   }
 }
 
-template<typename T, typename A>
-auto FORWARD_LIST_TEMPLATE::operator=(Self const& other)
- -> Self&
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::operator=(Self const &other) -> Self &
 {
   assign(other.begin(), other.end());
   return *this;
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::push_front(Node* new_node) noexcept
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::push_front(Node *new_node) noexcept
 {
   forward_list_detail::push_front(header_, new_node);
   ++header_->count;
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::push_back(Node* new_node) noexcept 
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::push_back(Node *new_node) noexcept
 {
   forward_list_detail::push_back(header_, new_node);
   ++header_->count;
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, Node* new_node)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, Node *new_node)
 {
   auto node = pos.to_iterator().extract();
   forward_list_detail::insert_after(header_, node, new_node);
@@ -118,8 +117,9 @@ void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, Node* new_node)
   ++header_->count;
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, SizeType count, ValueType const& val)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, SizeType count,
+                                         ValueType const &val)
 {
   // At first, I want create a list whose length is count
   // the first node do some work like insert_after()
@@ -128,65 +128,82 @@ void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, SizeType count, Valu
 
   // The push_back() is so simple, thus not wrong.
   while (count--) {
-    insert_after(pos, create_node(val));++pos;
+    insert_after(pos, create_node(val));
+    ++pos;
   }
 }
 
-template<typename T, typename A>
-template<typename InputIterator, typename>
-void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, InputIterator first, InputIterator last)
+FORWARD_LIST_TEMPLATE_LIST
+template <typename InputIterator, typename>
+void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, InputIterator first,
+                                         InputIterator last)
 {
   for (; first != last; ++first) {
-    //push_back(create_node(*first));
-    insert_after(pos, create_node(*first));++pos;
+    // push_back(create_node(*first));
+    insert_after(pos, create_node(*first));
+    ++pos;
   }
 }
 
-template<typename T, typename A>
+FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::pop_front()
 {
   auto node = extract_front_node();
   drop_node(node);
 }
 
-template<typename T, typename A>
-auto FORWARD_LIST_TEMPLATE::extract_front_node() noexcept
- -> Node*
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::pop_front_size(size_t sz)
 {
-  --header_->count; 
-  return static_cast<Node*>(forward_list_detail::extract_front(header_));
+  auto node = extract_front_node();
+  drop_node_size(node, sz);
 }
 
-template<typename T, typename A>
-auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator pos)
- -> Iterator
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::extract_front_node() noexcept -> Node *
+{
+  --header_->count;
+  return static_cast<Node *>(forward_list_detail::extract_front(header_));
+}
+
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator pos) -> Iterator
 {
   drop_node(extract_after_node(pos));
   return pos.next().to_iterator();
 }
 
-template<typename T, typename A>
-auto FORWARD_LIST_TEMPLATE::extract_after_node(ConstIterator pos) noexcept
- -> Node*
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator pos, size_t sz)
+    -> Iterator
 {
-  --header_->count;
-  return static_cast<Node*>(forward_list_detail::extract_after(header_, pos.to_iterator().extract()));
+  drop_node_size(extract_after_node(pos), sz);
+  return pos.next().to_iterator();
 }
 
-template<typename T, typename A>
-auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator first, ConstIterator last)
- -> Iterator
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::extract_after_node(ConstIterator pos) noexcept
+    -> Node *
 {
-  auto first_next = forward_list_detail::extract_after(header_, 
-                                                       first.to_iterator().extract(), last.to_iterator().extract());
-  
-  BaseNode* old_next; 
-  
+  --header_->count;
+  return static_cast<Node *>(
+      forward_list_detail::extract_after(header_, pos.to_iterator().extract()));
+}
+
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator first, ConstIterator last)
+    -> Iterator
+{
+  auto first_next = forward_list_detail::extract_after(
+      header_, first.to_iterator().extract(), last.to_iterator().extract());
+
+  BaseNode *old_next;
+
   // Drop all elements in (first, last)
   if (first_next != nullptr) {
     while (first_next != last.extract()) {
       old_next = first_next->next;
-      drop_node(static_cast<Node*>(first_next));
+      drop_node(static_cast<Node *>(first_next));
       first_next = old_next;
       --header_->count;
     }
@@ -195,10 +212,35 @@ auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator first, ConstIterator last)
   return last.to_iterator();
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::clear()
+FORWARD_LIST_TEMPLATE_LIST
+auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator first,
+                                             ConstIterator last, size_t sz)
+    -> Iterator
 {
-  if (!header_) { return; }
+  auto first_next = forward_list_detail::extract_after(
+      header_, first.to_iterator().extract(), last.to_iterator().extract());
+
+  BaseNode *old_next;
+
+  // Drop all elements in (first, last)
+  if (first_next != nullptr) {
+    while (first_next != last.extract()) {
+      old_next = first_next->next;
+      drop_node_size(static_cast<Node *>(first_next), sz);
+      first_next = old_next;
+      --header_->count;
+    }
+  }
+
+  return last.to_iterator();
+}
+
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::clear() noexcept
+{
+  if (!header_) {
+    return;
+  }
 
   while (header_->next) {
     auto node = header_->next;
@@ -206,42 +248,76 @@ void FORWARD_LIST_TEMPLATE::clear()
     drop_node(node);
   }
 
-  Base::reset();  
+  Base::reset();
 }
 
-template<typename T, typename A>
-template<typename UnaryPred>
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::clear_size(size_t sz) noexcept
+{
+  if (!header_) {
+    return;
+  }
+
+  while (header_->next) {
+    auto node = header_->next;
+    header_->next = node->next;
+    drop_node_size(node, sz);
+  }
+
+  Base::reset();
+}
+
+FORWARD_LIST_TEMPLATE_LIST
+template <typename DropCb>
+void FORWARD_LIST_TEMPLATE::clear(DropCb cb) noexcept
+{
+  if (!header_) {
+    return;
+  }
+
+  while (header_->next) {
+    auto node = header_->next;
+    header_->next = node->next;
+    cb(node);
+  }
+
+  Base::reset();
+}
+
+FORWARD_LIST_TEMPLATE_LIST
+template <typename UnaryPred>
 auto FORWARD_LIST_TEMPLATE::search_before(UnaryPred pred, ConstIterator pos)
- -> Iterator
+    -> Iterator
 {
   if (pos == end()) return end();
 
   for (auto beg = pos.extract_base(); beg->next != nullptr; beg = beg->next) {
     if (pred(GET_LINKED_NODE_VALUE(beg->next))) {
-      return Iterator(const_cast<BaseNode*>(beg));
+      return Iterator(const_cast<BaseNode *>(beg));
     }
   }
 
   return end();
 }
 
-template<typename T, typename A>
-template<typename BinaryPred>
-void FORWARD_LIST_TEMPLATE::merge(Self& list, BinaryPred pred)
+FORWARD_LIST_TEMPLATE_LIST
+template <typename BinaryPred>
+void FORWARD_LIST_TEMPLATE::merge(Self &list, BinaryPred pred)
 {
   if (list.empty()) return;
 
-  BaseNode* beg = header_;
-  BaseNode* obeg = list.header_;
-  
+  BaseNode *beg = header_;
+  BaseNode *obeg = list.header_;
+
   while (beg->next != nullptr && obeg->next != nullptr) {
-    if (pred(GET_LINKED_NODE_VALUE(obeg->next), GET_LINKED_NODE_VALUE(beg->next))) {
+    if (pred(GET_LINKED_NODE_VALUE(obeg->next),
+             GET_LINKED_NODE_VALUE(beg->next)))
+    {
       auto old_node = obeg->next->next;
       insert_after(beg, list.extract_after(obeg));
       beg = beg->next;
       obeg->next = old_node;
-    }
-    else {
+    } else {
       beg = beg->next;
     }
   }
@@ -255,14 +331,17 @@ void FORWARD_LIST_TEMPLATE::merge(Self& list, BinaryPred pred)
   list.reset();
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self& list, ConstIterator it)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self &list,
+                                         ConstIterator it)
 {
   insert_after(pos, list.extract_after(it));
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self& list, ConstIterator first, ConstIterator last)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self &list,
+                                         ConstIterator first,
+                                         ConstIterator last)
 {
   // (first, last)
   while (first.next() != last) {
@@ -270,18 +349,17 @@ void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self& list, ConstIte
   }
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self& list)
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self &list)
 {
   // If list is empty,
   // it is wrong to update prev.
-  if (list.empty()) return ;
+  if (list.empty()) return;
 
   auto pos_node = pos.to_iterator().extract();
   auto old_next = pos_node->next;
 
-  if (pos == before_end()) 
-  {
+  if (pos == before_end()) {
     header_->prev = list.before_end().extract();
   }
 
@@ -293,10 +371,9 @@ void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self& list)
   KANON_ASSERT(list.empty(), "The list must be empty");
 }
 
-template<typename T, typename A>
-template<typename UnaryPred>
-auto FORWARD_LIST_TEMPLATE::remove_if(UnaryPred pred)
- -> SizeType
+FORWARD_LIST_TEMPLATE_LIST
+template <typename UnaryPred>
+auto FORWARD_LIST_TEMPLATE::remove_if(UnaryPred pred) -> SizeType
 {
   SizeType count = 0;
 
@@ -310,31 +387,33 @@ auto FORWARD_LIST_TEMPLATE::remove_if(UnaryPred pred)
   return count;
 }
 
-template<typename T, typename A>
+FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::reverse() noexcept
 {
   if (size() < 2) return;
   if (size() == 2) {
     push_back(extract_front());
-    return ;
+    return;
   }
 
   forward_list_detail::reverse(header_);
 }
 
-template<typename T, typename A>
-template<typename BinaryPred>
-auto FORWARD_LIST_TEMPLATE::unique(BinaryPred pred)
- -> SizeType
+FORWARD_LIST_TEMPLATE_LIST
+template <typename BinaryPred>
+auto FORWARD_LIST_TEMPLATE::unique(BinaryPred pred) -> SizeType
 {
   SizeType count = 0;
-  for (BaseNode* beg = header_; beg->next != nullptr && beg->next->next != nullptr; ) {
+  for (BaseNode *beg = header_;
+       beg->next != nullptr && beg->next->next != nullptr;)
+  {
     // Adjacent node with same value
-    if (pred(GET_LINKED_NODE_VALUE(beg->next), GET_LINKED_NODE_VALUE(beg->next->next))) {
+    if (pred(GET_LINKED_NODE_VALUE(beg->next),
+             GET_LINKED_NODE_VALUE(beg->next->next)))
+    {
       erase_after(beg->next);
       ++count;
-    }
-    else {
+    } else {
       beg = beg->next;
       if (beg == nullptr) break;
     }
@@ -343,10 +422,10 @@ auto FORWARD_LIST_TEMPLATE::unique(BinaryPred pred)
   return count;
 }
 
-template<typename T, typename A>
-template<typename Compare>
+FORWARD_LIST_TEMPLATE_LIST
+template <typename Compare>
 void FORWARD_LIST_TEMPLATE::sort(Compare cmp)
-{ 
+{
   // TODO Optimization
   // lists store non-header list
   // To small list, maybe better a little.
@@ -355,29 +434,26 @@ void FORWARD_LIST_TEMPLATE::sort(Compare cmp)
   Self list;
   int8_t end_of_lists = 0;
 
-
   while (!empty()) {
     list.push_front(extract_front());
-    
-    for (int8_t i = 0; ; ++i) {
+
+    for (int8_t i = 0;; ++i) {
       if (lists[i].empty()) {
         list.swap(lists[i]);
         if (i == end_of_lists) end_of_lists++;
         break;
-      } 
-      else {
+      } else {
         // Merge non-empty list
         // larger list merge shorter list
         if (lists[i].size() > list.size()) {
           lists[i].merge(list, cmp);
           list.swap(lists[i]);
-        }
-        else
+        } else
           list.merge(lists[i], cmp);
       }
     }
-  } 
-    
+  }
+
   assert(list.empty());
 
   for (int i = end_of_lists - 1; i >= 0; --i) {
@@ -387,28 +463,28 @@ void FORWARD_LIST_TEMPLATE::sort(Compare cmp)
   *this = std::move(list);
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::sort2() 
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::sort2()
 {
 
   ForwardList less;
   ForwardList equal;
   ForwardList larger;
-  
+
   if (size() < 2) {
-    return ;
-  } 
+    return;
+  }
 
   if (size() == 2) {
     if (!(*begin() < *begin().next())) {
       push_back(extract_front());
     }
 
-    return ;
+    return;
   }
 
   auto pivot = *begin();
-  Node* tmp;
+  Node *tmp;
 
   equal.push_back(extract_front());
 
@@ -416,15 +492,13 @@ void FORWARD_LIST_TEMPLATE::sort2()
     tmp = extract_front_node();
     if (tmp->val < pivot) {
       less.push_back(tmp);
-    }
-    else if (pivot < tmp->val) {
+    } else if (pivot < tmp->val) {
       larger.push_back(tmp);
-    }
-    else {
+    } else {
       equal.push_back(tmp);
     }
   }
-  
+
   less.sort();
   larger.sort();
 
@@ -434,20 +508,21 @@ void FORWARD_LIST_TEMPLATE::sort2()
   *this = std::move(less);
 }
 
-template<typename T, typename A>
-void FORWARD_LIST_TEMPLATE::swap(Self& other) noexcept
+FORWARD_LIST_TEMPLATE_LIST
+void FORWARD_LIST_TEMPLATE::swap(Self &other) noexcept
 {
   std::swap(this->header_, other.header_);
 }
 
-template<typename T, typename A>
-inline void swap(ForwardList<T, A> const& x, ForwardList<T, A> const& y) noexcept(noexcept(x.swap(y))) 
+FORWARD_LIST_TEMPLATE_LIST
+inline void swap(ForwardList<T, A> const &x,
+                 ForwardList<T, A> const &y) noexcept(noexcept(x.swap(y)))
 {
   x.swap(y);
 }
 
 #ifdef FORWARD_LIST_DEBUG
-template<typename T, typename A>
+FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::print() const noexcept
 {
   std::cout << "==== print forward_list ====\n";
@@ -455,44 +530,44 @@ void FORWARD_LIST_TEMPLATE::print() const noexcept
   for (auto i = header_->next; i != nullptr; i = i->next) {
     std::cout << GET_LINKED_NODE_VALUE(i) << " -> ";
   }
-  
+
   std::cout << "(NULL)\n";
   std::cout << "============================" << std::endl;
 }
-#endif 
+#endif
 
-template<typename T, typename A>
-inline bool operator==(ForwardList<T, A> const& x, ForwardList<T, A> const& y)
+FORWARD_LIST_TEMPLATE_LIST
+inline bool operator==(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
 {
   return std::equal(x.begin(), x.end(), y.begin());
 }
 
-template<typename T, typename A>
-inline bool operator!=(ForwardList<T, A> const& x, ForwardList<T, A> const& y)
+FORWARD_LIST_TEMPLATE_LIST
+inline bool operator!=(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
 {
   return !(x == y);
 }
 
-template<typename T, typename A>
-inline bool operator<(ForwardList<T, A> const& x, ForwardList<T, A> const& y)
+FORWARD_LIST_TEMPLATE_LIST
+inline bool operator<(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
 {
   return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
 }
 
-template<typename T, typename A>
-inline bool operator>(ForwardList<T, A> const& x, ForwardList<T, A> const& y)
+FORWARD_LIST_TEMPLATE_LIST
+inline bool operator>(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
 {
   return y < x;
 }
 
-template<typename T, typename A>
-inline bool operator<=(ForwardList<T, A> const& x, ForwardList<T, A> const& y)
+FORWARD_LIST_TEMPLATE_LIST
+inline bool operator<=(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
 {
   return !(x > y);
 }
 
-template<typename T, typename A>
-inline bool operator>=(ForwardList<T, A> const& x, ForwardList<T, A> const& y)
+FORWARD_LIST_TEMPLATE_LIST
+inline bool operator>=(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
 {
   return !(x < y);
 }
