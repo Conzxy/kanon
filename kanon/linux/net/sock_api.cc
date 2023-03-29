@@ -4,6 +4,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+using namespace kanon;
+
 void sock::Listen(FdType fd) noexcept
 {
   auto ret = ::listen(fd, SOMAXCONN);
