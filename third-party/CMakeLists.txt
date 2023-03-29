@@ -1,5 +1,5 @@
 # The xxHash don't install when it is a subdirectory default.
-add_subdirectory(xxHash/cmake_unofficial)
+#add_subdirectory(xxHash/cmake_unofficial)
 
 # Required by leak_detector implementation
 # Don't install any files related libgc
