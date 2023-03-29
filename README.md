@@ -1,13 +1,14 @@
 # kanon
 
 ## Introduction
-`kanon`是一个`C++11`编写的基于**事件驱动**(event-driven)的网络库(network libaray)。<br>
-具体来说，该库基于`Reactor`模式，其网络模型是`同步非阻塞`（synchronized-unblocking），依赖的的API是：`poll()`(unix-like/linux)，`epoll`(linux)。<br>
+`kanon`是一个使用`C++11`编写的基于**事件驱动**(event-driven)的网络库(network libaray)。<br>
+具体来说，该库基于`Reactor`模式，其网络模型是`同步非阻塞`（synchronized-unblocking），依赖的的API是：`poll()`(unix-like/linux)，`epoll`(linux)、`GetQueuedCompletionStatusEx()`(Windows)。<br>
 但是，实际上该库是暴露**回调注册接口**来处理各种IO事件，因此在使用上是类似`异步`的，这也是事件驱动的一个体现和优势。
 
 除此之外，为了充分利用*多核优势*，该库支持启动多个线程，而*主线程仅接受(accept)连接*，而这些线程处理*IO事件*，因此一般这些线程称作`IO线程`。
 
-该库目前不考虑跨平台，因为`Windows`的网络API不贴近`Reactor`，兼容的话要承担一定的额外开销，同时，对现在的我而言也没这个必要。
+> 旧：该库目前不考虑跨平台，因为`Windows`的网络API不贴近`Reactor`，兼容的话要承担一定的额外开销，同时，对现在的我而言也没这个必要。
+> 新：现在kanon支持Windows的**Client** ，底层采用IOCP抽象为Poller来进行同步等待。
 
 另外，该库也实现了其他有用的组件，它们也是构成网络库的一部分，但对于编写应用程序的其他*非网络模块*也是十分有用的:
 | 模块 | 描述 | 相关文件 |
@@ -45,23 +46,14 @@ $ sudo apt install cmake
 
 然后通过以下命令构筑该库：
 ```shell
-# ${USER_ROOT_DIR} is ~ usually.
-$ cd ${USER_ROOT_DIR}/kanon
+$ git clone https://github.com/conzxy/kanon
+$ cd kanon
 $ mkdir build && cd build
-# Options:
-# Setting BUILD_STATIC_LIB can choose to generate shared libaray(.so) or static libaray(.a)(default: OFF)
-# Setting BUILD_ALL_TESTS can choose whether to generate tests or not(default: OFF)
-# Setting BUILD_ALL_EXAMPLES can choose whether to generate example or not(default: OFF)
+# Setting KANON_BUILD_STATIC_LIBS can choose to generate shared libaray(.so) or static libaray(.a)(default:ON)
+# More options please see:
+# cmake .. -LH
 $ cmake ..
-# -j specify the number of concurrent jobs
-# You can set it according to the core number of your machine
-$ cmake --build . --target all -j 2
-```
-另外，你也可以通过项目根目录的shell脚本构筑：
-```shell
-$ export KANON_BUILD_PATH=...
-$ chmod u+x build.sh
-$ ./build.sh
+$ cmake --build . --parallel $(nproc)
 ```
 
 构筑完成后，你可以安装该库：
@@ -70,9 +62,13 @@ $ ./build.sh
 $ cmake --install .
 ```
 
-注意，默认安装目录是`/usr/include/`（头文件），`/usr/lib`（库文件）。你可以更改：
+如果你要修改安装路径，可以按照如下命令：
 ```shell
-$ cmake --install . --prefix INSTALL_DIRECTORY 
+# 路径可以是绝对路径也可以是相对路径
+# 如果是相对路径，CMake会认为这是相对prefix的路径
+# prefix指定命令：
+# cmake --install . --prefix ...
+$ cmake .. -DCMAKE_INSTALL_INCLUDEDIR=... -DCMAKE_INSTALL_LIBDIR=...
 ```
 
 ## Example
@@ -94,6 +90,7 @@ void OnConnection(TcpConnectionPtr const& conn)
 ## Document
 目前仅有网络模块的API文档，是通过`Doxygen`生成的。
 
+> 目前已关闭
 Website: http://47.99.92.230/
 （由[kanon_httpd](https://github.com/Conzxy/kanon_httpd)支持）
 

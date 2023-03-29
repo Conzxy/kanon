@@ -62,3 +62,14 @@
    * 删除无用函数：`IsValid()`, `ToValid()`
    * 添加运算符重载：支持与double(seconds)，TimeStamp::Second，TimeStamp::Millisecond，TimeStamp::Microsecond的`+/-`运算（无关位置）以及`取反(nagation)`
    * 支持`strptime()`格式字符串获取TimeStamp（实际就是`strptime()`的wrapper）
+
+2023-3-29 Conzxy 1.7.0
+ * MOD：`ForwardList`提供基于size的删除节点API(`erase_after()|clear()|pop_front()`)
+ * FIX: `ChunkList`没有按照Chunk大小和Size Header大小来进行正确的释放操作。通过`ForwardList`提供的新API修复。
+ * FIX: `CountdownLatch`的`Add()`中`+`运算符误写为了`-`。
+ * NEW: 在Windows平台，基于IOCP实现`IocpPoller`，重新设计`Channel`，采用`CompletionContext`以适应IOCP的**Completion queue** 的事件机制。
+ * NEW: 为了代替Linux的eventfd，采用`PostCompletionStatus()`来唤醒`GetCompletionStatusEx()`。
+ * NEW: 结合`ConnectEx()`, `WSASend()`, `WSARecv()`等API实现`TcpClient`, `Connector`, `TcpConnection`，即目前支持Windows平台的Client。
+ * NEW: 提供了模块初始化函数，对于Windows这是有必要的，同时也用于初始化kanon的全局状态，不再依赖于static变量来初始化，因为其初始化顺序未定义，如果存在依赖最好写在初始化函数中。
+ * MOD: 为了各自平台的代码能够通过编译并符合预期作用，对一些平台特有的做了抽象和兼容，比如TLS specifier, gettid(), gettimeofday(), strcasecmp()等。
+

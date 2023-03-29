@@ -4,7 +4,7 @@
 # are static. That's not I wanted behavior. I want a variable,
 # it can build shared libraries default even though I don't set 
 # it explitly, and the build of static libraries is an option.
-option(KANON_BUILD_STATIC_LIBS "Build kanon static libraries" OFF)
+option(KANON_BUILD_STATIC_LIBS "Build kanon static libraries" ON)
 if (KANON_BUILD_STATIC_LIBS)
   set(BUILD_SHARED_LIBS OFF)
 else ()
