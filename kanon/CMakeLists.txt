@@ -73,16 +73,6 @@ GenLib(kanon_base ${KANON_BASE_SRC})
 target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
     "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-if (KANON_ON_WIN)
-  target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
-  "$<BUILD_INTERFACE:${KANON_WIN_CORE_INCLUDE_DIR}>"
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-endif ()
-if (KANON_ON_UNIX)
-  target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
-  "$<BUILD_INTERFACE:${KANON_LINUX_CORE_INCLUDE_DIR}>"
-  "${INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-endif ()
 
 GenLib(kanon_net ${KANON_NET_SRC})
 target_link_libraries(kanon_net PRIVATE kanon_base)
@@ -91,9 +81,6 @@ target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
     "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 if (KANON_ON_WIN)
-  target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
-  "$<BUILD_INTERFACE:${KANON_WIN_NET_INCLUDE_DIR}>"
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
   target_link_libraries(kanon_net PRIVATE ws2_32)
 endif ()
 
