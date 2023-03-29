@@ -31,6 +31,12 @@ jobs:
         ls ${{ github.workspace }}
       shell: bash
     
+    - name: Check install dir
+      run: |
+        cd ${{github.workspace}}
+        cmake .. -LA | grep INSTALL
+      shell: bash
+      
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -39,7 +45,8 @@ jobs:
         ls
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake .. -DCMAKE_INSTALL_INCLUDEDIR=${{github.workspace}}/dummy-include \
+        -DCMAKE_INSTALL_LIBDIR=${{github.workspace}}/dummy-lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       shell: bash
     
     - name: CMake Build
