@@ -61,7 +61,7 @@ void ConnectionBase<D>::ConnectionEstablished()
   LOG_TRACE_KANON << "Connection [" << name_ << "] is established";
 
   assert(connection_callback_);
-  connection_callback_(shared_from_this());
+  connection_callback_(this->shared_from_this());
 }
 
 template <typename D>
@@ -81,7 +81,7 @@ void ConnectionBase<D>::ConnectionDestroyed()
     LOG_TRACE_KANON << "Connection [" << name_ << "] has destroyed";
     // Because ConnectionDestroyed maybe async call
     // Don't pass raw pointer
-    connection_callback_(shared_from_this());
+    connection_callback_(this->shared_from_this());
   }
 
   assert(state_ == kDisconnected);
@@ -121,7 +121,7 @@ void ConnectionBase<D>::HandleLtRead(TimeStamp recv_time)
                     << ", fd: " << channel_->GetFd() << "]";
 
     if (message_callback_) {
-      message_callback_(shared_from_this(), input_buffer_, recv_time);
+      message_callback_(this->shared_from_this(), input_buffer_, recv_time);
     } else {
       input_buffer_.AdvanceAll();
       LOG_WARN << "If user want to process message from peer, should set "
@@ -175,7 +175,7 @@ void ConnectionBase<D>::HandleEtRead(TimeStamp recv_time)
     // FIXME
     // message_callback_ should be called here?
     if (message_callback_) {
-      message_callback_(shared_from_this(), input_buffer_, recv_time);
+      message_callback_(this->shared_from_this(), input_buffer_, recv_time);
     } else {
       input_buffer_.AdvanceAll();
       LOG_WARN << "If user want to process message from peer, should set "
@@ -235,13 +235,13 @@ void ConnectionBase<D>::HandleLtWrite()
         // also ok.
         // loop_->QueueToLoop(std::bind(
         //   write_complete_callback_,
-        //   shared_from_this()));
+        //   this->shared_from_this()));
 
         // Pass this is unsafe even thought this is in the
         // phase of processing write event since there is a
         // HandleClose() callback has register early
         loop_->QueueToLoop(std::bind(
-            &ConnectionBase<D>::CallWriteCompleteCallback, shared_from_this()));
+            &ConnectionBase<D>::CallWriteCompleteCallback, this->shared_from_this()));
       } else {
         channel_->DisableWriting();
       }
@@ -259,7 +259,7 @@ void ConnectionBase<D>::HandleLtWrite()
 template <typename D>
 void ConnectionBase<D>::CallWriteCompleteCallback()
 {
-  if (write_complete_callback_(shared_from_this())) {
+  if (write_complete_callback_(this->shared_from_this())) {
     LOG_TRACE_KANON << "Last chunk in the pipeline write";
     // The write_complete_callback_ maybe disable writing in the SendInLoop()
     if (channel_->IsWriting()) {
@@ -313,7 +313,7 @@ void ConnectionBase<D>::HandleEtWrite()
     if (write_complete_callback_) {
       // No need to disable writing
       loop_->QueueToLoop(std::bind(
-          &ConnectionBase<D>::CallWriteCompleteCallback, shared_from_this()));
+          &ConnectionBase<D>::CallWriteCompleteCallback, this->shared_from_this()));
     }
 
     if (state_ == kDisconnecting) {
@@ -349,7 +349,7 @@ void ConnectionBase<D>::HandleClose()
   // Prevent connection to be removed from TcpServer immediately(since
   // close_callback_) TcpServer::RemoveConnection need to call
   // ConnectionBase<D>::ConnectionDestroyed Therefore, we must guard here
-  const auto guard = shared_from_this();
+  const auto guard = this->shared_from_this();
   connection_callback_(guard);
 
   // TcpServer remove connection from its connections_
@@ -410,7 +410,7 @@ void ConnectionBase<D>::Send(void const *data, size_t len)
       // std::move(str)));
 
       loop_->QueueToLoop(std::bind(&ConnectionBase<D>::SendInLoopForStr,
-                                   shared_from_this(), std::move(str)));
+                                   this->shared_from_this(), std::move(str)));
     }
   } else {
     LOG_TRACE_KANON << "Connection [" << name_ << "](fd = " << channel_->GetFd()
@@ -439,7 +439,7 @@ void ConnectionBase<D>::Send(InputBuffer &buf)
       // lambda expression doesn't support move capture in
       // C++11, we can't move resource in the capture list
       loop_->QueueToLoop(std::bind(&ConnectionBase<D>::SendInLoopForBuf,
-                                   shared_from_this(), std::move(buf)));
+                                   this->shared_from_this(), std::move(buf)));
     }
   } else {
     LOG_TRACE_KANON << "Connection [" << name_ << "](fd = " << channel_->GetFd()
@@ -462,7 +462,7 @@ void ConnectionBase<D>::Send(OutputBuffer &buffer)
     SendInLoopForChunkList(buffer);
   } else {
     loop_->QueueToLoop(std::bind(&ConnectionBase::SendInLoopForChunkList,
-                                 shared_from_this(), std::move(buffer)));
+                                 this->shared_from_this(), std::move(buffer)));
   }
 }
 
