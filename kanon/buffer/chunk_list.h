@@ -120,7 +120,7 @@ class ChunkList final {
 
   // The ForwardList is an internel class
   ChunkList() = default;
-  ~ChunkList() noexcept = default;
+  ~ChunkList() noexcept;
 
   // Explicit copy API to avoid implicit copy
 

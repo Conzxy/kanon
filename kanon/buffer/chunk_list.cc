@@ -17,6 +17,14 @@
 
 namespace kanon {
 
+ChunkList::~ChunkList() noexcept
+{
+  auto first_size = free_buffers_.front().GetMaxSize();
+  if (first_size < CHUNK_SIZE) buffers_.pop_front_size(first_size);
+  buffers_.clear_size(CHUNK_SIZE);
+  free_buffers_.clear_size(CHUNK_SIZE);
+}
+
 void ChunkList::Append(void const *data, size_t len)
 {
   auto buf = reinterpret_cast<char const *>(data);
@@ -83,7 +91,8 @@ void ChunkList::AdvanceRead(size_t len)
     // reuse also can avoid to call ::malloc()
     if (len >= first_block->GetReadableSize()) {
       if (!PutToFreeChunk()) {
-        buffers_.drop_node(buffers_.extract_front_node());
+        assert(CHUNK_SIZE == buffers_.front().GetMaxSize());
+        buffers_.drop_node_size(buffers_.extract_front_node(), CHUNK_SIZE);
       }
 
       len -= rsize;
@@ -141,7 +150,10 @@ void ChunkList::Shrink(size_t chunk_size)
   auto end = free_buffers_.begin();
   std::advance(end, free_buffers_.size() - chunk_size);
 
-  free_buffers_.erase_after(free_buffers_.cbefore_begin(), end);
+  // Free buffers contains CHUNB_SIZE chunks only.
+  // There are no size header chunk.
+  free_buffers_.erase_after_size(free_buffers_.cbefore_begin(), end,
+                                 CHUNK_SIZE);
   assert(free_buffers_.size() == chunk_size);
 }
 
@@ -154,7 +166,7 @@ void ChunkList::ReserveFreeChunk(size_t chunk_size)
   size_t diff = chunk_size - free_buffers_.size();
 
   for (size_t i = 0; i < diff; ++i) {
-    free_buffers_.emplace_front();
+    free_buffers_.push_back(free_buffers_.create_node_size(CHUNK_SIZE));
   }
 }
 
