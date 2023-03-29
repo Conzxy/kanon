@@ -200,24 +200,21 @@ class Buffer {
    */
   Append_Macro(64)
 
-      /**
-       * \brief Append 32bit unsigned integer to buffer
-       * \note
-       *   Convert @p i to network byte order automatically
-       */
-      Append_Macro(32)
+  /**
+   * \brief Append 32bit unsigned integer to buffer
+   * \note
+   *   Convert @p i to network byte order automatically
+   */
+  Append_Macro(32)
 
-      /**
-       * \brief Append 16bit unsigned integer to buffer
-       * \note
-       *   Convert @p i to network byte order automatically
-       */
-      Append_Macro(16)
+  /**
+   * \brief Append 16bit unsigned integer to buffer
+   * \note
+   *   Convert @p i to network byte order automatically
+   */
+  Append_Macro(16)
 
-          void Append8(uint8_t i)
-  {
-    Append(&i, sizeof i);
-  }
+  void Append8(uint8_t i) { Append(&i, sizeof i); }
 
   //!@}
 
@@ -264,19 +261,19 @@ class Buffer {
    */
   Prepend_Macro(16)
 
-      /**
-       * \brief Prepend 32 unsigned integer to buffer
-       * \note
-       *   Convert @p i to network byte order automatically
-       */
-      Prepend_Macro(32)
+  /**
+   * \brief Prepend 32 unsigned integer to buffer
+   * \note
+   *   Convert @p i to network byte order automatically
+   */
+  Prepend_Macro(32)
 
-      /**
-       * \brief Prepend 64bit unsigned integer to buffer
-       * \note
-       *   Convert @p i to network byte order automatically
-       */
-      Prepend_Macro(64)
+  /**
+   * \brief Prepend 64bit unsigned integer to buffer
+   * \note
+   *   Convert @p i to network byte order automatically
+   */
+  Prepend_Macro(64)
 
   //!@}
 
@@ -291,12 +288,12 @@ class Buffer {
     return sock::ToHostByteOrder##size(i);                                     \
   }
 
-      /**
-       * \brief Get the 8bit unsigned integer in the prepend region
-       * \note
-       *   Returned value no need to be converted to host byte order
-       */
-      uint8_t GetReadBegin8() const noexcept
+  /**
+   * \brief Get the 8bit unsigned integer in the prepend region
+   * \note
+   *   Returned value no need to be converted to host byte order
+   */
+  uint8_t GetReadBegin8() const noexcept
   {
     uint8_t i;
     ::memcpy(&i, GetReadBegin(), sizeof i);
@@ -311,19 +308,19 @@ class Buffer {
    */
   GetReadBegin_Macro(16)
 
-      /**
-       * \brief Get the 32bit unsigned integer in the prepend region
-       * \note
-       *   Returned value has been converted to host byte order automatically
-       */
-      GetReadBegin_Macro(32)
+  /**
+   * \brief Get the 32bit unsigned integer in the prepend region
+   * \note
+   *   Returned value has been converted to host byte order automatically
+   */
+  GetReadBegin_Macro(32)
 
-      /**
-       * \brief Get the 64bit unsigned integer in the prepend region
-       * \note
-       *   Returned value has been converted to host byte order automatically
-       */
-      GetReadBegin_Macro(64)
+  /**
+   * \brief Get the 64bit unsigned integer in the prepend region
+   * \note
+   *   Returned value has been converted to host byte order automatically
+   */
+  GetReadBegin_Macro(64)
 
 #define Read_Macro(size)                                                       \
   uint##size##_t Read##size() noexcept                                         \
@@ -333,44 +330,44 @@ class Buffer {
     return ret;                                                                \
   }
 
-      /**
-       * \brief Read the 8bit unsigned integer in the prepend region
-       * \note
-       *   Compared to GetReadBegin8(), this will advance read pointer
-       */
-      Read_Macro(8)
+  /**
+   * \brief Read the 8bit unsigned integer in the prepend region
+   * \note
+   *   Compared to GetReadBegin8(), this will advance read pointer
+   */
+  Read_Macro(8)
 
-      /**
-       * \brief Read the 16bit unsigned integer in the prepend region
-       * \note
-       *   Returned value has been converted to host byte order automatically.\n
-       *   Compared to GetReadBegin16(), this will advance read pointer
-       */
-      Read_Macro(16)
+  /**
+   * \brief Read the 16bit unsigned integer in the prepend region
+   * \note
+   *   Returned value has been converted to host byte order automatically.\n
+   *   Compared to GetReadBegin16(), this will advance read pointer
+   */
+  Read_Macro(16)
 
-      /**
-       * \brief Read the 32bit unsigned integer in the prepend region
-       * \note
-       *   Returned value has been converted to host byte order automatically.\n
-       *   Compared to GetReadBegin32(), this will advance read pointer
-       */
-      Read_Macro(32)
+  /**
+   * \brief Read the 32bit unsigned integer in the prepend region
+   * \note
+   *   Returned value has been converted to host byte order automatically.\n
+   *   Compared to GetReadBegin32(), this will advance read pointer
+   */
+  Read_Macro(32)
 
-      /**
-       * \brief Read the 64bit unsigned integer in the prepend region
-       * \note
-       *   Returned value has been converted to host byte order automatically.\n
-       *   Compared to GetReadBegin64(), this will advance read pointer
-       */
-      Read_Macro(64)
+  /**
+   * \brief Read the 64bit unsigned integer in the prepend region
+   * \note
+   *   Returned value has been converted to host byte order automatically.\n
+   *   Compared to GetReadBegin64(), this will advance read pointer
+   */
+  Read_Macro(64)
 
-      //!@}
+  //!@}
 
-      //! \name advance operation
-      //!@{
+  //! \name advance operation
+  //!@{
 
-      //! Advance the read pointer in @p n
-      void AdvanceRead(size_type n) noexcept
+  //! Advance the read pointer in @p n
+  void AdvanceRead(size_type n) noexcept
   {
     assert(n <= GetReadableSize());
 
@@ -404,33 +401,33 @@ class Buffer {
    */
   AdvanceRead_Macro(64)
 
-      /**
-       * \brief Advance read region in sizeof(uint32_t)
-       */
-      AdvanceRead_Macro(32)
+  /**
+   * \brief Advance read region in sizeof(uint32_t)
+   */
+  AdvanceRead_Macro(32)
 
-      /**
-       * \brief Advance read region in sizeof(uint16_t)
-       */
-      AdvanceRead_Macro(16)
+  /**
+   * \brief Advance read region in sizeof(uint16_t)
+   */
+  AdvanceRead_Macro(16)
 
-      /**
-       * \brief Advance read region in sizeof(uint8_t)
-       */
-      AdvanceRead_Macro(8)
+  /**
+   * \brief Advance read region in sizeof(uint8_t)
+   */
+  AdvanceRead_Macro(8)
 
-      //! Advance write pointer in @p n
-      void AdvanceWrite(size_type n) noexcept
+  //! Advance write pointer in @p n
+  void AdvanceWrite(size_type n) noexcept
   {
     assert(n <= GetWritableSize());
 
     write_index_ += n;
   }
-    
+
   void SetWriteIndex(size_type n) noexcept
   {
-      assert(n >= read_index_ && n <= GetCapacity());
-      write_index_ = n;
+    assert(n >= read_index_ && n <= GetCapacity());
+    write_index_ = n;
   }
   //!@}
 

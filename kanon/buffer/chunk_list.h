@@ -165,7 +165,9 @@ class ChunkList final {
 
   void Append8(uint8_t i) { Append(&i, sizeof i); }
 
-  AppendInt_Macro(16) AppendInt_Macro(32) AppendInt_Macro(64)
+  AppendInt_Macro(16)
+  AppendInt_Macro(32)
+  AppendInt_Macro(64)
 
 /**
  * Prepend a new chunk
@@ -181,14 +183,16 @@ class ChunkList final {
     assert(buffers_.front().GetReadableSize() == sizeof(i));                   \
   }
 
-      void Prepend8(uint8_t i)
+  void Prepend8(uint8_t i)
   {
     buffers_.push_front(buffers_.create_node_size(sizeof(i), sizeof(i)));
     assert(buffers_.front().GetMaxSize() == sizeof(i));
     buffers_.front().Append(&i, sizeof i);
   }
 
-  PrependInt_Macro(16) PrependInt_Macro(32) PrependInt_Macro(64)
+  PrependInt_Macro(16)
+  PrependInt_Macro(32)
+  PrependInt_Macro(64)
 
 #define GetReadBeginInt_Macro(size)                                            \
   uint##size##_t GetReadBegin##size() noexcept                                 \
@@ -198,13 +202,15 @@ class ChunkList final {
         *reinterpret_cast<uint##size##_t *>(buffers_.front().GetReadBegin())); \
   }
 
-      uint8_t GetReadBegin8() noexcept
+  uint8_t GetReadBegin8() noexcept
   {
     assert(buffers_.front().GetReadableSize() >= sizeof(uint8_t));
     return *reinterpret_cast<uint8_t *>(buffers_.front().GetReadBegin());
   }
 
-  GetReadBeginInt_Macro(16) GetReadBeginInt_Macro(32) GetReadBeginInt_Macro(64)
+  GetReadBeginInt_Macro(16)
+  GetReadBeginInt_Macro(32)
+  GetReadBeginInt_Macro(64)
 
 #define ReadInt_Macro(size)                                                    \
   uint##size##_t Read##size() noexcept                                         \
@@ -214,9 +220,12 @@ class ChunkList final {
     return ret;                                                                \
   }
 
-      ReadInt_Macro(8) ReadInt_Macro(16) ReadInt_Macro(32) ReadInt_Macro(64)
+  ReadInt_Macro(8)
+  ReadInt_Macro(16)
+  ReadInt_Macro(32)
+  ReadInt_Macro(64)
 
-          void AdvanceRead(size_t len);
+  void AdvanceRead(size_t len);
   void AdvanceReadAll() { AdvanceRead(GetReadableSize()); }
   void Shrink(size_t chunk_size);
   void ReserveFreeChunk(size_t chunk_size);
