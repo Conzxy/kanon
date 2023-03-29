@@ -35,11 +35,11 @@ ChatClient::ChatClient(kanon::EventLoop *loop, InetAddr const &server_addr)
 void ChatClient::OnStringMessage(TcpConnectionPtr const &conn,
                                  std::string const &msg, TimeStamp receive_time)
 {
-  latch_.Countdown();
   KANON_UNUSED(conn);
   KANON_UNUSED(receive_time);
 
-  printf("<<< %s\n", msg.c_str());
+  printf("\n<<< %s\n", msg.c_str());
+  latch_.Countdown();
 }
 
 void ChatClient::Start()
