@@ -426,7 +426,12 @@ class Buffer {
 
     write_index_ += n;
   }
-
+    
+  void SetWriteIndex(size_type n) noexcept
+  {
+      assert(n >= read_index_ && n <= GetCapacity());
+      write_index_ = n;
+  }
   //!@}
 
   //! \name retrieve operation

@@ -64,6 +64,6 @@ void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
 
 usize kanon::BufferReadFromFd(Buffer &buffer, FdType fd, int &saved_errno)
 {
-  LOG_FATAL << "BUfferReadFromFd() isn't implemented for Windows";
+  LOG_FATAL << "BufferReadFromFd() isn't implemented for Windows";
   return usize(-1);
 }

@@ -1,4 +1,5 @@
 #include "kanon/net/buffer.h"
+#include "kanon/log/logger.h"
 
 #include <sys/uio.h>
 
@@ -28,11 +29,11 @@ usize kanon::BufferReadFromFd(Buffer &buffer, FdType fd, int &saved_errno)
 
   if (readen_bytes < 0) {
     saved_errno = errno;
-  } else if (static_cast<size_type>(readen_bytes) <= cache_writable_size) {
-    write_index_ += readen_bytes;
+  } else if (static_cast<Buffer::size_type>(readen_bytes) <= cache_writable_size) {
+    buffer.AdvanceWrite(readen_bytes);
   } else {
-    write_index_ = buffer.GetCapacity();
-    Append(extra_buf, readen_bytes - cache_writable_size);
+    buffer.SetWriteIndex(buffer.GetCapacity());
+    buffer.Append(extra_buf, readen_bytes - cache_writable_size);
   }
 
   return readen_bytes;
@@ -41,4 +42,5 @@ usize kanon::BufferReadFromFd(Buffer &buffer, FdType fd, int &saved_errno)
 void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
                               void *overlap)
 {
+  LOG_FATAL << "BufferOverlapRecv() isn't implemented for Linux";
 }
