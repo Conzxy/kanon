@@ -51,7 +51,7 @@ jobs:
     - name: CMake Install
       run: |
         cd ${{github.workspace}}/build
-        cmake --install .
+        cmake --install . --prefix ${{github.workspace}}/dummy
       shell: bash
 
  
