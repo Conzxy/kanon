@@ -38,6 +38,8 @@ function (conzxy_install)
   configure_package_config_file("${project_config_in_file}" "${project_config_out_file}" 
       INSTALL_DESTINATION "${export_dest_dir}")
   write_basic_package_version_file("${config_version_file}" COMPATIBILITY SameMajorVersion)
+  message(STATUS "Config file path = ${project_config_out_file}")
+  message(STATUS "ConfigVersion file path = ${config_version_file}")
   # Install Config.cmake and ConfigVersion.cmake
   install(FILES "${project_config_out_file}" "${config_version_file}" DESTINATION "${export_dest_dir}")
 endfunction ()
