@@ -3,9 +3,9 @@ function (conzxy_install)
 
   include(GNUInstallDirs)
   set(project_config_in_file "${CMAKE_CURRENT_LIST_DIR}/cmake/${CONZXY_PROJECT}Config.cmake.in")
-  set(project_config_out_file "${CMAKE_CURRENT_BINARY}/${CONZXY_PROJECT}Config.cmake")
+  set(project_config_out_file "${CMAKE_CURRENT_BINARY_DIR}/${CONZXY_PROJECT}Config.cmake")
   set(config_targets_filename "${CONZXY_PROJECT}ConfigTargets.cmake")
-  set(config_version_file "${CMAKE_CURRENT_BINARY}/${CONZXY_PROJECT}ConfigVersion.cmake")
+  set(config_version_file "${CMAKE_CURRENT_BINARY_DIR}/${CONZXY_PROJECT}ConfigVersion.cmake")
   set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${CONZXY_PROJECT}")
     
   # Specify rules of targets
