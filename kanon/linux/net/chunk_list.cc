@@ -1,5 +1,6 @@
 #include "kanon/net/chunk_list.h"
 
+#include <sys/uio.h>
 #include "kanon/algo/fixed_vector.h"
 #include "kanon/net/sock_api.h"
 
@@ -54,4 +55,5 @@ ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
 void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
                                  void *overlap)
 {
+  LOG_FATAL << "ChunkListOverlapSend() isn't implemented for Linux";
 }
