@@ -1,4 +1,4 @@
-name: CMake
+name: Kanon CMake Linux CI
 
 on:
   push:
@@ -47,12 +47,10 @@ jobs:
       run: |
         cd ${{github.workspace}}/build
         cmake --build . --parallel $(nproc)
+      shell: bash
       
     - name: CMake Install
       run: |
         cd ${{github.workspace}}/build
         cmake --install . --prefix ${{github.workspace}}/dummy
       shell: bash
-
- 
-
