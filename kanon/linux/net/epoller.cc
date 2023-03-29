@@ -4,6 +4,8 @@
 
 #include "kanon/net/event_loop.h"
 
+using namespace kanon::detail;
+
 namespace kanon {
 
 namespace detail {
