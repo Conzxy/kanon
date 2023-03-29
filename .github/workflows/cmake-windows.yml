@@ -2,11 +2,17 @@ name: Kanon CMake Windows CI
 
 on:
   push:
+    branches: ['win', 'master']
     paths:
-      - '**/win/**'
-    #branches: [ "master" ]
-    #pull_request:
-    #branches: [ "master" ]
+      - '**/win/**.cc'
+      - '**/win/**.h'
+      - '**/win/**.inl'
+  pull_request:
+    branches: ['win']
+    paths:
+      - '**/win/**.cc'
+      - '**/win/**.h'
+      - '**/win/**.inl'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
