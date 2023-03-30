@@ -1,0 +1,18 @@
+digraph "Net"
+{
+  bgcolor="transparent";
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node5 [label="Demultiplexer",height=0.2,width=0.4,color="black",URL="$group__demultiplexer.html",tooltip="As the role of the Synchronous Event Demultiplexer in Reactor pattern."];
+  Node2 [label="Server",height=0.2,width=0.4,color="black",URL="$group__server.html",tooltip="Server parts."];
+  Node3 [label="Client",height=0.2,width=0.4,color="black",URL="$group__client.html",tooltip="Client parts."];
+  Node4 [label="EventLoop",height=0.2,width=0.4,color="black",URL="$group__EventLoop.html",tooltip="event loop facilities"];
+  Node1 [label="Net",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Network module, including event loop in reactor mode and tcp server/client, etc."];
+  Node6 [label="Timer",height=0.2,width=0.4,color="black",URL="$group__timer.html",tooltip="Manage timer and process timer events."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node5 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node6 [shape=plaintext, dir="back", style="solid"];
+}
