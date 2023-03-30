@@ -1,0 +1,5 @@
+<map id="kanon::Connector" name="kanon::Connector">
+<area shape="rect" id="node1" title="Connect to peer(server)" alt="" coords="116,95,252,121"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,192,47"/>
+<area shape="rect" id="node3" title=" " alt="" coords="217,13,322,39"/>
+</map>
