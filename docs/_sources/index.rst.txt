@@ -8,4 +8,5 @@ Welcome to kanon's documentation!
 
 .. toctree::
    :maxdepth: 1
-   doxygen/kanon/html/index.rst
+
+   doxygen/kanon/html/index.html
