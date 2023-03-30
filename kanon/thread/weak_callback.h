@@ -8,7 +8,7 @@ namespace kanon {
 
 // \note
 // I don't think this is great wrapper:
-// member function wrapper too many( &, &&, noexcept, const, volatile i.e. 48 types)
+// member function wrapper too many( &, &&, KANON_NOEXCEPT, const, volatile i.e. 48 types)
 // if std::is_member_pointer<> provide traits type alias, it's great(my TinySTL::Is_member_pointer<> can provide return and paraemter for 48 types)
 // 
 template<typename R, typename T, typename ...Args>
@@ -58,18 +58,18 @@ MAKEWEAKCALLBACK(const &&)
 MAKEWEAKCALLBACK(volatile &&)
 MAKEWEAKCALLBACK(const volatile &&)
 #if __cpluscplus >= 201703L
-MAKEWEAKCALLBACK(const noexcept)
-MAKEWEAKCALLBACK(noexcept)
-MAKEWEAKCALLBACK(volatile noexcept)
-MAKEWEAKCALLBACK(const volatile noexcept)
-MAKEWEAKCALLBACK(const & noexcept)
-MAKEWEAKCALLBACK(& noexcept)
-MAKEWEAKCALLBACK(volatile & noexcept)
-MAKEWEAKCALLBACK(const volatile & noexcept)
-MAKEWEAKCALLBACK(const && noexcept)
-MAKEWEAKCALLBACK(&& noexcept)
-MAKEWEAKCALLBACK(volatile && noexcept)
-MAKEWEAKCALLBACK(const volatile && noexcept)
+MAKEWEAKCALLBACK(const KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(volatile KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(const volatile KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(const & KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(& KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(volatile & KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(const volatile & KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(const && KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(&& KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(volatile && KANON_NOEXCEPT)
+MAKEWEAKCALLBACK(const volatile && KANON_NOEXCEPT)
 #endif // __cpluscplus >= 201703L
 } // namespace kanon
 

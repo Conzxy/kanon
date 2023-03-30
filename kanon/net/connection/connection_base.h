@@ -53,8 +53,11 @@ class ConnectionBase
   };
 
   using ContextType = RawAny;
-  D &GetDerived() noexcept { return static_cast<D &>(*this); }
-  D const &GetDerived() const noexcept { return static_cast<D const &>(*this); }
+  D &GetDerived() KANON_NOEXCEPT { return static_cast<D &>(*this); }
+  D const &GetDerived() const KANON_NOEXCEPT
+  {
+    return static_cast<D const &>(*this);
+  }
 
   using ConnectionPtr = std::shared_ptr<D>;
   using ConnectionCallback = std::function<void(ConnectionPtr const &)>;
@@ -66,8 +69,9 @@ class ConnectionBase
       std::function<void(ConnectionPtr const &, InputBuffer &, TimeStamp)>;
 
  public:
-  ConnectionBase(EventLoop *loop, std::string const &name, int sockfd);
-  ~ConnectionBase();
+  KANON_NET_API ConnectionBase(EventLoop *loop, std::string const &name,
+                               int sockfd);
+  KANON_NET_API ~ConnectionBase();
 
   //! \name write operation
   //!@{
@@ -77,25 +81,25 @@ class ConnectionBase
    *
    * \note Not thread-safe but in loop
    */
-  void Send(InputBuffer &buf);
+  KANON_NET_API void Send(InputBuffer &buf);
 
   /**
    * \brief Send message stored in the chunklist from the external
    * \note Not thread-safe but in loop
    */
-  void Send(OutputBuffer &buf);
+  KANON_NET_API void Send(OutputBuffer &buf);
 
   /**
    * \brief Send message in the \p date of \p len
    *
    * \note Not thread-safe but in loop
    */
-  void Send(void const *data, size_t len);
+  KANON_NET_API void Send(void const *data, size_t len);
 
   /**
    * \brief wrapper of Send(void const*, size_t)
    */
-  void Send(StringView data);
+  KANON_NET_API void Send(StringView data);
 
   //!@}
 
@@ -105,12 +109,12 @@ class ConnectionBase
   /**
    * \brief Half close the connection in write connection
    */
-  void ShutdownWrite() noexcept;
+  KANON_NET_API void ShutdownWrite() KANON_NOEXCEPT;
 
   /**
    * \brief Close the connection regardless of peer whether send FIN or not
    */
-  void ForceClose() noexcept;
+  KANON_NET_API void ForceClose() KANON_NOEXCEPT;
   //!@}
 
   //! \name setter
@@ -147,7 +151,7 @@ class ConnectionBase
    *
    *  YOU must free it manaually(e.g. through GetContext())
    */
-  void SetContext(ContextType context) noexcept { context_ = context; }
+  void SetContext(ContextType context) KANON_NOEXCEPT { context_ = context; }
 
   /**
    * \brief Disable connection continue read message from kernel space
@@ -157,7 +161,7 @@ class ConnectionBase
    * \note
    *   If read has disabled, this is no effect
    */
-  void DisbaleRead();
+  KANON_NET_API void DisbaleRead();
 
   /**
    * \brief Restart connection continue read message from kernel space
@@ -167,7 +171,7 @@ class ConnectionBase
    * \note
    *   If read has enabled, this is no effect
    */
-  void EnableRead();
+  KANON_NET_API void EnableRead();
 
   //!@}
 
@@ -177,8 +181,8 @@ class ConnectionBase
   /**
    * \brief Get the IO loop
    */
-  EventLoop *GetLoop() const noexcept { return loop_; }
-  Channel *channel() noexcept { return channel_.get(); }
+  EventLoop *GetLoop() const KANON_NOEXCEPT { return loop_; }
+  Channel *channel() KANON_NOEXCEPT { return channel_.get(); }
   /**
    * \brief Connection whether is down
    *
@@ -186,28 +190,28 @@ class ConnectionBase
    * we can do something when connection is established
    * or destroyed.
    */
-  bool IsConnected() const noexcept { return state_ == kConnected; }
+  bool IsConnected() const KANON_NOEXCEPT { return state_ == kConnected; }
 
-  ContextType &GetContext() noexcept { return context_; }
+  ContextType &GetContext() KANON_NOEXCEPT { return context_; }
 
-  ContextType const &GetContext() const noexcept { return context_; }
+  ContextType const &GetContext() const KANON_NOEXCEPT { return context_; }
 
-  std::string const &GetName() const noexcept { return name_; }
+  std::string const &GetName() const KANON_NOEXCEPT { return name_; }
 
-  InputBuffer *GetInputBuffer() noexcept { return &input_buffer_; }
+  InputBuffer *GetInputBuffer() KANON_NOEXCEPT { return &input_buffer_; }
 
-  OutputBuffer *GetOutputBuffer() noexcept { return &output_buffer_; }
+  OutputBuffer *GetOutputBuffer() KANON_NOEXCEPT { return &output_buffer_; }
   //!@}
 
   void SetCloseCallback(CloseCallback cb) { close_callback_ = std::move(cb); }
 
   // When TcpServer accept a new connection in newConnectionCallback
-  void ConnectionEstablished();
+  KANON_NET_NO_API void ConnectionEstablished();
   // When TcpServer has removed connection from its connections_
   // ! Must not be called in event handling phase
-  void ConnectionDestroyed();
+  KANON_NET_NO_API void ConnectionDestroyed();
 
-  void SetChannel(std::unique_ptr<Channel> ch);
+  KANON_NET_NO_API void SetChannel(std::unique_ptr<Channel> ch);
 
  protected:
 #ifdef KANON_ON_WIN
@@ -233,7 +237,7 @@ class ConnectionBase
   void SendInLoopForBuf(InputBuffer &buffer);
   void SendInLoopForChunkList(OutputBuffer &buffer);
 
-  char const *State2String() const noexcept;
+  char const *State2String() const KANON_NOEXCEPT;
 
   // OVERLAPPED overlapped_;
 

@@ -7,63 +7,48 @@
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
-namespace kanon{
+namespace kanon {
 
-template<typename T>
-class Atomic : noncopyable {
-public:
-  static_assert(std::is_integral<T>::value, 
-      "Atomic type must be integral\n");
+template <typename T>
+class KANON_CORE_DEPRECATED Atomic : noncopyable {
+ public:
+  static_assert(std::is_integral<T>::value, "Atomic type must be integral\n");
 
   Atomic()
     : val_{0}
-  {}
-
-  T get() noexcept {
-    return __atomic_load_n(&val_, __ATOMIC_SEQ_CST);  
+  {
   }
-  
-  T getAndAdd(T x) noexcept {
+
+  T get() KANON_NOEXCEPT { return __atomic_load_n(&val_, __ATOMIC_SEQ_CST); }
+
+  T getAndAdd(T x) KANON_NOEXCEPT
+  {
     return __atomic_fetch_add(&val_, x, __ATOMIC_SEQ_CST);
   }
 
-  T addAndGet(T x) noexcept {
-    return getAndAdd(x) + x;
-  }
+  T addAndGet(T x) KANON_NOEXCEPT { return getAndAdd(x) + x; }
 
-  T incrementAndGet() noexcept {
-    return addAndGet(1);
-  }
-  
-  T decrementAndGet() noexcept {
-    return addAndGet(-1);
-  }
+  T incrementAndGet() KANON_NOEXCEPT { return addAndGet(1); }
 
-  void add(T x) noexcept {
-    getAndAdd(x);
-  }
+  T decrementAndGet() KANON_NOEXCEPT { return addAndGet(-1); }
 
-  void increment() noexcept {
-    getAndAdd(1);
-  }
+  void add(T x) KANON_NOEXCEPT { getAndAdd(x); }
 
-  void decrement() noexcept {
-    getAndAdd(-1);
-  }
+  void increment() KANON_NOEXCEPT { getAndAdd(1); }
 
-  T getAndSet(T x) noexcept {
+  void decrement() KANON_NOEXCEPT { getAndAdd(-1); }
+
+  T getAndSet(T x) KANON_NOEXCEPT
+  {
     return __atomic_exchange_n(&val_, x, __ATOMIC_SEQ_CST);
   }
 
-private:
+ private:
   volatile T val_;
 };
-
-template class Atomic<int32_t>;
-template class Atomic<int64_t>;
 
 using AtomicInt32 = Atomic<int32_t>;
 using AtomicInt64 = Atomic<int64_t>;
 
-}//namespace kanon
+} // namespace kanon
 #endif //_ATOMIC_H

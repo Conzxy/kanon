@@ -24,32 +24,26 @@ class EventLoopThread : noncopyable {
  public:
   using ThreadInitCallback = std::function<void(EventLoop *)>;
 
-  EventLoopThread(std::string const & = std::string{});
-  ~EventLoopThread() noexcept;
+  KANON_NET_API EventLoopThread(std::string const & = std::string{});
+  KANON_NET_API ~EventLoopThread() KANON_NOEXCEPT;
 
   /**
    * \brief Start a new thread and start event loop
    * \note
    *   Must be called in main thread
    */
-  EventLoop *StartRun()
-  {
-    return StartRun({});
-  }
+  KANON_INLINE EventLoop *StartRun() { return StartRun({}); }
 
-  EventLoop *StartRun(ThreadInitCallback const &init_cb);
-  EventLoop *GetLoop() noexcept
-  {
-    return loop_;
-  }
-  EventLoop const *GetLoop() const noexcept
+  KANON_NET_API EventLoop *StartRun(ThreadInitCallback const &init_cb);
+  KANON_NET_API EventLoop *GetLoop() KANON_NOEXCEPT { return loop_; }
+  KANON_NET_API EventLoop const *GetLoop() const KANON_NOEXCEPT
   {
     return loop_;
   }
 
  private:
   // Start loop in background thread(IO thread usually)
-  void BackGroundStartLoop(ThreadInitCallback const &init_cb);
+  KANON_NET_NO_API void BackGroundStartLoop(ThreadInitCallback const &init_cb);
 
   EventLoop *loop_;
 

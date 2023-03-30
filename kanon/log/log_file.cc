@@ -45,7 +45,7 @@ LogFile<T>::LogFile(StringView basename, size_t roll_size, StringView prefix,
 }
 
 template <bool T>
-inline LogFile<T>::~LogFile() noexcept
+KANON_INLINE LogFile<T>::~LogFile() KANON_NOEXCEPT
 {
   if (log_file_num_ != UINT_MAX) {
     quit_remove_thr_ = true;
@@ -56,7 +56,7 @@ inline LogFile<T>::~LogFile() noexcept
 }
 
 template <bool T>
-void LogFile<T>::Append(char const *data, size_t num) noexcept
+void LogFile<T>::Append(char const *data, size_t num) KANON_NOEXCEPT
 {
   MutexGuardT<MutexPolicy> guard(lock_);
 
@@ -96,7 +96,7 @@ void LogFile<T>::Append(char const *data, size_t num) noexcept
 }
 
 template <bool T>
-void LogFile<T>::Flush() noexcept
+void LogFile<T>::Flush() KANON_NOEXCEPT
 {
   MutexGuardT<MutexPolicy> guard(lock_);
   file_->Flush();
@@ -156,7 +156,9 @@ std::string LogFile<T>::GetLogFilename(time_t &now)
   return filename;
 }
 
-template class LogFile<true>;
-template class LogFile<>;
+template class KANON_CORE_API LogFile<true>;
+template class KANON_CORE_API LogFile<>;
+template KANON_CORE_API void SetupLogFile<true>(LogFile<true> &lf);
+template KANON_CORE_API void SetupLogFile<false>(LogFile<false> &lf);
 
 } // namespace kanon

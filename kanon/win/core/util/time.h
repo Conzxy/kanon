@@ -3,8 +3,12 @@
 
 #include <ctime>
 
+#include "kanon/util/macro.h"
+
 namespace kanon {
 
+/** Although Win SDK has a timeval definition in <winsock.h>
+    But I don't like it */
 struct timeval {
   /** !WARNING
     Don't use unsigned long
@@ -13,12 +17,15 @@ struct timeval {
   unsigned long long tv_usec;
 };
 
+/** Win SDK no timezone definition */
 struct timezone {
   int tz_minuteswest; /* minutes W of Greenwich */
   int tz_dsttime;     /* type of dst correction */
 };
 
-int GetTimeOfDay(struct timeval *tv, struct timezone *ts) noexcept;
+/** Equivalent implementation of gettimeofday() */
+KANON_CORE_API int GetTimeOfDay(struct timeval *tv,
+                                struct timezone *ts) KANON_NOEXCEPT;
 
 } // namespace kanon
 

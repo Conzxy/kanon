@@ -2,9 +2,10 @@
 #define KANON_UTIL_MACRO_H
 
 #include "kanon/util/platform_macro.h"
+#include "kanon/util/compiler_macro.h"
 
 #define KANON_UNUSED(var) (void)var
-#define KANON_RETHROW throw
+#define KANON_RETHROW     throw
 
 /* In windows, you add /Zc:__cplusplus option to MSVC,
    the __cplusplus >= 201402L at least(i.e. c++14) */
@@ -25,17 +26,13 @@
 #endif
 
 #ifdef CXX_STANDARD_11
-#define noexcept noexcept
-#define KANON_OVERRIDE override
+#define KANON_NOEXCEPT       noexcept
+#define KANON_NOEXCEPT_OP(x) noexcept(x)
+#define KANON_OVERRIDE       override
 #else
-#define noexcept throw()
+#define KANON_NOEXCEPT throw()
+#define KANON_NOEXCEPT_OP(x)
 #define KANON_OVERRIDE
-#endif
-
-#ifdef CXX_STANDARD_14
-#define KANON_CONSTEXPR constexpr
-#else
-#define KANON_CONSTEXPR inline
 #endif
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -48,10 +45,16 @@
 
 #define KANON_INLINE inline KANON_ALWAYS_INLINE
 
-#define KANON_RETHROW throw
+#ifdef CXX_STANDARD_14
+#define KANON_CONSTEXPR constexpr
+#else
+#define KANON_CONSTEXPR KANON_INLINE
+#endif
+
+#define KANON_RETHROW      throw
 #define KANON_FUNCTION_TRY try:
-#define KANON_CATCH catch
-#define KANON_CATCH_ALL catch (...)
+#define KANON_CATCH        catch
+#define KANON_CATCH_ALL    catch (...)
 
 #define BZERO(dst, num) ::memset(dst, 0, num)
 
@@ -60,10 +63,10 @@
 #define KANON_ASSERT(cond, msg) assert((cond) && (msg))
 
 #if defined(__GUNC__) || defined(__clang__)
-#define KANON_LIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 1)
+#define KANON_LIKELY(cond)   KANON_BUILTIN_EXPECT(!!(cond), 1)
 #define KANON_UNLIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 0)
 #else
-#define KANON_LIKELY(cond) (cond)
+#define KANON_LIKELY(cond)   (cond)
 #define KANON_UNLIKELY(cond) (cond)
 #endif
 

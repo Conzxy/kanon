@@ -2,6 +2,8 @@
 #define KANON_UTIL_RAW_ANY_H_
 
 #include <memory> // addressof()
+
+#include "kanon/util/macro.h"
 #include "kanon/zstl/type_traits.h"
 
 namespace kanon {
@@ -20,32 +22,32 @@ namespace kanon {
  */
 class RawAny final {
   template <typename T>
-  using AmbiguousCond = zstl::negation<std::is_same<typename std::decay<T>::type, RawAny>>;
+  using AmbiguousCond =
+      zstl::negation<std::is_same<typename std::decay<T>::type, RawAny>>;
+
  public:
   RawAny()
     : obj_(nullptr)
   {
   }
 
-  template <typename T, 
-           zstl::enable_if_t<AmbiguousCond<T>::value, char> = 0>
+  template <typename T, zstl::enable_if_t<AmbiguousCond<T>::value, char> = 0>
   RawAny(T &obj)
     : obj_(std::addressof(obj))
   {
   }
 
-  template <typename T, 
-           zstl::enable_if_t<AmbiguousCond<T>::value, char> = 0>
-  RawAny &operator=(T &obj) noexcept
+  template <typename T, zstl::enable_if_t<AmbiguousCond<T>::value, char> = 0>
+  RawAny &operator=(T &obj) KANON_NOEXCEPT
   {
     obj_ = std::addressof(obj);
     return *this;
   }
 
-  bool empty() const noexcept { return obj_ == nullptr; }
-  void clear() noexcept { obj_ = nullptr; }
+  bool empty() const KANON_NOEXCEPT { return obj_ == nullptr; }
+  void clear() KANON_NOEXCEPT { obj_ = nullptr; }
 
-  void swap(RawAny &rhs) noexcept { std::swap(obj_, rhs.obj_); }
+  void swap(RawAny &rhs) KANON_NOEXCEPT { std::swap(obj_, rhs.obj_); }
 
   template <typename V>
   friend V *SafeAnyCast(RawAny from);
@@ -58,19 +60,19 @@ class RawAny final {
 };
 
 template <typename V>
-V *UnsafeAnyCast(RawAny from)
+KANON_INLINE V *UnsafeAnyCast(RawAny from)
 {
   return reinterpret_cast<V *>(from.obj_);
 }
 
 template <typename V>
-V *SafeAnyCast(RawAny from)
+KANON_INLINE V *SafeAnyCast(RawAny from)
 {
   return UnsafeAnyCast<V>(from);
 }
 
 template <typename V>
-V *AnyCast(RawAny from)
+KANON_INLINE V *AnyCast(RawAny from)
 {
   return UnsafeAnyCast<V>(from);
 }

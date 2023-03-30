@@ -26,16 +26,16 @@ class CountDownLatch : noncopyable {
   {
   }
 
-  void Reset(int count) noexcept { count_ = count; }
+  void Reset(int count) KANON_NOEXCEPT { count_ = count; }
 
-  void Add(int count) noexcept { count_ += count; }
+  void Add(int count) KANON_NOEXCEPT { count_ += count; }
 
-  void Minus(int count) noexcept { count_ -= count; }
+  void Minus(int count) KANON_NOEXCEPT { count_ -= count; }
 
-  void Incr() noexcept { Add(1); }
-  void Decr() noexcept { Minus(1); }
+  void Incr() KANON_NOEXCEPT { Add(1); }
+  void Decr() KANON_NOEXCEPT { Minus(1); }
 
-  int GetCount() const noexcept { return count_; }
+  int GetCount() const KANON_NOEXCEPT { return count_; }
 
   void Wait()
   {
@@ -43,7 +43,7 @@ class CountDownLatch : noncopyable {
     if (count_ > 0) cond_.Wait();
   }
 
-  void Countdown() noexcept
+  void Countdown() KANON_NOEXCEPT
   {
     MutexGuard guard(mutex_);
     if (--count_ == 0) cond_.NotifyAll();

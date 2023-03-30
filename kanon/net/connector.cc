@@ -21,7 +21,7 @@ Connector::Connector(EventLoop *loop, InetAddr const &serv_addr)
   LOG_DEBUG_KANON << "Connector is constructed";
 }
 
-Connector::~Connector() noexcept
+Connector::~Connector() KANON_NOEXCEPT
 {
   LOG_DEBUG_KANON << "Connector is destructed";
   // user should call stop explicitly when reconnecting...

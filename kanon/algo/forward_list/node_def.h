@@ -5,6 +5,8 @@
 #include <utility>
 #include <stdio.h>
 
+#include "kanon/util/compiler_macro.h"
+
 // Hide the implementation detail for users
 namespace zstl {
 namespace forward_list_detail {
@@ -15,36 +17,34 @@ namespace forward_list_detail {
  * @note In C++, "typedef struct XXX { } XXX;" is not necessary in fact.
  * @see src/forward_list/algorithm.cc
  */
-typedef struct BaseLinkedNode {
-  struct BaseLinkedNode* next = nullptr;
+typedef struct KANON_CORE_API BaseLinkedNode {
+  struct BaseLinkedNode *next = nullptr;
 } BaseLinkedNode;
 
 /**
  * Represents the plain node
  * which has value(related template parameter)
  */
-template<typename T>
+template <typename T>
 struct LinkedNode : BaseLinkedNode {
   T val;
 };
 
 /**
  * Represents the header sentinel.
- * Different from the plain node(LinkedNode<>), header doesn't maintains value domain,
- * it just maintains previous/next and count of elements.
+ * Different from the plain node(LinkedNode<>), header doesn't maintains value
+ * domain, it just maintains previous/next and count of elements.
  * @warning This is not STL-required, just useful for me.
  */
-struct Header : BaseLinkedNode {
-  BaseLinkedNode* prev = nullptr;
+struct KANON_CORE_API Header : BaseLinkedNode {
+  BaseLinkedNode *prev = nullptr;
   size_t count = 0;
 };
 
 // Useful macro for ForwardList<>
-#define GET_LINKED_NODE_VALUE(node) \
-  static_cast<Node*>(node)->val
+#define GET_LINKED_NODE_VALUE(node) static_cast<Node *>(node)->val
 
-#define SET_LINKED_NODE_VALUE(node, val) \
-  static_cast<Node*>(node)->val = val
+#define SET_LINKED_NODE_VALUE(node, val) static_cast<Node *>(node)->val = val
 
 } // namespace forward_list_detail
 } // namespace zstl

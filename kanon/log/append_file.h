@@ -11,15 +11,15 @@ namespace kanon {
 
 class AppendFile : noncopyable {
  public:
-  explicit AppendFile(StringArg filename);
-  ~AppendFile() noexcept;
+  KANON_CORE_API explicit AppendFile(StringArg filename);
+  KANON_CORE_API ~AppendFile() KANON_NOEXCEPT;
 
-  void Append(void const *data, size_t num) noexcept
+  void Append(void const *data, size_t num) KANON_NOEXCEPT
   {
     _Append((char const *)data, num);
   }
 
-  void Flush() noexcept
+  void Flush() KANON_NOEXCEPT
   {
 #if defined(__GUNC__)
     ::fflush_unlocked(fp_);
@@ -28,17 +28,17 @@ class AppendFile : noncopyable {
 #endif
   }
 
-  size_t writtenBytes() const noexcept { return writtenBytes_; }
+  size_t writtenBytes() const KANON_NOEXCEPT { return writtenBytes_; }
 
-  FILE *fp() const noexcept { return fp_; }
+  FILE *fp() const KANON_NOEXCEPT { return fp_; }
 
  private:
-  size_t write(char const *data, size_t num) noexcept
+  size_t write(char const *data, size_t num) KANON_NOEXCEPT
   {
     return ::fwrite(data, 1, num, fp_);
   }
 
-  void _Append(char const *data, size_t num) noexcept;
+  KANON_CORE_API void _Append(char const *data, size_t num) KANON_NOEXCEPT;
 
  protected:
   char buf_[64 * 1024];

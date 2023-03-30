@@ -25,30 +25,30 @@ class InetAddr;
  *
  *   Internal class
  */
-class Socket : noncopyable {
+class KANON_NET_NO_API Socket : noncopyable {
  public:
   explicit Socket(FdType fd)
     : fd_{fd}
   {
   }
 
-  ~Socket() noexcept;
+  ~Socket() KANON_NOEXCEPT;
 
   // Must be called by server
-  void BindAddress(InetAddr const &addr) noexcept;
-  int Accpet(InetAddr &addr) noexcept;
+  void BindAddress(InetAddr const &addr) KANON_NOEXCEPT;
+  int Accpet(InetAddr &addr) KANON_NOEXCEPT;
 
-  void ShutdownWrite() noexcept;
-  void ShutdownTwoDirection() noexcept;
+  void ShutdownWrite() KANON_NOEXCEPT;
+  void ShutdownTwoDirection() KANON_NOEXCEPT;
 
-  void SetReuseAddr(bool flag) noexcept { sock::SetReuseAddr(fd_, flag); }
-  void SetReusePort(bool flag) noexcept { sock::SetReusePort(fd_, flag); }
-  void SetNoDelay(bool flag) noexcept { sock::SetNoDelay(fd_, flag); }
-  void SetKeepAlive(bool flag) noexcept { sock::SetKeepAlive(fd_, flag); }
+  void SetReuseAddr(bool flag) KANON_NOEXCEPT { sock::SetReuseAddr(fd_, flag); }
+  void SetReusePort(bool flag) KANON_NOEXCEPT { sock::SetReusePort(fd_, flag); }
+  void SetNoDelay(bool flag) KANON_NOEXCEPT { sock::SetNoDelay(fd_, flag); }
+  void SetKeepAlive(bool flag) KANON_NOEXCEPT { sock::SetKeepAlive(fd_, flag); }
 
   // Must be called by client
 
-  int GetFd() const noexcept { return fd_; }
+  int GetFd() const KANON_NOEXCEPT { return fd_; }
 
  private:
   FdType fd_;

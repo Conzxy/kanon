@@ -16,25 +16,20 @@ namespace kanon {
 template <typename T>
 class ThreadLocal {
  public:
-  ThreadLocal()
-  {
-    TCHECK(pthread_key_create(&key_, &ThreadLocal::Destructor));
-  }
+  ThreadLocal() { TCHECK(pthread_key_create(&key_, &ThreadLocal::Destructor)); }
 
-  ~ThreadLocal() noexcept
+  ~ThreadLocal() KANON_NOEXCEPT { TCHECK(pthread_key_delete(key_)); }
+
+  template <typename... Args>
+  T const &value(Args &&...args) const KANON_NOEXCEPT
   {
-    TCHECK(pthread_key_delete(key_));
-  }
-  
-  template<typename ...Args>
-  T const &value(Args&&... args) const noexcept
-  {
-    return const_cast<ThreadLocal<T> *>(this)->value(std::forward<Args>(args)...);
+    return const_cast<ThreadLocal<T> *>(this)->value(
+        std::forward<Args>(args)...);
   }
 
   /** Not thread-safe */
-  template <typename ...Args>
-  T &value(Args&&... args) noexcept
+  template <typename... Args>
+  T &value(Args &&...args) KANON_NOEXCEPT
   {
     T *val = (T *)pthread_getspecific(key_);
     if (val == NULL) {

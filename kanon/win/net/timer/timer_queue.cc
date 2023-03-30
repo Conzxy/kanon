@@ -15,7 +15,7 @@ TimerQueue::TimerQueue(EventLoop *loop)
   }
 }
 
-TimerQueue::~TimerQueue() noexcept { DeleteTimerQueueEx(timer_queue_, NULL); }
+TimerQueue::~TimerQueue() KANON_NOEXCEPT { DeleteTimerQueueEx(timer_queue_, NULL); }
 
 VOID kanon::timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired)
 {

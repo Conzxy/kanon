@@ -28,7 +28,8 @@ macro (GenTest SRC)
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
       COMMAND ${kanon_test_filename}
     )
-
+    
+    kanon_copy_dll_to_target_dir(${kanon_test_filename})
     add_test(NAME ${kanon_test_filename} COMMAND ${kanon_test_filename})
   endforeach (kanon_test_source ${KANON_TEST_SOURCES})
 endmacro()

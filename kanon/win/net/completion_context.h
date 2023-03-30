@@ -18,7 +18,7 @@ struct CompletionContext {
   std::function<void()> *error_event_callback;
 };
 
-void completion_context_init(CompletionContext *ctx);
+KANON_NET_NO_API void completion_context_init(CompletionContext *ctx);
 
 } // namespace kanon
 

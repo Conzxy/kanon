@@ -9,9 +9,10 @@ file(GLOB_RECURSE KANON_BASE_SRC
   thread/*.cc
   util/*.cc
   algo/*.cc
+  buffer/*.cc 
 )
 
-file(GLOB_RECURSE KANON_NET_SRC ${CMAKE_SOURCE_DIR}/third-party/xxHash/xxhash.c buffer/*.cc net/*.cc)
+file(GLOB_RECURSE KANON_NET_SRC ${CMAKE_SOURCE_DIR}/third-party/xxHash/xxhash.c net/*.cc)
 
 #message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
 #message(STATUS "kanon net source files: ${KANON_NET_SRC}")
@@ -59,7 +60,6 @@ set(KANON_WIN_NET_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win/net)
 set(KANON_LIB_POPULATE_KEYWORD PUBLIC)
 
 if (KANON_ON_WIN)
-  message("Windows core sources: ${KANON_WIN_CORE_SRC}")
   list(APPEND KANON_BASE_SRC ${KANON_WIN_CORE_SRC})
   list(APPEND KANON_NET_SRC ${KANON_WIN_NET_SRC})
 endif ()
@@ -73,15 +73,29 @@ GenLib(kanon_base ${KANON_BASE_SRC})
 target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
     "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+if (NOT KANON_BUILD_STATIC_LIBS)
+  target_compile_definitions(kanon_base PRIVATE KANON_BUILD_CORE_SHARED
+                                        INTERFACE KANON_LINK_CORE_SHARED)
+endif ()
+if (KANON_ON_WIN)
+  target_link_libraries(kanon_base PUBLIC ws2_32)
+  set_target_properties(kanon_base PROPERTIES LINKER_LANGUAGE CXX)
+endif ()
 
 GenLib(kanon_net ${KANON_NET_SRC})
-target_link_libraries(kanon_net PRIVATE kanon_base)
+target_link_libraries(kanon_net PUBLIC kanon_base)
 #target_link_libraries(kanon_net PRIVATE xxHash::xxhash)
 target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
     "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+if (NOT KANON_BUILD_STATIC_LIBS)
+  target_compile_definitions(kanon_net INTERFACE KANON_LINK_NET_SHARED
+                                       PRIVATE KANON_BUILD_NET_SHARED)
+
+endif ()
 if (KANON_ON_WIN)
-  target_link_libraries(kanon_net PRIVATE ws2_32)
+  target_link_libraries(kanon_net PUBLIC ws2_32)
+  set_target_properties(kanon_net PROPERTIES LINKER_LANGUAGE CXX)
 endif ()
 
 ###########################################################

@@ -8,7 +8,7 @@
 class FileTransferSession {
 public:
   FileTransferSession(kanon::TcpConnection* conn);
-  ~FileTransferSession() noexcept;
+  ~FileTransferSession() KANON_NOEXCEPT;
   void OnLengthMessage(TcpConnectionPtr const& conn, Buffer& msg, TimeStamp recv_time);
 private:
   kanon::TcpConnection* conn_;
@@ -17,8 +17,8 @@ private:
   uint32_t seq_;
   std::unique_ptr<util::File> file_; 
 
-  uint32_t ExtractInt32(kanon::StringView& num) noexcept;
-  void Reset() noexcept;
+  uint32_t ExtractInt32(kanon::StringView& num) KANON_NOEXCEPT;
+  void Reset() KANON_NOEXCEPT;
 
   // operation + sequence number + filename-length + filename + file-size + file-content + END(last chunk)
   // 8 + 4 + 4 + 4096 + 4 + 65536 + 3

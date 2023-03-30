@@ -44,22 +44,22 @@ class EventLoop : noncopyable {
   /**
    * \brief Construct default eventloop that use epoll(2) as the demultiplexer
    */
-  EventLoop();
+  KANON_NET_API EventLoop();
 
   /**
    * \brief Construct eventloop whose demultiplexer is specified by user
    * \param is_poller specify the poll(2) as the demultiplexer
    */
-  explicit EventLoop(bool is_poller);
+  KANON_NET_API explicit EventLoop(bool is_poller);
 
-  ~EventLoop();
+  KANON_NET_API ~EventLoop();
 
   //! \name Loop API
   //!@{
   /**
    * \brief Start a event loop to process events
    */
-  void StartLoop();
+  KANON_NET_API void StartLoop();
 
   /**
    * \brief Quit loop
@@ -67,7 +67,7 @@ class EventLoop : noncopyable {
    *   If not in thread, this will call Wakeup(),
    *   user no need to call it explicitly
    */
-  void Quit() noexcept;
+  KANON_NET_API void Quit() KANON_NOEXCEPT;
 
   /**
    * \brief Run functor in the loop
@@ -77,13 +77,13 @@ class EventLoop : noncopyable {
    * it immediately
    * \note Thread-safety
    */
-  void RunInLoop(FunctorCallback);
+  KANON_NET_API void RunInLoop(FunctorCallback);
 
   /**
    * \brief Queue the functor to event loop
    * \note Thread-safety
    */
-  void QueueToLoop(FunctorCallback);
+  KANON_NET_API void QueueToLoop(FunctorCallback);
   //!@}
 
   //! \cond Channel API
@@ -91,13 +91,13 @@ class EventLoop : noncopyable {
    * \brief Remove channel in poller_
    * \warning This is internal API, user don't call it.
    */
-  void RemoveChannel(Channel *ch);
+  KANON_NET_API void RemoveChannel(Channel *ch);
 
   /**
    * \brief Add or update channel in poller_
    * \warning This is internal API, user don't call it.
    */
-  void UpdateChannel(Channel *ch);
+  KANON_NET_API void UpdateChannel(Channel *ch);
   //! \endcond
 
   /**
@@ -107,12 +107,12 @@ class EventLoop : noncopyable {
   /**
    * \brief Set event loop work in edge trigger mode of epoller()
    */
-  void SetEdgeTriggerMode() noexcept;
+  KANON_NET_API void SetEdgeTriggerMode() KANON_NOEXCEPT;
 
   /**
    * \brief Check event loop if work in trigger mode
    */
-  bool IsEdgeTriggerMode() const noexcept;
+  KANON_NET_API bool IsEdgeTriggerMode() const KANON_NOEXCEPT;
   //!@}
 
   /**
@@ -124,7 +124,7 @@ class EventLoop : noncopyable {
    * \return
    *   A TimerId object used for removing timer from event loop
    */
-  TimerId RunAt(TimerCallback cb, TimeStamp expiration);
+  KANON_NET_API TimerId RunAt(TimerCallback cb, TimeStamp expiration);
 
   /**
    * \brief Run callback @p cb after a time interval @p delay
@@ -132,17 +132,17 @@ class EventLoop : noncopyable {
    * \return
    *   A TimerId object used for removing timer from event loop
    */
-  TimerId RunAfter(TimerCallback cb, double delay)
+  KANON_INLINE TimerId RunAfter(TimerCallback cb, double delay)
   {
     return RunAt(std::move(cb), AddTime(TimeStamp::Now(), delay));
   }
 
-  TimerId RunAfterMs(TimerCallback cb, uint64_t delay)
+  KANON_INLINE TimerId RunAfterMs(TimerCallback cb, uint64_t delay)
   {
     return RunAt(std::move(cb), AddTimeMs(TimeStamp::Now(), delay));
   }
 
-  TimerId RunAfterUs(TimerCallback cb, uint64_t delay)
+  KANON_INLINE TimerId RunAfterUs(TimerCallback cb, uint64_t delay)
   {
     return RunAt(std::move(cb), AddTimeUs(TimeStamp::Now(), delay));
   }
@@ -154,7 +154,8 @@ class EventLoop : noncopyable {
    * \return
    *   A TimerId object used for removing timer from event loop
    */
-  TimerId RunEvery(TimerCallback cb, TimeStamp expiration, double interval);
+  KANON_NET_API TimerId RunEvery(TimerCallback cb, TimeStamp expiration,
+                                 double interval);
 
   /**
    * \brief
@@ -162,7 +163,7 @@ class EventLoop : noncopyable {
    * \return
    *   A TimerId object used for removing timer from event loop
    */
-  TimerId RunEvery(TimerCallback cb, double interval)
+  KANON_INLINE TimerId RunEvery(TimerCallback cb, double interval)
   {
     return this->RunEvery(std::move(cb), AddTime(TimeStamp::Now(), interval),
                           interval);
@@ -173,7 +174,7 @@ class EventLoop : noncopyable {
    *
    * Then, the callback of timer will not be called
    */
-  void CancelTimer(TimerId timer_id);
+  KANON_NET_API void CancelTimer(TimerId timer_id);
   //!@}
 
   //! \cond AssertLoopThread
@@ -182,14 +183,19 @@ class EventLoop : noncopyable {
    * \note Although release version, it also work
    * \warning This is a interval API, user no need to call it
    */
-  void AssertInThread() noexcept
+  KANON_INLINE void AssertInThread() KANON_NOEXCEPT
   {
     if (!IsLoopInThread()) AbortNotInThread();
   }
-  bool IsLoopInThread() noexcept
+
+#if KANON___THREAD_DEFINED
+  KANON_INLINE bool IsLoopInThread() KANON_NOEXCEPT
   {
     return CurrentThread::t_tid == owner_thread_id_;
   }
+#else
+  KANON_NET_API bool IsLoopInThread() KANON_NOEXCEPT;
+#endif
   //! \endcond
  private:
   /**
@@ -199,20 +205,20 @@ class EventLoop : noncopyable {
    * block for long time
    * ((e)poll have to handle and return immediately)
    */
-  void Wakeup() noexcept;
+  KANON_NET_API void Wakeup() KANON_NOEXCEPT;
 
   /**
    * \brief Call all functors in functors_(better name: callable)
    */
-  void CallFunctors();
+  KANON_NET_API void CallFunctors();
 
   /**
    * \brief Read callback of eventfd
    */
-  void EvRead() noexcept;
+  KANON_NET_API void EvRead() KANON_NOEXCEPT;
 
   //! Abort the program if not satify the "One loop per thread" policy
-  void AbortNotInThread() noexcept;
+  KANON_NET_API void AbortNotInThread() KANON_NOEXCEPT;
 
  private:
   /**

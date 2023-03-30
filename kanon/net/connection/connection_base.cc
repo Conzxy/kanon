@@ -243,8 +243,9 @@ void ConnectionBase<D>::HandleLtWrite()
         // Pass this is unsafe even thought this is in the
         // phase of processing write event since there is a
         // HandleClose() callback has register early
-        loop_->QueueToLoop(std::bind(
-            &ConnectionBase<D>::CallWriteCompleteCallback, this->shared_from_this()));
+        loop_->QueueToLoop(
+            std::bind(&ConnectionBase<D>::CallWriteCompleteCallback,
+                      this->shared_from_this()));
       } else {
         channel_->DisableWriting();
       }
@@ -315,8 +316,9 @@ void ConnectionBase<D>::HandleEtWrite()
   } else {
     if (write_complete_callback_) {
       // No need to disable writing
-      loop_->QueueToLoop(std::bind(
-          &ConnectionBase<D>::CallWriteCompleteCallback, this->shared_from_this()));
+      loop_->QueueToLoop(
+          std::bind(&ConnectionBase<D>::CallWriteCompleteCallback,
+                    this->shared_from_this()));
     }
 
     if (state_ == kDisconnecting) {
@@ -362,7 +364,7 @@ void ConnectionBase<D>::HandleClose()
 }
 
 template <typename D>
-void ConnectionBase<D>::ShutdownWrite() noexcept
+void ConnectionBase<D>::ShutdownWrite() KANON_NOEXCEPT
 {
   if (state_ == kConnected) {
     state_ = kDisconnecting;
@@ -380,7 +382,7 @@ void ConnectionBase<D>::ShutdownWrite() noexcept
 }
 
 template <typename D>
-void ConnectionBase<D>::ForceClose() noexcept
+void ConnectionBase<D>::ForceClose() KANON_NOEXCEPT
 {
   // If connection is not established or
   // disconnected,
@@ -499,7 +501,7 @@ void ConnectionBase<D>::EnableRead()
 }
 
 template <typename D>
-char const *ConnectionBase<D>::State2String() const noexcept
+char const *ConnectionBase<D>::State2String() const KANON_NOEXCEPT
 {
   switch (state_) {
     case kConnecting:

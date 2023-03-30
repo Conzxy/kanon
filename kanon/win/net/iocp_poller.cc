@@ -23,7 +23,7 @@ IocpPoller::IocpPoller(EventLoop *loop)
   LOG_TRACE << "Completion port: " << this << " has constructed";
 }
 
-IocpPoller::~IocpPoller() noexcept { ::CloseHandle(completion_port_); }
+IocpPoller::~IocpPoller() KANON_NOEXCEPT { ::CloseHandle(completion_port_); }
 
 TimeStamp IocpPoller::Poll(int ms, ChannelVec &active_channels)
 {

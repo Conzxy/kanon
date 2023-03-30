@@ -16,7 +16,7 @@
 #include "kanon/util/macro.h"
 
 #define FORWARD_LIST_TEMPLATE_LIST template <typename T, typename A>
-#define FORWARD_LIST_TEMPLATE ForwardList<T, A>
+#define FORWARD_LIST_TEMPLATE      ForwardList<T, A>
 
 namespace zstl {
 
@@ -95,14 +95,14 @@ auto FORWARD_LIST_TEMPLATE::operator=(Self const &other) -> Self &
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::push_front(Node *new_node) noexcept
+void FORWARD_LIST_TEMPLATE::push_front(Node *new_node) KANON_NOEXCEPT
 {
   forward_list_detail::push_front(header_, new_node);
   ++header_->count;
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::push_back(Node *new_node) noexcept
+void FORWARD_LIST_TEMPLATE::push_back(Node *new_node) KANON_NOEXCEPT
 {
   forward_list_detail::push_back(header_, new_node);
   ++header_->count;
@@ -160,7 +160,7 @@ void FORWARD_LIST_TEMPLATE::pop_front_size(size_t sz)
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-auto FORWARD_LIST_TEMPLATE::extract_front_node() noexcept -> Node *
+auto FORWARD_LIST_TEMPLATE::extract_front_node() KANON_NOEXCEPT->Node *
 {
   --header_->count;
   return static_cast<Node *>(forward_list_detail::extract_front(header_));
@@ -182,8 +182,8 @@ auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator pos, size_t sz)
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-auto FORWARD_LIST_TEMPLATE::extract_after_node(ConstIterator pos) noexcept
-    -> Node *
+auto FORWARD_LIST_TEMPLATE::extract_after_node(ConstIterator pos)
+    KANON_NOEXCEPT->Node *
 {
   --header_->count;
   return static_cast<Node *>(
@@ -236,7 +236,7 @@ auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator first,
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::clear() noexcept
+void FORWARD_LIST_TEMPLATE::clear() KANON_NOEXCEPT
 {
   if (!header_) {
     return;
@@ -252,7 +252,7 @@ void FORWARD_LIST_TEMPLATE::clear() noexcept
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::clear_size(size_t sz) noexcept
+void FORWARD_LIST_TEMPLATE::clear_size(size_t sz) KANON_NOEXCEPT
 {
   if (!header_) {
     return;
@@ -269,7 +269,7 @@ void FORWARD_LIST_TEMPLATE::clear_size(size_t sz) noexcept
 
 FORWARD_LIST_TEMPLATE_LIST
 template <typename DropCb>
-void FORWARD_LIST_TEMPLATE::clear(DropCb cb) noexcept
+void FORWARD_LIST_TEMPLATE::clear(DropCb cb) KANON_NOEXCEPT
 {
   if (!header_) {
     return;
@@ -388,7 +388,7 @@ auto FORWARD_LIST_TEMPLATE::remove_if(UnaryPred pred) -> SizeType
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::reverse() noexcept
+void FORWARD_LIST_TEMPLATE::reverse() KANON_NOEXCEPT
 {
   if (size() < 2) return;
   if (size() == 2) {
@@ -509,21 +509,21 @@ void FORWARD_LIST_TEMPLATE::sort2()
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::swap(Self &other) noexcept
+void FORWARD_LIST_TEMPLATE::swap(Self &other) KANON_NOEXCEPT
 {
   std::swap(this->header_, other.header_);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-inline void swap(ForwardList<T, A> const &x,
-                 ForwardList<T, A> const &y) noexcept(noexcept(x.swap(y)))
+KANON_INLINE void swap(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+    KANON_NOEXCEPT_OP(KANON_NOEXCEPT_OP(x.swap(y)))
 {
   x.swap(y);
 }
 
 #ifdef FORWARD_LIST_DEBUG
 FORWARD_LIST_TEMPLATE_LIST
-void FORWARD_LIST_TEMPLATE::print() const noexcept
+void FORWARD_LIST_TEMPLATE::print() const KANON_NOEXCEPT
 {
   std::cout << "==== print forward_list ====\n";
   std::cout << "Header -> ";
@@ -537,37 +537,43 @@ void FORWARD_LIST_TEMPLATE::print() const noexcept
 #endif
 
 FORWARD_LIST_TEMPLATE_LIST
-inline bool operator==(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+KANON_INLINE bool operator==(ForwardList<T, A> const &x,
+                             ForwardList<T, A> const &y)
 {
   return std::equal(x.begin(), x.end(), y.begin());
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-inline bool operator!=(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+KANON_INLINE bool operator!=(ForwardList<T, A> const &x,
+                             ForwardList<T, A> const &y)
 {
   return !(x == y);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-inline bool operator<(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+KANON_INLINE bool operator<(ForwardList<T, A> const &x,
+                            ForwardList<T, A> const &y)
 {
   return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-inline bool operator>(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+KANON_INLINE bool operator>(ForwardList<T, A> const &x,
+                            ForwardList<T, A> const &y)
 {
   return y < x;
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-inline bool operator<=(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+KANON_INLINE bool operator<=(ForwardList<T, A> const &x,
+                             ForwardList<T, A> const &y)
 {
   return !(x > y);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-inline bool operator>=(ForwardList<T, A> const &x, ForwardList<T, A> const &y)
+KANON_INLINE bool operator>=(ForwardList<T, A> const &x,
+                             ForwardList<T, A> const &y)
 {
   return !(x < y);
 }

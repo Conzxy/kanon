@@ -10,7 +10,7 @@ namespace process {
 
 using PId = DWORD;
 
-KANON_INLINE PId Pid() noexcept { return ::GetCurrentProcessId(); }
+KANON_INLINE PId Pid() KANON_NOEXCEPT { return ::GetCurrentProcessId(); }
 
 } // namespace process
 } // namespace kanon

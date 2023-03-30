@@ -76,7 +76,7 @@ class InetAddrException : public std::exception {
   {
   }
 
-  char const *what() const noexcept override { return msg_.c_str(); }
+  char const *what() const KANON_NOEXCEPT override { return msg_.c_str(); }
 
  private:
   std::string msg_;
@@ -113,7 +113,7 @@ class InetAddr {
    * \note
    *   I recommend to use InetAddress(address)
    */
-  InetAddr(StringArg hostname, StringArg service);
+  KANON_NET_API InetAddr(StringArg hostname, StringArg service);
 
   /**
    * \brief Construct address from the port
@@ -128,7 +128,8 @@ class InetAddr {
    * \warning
    *   This must be used for server
    */
-  explicit InetAddr(Port port = 0, bool loopback = false, bool v6 = false);
+  KANON_NET_API explicit InetAddr(Port port = 0, bool loopback = false,
+                                  bool v6 = false);
 
   /**
    * \brief Construct address from ip address and port number
@@ -139,7 +140,7 @@ class InetAddr {
    * \note
    *   If want to use hostname and service, don't use this
    */
-  InetAddr(StringView ip, Port port);
+  KANON_NET_API InetAddr(StringView ip, Port port);
 
   /**
    * \brief Construct address from address string
@@ -149,7 +150,7 @@ class InetAddr {
    *     - [Ipv6 IP address]:port
    *     - hostname:port
    */
-  InetAddr(StringView address);
+  KANON_NET_API InetAddr(StringView address);
 
   /**
    * \brief Compatible with C struct sockaddr_in
@@ -181,14 +182,14 @@ class InetAddr {
    *   - ipv4 address:port number
    *   - [ipv6 address]:port number
    */
-  std::string ToIpPort() const;
+  KANON_NET_API std::string ToIpPort() const;
 
   /**
    * \brief Convert to string that represent ip
    * \return
    *   A string represent ip address
    */
-  std::string ToIp() const;
+  KANON_NET_API std::string ToIp() const;
 
   /**
    * \brief Convert to Ipv4 address(sockaddr_in)
@@ -196,7 +197,7 @@ class InetAddr {
    * If this address is not a Ipv4 address in fact,
    * just abort
    */
-  struct sockaddr_in const *ToIpv4() const noexcept
+  KANON_INLINE struct sockaddr_in const *ToIpv4() const KANON_NOEXCEPT
   {
     KANON_ASSERT(IsIpv4(), "The InetAddr doesn't represent an ipv4 address");
     return &addr_;
@@ -208,18 +209,18 @@ class InetAddr {
    * If this address is not a Ipv6 address in fact,
    * just abort.
    */
-  struct sockaddr_in6 const *ToIpv6() const noexcept
+  KANON_INLINE struct sockaddr_in6 const *ToIpv6() const KANON_NOEXCEPT
   {
     KANON_ASSERT(!IsIpv4(), "The InetAddr doesn't represent an ipv6 address");
     return &addr6_;
   }
 
-  struct sockaddr *ToSockaddr() noexcept
+  KANON_INLINE struct sockaddr *ToSockaddr() KANON_NOEXCEPT
   {
     return reinterpret_cast<sockaddr *>(&addr_);
   }
 
-  struct sockaddr const *ToSockaddr() const noexcept
+  KANON_INLINE struct sockaddr const *ToSockaddr() const KANON_NOEXCEPT
   {
     return reinterpret_cast<sockaddr const *>(&addr_);
   }
@@ -229,13 +230,19 @@ class InetAddr {
   //!@{
 
   //! Get the inet family
-  Family GetFamily() const noexcept { return addr_.sin_family; }
+  KANON_INLINE Family GetFamily() const KANON_NOEXCEPT
+  {
+    return addr_.sin_family;
+  }
 
   //! Get the decimal port number
-  Port GetPort() const noexcept;
+  KANON_NET_API Port GetPort() const KANON_NOEXCEPT;
 
   //! Check whether this is a Ipv4 address
-  bool IsIpv4() const noexcept { return addr_.sin_family == AF_INET; }
+  KANON_INLINE bool IsIpv4() const KANON_NOEXCEPT
+  {
+    return addr_.sin_family == AF_INET;
+  }
   //!@}
 
   //! \name DNS lookup
@@ -253,8 +260,8 @@ class InetAddr {
    *   suitable for binding, otherwise, return the addresses that
    *   are suitable for connecting.
    */
-  static std::vector<InetAddr> Resolve(StringArg hostname, StringArg service,
-                                       bool is_server = false);
+  KANON_NET_API static std::vector<InetAddr>
+  Resolve(StringArg hostname, StringArg service, bool is_server = false);
 
   /**
    * This is a HACK method. \n
@@ -267,8 +274,8 @@ class InetAddr {
    *   number(16bit)
    * \param hint see man getaddrinfo
    */
-  static std::vector<InetAddr> Resolve(StringArg hostname, StringArg service,
-                                       struct addrinfo const *hint);
+  KANON_NET_API static std::vector<InetAddr>
+  Resolve(StringArg hostname, StringArg service, struct addrinfo const *hint);
   //!@}
 
  private:

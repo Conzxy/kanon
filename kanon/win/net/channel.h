@@ -41,7 +41,7 @@ class Buffer;
  *
  * \warning Internal class
  */
-class Channel {
+class KANON_NET_NO_API Channel {
   /**
    * Use enum class is not a better choice,
    * since it should be compatible with C API
@@ -59,7 +59,7 @@ class Channel {
    *   i.e. The fd is not released in the dtor.
    */
   Channel(EventLoop *loop, FdType fd);
-  ~Channel() noexcept;
+  ~Channel() KANON_NOEXCEPT;
 
   //! \name conversion
   //!@{
@@ -68,13 +68,13 @@ class Channel {
   static std::string Ev2String(uint32_t ev);
 
   //! Convert interested event to string representation
-  KANON_INLINE std::string Events2String() const noexcept
+  KANON_INLINE std::string Events2String() const KANON_NOEXCEPT
   {
     return Ev2String(events_);
   }
 
   //! Convert receive event to string representation
-  KANON_INLINE std::string Revents2String() const noexcept
+  KANON_INLINE std::string Revents2String() const KANON_NOEXCEPT
   {
     return Ev2String(events_);
   }
@@ -85,35 +85,35 @@ class Channel {
   //!@{
 
   //! Start monitoring the read event
-  void EnableReading() noexcept
+  void EnableReading() KANON_NOEXCEPT
   {
     events_ |= Event::ReadEvent;
     Update();
   }
 
   //! Start monitoring the write event
-  void EnableWriting() noexcept
+  void EnableWriting() KANON_NOEXCEPT
   {
     events_ |= Event::WriteEvent;
     Update();
   }
 
   //! Stop monitoring the read event
-  void DisableReading() noexcept
+  void DisableReading() KANON_NOEXCEPT
   {
     events_ &= ~Event::ReadEvent;
     // Update();
   }
 
   //! Stop monitoring the write event
-  void DisableWriting() noexcept
+  void DisableWriting() KANON_NOEXCEPT
   {
     events_ &= ~Event::WriteEvent;
     // Update();
   }
 
   //! Stop monitoring any event
-  void DisableAll() noexcept
+  void DisableAll() KANON_NOEXCEPT
   {
     events_ = 0;
     // Update();
@@ -122,11 +122,11 @@ class Channel {
   /**
    * Remove the channel from poller
    */
-  void Remove() noexcept;
+  void Remove() KANON_NOEXCEPT;
 
-  bool IsReading() const noexcept { return events_ & Event::ReadEvent; }
-  bool IsWriting() const noexcept { return events_ & Event::WriteEvent; }
-  bool IsNoneEvent() const noexcept { return events_ == 0; }
+  bool IsReading() const KANON_NOEXCEPT { return events_ & Event::ReadEvent; }
+  bool IsWriting() const KANON_NOEXCEPT { return events_ & Event::WriteEvent; }
+  bool IsNoneEvent() const KANON_NOEXCEPT { return events_ == 0; }
 
   //!@} // events register
 
@@ -146,25 +146,25 @@ class Channel {
   //!@{
 
   //! Get the fd
-  FdType GetFd() const noexcept { return fd_; }
+  FdType GetFd() const KANON_NOEXCEPT { return fd_; }
 
   //! Get the events that fd interests
 
-  int GetEvents() const noexcept { return events_; }
+  int GetEvents() const KANON_NOEXCEPT { return events_; }
 
-  // int GetRevents() const noexcept { return revents_; }
+  // int GetRevents() const KANON_NOEXCEPT { return revents_; }
 
   //! Get the index
-  int GetIndex() noexcept { return index_; }
+  int GetIndex() KANON_NOEXCEPT { return index_; }
 
   //!@} // getter
 
   //! \name setter
   //!@{
 
-  void SetEvents(int ev) noexcept { events_ = ev; }
-  void SetIndex(int index) noexcept { index_ = index; }
-  // void SetRevents(int event) noexcept { revents_ = event; }
+  void SetEvents(int ev) KANON_NOEXCEPT { events_ = ev; }
+  void SetIndex(int index) KANON_NOEXCEPT { index_ = index; }
+  // void SetRevents(int event) KANON_NOEXCEPT { revents_ = event; }
 
   //!@} // setter
 

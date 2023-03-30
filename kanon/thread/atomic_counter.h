@@ -15,37 +15,37 @@ class AtomicCounter : noncopyable {
  public:
   explicit AtomicCounter(T const init_val = 0) : count_(init_val) {}
 
-  T operator=(T const val) noexcept {
+  T operator=(T const val) KANON_NOEXCEPT {
     Set(val);
     return this->GetVal()();
   }
 
-  AtomicCounter(Self &&other) noexcept : count_(other.GetVal()()) {}
+  AtomicCounter(Self &&other) KANON_NOEXCEPT : count_(other.GetVal()()) {}
 
-  Self &operator=(Self &&other) noexcept {
+  Self &operator=(Self &&other) KANON_NOEXCEPT {
     Set(other.GetVal());
     return *this;
   }
 
-  T Reset() noexcept { count_.store(0, std::memory_order_relaxed); }
+  T Reset() KANON_NOEXCEPT { count_.store(0, std::memory_order_relaxed); }
 
-  void SetValue(T const val) noexcept { count_.store(val, std::memory_order_relaxed); }
+  void SetValue(T const val) KANON_NOEXCEPT { count_.store(val, std::memory_order_relaxed); }
 
-  T GetValue() const noexcept { return count_.load(std::memory_order_relaxed); }
+  T GetValue() const KANON_NOEXCEPT { return count_.load(std::memory_order_relaxed); }
 
-  T Add(T const val) noexcept { return count_.fetch_add(val, std::memory_order_relaxed) + val; }
+  T Add(T const val) KANON_NOEXCEPT { return count_.fetch_add(val, std::memory_order_relaxed) + val; }
 
-  T GetAndAdd(T const val) noexcept { return count_.fetch_add(val, std::memory_order_relaxed); }
+  T GetAndAdd(T const val) KANON_NOEXCEPT { return count_.fetch_add(val, std::memory_order_relaxed); }
 
-  T Sub(T const val) noexcept { return count_.fetch_sub(val, std::memory_order_relaxed) - val; }
+  T Sub(T const val) KANON_NOEXCEPT { return count_.fetch_sub(val, std::memory_order_relaxed) - val; }
 
-  T GetAndSub(T const val) noexcept { return count_.fetch_sub(val, std::memory_order_relaxed); }
+  T GetAndSub(T const val) KANON_NOEXCEPT { return count_.fetch_sub(val, std::memory_order_relaxed); }
 
-  operator T() const noexcept { return GetValue(); }
-  T operator++() noexcept { return Add(1); }
-  T operator++(int) noexcept { return GetAndAdd(1); }
-  T operator--() noexcept { return Sub(1); }
-  T operator--(int) noexcept { return GetAndSub(1); }
+  operator T() const KANON_NOEXCEPT { return GetValue(); }
+  T operator++() KANON_NOEXCEPT { return Add(1); }
+  T operator++(int) KANON_NOEXCEPT { return GetAndAdd(1); }
+  T operator--() KANON_NOEXCEPT { return Sub(1); }
+  T operator--(int) KANON_NOEXCEPT { return GetAndSub(1); }
 
  private:
   std::atomic<T> count_;

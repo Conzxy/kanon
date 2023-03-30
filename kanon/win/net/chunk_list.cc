@@ -69,7 +69,7 @@ void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
 }
 
 ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
-                                            int &saved_errno) noexcept
+                                            int &saved_errno) KANON_NOEXCEPT
 {
   LOG_FATAL << "ChunkListWriteFd() isn't implemented for Windows";
   return (-1);

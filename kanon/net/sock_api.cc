@@ -49,7 +49,7 @@ void sock::ToIpPort(char *buf, size_t size, sockaddr const *addr)
              sock::ToHostByteOrder16(addr4->sin_port));
 }
 
-void sock::SetNonBlockAndCloExec(FdType fd) noexcept
+void sock::SetNonBlockAndCloExec(FdType fd) KANON_NOEXCEPT
 {
 #ifdef KANON_ON_UNIX
   auto ret = ::fcntl(fd, F_GETFL, 0);
@@ -68,7 +68,7 @@ void sock::SetNonBlockAndCloExec(FdType fd) noexcept
 #endif
 #endif
 
-FdType sock::CreateSocket(bool ipv6) noexcept
+FdType sock::CreateSocket(bool ipv6) KANON_NOEXCEPT
 {
   int sockfd = ::socket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sockfd < 0) {
@@ -85,7 +85,7 @@ FdType sock::CreateSocket(bool ipv6) noexcept
 #endif
 #endif
 
-void sock::SetReuseAddr(FdType fd, int flag) noexcept
+void sock::SetReuseAddr(FdType fd, int flag) KANON_NOEXCEPT
 {
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
@@ -96,7 +96,7 @@ void sock::SetReuseAddr(FdType fd, int flag) noexcept
   }
 }
 
-void sock::SetReusePort(FdType fd, int flag) noexcept
+void sock::SetReusePort(FdType fd, int flag) KANON_NOEXCEPT
 {
 #ifdef KANON_ON_LINUX
 #if LINUX_VERSION_CODE > KERNEL_VERSION(3, 9, 0)
@@ -114,7 +114,7 @@ void sock::SetReusePort(FdType fd, int flag) noexcept
 #endif
 }
 
-void sock::SetNoDelay(FdType fd, int flag) noexcept
+void sock::SetNoDelay(FdType fd, int flag) KANON_NOEXCEPT
 {
   auto ret = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
@@ -122,7 +122,7 @@ void sock::SetNoDelay(FdType fd, int flag) noexcept
   if (ret < 0) LOG_SYSERROR << "set sockopt error(tcp: nodelay)";
 }
 
-void sock::SetKeepAlive(FdType fd, int flag) noexcept
+void sock::SetKeepAlive(FdType fd, int flag) KANON_NOEXCEPT
 {
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
@@ -132,7 +132,7 @@ void sock::SetKeepAlive(FdType fd, int flag) noexcept
   }
 }
 
-struct sockaddr_in6 sock::GetLocalAddr(FdType fd) noexcept
+struct sockaddr_in6 sock::GetLocalAddr(FdType fd) KANON_NOEXCEPT
 {
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
@@ -145,7 +145,7 @@ struct sockaddr_in6 sock::GetLocalAddr(FdType fd) noexcept
   return addr;
 }
 
-struct sockaddr_in6 sock::GetPeerAddr(FdType fd) noexcept
+struct sockaddr_in6 sock::GetPeerAddr(FdType fd) KANON_NOEXCEPT
 {
   struct sockaddr_in6 addr;
   socklen_t len = sizeof addr;
@@ -158,7 +158,7 @@ struct sockaddr_in6 sock::GetPeerAddr(FdType fd) noexcept
   return addr;
 }
 
-static bool GetLocalAddrSafe(FdType fd, struct sockaddr_in6 &addr) noexcept
+static bool GetLocalAddrSafe(FdType fd, struct sockaddr_in6 &addr) KANON_NOEXCEPT
 {
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -170,7 +170,7 @@ static bool GetLocalAddrSafe(FdType fd, struct sockaddr_in6 &addr) noexcept
   return true;
 }
 
-static bool GetPeerAddrSafe(FdType fd, struct sockaddr_in6 &addr) noexcept
+static bool GetPeerAddrSafe(FdType fd, struct sockaddr_in6 &addr) KANON_NOEXCEPT
 {
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
@@ -181,7 +181,7 @@ static bool GetPeerAddrSafe(FdType fd, struct sockaddr_in6 &addr) noexcept
   return true;
 }
 
-bool sock::IsSelfConnect(FdType sockfd) noexcept
+bool sock::IsSelfConnect(FdType sockfd) KANON_NOEXCEPT
 {
   struct sockaddr_in6 local;
   struct sockaddr_in6 peer;

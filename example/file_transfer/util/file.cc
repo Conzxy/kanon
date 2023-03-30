@@ -38,7 +38,7 @@ File::File(std::string const& filename, int mode)
   }
 }
 
-File::~File() noexcept
+File::~File() KANON_NOEXCEPT
 {
   if (fp_) {
     ::fclose(fp_);
@@ -169,7 +169,7 @@ bool File::ReadLine(std::string& line, const bool need_newline)
   return true;
 }
 
-bool File::Write(const char *buf, size_t len) noexcept
+bool File::Write(const char *buf, size_t len) KANON_NOEXCEPT
 {
   if (::fwrite(buf, 1, len, fp_) != len) {
     assert(::ferror(fp_) != 0);
@@ -179,7 +179,7 @@ bool File::Write(const char *buf, size_t len) noexcept
   return true;
 }
 
-size_t File::GetSize() noexcept
+size_t File::GetSize() KANON_NOEXCEPT
 {
   auto cur = GetCurrentPosition();
   SeekEnd(0);

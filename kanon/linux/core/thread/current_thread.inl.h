@@ -5,7 +5,7 @@
 namespace kanon {
 namespace CurrentThread {
 
-static KANON_INLINE process::PId gettid() { return ::syscall(SYS_gettid); }
+KANON_INLINE process::PId gettid() { return ::syscall(SYS_gettid); }
 
 } // namespace CurrentThread
 } // namespace kanon

@@ -1,6 +1,8 @@
 #ifndef KANON_WIN_NET_EVENT_H__
 #define KANON_WIN_NET_EVENT_H__
 
+#include "kanon/util/compiler_macro.h"
+
 namespace kanon {
 
 enum Event /* : unsigned char */ {

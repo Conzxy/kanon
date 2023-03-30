@@ -66,7 +66,7 @@ Acceptor::Acceptor(EventLoop *loop, InetAddr const &addr, bool reuseport)
   // server.StartRun();
 }
 
-Acceptor::~Acceptor() noexcept
+Acceptor::~Acceptor() KANON_NOEXCEPT
 {
   // FIXME
   loop_->AssertInThread();
@@ -80,7 +80,7 @@ Acceptor::~Acceptor() noexcept
 #endif
 }
 
-void Acceptor::Listen() noexcept
+void Acceptor::Listen() KANON_NOEXCEPT
 {
   assert(!listening_);
   loop_->AssertInThread();

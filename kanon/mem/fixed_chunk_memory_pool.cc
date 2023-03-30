@@ -22,7 +22,7 @@ FixedChunkMemoryPool::FixedChunkMemoryPool(size_t chunk_per_block)
 {
 }
 
-FixedChunkMemoryPool::~FixedChunkMemoryPool() noexcept
+FixedChunkMemoryPool::~FixedChunkMemoryPool() KANON_NOEXCEPT
 {
   Block *next = nullptr;
   while (block_chain_) {
@@ -93,12 +93,12 @@ void FixedChunkMemoryPool::Shrink(size_t sz)
   }
 }
 
-size_t FixedChunkMemoryPool::GetUsage(size_t sz) const noexcept
+size_t FixedChunkMemoryPool::GetUsage(size_t sz) const KANON_NOEXCEPT
 {
   return BLOCK_SPACE(ALIGN_SIZE(sz)) * block_count_;
 }
 
-size_t FixedChunkMemoryPool::GetFreeChunkNum(size_t sz) const noexcept
+size_t FixedChunkMemoryPool::GetFreeChunkNum(size_t sz) const KANON_NOEXCEPT
 {
   sz = ALIGN_SIZE(sz);
   auto block_iter = block_chain_;
@@ -151,7 +151,7 @@ bool FixedChunkMemoryPool::IsBlockFree(Block *block, size_t sz)
 #endif
 }
 
-size_t FixedChunkMemoryPool::GetFreeChunkNumInBlock(Block *block, size_t sz) const noexcept
+size_t FixedChunkMemoryPool::GetFreeChunkNumInBlock(Block *block, size_t sz) const KANON_NOEXCEPT
 {
   assert(CHECK_ALIGNED(sz));
   auto chunk_iter = reinterpret_cast<Chunk*>(reinterpret_cast<char*>(block) + sizeof(Block));

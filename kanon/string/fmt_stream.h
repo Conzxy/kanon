@@ -25,17 +25,17 @@ public:
    * But this is not significant in release mode
    */
   template<typename ...Args>
-  inline FmtStream(StringView fmt, Args... args);
+  KANON_INLINE FmtStream(StringView fmt, Args... args);
 
   template<typename ...Args>
-  inline void Serialize(StringView fmt, Args... args);
+  KANON_INLINE void Serialize(StringView fmt, Args... args);
 
-  char const* GetData() const noexcept { return stream_.data(); }
-  void Reset() noexcept { stream_.reset(); }
-  StringView ToStringView() const noexcept { return stream_.ToStringView(); }
+  char const* GetData() const KANON_NOEXCEPT { return stream_.data(); }
+  void Reset() KANON_NOEXCEPT { stream_.reset(); }
+  StringView ToStringView() const KANON_NOEXCEPT { return stream_.ToStringView(); }
 private:
   template<typename ...Args>
-  inline void ParseAndSerialize(StringView fmt, Args... args);
+  KANON_INLINE void ParseAndSerialize(StringView fmt, Args... args);
 
   void ParseAndSerialize(StringView fmt);
 
@@ -45,15 +45,15 @@ private:
 
   template<typename T, 
    typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-  void SerializeOne(T arg) noexcept { stream_.appendInt(arg); }
+  void SerializeOne(T arg) KANON_NOEXCEPT { stream_.appendInt(arg); }
 
   template<typename T,
     typename std::enable_if<std::is_floating_point<T>::value, char>::type = 0>
-  void SerializeOne(T arg) noexcept { stream_.appendFloat(static_cast<double>(arg)); }
+  void SerializeOne(T arg) KANON_NOEXCEPT { stream_.appendFloat(static_cast<double>(arg)); }
 
-  void SerializeOne(bool arg) noexcept { stream_.appendBool(arg); }
-  void SerializeOne(void const* p) noexcept { stream_.appendPtr(p); }
-  void SerializeOne(char c) noexcept { stream_.appendChar(c); }
+  void SerializeOne(bool arg) KANON_NOEXCEPT { stream_.appendBool(arg); }
+  void SerializeOne(void const* p) KANON_NOEXCEPT { stream_.appendPtr(p); }
+  void SerializeOne(char c) KANON_NOEXCEPT { stream_.appendChar(c); }
 
   detail::FixedBuffer<SZ> stream_;
 };

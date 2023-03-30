@@ -33,7 +33,7 @@ public:
     append(key.data(), key.size());
   }
   
-  ~Item() noexcept {
+  ~Item() KANON_NOEXCEPT {
     ::free(data_);
   }
   
@@ -65,35 +65,35 @@ public:
     //::memcpy(data_ + key.size(), "\r\n", sizeof "\r\n");
   } 
 
-  uint totalLen() const noexcept { return keyLen_ + valLen_; }
+  uint totalLen() const KANON_NOEXCEPT { return keyLen_ + valLen_; }
   
-  uint valueLen() const noexcept {
+  uint valueLen() const KANON_NOEXCEPT {
     return valLen_;
   }
 
-  uint keyLen() const noexcept {
+  uint keyLen() const KANON_NOEXCEPT {
     return keyLen_;
   }
 
-  i64 flag() const noexcept { return flag_; }
+  i64 flag() const KANON_NOEXCEPT { return flag_; }
 
-  i32 expirationTime() const noexcept { return expTime_; }
+  i32 expirationTime() const KANON_NOEXCEPT { return expTime_; }
 
-  u64 cas() const noexcept { return cas_; }
+  u64 cas() const KANON_NOEXCEPT { return cas_; }
   
-  void incrCas() noexcept { cas_ = ++s_cas_; }
+  void incrCas() KANON_NOEXCEPT { cas_ = ++s_cas_; }
   // This may be not used
-  void decrCas() noexcept { cas_ = --s_cas_; }
+  void decrCas() KANON_NOEXCEPT { cas_ = --s_cas_; }
   
-  u64 hash() const noexcept 
+  u64 hash() const KANON_NOEXCEPT 
   { return boost::hash_range(data_, data_+totalLen()); }
 
-  StringView key() const noexcept { return StringView{ data_, keyLen_ }; }
-  StringView value() const noexcept { return StringView{ data_+keyLen_, valLen_ }; }
+  StringView key() const KANON_NOEXCEPT { return StringView{ data_, keyLen_ }; }
+  StringView value() const KANON_NOEXCEPT { return StringView{ data_+keyLen_, valLen_ }; }
   
-  char const* valueData() const noexcept { return data_+keyLen_; }
+  char const* valueData() const KANON_NOEXCEPT { return data_+keyLen_; }
   
-  bool endWithCRLF() const noexcept {
+  bool endWithCRLF() const KANON_NOEXCEPT {
     auto len = totalLen();
     return data_[len-1] == '\n' && data_[len-2] == '\r';
   }  

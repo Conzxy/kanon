@@ -12,13 +12,13 @@ static constexpr unsigned IOVEC_MAX = IOV_MAX;
 static constexpr unsigned IOVEC_MAX = 1024;
 #endif
 
-static size_t RoundUpDivideIn2(size_t x, size_t y) noexcept
+static size_t RoundUpDivideIn2(size_t x, size_t y) KANON_NOEXCEPT
 {
   return (x == 0) ? 0 : ((x - 1) / y + 1);
 }
 
 ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
-                                            int &saved_errno) noexcept
+                                            int &saved_errno) KANON_NOEXCEPT
 {
   if (buffer.GetChunkSize() == 1) {
     auto first_chunk = buffer.GetFirstChunk();

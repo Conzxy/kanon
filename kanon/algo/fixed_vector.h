@@ -24,7 +24,7 @@ public:
     }
   }
 
-  ~FixedVector() noexcept {
+  ~FixedVector() KANON_NOEXCEPT {
     algo_util::destroy(data_, data_+size_);
     ::free(data_);
   }
@@ -43,25 +43,25 @@ public:
     }
   }
 
-  T* begin() noexcept { return data_; }
-  T* end() noexcept { return data_ + size_; }
-  T const* begin() const noexcept { return data_; }
-  T const* end() const noexcept { return data_ + size_; }
-  T const* cbegin() const noexcept { return data_; }
-  T const* cend() const noexcept { return data_ + size_; }
-  T const* cbegin() noexcept { return data_; }
-  T const* cend() noexcept { return data_ + size_; }
+  T* begin() KANON_NOEXCEPT { return data_; }
+  T* end() KANON_NOEXCEPT { return data_ + size_; }
+  T const* begin() const KANON_NOEXCEPT { return data_; }
+  T const* end() const KANON_NOEXCEPT { return data_ + size_; }
+  T const* cbegin() const KANON_NOEXCEPT { return data_; }
+  T const* cend() const KANON_NOEXCEPT { return data_ + size_; }
+  T const* cbegin() KANON_NOEXCEPT { return data_; }
+  T const* cend() KANON_NOEXCEPT { return data_ + size_; }
 
-  T const* data() const noexcept { return data_; }
-  T* data() noexcept { return data_; }
+  T const* data() const KANON_NOEXCEPT { return data_; }
+  T* data() KANON_NOEXCEPT { return data_; }
 
-  size_t size() const noexcept { return size_; }
+  size_t size() const KANON_NOEXCEPT { return size_; }
 
-  T& operator[](size_t idx) noexcept {
+  T& operator[](size_t idx) KANON_NOEXCEPT {
     return data_[idx];
   }
 
-  T const& operator[](size_t idx) const noexcept {
+  T const& operator[](size_t idx) const KANON_NOEXCEPT {
     return data_[idx];
   }
 private:

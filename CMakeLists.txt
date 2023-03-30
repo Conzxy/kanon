@@ -10,10 +10,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 include(cmake/utils.cmake)
 include(cmake/install.cmake)
 
+function (kanon_copy_dll_to_target_dir kanon_target)
+  if (KANON_ON_WIN)
+    conzxy_copy_dll_to_target_dir(TARGET ${kanon_target}
+      DLL_PATH "${CMAKE_BINARY_DIR}/kanon/kanon_base.dll") 
+    conzxy_copy_dll_to_target_dir(TARGET ${kanon_target} 
+      DLL_PATH "${CMAKE_BINARY_DIR}/kanon/kanon_net.dll")
+  endif ()
+endfunction ()
+
 # Extract the version from version.h in the top level of include directory
 kanon_extract_version()
 
 project(kanon VERSION ${KANON_VERSION})
+message(STATUS "CMake Version: ${CMAKE_VERSION}")
 message(STATUS "Building kanon: ${KANON_VERSION}")
 
 include(cmake/compile_flag.cmake)

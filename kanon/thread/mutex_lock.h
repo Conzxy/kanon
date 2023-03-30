@@ -12,110 +12,100 @@
 #include "kanon/util/noncopyable.h"
 
 #include "kanon/thread/pthread_macro.h"
-#include "kanon/thread/current_thread.h" 
-
+#include "kanon/thread/current_thread.h"
 
 // Enable thread safety attributes only with clang.
 // The attributes can be safely erased when compiling with other compilers.
 // \see https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
 #if defined(__clang__) && (!defined(SWIG))
-#define THREAD_ANNOTATION_ATTRIBUTE__(x)   __attribute__((x))
+#define THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
 #else
-#define THREAD_ANNOTATION_ATTRIBUTE__(x)   // no-op
+#define THREAD_ANNOTATION_ATTRIBUTE__(x) // no-op
 #endif
 
-#define CAPABILITY(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
+#define CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
 
-#define SCOPED_CAPABILITY \
-  THREAD_ANNOTATION_ATTRIBUTE__(scoped_lockable)
+#define SCOPED_CAPABILITY THREAD_ANNOTATION_ATTRIBUTE__(scoped_lockable)
 
-#define GUARDED_BY(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
+#define GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
 
-#define PT_GUARDED_BY(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(pt_guarded_by(x))
+#define PT_GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE__(pt_guarded_by(x))
 
-#define ACQUIRED_BEFORE(...) \
+#define ACQUIRED_BEFORE(...)                                                   \
   THREAD_ANNOTATION_ATTRIBUTE__(acquired_before(__VA_ARGS__))
 
-#define ACQUIRED_AFTER(...) \
+#define ACQUIRED_AFTER(...)                                                    \
   THREAD_ANNOTATION_ATTRIBUTE__(acquired_after(__VA_ARGS__))
 
-#define REQUIRES(...) \
+#define REQUIRES(...)                                                          \
   THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
 
-#define REQUIRES_SHARED(...) \
+#define REQUIRES_SHARED(...)                                                   \
   THREAD_ANNOTATION_ATTRIBUTE__(requires_shared_capability(__VA_ARGS__))
 
-#define ACQUIRE(...) \
+#define ACQUIRE(...)                                                           \
   THREAD_ANNOTATION_ATTRIBUTE__(acquire_capability(__VA_ARGS__))
 
-#define ACQUIRE_SHARED(...) \
+#define ACQUIRE_SHARED(...)                                                    \
   THREAD_ANNOTATION_ATTRIBUTE__(acquire_shared_capability(__VA_ARGS__))
 
-#define RELEASE(...) \
+#define RELEASE(...)                                                           \
   THREAD_ANNOTATION_ATTRIBUTE__(release_capability(__VA_ARGS__))
 
-#define RELEASE_SHARED(...) \
+#define RELEASE_SHARED(...)                                                    \
   THREAD_ANNOTATION_ATTRIBUTE__(release_shared_capability(__VA_ARGS__))
 
-#define RELEASE_GENERIC(...) \
+#define RELEASE_GENERIC(...)                                                   \
   THREAD_ANNOTATION_ATTRIBUTE__(release_generic_capability(__VA_ARGS__))
 
-#define TRY_ACQUIRE(...) \
+#define TRY_ACQUIRE(...)                                                       \
   THREAD_ANNOTATION_ATTRIBUTE__(try_acquire_capability(__VA_ARGS__))
 
-#define TRY_ACQUIRE_SHARED(...) \
+#define TRY_ACQUIRE_SHARED(...)                                                \
   THREAD_ANNOTATION_ATTRIBUTE__(try_acquire_shared_capability(__VA_ARGS__))
 
-#define EXCLUDES(...) \
-  THREAD_ANNOTATION_ATTRIBUTE__(locks_excluded(__VA_ARGS__))
+#define EXCLUDES(...) THREAD_ANNOTATION_ATTRIBUTE__(locks_excluded(__VA_ARGS__))
 
-#define ASSERT_CAPABILITY(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(assert_capability(x))
+#define ASSERT_CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(assert_capability(x))
 
-#define ASSERT_SHARED_CAPABILITY(x) \
+#define ASSERT_SHARED_CAPABILITY(x)                                            \
   THREAD_ANNOTATION_ATTRIBUTE__(assert_shared_capability(x))
 
-#define RETURN_CAPABILITY(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(lock_returned(x))
+#define RETURN_CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(lock_returned(x))
 
-#define NO_THREAD_SAFETY_ANALYSIS \
+#define NO_THREAD_SAFETY_ANALYSIS                                              \
   THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)
 
-namespace kanon{
+namespace kanon {
 
-class CAPABILITY("mutexlock") MutexLock : noncopyable
-{
+class CAPABILITY("mutexlock") MutexLock : noncopyable {
 #ifdef KANON_ON_UNIX
   using MutexT = pthread_mutex_t;
 #else
   using MutexT = std::mutex;
 #endif
 
-public:
-  MutexLock() {
+ public:
+  MutexLock()
+  {
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_init(&mutex_, NULL));
 #endif
   }
-  
-  ~MutexLock() {
+
+  ~MutexLock()
+  {
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_destroy(&mutex_));
 #endif
   }
-  
-  bool IsLockedInThisThread() {
-    return holder_ == CurrentThread::tid();
-  }
-  
-  void AssertLocked() {
-    ASSERT(IsLockedInThisThread());
-  }
 
-  void Lock() ACQUIRE() {
+  bool IsLockedInThisThread() { return holder_ == CurrentThread::tid(); }
+
+  void AssertLocked() { ASSERT(IsLockedInThisThread()); }
+
+  void Lock() ACQUIRE()
+  {
     assignHolder();
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_lock(&mutex_));
@@ -123,13 +113,14 @@ public:
     mutex_.lock();
 #endif
   }
-  
+
   /**
    * \return
    *  true -- lock successfully
    *  false -- lock already owned by others
    */
-  bool TryLock() {
+  bool TryLock()
+  {
     auto success = true;
 #ifdef KANON_ON_UNIX
     auto err = pthread_mutex_trylock(&mutex_);
@@ -141,12 +132,12 @@ public:
 #else
     success = mutex_.try_lock();
 #endif
-    if (success)
-      unassignHolder();
+    if (success) unassignHolder();
     return success;
   }
 
-  void Unlock() RELEASE() {
+  void Unlock() RELEASE()
+  {
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_mutex_unlock(&mutex_));
 #else
@@ -164,34 +155,30 @@ public:
   }
 #endif
 
-  MutexT& GetMutex(){
-    return mutex_;
-  }
+  MutexT &GetMutex() { return mutex_; }
 
-private:
+ private:
   friend class Condition;
 
-  class UnassignHolder : noncopyable
-  {
-  public:
-    explicit UnassignHolder(MutexLock& mutex)
+  class UnassignHolder : noncopyable {
+   public:
+    explicit UnassignHolder(MutexLock &mutex)
       : mutex_(mutex)
-    { mutex_.unassignHolder(); }
+    {
+      mutex_.unassignHolder();
+    }
 
-    ~UnassignHolder()
-    { mutex_.assignHolder(); }
+    ~UnassignHolder() { mutex_.assignHolder(); }
 
-  private:
-    MutexLock& mutex_;
+   private:
+    MutexLock &mutex_;
   };
 
-  void assignHolder() noexcept
-  { holder_ = CurrentThread::tid(); }
+  void assignHolder() KANON_NOEXCEPT { holder_ = CurrentThread::tid(); }
 
-  void unassignHolder() noexcept
-  { holder_ = 0; }
-private:
+  void unassignHolder() KANON_NOEXCEPT { holder_ = 0; }
 
+ private:
 #ifdef KANON_ON_UNIX
   pthread_mutex_t mutex_;
 #else
@@ -200,43 +187,43 @@ private:
   int holder_;
 };
 
-//pthread_mutex_t simple RAII wrapper
-class SCOPED_CAPABILITY MutexGuard : noncopyable
-{
-public:
-  explicit MutexGuard(MutexLock& mutex) ACQUIRE(mutex)
+// pthread_mutex_t simple RAII wrapper
+class SCOPED_CAPABILITY MutexGuard : noncopyable {
+ public:
+  explicit MutexGuard(MutexLock &mutex) ACQUIRE(mutex)
     : mutex_{mutex}
-  { mutex_.Lock(); }
+  {
+    mutex_.Lock();
+  }
 
-  ~MutexGuard() RELEASE()
-  { mutex_.Unlock(); }
-private:
-  MutexLock& mutex_;
+  ~MutexGuard() RELEASE() { mutex_.Unlock(); }
+
+ private:
+  MutexLock &mutex_;
 };
 
-template<typename T>
-class SCOPED_CAPABILITY MutexGuardT : noncopyable
-{
-public:
-  explicit MutexGuardT(T& mutex) ACQUIRE(mutex)
+template <typename T>
+class SCOPED_CAPABILITY MutexGuardT : noncopyable {
+ public:
+  explicit MutexGuardT(T &mutex) ACQUIRE(mutex)
     : mutex_(mutex)
-  { mutex_.Lock(); }
+  {
+    mutex_.Lock();
+  }
 
-  ~MutexGuardT() RELEASE()
-  { mutex_.Unlock(); }
-private:
-  T& mutex_;
+  ~MutexGuardT() RELEASE() { mutex_.Unlock(); }
+
+ private:
+  T &mutex_;
 };
 
-#define MutexGuard(x) \
-  static_assert(sizeof(x) < 0, \
-      "error useage of MutexGuard" \
-      "(i.e. tempory object)");
+#define MutexGuard(x)                                                          \
+  static_assert(sizeof(x) < 0, "error useage of MutexGuard"                    \
+                               "(i.e. tempory object)");
 
-#define MutexGuardT(x) \
-  static_assert(sizeof(x) < 0, \
-      "error useage of MutexGuard" \
-      "(i.e. tempory object)");
+#define MutexGuardT(x)                                                         \
+  static_assert(sizeof(x) < 0, "error useage of MutexGuard"                    \
+                               "(i.e. tempory object)");
 
 } // namespace kanon
 

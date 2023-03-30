@@ -16,9 +16,10 @@ namespace kanon {
  *   This is a internal API, user don't care this.\n
  *   Then saved_errno is necessary since we don't process the error here.
  */
-usize BufferReadFromFd(Buffer &buffer, FdType fd, int &saved_errno);
+KANON_NET_NO_API usize BufferReadFromFd(Buffer &buffer, FdType fd,
+                                        int &saved_errno);
 
-void BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
-                       void *overlap);
+KANON_NET_NO_API void BufferOverlapRecv(Buffer &buffer, FdType fd,
+                                        int &saved_errno, void *overlap);
 } // namespace kanon
 #endif // _KANON_NET_BUFFER_H_

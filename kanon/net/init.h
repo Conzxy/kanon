@@ -3,7 +3,7 @@
 
 namespace kanon {
 
-void KanonNetInitialize();
+KANON_NET_API void KanonNetInitialize();
 
 } // namespace kanon
 

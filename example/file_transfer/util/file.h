@@ -39,7 +39,7 @@ public:
 
   File(char const* filename, int mode = kRead);
   File(std::string const& filename, int mode = kRead);
-  ~File() noexcept;
+  ~File() KANON_NOEXCEPT;
 
   bool Open(std::string const& filename, int mode = kRead)
   {
@@ -51,23 +51,23 @@ public:
   size_t Read(void* buf, size_t len);
   bool ReadLine(std::string& line, const bool need_newline = true);
 
-  bool Write(char const* buf, size_t len) noexcept;
+  bool Write(char const* buf, size_t len) KANON_NOEXCEPT;
 
-  bool IsValid() const noexcept { return fp_ != NULL; }
-  bool IsEof() const noexcept { return eof_; }
+  bool IsValid() const KANON_NOEXCEPT { return fp_ != NULL; }
+  bool IsEof() const KANON_NOEXCEPT { return eof_; }
 
-  void Rewind() noexcept { ::rewind(fp_); }
-  void SeekCurrent(long offset) noexcept { Seek(offset, SEEK_CUR); }
-  void SeekBegin(long offset) noexcept { Seek(offset, SEEK_SET); }
-  void SeekEnd(long offset) noexcept { Seek(offset, SEEK_END); }
-  long GetCurrentPosition() noexcept { return ::ftell(fp_); }
+  void Rewind() KANON_NOEXCEPT { ::rewind(fp_); }
+  void SeekCurrent(long offset) KANON_NOEXCEPT { Seek(offset, SEEK_CUR); }
+  void SeekBegin(long offset) KANON_NOEXCEPT { Seek(offset, SEEK_SET); }
+  void SeekEnd(long offset) KANON_NOEXCEPT { Seek(offset, SEEK_END); }
+  long GetCurrentPosition() KANON_NOEXCEPT { return ::ftell(fp_); }
 
-  size_t GetSize() noexcept;
+  size_t GetSize() KANON_NOEXCEPT;
 
   static const size_t kInvalidReturn = static_cast<size_t>(-1);
 
 private:
-  void Seek(long offset, int whence) noexcept { ::fseek(fp_, offset, whence); }
+  void Seek(long offset, int whence) KANON_NOEXCEPT { ::fseek(fp_, offset, whence); }
 
   FILE* fp_;
   int mode_;

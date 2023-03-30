@@ -16,29 +16,35 @@ namespace detail {
 /*
  * The following functions are deprecated
  */
-inline size_t Strlen(std::string const &str) noexcept { return str.size(); }
+KANON_INLINE size_t Strlen(std::string const &str) KANON_NOEXCEPT
+{
+  return str.size();
+}
 
-inline size_t Strlen(char const *str) noexcept { return strlen(str); }
+KANON_INLINE size_t Strlen(char const *str) KANON_NOEXCEPT
+{
+  return strlen(str);
+}
 
-inline size_t Strlen(kanon::StringView const &str) noexcept
+KANON_INLINE size_t Strlen(kanon::StringView const &str) KANON_NOEXCEPT
 {
   return str.size();
 }
 
 template <typename S, typename... Args>
-size_t StrSize_impl(S const &head, Args &&...strs) noexcept
+KANON_INLINE size_t StrSize_impl(S const &head, Args &&...strs) KANON_NOEXCEPT
 {
   return Strlen(head) + StrSize_impl(strs...);
 }
 
 template <typename S>
-size_t StrSize_impl(S const &head) noexcept
+KANON_INLINE size_t StrSize_impl(S const &head) KANON_NOEXCEPT
 {
   return Strlen(head);
 }
 
 template <typename... Args>
-size_t StrSize(Args &&...args)
+KANON_INLINE size_t StrSize(Args &&...args)
 {
   return StrSize_impl(args...);
 }
@@ -129,22 +135,22 @@ void StrAppend_impl(std::string &str, size_t &size, size_t &index,
   } while (0)
 
 template <>
-inline void StrAppend_impl<>(std::string &str, size_t &size, size_t &index,
-                             kanon::StringView const &head)
+KANON_INLINE void StrAppend_impl<>(std::string &str, size_t &size,
+                                   size_t &index, kanon::StringView const &head)
 {
   STRAPPEND_STL_STYLE_EXIT;
 }
 
 template <>
-inline void StrAppend_impl<>(std::string &str, size_t &size, size_t &index,
-                             std::string const &head)
+KANON_INLINE void StrAppend_impl<>(std::string &str, size_t &size,
+                                   size_t &index, std::string const &head)
 {
   STRAPPEND_STL_STYLE_EXIT;
 }
 
 template <>
-inline void StrAppend_impl<>(std::string &str, size_t &size, size_t &index,
-                             char const *head)
+KANON_INLINE void StrAppend_impl<>(std::string &str, size_t &size,
+                                   size_t &index, char const *head)
 {
   auto len = strlen(head);
   size += len;
@@ -155,8 +161,8 @@ inline void StrAppend_impl<>(std::string &str, size_t &size, size_t &index,
 
 #ifdef CXX_STANDARD_17
 template <>
-inline void StrAppend_impl<>(std::string &str, size_t &size, size_t &index,
-                             std::string_view const &head)
+KANON_INLINE void StrAppend_impl<>(std::string &str, size_t &size,
+                                   size_t &index, std::string_view const &head)
 {
   STRAPPEND_STL_STYLE_EXIT;
 }
@@ -173,7 +179,7 @@ inline void StrAppend_impl<>(std::string &str, size_t &size, size_t &index,
  *  The performance is better than the absl::StrAppend()
  */
 template <typename... Args>
-void StrAppend(std::string &str, Args &&...strs)
+KANON_INLINE void StrAppend(std::string &str, Args &&...strs)
 {
   size_t size = 0;
   size_t index = 0;
@@ -209,7 +215,7 @@ void StrAppend(std::string &str, Args &&...strs)
  *  In fact, this a wrapper of the StrAppend(empty-string, strs...)
  */
 template <typename... Args>
-std::string StrCat(Args &&...strs)
+KANON_INLINE std::string StrCat(Args &&...strs)
 {
   std::string ret;
   StrAppend(ret, strs...);

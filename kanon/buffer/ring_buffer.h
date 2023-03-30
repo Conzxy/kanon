@@ -1,12 +1,12 @@
 #ifndef KANON_ALGO_RINGBUFFER_H
 #define KANON_ALGO_RINGBUFFER_H
 
-#include <utility>       // swap
+#include <utility> // swap
 #include <stdint.h>
-#include <cstdlib>       // mkstemp
-#include <sys/types.h>   // off_t
-#include <sys/mman.h>   // mmap
-#include <unistd.h>     // unlink
+#include <cstdlib>     // mkstemp
+#include <sys/types.h> // off_t
+#include <sys/mman.h>  // mmap
+#include <unistd.h>    // unlink
 #include <assert.h>
 
 #include "kanon/util/macro.h"
@@ -16,90 +16,78 @@
 namespace kanon {
 
 // adjust size to n times page size(n is an integer)
-#define ROUNDUP_PGSIZE(size) \
-  (((size) + 0xfff) & (~0xfff))
+#define ROUNDUP_PGSIZE(size) (((size) + 0xfff) & (~0xfff))
 
 // for debug
-#define IS_PGSIZE(size) \
-  (size & (~0xfff))
+#define IS_PGSIZE(size) (size & (~0xfff))
 
 /**
  * @class RingBuffer
  * \tparam T type of element
- * \brief 
+ * \brief
  * RingBuffer write policy when buffer is full:
  * -- overwrite these old data in buffer.
  * Since memory space is linear, we want to implemete such
- * ring buffer which need use read index and write index to 
+ * ring buffer which need use read index and write index to
  * construct a loop logically.
- * 
+ *
  * Here, I use memory map to map two buffer to same temp file,
- * then, if read index is not begin address, the write index 
+ * then, if read index is not begin address, the write index
  * must after read index, but write position before read index.
  * This is different from classic implemetation that reset index
  * but memory is not continuous in fact.Memory map make memory to
  * a ring and no need to reset index(only shrink index).
  * The only one disadvantage is need double space than expected.
  */
-template<typename T>  
+template <typename T>
 class RingBuffer {
-public:
+ public:
   typedef T value_type;
   typedef size_t size_type;
-  typedef T* pointer;
-  typedef T const* const_pointer;
-  typedef T& reference;
-  typedef T const& const_reference;
+  typedef T *pointer;
+  typedef T const *const_pointer;
+  typedef T &reference;
+  typedef T const &const_reference;
   typedef pointer iterator;
   typedef const_pointer const_iterator;
 
   explicit RingBuffer(size_type n);
-  ~RingBuffer() noexcept;
-  
-  RingBuffer(RingBuffer const& other);
-  RingBuffer(RingBuffer&& other) noexcept;
+  ~RingBuffer() KANON_NOEXCEPT;
 
-  RingBuffer& operator=(RingBuffer const& other);
-  RingBuffer& operator=(RingBuffer&& other) noexcept;
+  RingBuffer(RingBuffer const &other);
+  RingBuffer(RingBuffer &&other) KANON_NOEXCEPT;
+
+  RingBuffer &operator=(RingBuffer const &other);
+  RingBuffer &operator=(RingBuffer &&other) KANON_NOEXCEPT;
 
   /**
    * \return size of readable region
    */
-  size_type readable() const noexcept {
-    return write_index_ - read_index_;
-  }
+  size_type readable() const KANON_NOEXCEPT { return write_index_ - read_index_; }
 
   /**
    * \return remaing space for writing
    */
-  size_type writeable() const noexcept {
-    return count_ - readable();
-  }
+  size_type writeable() const KANON_NOEXCEPT { return count_ - readable(); }
 
   /**
    * \return bound of buffer
    */
-  size_type max_size() const noexcept {
-    return count_;
-  }
+  size_type max_size() const KANON_NOEXCEPT { return count_; }
 
   /**
-   * \return readable position 
+   * \return readable position
    */
-  const_pointer GetReadBegin() const noexcept {
-    return data_ + read_index_;
-  }
-  
+  const_pointer GetReadBegin() const KANON_NOEXCEPT { return data_ + read_index_; }
 
-  pointer GetReadBegin() noexcept {
-    return data_ + read_index_;
-  }
-  
+  pointer GetReadBegin() KANON_NOEXCEPT { return data_ + read_index_; }
+
   /**
    * \brief advance read index
    * \warning should be called after consume readable buffer
    */
-  void AdvanceRead(size_type n) noexcept {
+  void AdvanceRead(size_type n) KANON_NOEXCEPT
+  {
     read_index_ += n;
     if (read_index_ > count_) {
       read_index_ -= count_;
@@ -108,48 +96,48 @@ public:
   }
 
   /**
-   * \brief write data to buffer 
-   * \return written number of element, 
+   * \brief write data to buffer
+   * \return written number of element,
    */
-  template<typename FI>
-  size_type Append(FI first, size_type n) {
+  template <typename FI>
+  size_type Append(FI first, size_type n)
+  {
     auto last = first;
     std::advance(last, n);
     return Append(std::move(first), std::move(last));
   }
 
-  template<typename FI>
+  template <typename FI>
   size_type Append(FI first, FI last);
 
   /**
    * \brief emplace element which is constructed in place
    */
-  template<typename... Args>
-  void emplace(Args&&... args);
+  template <typename... Args>
+  void emplace(Args &&...args);
 
-  void swap(RingBuffer& rhs) noexcept {
+  void swap(RingBuffer &rhs) KANON_NOEXCEPT
+  {
     std::swap(data_, rhs.data_);
     std::swap(count_, rhs.count_);
     std::swap(write_index_, rhs.write_index_);
     std::swap(read_index_, rhs.read_index_);
   }
 
-private:
-  pointer writeBegin() noexcept {
-    return data_ + write_index_;
-  }
+ private:
+  pointer writeBegin() KANON_NOEXCEPT { return data_ + write_index_; }
 
-  T* data_;
+  T *data_;
   size_type count_;
   size_type write_index_;
   size_type read_index_;
 };
 
-template<typename T>
-RingBuffer<T>::RingBuffer(size_type n) 
-  : count_{ 0 }
-  , write_index_{ 0 }
-  , read_index_{ 0 }
+template <typename T>
+RingBuffer<T>::RingBuffer(size_type n)
+  : count_{0}
+  , write_index_{0}
+  , read_index_{0}
 {
   // \warning: You should not use char const* to accept string literal,
   //            because it stored in read only memory.
@@ -158,19 +146,19 @@ RingBuffer<T>::RingBuffer(size_type n)
   char const path[] = "/dev/shm/ring_buffer_XXXXXX";
   int status = 0;
 
-  int fd = ::mkstemp(const_cast<char*>(path));
+  int fd = ::mkstemp(const_cast<char *>(path));
   if (fd < 0) {
     LOG_SYSFATAL << "make a temp file error";
   }
 
-  status = ::unlink(path);  
+  status = ::unlink(path);
   if (status < 0) {
     LOG_SYSERROR << "unlink temp file for ring buffer error";
   }
 
   count_ = ROUNDUP_PGSIZE(n * sizeof(T));
   assert(IS_PGSIZE(count_));
-  
+
   status = ::ftruncate(fd, count_);
   if (status < 0) {
     if (close(fd) < 0) {
@@ -179,9 +167,8 @@ RingBuffer<T>::RingBuffer(size_type n)
     LOG_SYSFATAL << "ftruncate temp file to count size error";
   }
 
-  auto data = ::mmap(
-    NULL, count_ << 1, 
-    PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  auto data =
+      ::mmap(NULL, count_ << 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
   if (data == MAP_FAILED) {
     if (close(fd) < 0) {
@@ -192,9 +179,8 @@ RingBuffer<T>::RingBuffer(size_type n)
 
   data_ = static_cast<pointer>(data);
 
-  auto addr = ::mmap(
-    data_, count_,
-    PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, 0);
+  auto addr = ::mmap(data_, count_, PROT_READ | PROT_WRITE,
+                     MAP_FIXED | MAP_SHARED, fd, 0);
 
   if (static_cast<pointer>(addr) != data) {
     if (close(fd) < 0) {
@@ -203,9 +189,8 @@ RingBuffer<T>::RingBuffer(size_type n)
     LOG_SYSFATAL << "mmap error";
   }
 
-  addr = ::mmap(
-    data_ + count_, count_,
-    PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, count_);
+  addr = ::mmap(data_ + count_, count_, PROT_READ | PROT_WRITE,
+                MAP_FIXED | MAP_SHARED, fd, count_);
 
   if (static_cast<pointer>(addr) != data_ + count_) {
     if (close(fd) < 0) {
@@ -213,7 +198,6 @@ RingBuffer<T>::RingBuffer(size_type n)
     }
     LOG_SYSFATAL << "mmap error";
   }
-
 
   status = ::close(fd);
 
@@ -226,57 +210,56 @@ RingBuffer<T>::RingBuffer(size_type n)
   count_ = n;
 }
 
-template<typename T>
-RingBuffer<T>::~RingBuffer() noexcept {
+template <typename T>
+RingBuffer<T>::~RingBuffer() KANON_NOEXCEPT
+{
   if (data_) {
-    if (::munmap(
-        data_, 
-        ROUNDUP_PGSIZE(count_ * sizeof(T)) << 1) < 0) {
-          LOG_SYSFATAL << "munmap error";
+    if (::munmap(data_, ROUNDUP_PGSIZE(count_ * sizeof(T)) << 1) < 0) {
+      LOG_SYSFATAL << "munmap error";
     }
 
     write_index_ = read_index_ = count_ = 0;
   }
 }
 
-template<typename T>
-RingBuffer<T>::RingBuffer(RingBuffer const& other) 
-  : RingBuffer(other.count_) 
+template <typename T>
+RingBuffer<T>::RingBuffer(RingBuffer const &other)
+  : RingBuffer(other.count_)
 {
 
-  std::copy(other.GetReadBegin(), other.GetReadBegin()+other.readable());
+  std::copy(other.GetReadBegin(), other.GetReadBegin() + other.readable());
   AdvanceRead(other.readable());
 }
 
-template<typename T>
-RingBuffer<T>::RingBuffer(RingBuffer&& other) noexcept
+template <typename T>
+RingBuffer<T>::RingBuffer(RingBuffer &&other) KANON_NOEXCEPT
 {
   swap(other);
   other.data_ = NULL;
   other.count_ = other.write_index_ = other.read_index_ = 0;
 }
 
-template<typename T>
-RingBuffer<T>& 
-RingBuffer<T>::operator=(RingBuffer<T> const& other) {
+template <typename T>
+RingBuffer<T> &RingBuffer<T>::operator=(RingBuffer<T> const &other)
+{
   if (this != &other) {
-    auto tmp{ other };
+    auto tmp{other};
     swap(tmp);
-    return *this;  
+    return *this;
   }
 }
 
-template<typename T>
-RingBuffer<T>&
-RingBuffer<T>::operator=(RingBuffer<T>&& other) noexcept {
-    // no need to free space
-    swap(other);
+template <typename T>
+RingBuffer<T> &RingBuffer<T>::operator=(RingBuffer<T> &&other) KANON_NOEXCEPT
+{
+  // no need to free space
+  swap(other);
 }
 
-template<typename T>
-template<typename FI>
-auto RingBuffer<T>::Append(FI first, FI last) 
--> size_type {
+template <typename T>
+template <typename FI>
+auto RingBuffer<T>::Append(FI first, FI last) -> size_type
+{
   // size_type remain = 0;
   // const size_type writeable_size = writeable();
   // const size_type n = std::distance(first, last);
@@ -306,9 +289,10 @@ auto RingBuffer<T>::Append(FI first, FI last)
   return 0;
 }
 
-template<typename T>
-template<typename... Args>
-void RingBuffer<T>::emplace(Args&&... args) {
+template <typename T>
+template <typename... Args>
+void RingBuffer<T>::emplace(Args &&...args)
+{
   if (writeable() >= 1) {
     algo_util::construct(writeBegin(), std::forward<Args>(args)...);
     write_index_++;
@@ -320,10 +304,10 @@ void RingBuffer<T>::emplace(Args&&... args) {
   }
 }
 
-template<typename T>
-void swap(RingBuffer<T>& lhs, RingBuffer<T>& rhs) 
+template <typename T>
+void swap(RingBuffer<T> &lhs, RingBuffer<T> &rhs)
 #ifdef CXX_STANDARD_11
-noexcept(noexcept(lhs.swap(rhs)))
+    KANON_NOEXCEPT_OP(KANON_NOEXCEPT_OP(lhs.swap(rhs)))
 #endif
 {
   lhs.swap(rhs);

@@ -10,7 +10,7 @@ namespace kanon {
 
 namespace detail {
 
-static inline int CreateEpollFd() noexcept
+static KANON_INLINE int CreateEpollFd() KANON_NOEXCEPT
 {
   // since linux 2.6.8, size argument is ignored for epoll_create()
   // on the contrary, epoll_create1() accept a flag argument
@@ -36,7 +36,7 @@ Epoller::Epoller(EventLoop *loop)
   LOG_TRACE_KANON << "Epoller is created";
 }
 
-Epoller::~Epoller() noexcept
+Epoller::~Epoller() KANON_NOEXCEPT
 {
   ::close(epoll_fd_);
   LOG_TRACE_KANON << "Epoller is destroyed";
@@ -78,7 +78,7 @@ TimeStamp Epoller::Poll(int ms, ChannelVec &active_channels)
 }
 
 void Epoller::FillActiveChannels(int ev_nums,
-                                 ChannelVec &active_channels) noexcept
+                                 ChannelVec &active_channels) KANON_NOEXCEPT
 {
   assert(ev_nums <= static_cast<int>(events_.size()));
 
@@ -110,7 +110,7 @@ void Epoller::UpdateChannel(Channel *ch)
 }
 
 namespace detail {
-static inline char const *Op2Str(int op) noexcept
+static KANON_INLINE char const *Op2Str(int op) KANON_NOEXCEPT
 {
   switch (op) {
     case EPOLL_CTL_ADD:
@@ -126,7 +126,7 @@ static inline char const *Op2Str(int op) noexcept
 
 } // namespace detail
 
-void Epoller::UpdateEpollEvent(int op, Channel *ch) noexcept
+void Epoller::UpdateEpollEvent(int op, Channel *ch) KANON_NOEXCEPT
 {
   int fd = ch->GetFd();
 

@@ -1,6 +1,11 @@
 #ifndef KANON_STRING_VIEW_H
 #define KANON_STRING_VIEW_H
 
+/**
+ * WinSDK <windows.h> define 'min' and 'max' macros.
+ * To avoid definition conflict(ie. ODR), undef them.
+ * Otherwise, std::min() and std::max() will be replace by these macros.
+ */
 #ifdef min
 #undef min
 #endif
@@ -39,9 +44,12 @@ class StringArg {
   {
   }
 
-  constexpr char const *data() const noexcept { return data_; }
+  KANON_INLINE constexpr char const *data() const KANON_NOEXCEPT
+  {
+    return data_;
+  }
 
-  operator char const *() const { return data_; }
+  KANON_INLINE operator char const *() const { return data_; }
 
  private:
   char const *data_;
@@ -141,17 +149,17 @@ class StringView {
   // constexpr operator char const*() const { return data_; }
 
   // capacity
-  constexpr bool empty() const noexcept { return len_ == 0; }
+  constexpr bool empty() const KANON_NOEXCEPT { return len_ == 0; }
 
-  constexpr size_type size() const noexcept { return len_; }
+  constexpr size_type size() const KANON_NOEXCEPT { return len_; }
 
   // position
-  constexpr char const *begin() const noexcept { return data_; }
+  constexpr char const *begin() const KANON_NOEXCEPT { return data_; }
 
-  constexpr char const *end() const noexcept { return data_ + len_; }
+  constexpr char const *end() const KANON_NOEXCEPT { return data_ + len_; }
 
   // data access
-  constexpr const_reference operator[](size_type n) const noexcept
+  constexpr const_reference operator[](size_type n) const KANON_NOEXCEPT
   {
     return data_[n];
   }
@@ -163,26 +171,29 @@ class StringView {
                      : data_[n];
   }
 
-  constexpr const_reference front() const noexcept { return data_[0]; }
+  constexpr const_reference front() const KANON_NOEXCEPT { return data_[0]; }
 
-  constexpr const_reference back() const noexcept { return data_[len_ - 1]; }
+  constexpr const_reference back() const KANON_NOEXCEPT
+  {
+    return data_[len_ - 1];
+  }
 
-  constexpr const_pointer data() const noexcept { return data_; }
+  constexpr const_pointer data() const KANON_NOEXCEPT { return data_; }
 
-  void swap(StringView &rhs) noexcept
+  void swap(StringView &rhs) KANON_NOEXCEPT
   {
     std::swap(data_, rhs.data_);
     std::swap(len_, rhs.len_);
   }
 
   // modify operation
-  KANON_CONSTEXPR void remove_prefix(size_type n) noexcept
+  KANON_CONSTEXPR void remove_prefix(size_type n) KANON_NOEXCEPT
   {
     data_ += n;
     len_ -= n;
   }
 
-  KANON_CONSTEXPR void remove_suffix(size_type n) noexcept { len_ -= n; }
+  KANON_CONSTEXPR void remove_suffix(size_type n) KANON_NOEXCEPT { len_ -= n; }
 
   KANON_INLINE size_type copy(char *dst, size_type count,
                               size_type pos = 0) const
@@ -200,19 +211,19 @@ class StringView {
    * substr() return the remaining part
    */
   KANON_CONSTEXPR StringView substr(size_type pos = 0,
-                                    size_type count = npos) const noexcept
+                                    size_type count = npos) const KANON_NOEXCEPT
   {
     auto len = std::min(count, len_ - pos);
     return StringView(data_ + pos, len);
   }
 
-  KANON_CONSTEXPR StringView substr_range(size_type begin = 0,
-                                          size_type end = npos) const noexcept
+  KANON_CONSTEXPR StringView
+  substr_range(size_type begin = 0, size_type end = npos) const KANON_NOEXCEPT
   {
     return substr(begin, end - begin);
   }
 
-  size_type find(StringView v, size_type pos = 0) const noexcept
+  size_type find(StringView v, size_type pos = 0) const KANON_NOEXCEPT
   {
     // Intead of kmp or other efficient algorithm?
     // It is maybe bring some overhead.
@@ -232,7 +243,7 @@ class StringView {
     return npos;
   }
 
-  size_type find(char c, size_type pos = 0) const noexcept
+  size_type find(char c, size_type pos = 0) const KANON_NOEXCEPT
   {
     for (size_type i = pos; i < len_; ++i) {
       if (c == data_[i]) return i;
@@ -247,7 +258,7 @@ class StringView {
    * then reverse find the @p v if match
    * @p pos the start position
    */
-  size_type rfind(StringView v, size_type pos = npos) const noexcept
+  size_type rfind(StringView v, size_type pos = npos) const KANON_NOEXCEPT
   {
     if (!v.empty()) {
       auto len = std::min(len_ - 1, pos);
@@ -265,7 +276,7 @@ class StringView {
     return npos;
   }
 
-  size_type rfind(char c, size_type pos = npos) const noexcept
+  size_type rfind(char c, size_type pos = npos) const KANON_NOEXCEPT
   {
     auto len = std::min(len_ - 1, pos);
     for (;; --len) {
@@ -279,22 +290,22 @@ class StringView {
     return npos;
   }
 
-  bool contains(StringView v) const noexcept { return find(v) != npos; }
+  bool contains(StringView v) const KANON_NOEXCEPT { return find(v) != npos; }
 
-  bool contains(char c) const noexcept { return find(c) != npos; }
+  bool contains(char c) const KANON_NOEXCEPT { return find(c) != npos; }
 
-  bool starts_with(StringView v) const noexcept
+  bool starts_with(StringView v) const KANON_NOEXCEPT
   {
     return (len_ >= v.size() && memcmp(data_, v.data(), v.size()) == 0) ? true
                                                                         : false;
   }
 
-  bool starts_with(char c) const noexcept
+  bool starts_with(char c) const KANON_NOEXCEPT
   {
     return (len_ >= 1 && data_[0] == c) ? true : false;
   }
 
-  bool ends_with(StringView v) const noexcept
+  bool ends_with(StringView v) const KANON_NOEXCEPT
   {
     return (len_ >= v.size() &&
             memcmp(data_ + len_ - v.size(), v.data(), v.size()) == 0)
@@ -302,7 +313,7 @@ class StringView {
                : false;
   }
 
-  bool ends_with(char c) const noexcept
+  bool ends_with(char c) const KANON_NOEXCEPT
   {
     return (len_ >= 1 && data_[len_ - 1] == c) ? true : false;
   }
@@ -314,7 +325,7 @@ class StringView {
    * the index of the first occurrence of any character of the sequence,
    * if not found, return npos
    */
-  size_type find_first_of(StringView v, size_type pos = 0) const noexcept
+  size_type find_first_of(StringView v, size_type pos = 0) const KANON_NOEXCEPT
   {
     for (; pos < len_; ++pos) {
       if (charInRange(data_[pos], v)) return pos;
@@ -323,7 +334,7 @@ class StringView {
     return npos;
   }
 
-  size_type find_first_of(char c, size_type pos = 0) const noexcept
+  size_type find_first_of(char c, size_type pos = 0) const KANON_NOEXCEPT
   {
     for (; pos < len_; ++pos)
       if (data_[pos] == c) return pos;
@@ -339,7 +350,8 @@ class StringView {
    * the index of the last occurrence of any character of the sequence,
    * if not found, return npos
    */
-  size_type find_last_of(StringView v, size_type pos = npos) const noexcept
+  size_type find_last_of(StringView v,
+                         size_type pos = npos) const KANON_NOEXCEPT
   {
     int i = static_cast<int>(std::min(len_ - 1, pos));
 
@@ -350,7 +362,7 @@ class StringView {
     return npos;
   }
 
-  size_type find_last_of(char c, size_type pos = npos) const noexcept
+  size_type find_last_of(char c, size_type pos = npos) const KANON_NOEXCEPT
   {
     int i = std::min(len_ - 1, pos);
 
@@ -360,7 +372,8 @@ class StringView {
     return npos;
   }
 
-  size_type find_first_not_of(StringView v, size_type pos = 0) const noexcept
+  size_type find_first_not_of(StringView v,
+                              size_type pos = 0) const KANON_NOEXCEPT
   {
     for (; pos < len_; ++pos) {
       if (!charInRange(data_[pos], v)) return pos;
@@ -368,7 +381,7 @@ class StringView {
     return npos;
   }
 
-  size_type find_first_not_of(char c, size_type pos = 0) const noexcept
+  size_type find_first_not_of(char c, size_type pos = 0) const KANON_NOEXCEPT
   {
     for (; pos < len_; ++pos) {
       if (data_[pos] != c) return pos;
@@ -376,7 +389,8 @@ class StringView {
     return npos;
   }
 
-  size_type find_last_not_of(StringView v, size_type pos = npos) const noexcept
+  size_type find_last_not_of(StringView v,
+                             size_type pos = npos) const KANON_NOEXCEPT
   {
     int i = static_cast<int>(std::min(len_ - 1, pos));
 
@@ -387,7 +401,7 @@ class StringView {
     return npos;
   }
 
-  size_type find_last_not_of(char c, size_type pos = npos) const noexcept
+  size_type find_last_not_of(char c, size_type pos = npos) const KANON_NOEXCEPT
   {
     int i = static_cast<int>(std::min(len_ - 1, pos));
 
@@ -398,7 +412,7 @@ class StringView {
     return npos;
   }
 
-  int caseCompare(StringView v) const noexcept
+  int caseCompare(StringView v) const KANON_NOEXCEPT
   {
     int r = kanon::StrNCaseCompare(data_, v.data(),
                                    len_ < v.size() ? len_ : v.size());
@@ -413,7 +427,7 @@ class StringView {
     return r;
   }
 
-  int caseCompare(char c) const noexcept
+  int caseCompare(char c) const KANON_NOEXCEPT
   {
     auto data_0 = ::toupper(data_[0]);
     auto _c = ::toupper(c);
@@ -426,7 +440,7 @@ class StringView {
   }
 
   // lexicographic compare
-  int compare(StringView v) const noexcept
+  int compare(StringView v) const KANON_NOEXCEPT
   {
     int r = ::memcmp(data_, v.data(), len_ < v.size() ? len_ : v.size());
 
@@ -440,7 +454,7 @@ class StringView {
     return r;
   }
 
-  int compare(char c) const noexcept
+  int compare(char c) const KANON_NOEXCEPT
   {
     if (len_ < 1 || data_[0] < c) return -1;
 
@@ -449,14 +463,14 @@ class StringView {
     return (data_[0] == c && len_ == 1) ? 0 : 1;
   }
 
-  std::vector<std::string> split(StringView spliter = " ") const;
+  KANON_CORE_API std::vector<std::string> split(StringView spliter = " ") const;
 
   std::string ToString() const { return std::string{data(), size()}; }
 
  private:
   // helper
   // complexity O(sv.size())
-  bool charInRange(char c, StringView const &sv) const noexcept
+  bool charInRange(char c, StringView const &sv) const KANON_NOEXCEPT
   {
     for (auto x : sv)
       if (c == x) return true;
@@ -481,85 +495,98 @@ StringView MakeStringView(char const (&literal)[N])
   return StringView(static_cast<char const *>(literal), N - 1);
 }
 
-inline void swap(StringView &lhs,
-                 StringView &rhs) noexcept(noexcept(lhs.swap(rhs)))
+KANON_INLINE void swap(StringView &lhs, StringView &rhs)
+    KANON_NOEXCEPT_OP(KANON_NOEXCEPT_OP(lhs.swap(rhs)))
 {
   lhs.swap(rhs);
 }
 
-inline bool operator==(StringView const &lhs, StringView const &rhs) noexcept
+KANON_INLINE bool operator==(StringView const &lhs,
+                             StringView const &rhs) KANON_NOEXCEPT
 {
   return (lhs.size() == rhs.size()) &&
          memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
 }
 
 template <StringView::size_type N>
-inline bool operator==(StringView const &lhs, char const (&rhs)[N]) noexcept
+KANON_INLINE bool operator==(StringView const &lhs,
+                             char const (&rhs)[N]) KANON_NOEXCEPT
 {
   return lhs == MakeStringView(rhs);
 }
 
-inline bool operator!=(StringView const &lhs, StringView const &rhs) noexcept
+KANON_INLINE bool operator!=(StringView const &lhs,
+                             StringView const &rhs) KANON_NOEXCEPT
 {
   return !(lhs == rhs);
 }
 
 template <StringView::size_type N>
-inline bool operator!=(StringView const &lhs, char const (&rhs)[N]) noexcept
+KANON_INLINE bool operator!=(StringView const &lhs,
+                             char const (&rhs)[N]) KANON_NOEXCEPT
 {
   return !(lhs == MakeStringView(rhs));
 }
 
-inline bool operator<(StringView const &lhs, StringView const &rhs) noexcept
+KANON_INLINE bool operator<(StringView const &lhs,
+                            StringView const &rhs) KANON_NOEXCEPT
 {
   return lhs.compare(rhs) < 0;
 }
 
 template <StringView::size_type N>
-inline bool operator<(StringView const &lhs, char const (&rhs)[N]) noexcept
+KANON_INLINE bool operator<(StringView const &lhs,
+                            char const (&rhs)[N]) KANON_NOEXCEPT
 {
   return lhs < MakeStringView(rhs);
 }
 
-inline bool operator>(StringView const &lhs, StringView const &rhs) noexcept
+KANON_INLINE bool operator>(StringView const &lhs,
+                            StringView const &rhs) KANON_NOEXCEPT
 {
   return rhs < lhs;
 }
 
 template <StringView::size_type N>
-inline bool operator>(StringView const &lhs, char const (&rhs)[N]) noexcept
+KANON_INLINE bool operator>(StringView const &lhs,
+                            char const (&rhs)[N]) KANON_NOEXCEPT
 {
   return rhs < lhs;
 }
 
-inline bool operator>=(StringView const &lhs, StringView const &rhs) noexcept
+KANON_INLINE bool operator>=(StringView const &lhs,
+                             StringView const &rhs) KANON_NOEXCEPT
 {
   return !(lhs < rhs);
 }
 
 template <StringView::size_type N>
-inline bool operator>=(StringView const &lhs, char const (&rhs)[N]) noexcept
+KANON_INLINE bool operator>=(StringView const &lhs,
+                             char const (&rhs)[N]) KANON_NOEXCEPT
 {
   return !(lhs < rhs);
 }
 
-inline bool operator<=(StringView const &lhs, StringView const &rhs) noexcept
+KANON_INLINE bool operator<=(StringView const &lhs,
+                             StringView const &rhs) KANON_NOEXCEPT
 {
   return !(lhs > rhs);
 }
 
 template <StringView::size_type N>
-inline bool operator<=(StringView const &lhs, char const (&rhs)[N]) noexcept
+KANON_INLINE bool operator<=(StringView const &lhs,
+                             char const (&rhs)[N]) KANON_NOEXCEPT
 {
   return !(lhs > rhs);
 }
 
 // template<typename Ostream>
-// Ostream& operator<<(Ostream& os, StringView v) noexcept
+// Ostream& operator<<(Ostream& os, StringView v) KANON_NOEXCEPT
 // { return os << v.data(); }
 
 namespace literal {
-constexpr StringView operator""_sv(char const *str, std::size_t len) noexcept
+constexpr StringView operator""_sv(char const *str,
+                                   std::size_t len)KANON_NOEXCEPT
 {
   return StringView(str, len);
 }

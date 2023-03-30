@@ -17,15 +17,15 @@
 #include <system_error>
 #endif
 
+#include "kanon/util/compiler_macro.h"
 #include "kanon/util/noncopyable.h"
-
 #include "kanon/thread/mutex_lock.h"
 
-namespace kanon{
+namespace kanon {
 
 class Condition : noncopyable {
-public:
-  explicit Condition(MutexLock& mutex)
+ public:
+  explicit Condition(MutexLock &mutex)
     : mutex_{mutex}
   {
 #ifdef KANON_ON_UNIX
@@ -33,13 +33,15 @@ public:
 #endif
   }
 
-  ~Condition(){
+  ~Condition()
+  {
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_cond_destroy(&cond_));
 #endif
   }
 
-  void Wait() {
+  void Wait()
+  {
 #ifdef KANON_ON_UNIX
     MutexLock::UnassignHolder holder(mutex_);
     TCHECK(pthread_cond_wait(&cond_, &mutex_.GetMutex()));
@@ -52,9 +54,10 @@ public:
 #endif
   }
 
-  bool WaitForSeconds(double seconds);
+  KANON_CORE_API bool WaitForSeconds(double seconds);
 
-  void Notify(){
+  void Notify()
+  {
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_cond_signal(&cond_));
 #else
@@ -62,7 +65,8 @@ public:
 #endif
   }
 
-  void NotifyAll(){
+  void NotifyAll()
+  {
 #ifdef KANON_ON_UNIX
     TCHECK(pthread_cond_broadcast(&cond_));
 #else
@@ -70,8 +74,8 @@ public:
 #endif
   }
 
-private:
-  MutexLock& mutex_;  
+ private:
+  MutexLock &mutex_;
 #ifdef KANON_ON_UNIX
   pthread_cond_t cond_;
 #else
@@ -79,6 +83,6 @@ private:
 #endif
 };
 
-}//namespace kanon
+} // namespace kanon
 
 #endif // KANON_CONDITION_H

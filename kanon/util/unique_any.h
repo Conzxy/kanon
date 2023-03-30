@@ -2,9 +2,9 @@
 #define KANON_UNIQUE_ANY_H_
 
 #include <type_traits>
-#include <utility>  // forward, move, swap
+#include <utility> // forward, move, swap
 #include <assert.h>
-#include <typeinfo> // typeid
+#include <typeinfo>  // typeid
 #include <exception> // bad_cast
 #include "kanon/util/macro.h"
 
@@ -18,74 +18,71 @@ namespace kanon {
  * move-only object, the `UniqueAny` owns the object(unique semantic).
  */
 class UniqueAny final {
-public:
-  UniqueAny() 
+ public:
+  UniqueAny()
     : holder_(nullptr)
   {
   }
 
-  template<typename V,
-    typename std::enable_if<!std::is_same<UniqueAny, typename std::decay<V>::type>::value, char>::type = 0>
-  UniqueAny(V&& val)
-  { 
-    holder_ = new Holder<typename std::decay<V>::type>{ std::forward<V>(val) };
+  template <typename V,
+            typename std::enable_if<
+                !std::is_same<UniqueAny, typename std::decay<V>::type>::value,
+                char>::type = 0>
+  UniqueAny(V &&val)
+  {
+    holder_ = new Holder<typename std::decay<V>::type>{std::forward<V>(val)};
   }
-  
+
   UniqueAny(UniqueAny const &) = delete;
   UniqueAny &operator=(UniqueAny const &) = delete;
 
-  UniqueAny(UniqueAny&& rhs) noexcept
-    : holder_{ rhs.holder_ }
+  UniqueAny(UniqueAny &&rhs) KANON_NOEXCEPT
+    : holder_{rhs.holder_}
   {
     rhs.holder_ = nullptr;
   }
-  
-  template<typename V>
-  UniqueAny& operator=(V&& v) {
+
+  template <typename V>
+  UniqueAny &operator=(V &&v)
+  {
     UniqueAny(std::forward<V>(v)).swap(*this);
     return *this;
   }
 
-  UniqueAny& operator=(UniqueAny&& rhs) noexcept {
+  UniqueAny &operator=(UniqueAny &&rhs) KANON_NOEXCEPT
+  {
     this->swap(rhs);
     return *this;
   }
-  
-  ~UniqueAny() noexcept {
-    clear();
-  }
 
-  bool empty() const noexcept 
-  { return holder_ == nullptr; }
+  ~UniqueAny() KANON_NOEXCEPT { clear(); }
 
-  void clear() {
-    if (holder_) 
-      delete holder_;
+  bool empty() const KANON_NOEXCEPT { return holder_ == nullptr; }
+
+  void clear()
+  {
+    if (holder_) delete holder_;
     holder_ = nullptr;
   }
-  
-  std::type_info const& type() const {
-    return holder_->type();
-  }  
 
-  void swap(UniqueAny& rhs) noexcept {
-    std::swap(holder_, rhs.holder_);
-  }
+  std::type_info const &type() const { return holder_->type(); }
 
-private:
+  void swap(UniqueAny &rhs) KANON_NOEXCEPT { std::swap(holder_, rhs.holder_); }
+
+ private:
   /**
    * use friend function to hide the implemetation detail
    * parameter use * instead of & to determine the argument if valid
-   * 
+   *
    */
-  template<typename V>
-  friend V* SafeUniqueAnyCast(UniqueAny const& from);
+  template <typename V>
+  friend V *SafeUniqueAnyCast(UniqueAny const &from);
 
-  template<typename V>
-  friend V* UnsafeUniqueAnyCast(UniqueAny const& from);
+  template <typename V>
+  friend V *UnsafeUniqueAnyCast(UniqueAny const &from);
 
   /**
-   * \brief 
+   * \brief
    * HolderBase is a dummy base class.
    * Use it we can erase the type from Holder<>.
    * Also, to call the correct function from HolderBase*,
@@ -94,101 +91,104 @@ private:
    * \see Holder further
    */
   class HolderBase {
-  public:
+   public:
     HolderBase() = default;
 
     // Althought it is not necessary here
-    virtual ~HolderBase() noexcept = default; 
+    virtual ~HolderBase() KANON_NOEXCEPT = default;
 
     /**
-     * \brief 
+     * \brief
      * Since we can't get static type from HolderBase,
      * we need RTTI(run time type identify) to determine type cast if safe
-     */ 
-    virtual std::type_info const& type() const = 0;
-    
+     */
+    virtual std::type_info const &type() const = 0;
   };
 
   /**
    * \tparam V the type of value which we want to store
-   * \brief 
+   * \brief
    * This is actual implemetation class
-   * it store the value and implematation some useful interface from its base class
+   * it store the value and implematation some useful interface from its base
+   * class
    */
-  template<typename V>
-  class Holder final
-    : public HolderBase {
-  public:
+  template <typename V>
+  class Holder final : public HolderBase {
+   public:
     Holder() = default;
     ~Holder() = default;
-  
+
     /* Disable copy */
-    Holder(V const& v) = delete;
+    Holder(V const &v) = delete;
     Holder &operator=(Holder const &) = delete;
 
-    Holder(V&& v)
-      : holder_{ std::move(v) }
-    { }
-    
-    Holder &operator=(V &&v)
+    Holder(V &&v)
+      : holder_{std::move(v)}
     {
-      holder_ = std::move(v);
     }
 
-    std::type_info const& type() const KANON_OVERRIDE {
-      return typeid(V);
-    }
+    Holder &operator=(V &&v) { holder_ = std::move(v); }
+
+    std::type_info const &type() const KANON_OVERRIDE { return typeid(V); }
 
     V holder_;
   };
 
-  HolderBase* holder_;
+  HolderBase *holder_;
 };
 
 class BadUniqueAnyCastException : public std::bad_cast {
-public:
-  char const* what() const noexcept KANON_OVERRIDE {
+ public:
+  char const *what() const KANON_NOEXCEPT KANON_OVERRIDE
+  {
     return "BadUniqueAnyCast: UniqueAny object maybe not initialized or "
            "type not match";
   }
 };
 
-template<typename V>
-inline V* SafeUniqueAnyCast(UniqueAny const& from) {
+template <typename V>
+KANON_INLINE V *SafeUniqueAnyCast(UniqueAny const &from)
+{
   // If V is reference type, we don't remove it
   // and trigger a error.
   static_assert(!std::is_reference<V>::value,
-    "The type to cast must not be reference");
+                "The type to cast must not be reference");
 
   if (from.type() == typeid(V)) {
-    return std::addressof(static_cast<UniqueAny::Holder<V>*>(from.holder_)->holder_); 
+    return std::addressof(
+        static_cast<UniqueAny::Holder<V> *>(from.holder_)->holder_);
   }
 
   return nullptr;
 }
 
 /** For compatible */
-template<typename V>
-inline V* SafeAnyCast(UniqueAny const& from) {
+template <typename V>
+KANON_INLINE V *SafeAnyCast(UniqueAny const &from)
+{
   return SafeUniqueAnyCast<V>(from);
 }
 
-template<typename V>
-inline V* UnsafeUniqueAnyCast(UniqueAny const& from) {
+template <typename V>
+KANON_INLINE V *UnsafeUniqueAnyCast(UniqueAny const &from)
+{
   static_assert(!std::is_reference<V>::value,
-    "The type to cast must not be reference");
+                "The type to cast must not be reference");
 
-  return std::addressof(static_cast<UniqueAny::Holder<V>*>(from.holder_)->holder_);
+  return std::addressof(
+      static_cast<UniqueAny::Holder<V> *>(from.holder_)->holder_);
 }
 
 /** For compatible */
-template<typename V>
-inline V* UnsafeAnyCast(UniqueAny const& from) {
+template <typename V>
+KANON_INLINE V *UnsafeAnyCast(UniqueAny const &from)
+{
   return UnsafeUniqueAnyCast<V>(from);
 }
 
-template<typename V>
-inline V* UniqueAnyCast(UniqueAny const& from) {
+template <typename V>
+KANON_INLINE V *UniqueAnyCast(UniqueAny const &from)
+{
 #ifndef NDEBUG
   return SafeUniqueAnyCast<V>(from);
 #else
@@ -197,8 +197,9 @@ inline V* UniqueAnyCast(UniqueAny const& from) {
 }
 
 /** For compatible */
-template<typename V>
-inline V* AnyCast(UniqueAny const& from) {
+template <typename V>
+KANON_INLINE V *AnyCast(UniqueAny const &from)
+{
   return UniqueAnyCast<V>(from);
 }
 

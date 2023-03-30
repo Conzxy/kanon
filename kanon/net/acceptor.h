@@ -30,7 +30,7 @@ class EventLoop;
  *   Internal class
  *   Only used by TcpServer
  */
-class Acceptor : noncopyable {
+class KANON_NET_NO_API Acceptor : noncopyable {
  public:
   using NewConnectionCallback =
       std::function<void(int cli_fd, InetAddr const &cli_addr)>;
@@ -45,14 +45,14 @@ class Acceptor : noncopyable {
    * and start monitoring read event(i.e. new connection)
    */
   Acceptor(EventLoop *loop, InetAddr const &addr, bool reuseport = false);
-  ~Acceptor() noexcept;
+  ~Acceptor() KANON_NOEXCEPT;
 
   /**
    * \brief Check whether is listening state
    * \note
    *  Thread-safe
    */
-  bool Listening() const noexcept { return listening_; }
+  bool Listening() const KANON_NOEXCEPT { return listening_; }
 
   /**
    * \brief start listening
@@ -61,9 +61,9 @@ class Acceptor : noncopyable {
    *   Not thread-safe
    *   Ensured by TcpServer
    */
-  void Listen() noexcept;
+  void Listen() KANON_NOEXCEPT;
 
-  void SetNewConnectionCallback(NewConnectionCallback cb) noexcept
+  void SetNewConnectionCallback(NewConnectionCallback cb) KANON_NOEXCEPT
   {
     new_connection_callback_ = std::move(cb);
   }

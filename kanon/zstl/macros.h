@@ -22,7 +22,7 @@
 #ifdef CXX_STANDARD_14
 #define ZSTL_CONSTEXPR constexpr
 #else
-#define ZSTL_CONSTEXPR inline
+#define ZSTL_CONSTEXPR KANON_INLINE
 #endif
 
 #endif

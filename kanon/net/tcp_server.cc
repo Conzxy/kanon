@@ -18,7 +18,7 @@ using namespace kanon;
 
 static EventLoop *g_loop = nullptr;
 
-inline void SignalHandler(int signo, int expected, char const *msg) noexcept
+KANON_INLINE void SignalHandler(int signo, int expected, char const *msg) KANON_NOEXCEPT
 {
   assert(signo == expected);
   LOG_INFO << msg;
@@ -32,21 +32,21 @@ inline void SignalHandler(int signo, int expected, char const *msg) noexcept
 }
 
 #ifdef KANON_ON_UNIX
-inline void SigKillHandler(int signo) noexcept
+KANON_INLINE void SigKillHandler(int signo) KANON_NOEXCEPT
 {
   SignalHandler(signo, SIGKILL, "Catching SIGKILL, force kill the server");
   exit(1);
 }
 #endif
 
-inline void SigIntHandler(int signo) noexcept
+KANON_INLINE void SigIntHandler(int signo) KANON_NOEXCEPT
 {
   SignalHandler(signo, SIGINT,
                 "Catching SIGINT(i.e. User type Ctrl+c), server is exiting");
   exit(0);
 }
 
-inline void SigTermHandler(int signo) noexcept
+KANON_INLINE void SigTermHandler(int signo) KANON_NOEXCEPT
 {
   SignalHandler(signo, SIGTERM,
                 "Catching SIGTERM(e.g. kill(1)), server is terminated");
@@ -166,7 +166,7 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
       });
 }
 
-TcpServer::~TcpServer() noexcept
+TcpServer::~TcpServer() KANON_NOEXCEPT
 {
   //
   for (auto &conn_pair : connections_) {
@@ -180,9 +180,9 @@ TcpServer::~TcpServer() noexcept
   }
 }
 
-void TcpServer::SetLoopNum(int num) noexcept { pool_->SetLoopNum(num); }
+void TcpServer::SetLoopNum(int num) KANON_NOEXCEPT { pool_->SetLoopNum(num); }
 
-void TcpServer::StartRun() noexcept
+void TcpServer::StartRun() KANON_NOEXCEPT
 {
   // ! Must be thread-safe
   // Scenario:
@@ -214,4 +214,4 @@ void TcpServer::StartRun() noexcept
   }
 }
 
-bool TcpServer::IsRunning() noexcept { return acceptor_->Listening(); }
+bool TcpServer::IsRunning() KANON_NOEXCEPT { return acceptor_->Listening(); }

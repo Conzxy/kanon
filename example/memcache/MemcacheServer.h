@@ -63,13 +63,13 @@ private:
   std::map<std::string, Session> sessions_;
   
   struct ItemHash {
-    usize operator()(ItemPtr const& item) const noexcept {
+    usize operator()(ItemPtr const& item) const KANON_NOEXCEPT {
       return item->hash();
     }
   };
   
   struct ItemEqual {
-    bool operator()(ItemPtr const& x, ItemPtr const& y) const noexcept {
+    bool operator()(ItemPtr const& x, ItemPtr const& y) const KANON_NOEXCEPT {
       return x->key() == y->key();
     } 
   };

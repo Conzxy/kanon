@@ -6,7 +6,7 @@
 
 using namespace kanon;
 
-void sock::Listen(FdType fd) noexcept
+void sock::Listen(FdType fd) KANON_NOEXCEPT
 {
   auto ret = ::listen(fd, SOMAXCONN);
 
@@ -15,7 +15,7 @@ void sock::Listen(FdType fd) noexcept
   }
 }
 
-FdType sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept
+FdType sock::CreateNonBlockAndCloExecSocket(bool ipv6) KANON_NOEXCEPT
 {
   FdType sockfd;
 #ifdef NO_SOCKTYPE
@@ -35,7 +35,7 @@ error_handle:
   return -1;
 }
 
-FdType sock::Accept(FdType fd, sockaddr_in6 *addr) noexcept
+FdType sock::Accept(FdType fd, sockaddr_in6 *addr) KANON_NOEXCEPT
 {
   socklen_t socklen = sizeof(struct sockaddr_in6);
 
@@ -73,7 +73,7 @@ FdType sock::Accept(FdType fd, sockaddr_in6 *addr) noexcept
   return cli_sock;
 }
 
-int sock::GetSocketError(FdType fd) noexcept
+int sock::GetSocketError(FdType fd) KANON_NOEXCEPT
 {
   int optval;
   auto len = static_cast<socklen_t>(sizeof optval);

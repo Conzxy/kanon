@@ -10,7 +10,7 @@ namespace process {
 
 using PId = pid_t;
 
-KANON_INLINE PId Pid() noexcept { return ::getpid(); }
+KANON_INLINE PId Pid() KANON_NOEXCEPT { return ::getpid(); }
 
 } // namespace process
 } // namespace kanon

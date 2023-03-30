@@ -39,7 +39,7 @@ char const
 static char const *g_logLevelColor[] = {CYAN, BLUE,  GREEN, YELLOW,
                                         RED,  L_RED, RED,   L_RED};
 
-static Logger::LogLevel initLogLevel() noexcept
+static Logger::LogLevel initLogLevel() KANON_NOEXCEPT
 {
   char *env = nullptr;
   if ((env = ::getenv("KANON_NDEBUG")) && strcmp(env, "1") == 0)
@@ -67,7 +67,7 @@ Logger::OutputCallback Logger::output_callback_ = &DefaultOutput;
 Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
 
 #define ERRNO_BUFFER_SIZE 1024
-#define TIME_BUFFER_SIZE 64
+#define TIME_BUFFER_SIZE  64
 
 KANON_TLS char t_errorBuf[ERRNO_BUFFER_SIZE];
 KANON_TLS char t_lastErrorBuf[ERRNO_BUFFER_SIZE];
@@ -136,7 +136,7 @@ Logger::Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys)
   errno = savedErrno;
 }
 
-Logger::~Logger() noexcept
+Logger::~Logger() KANON_NOEXCEPT
 {
   stream_ << " - " << basename_ << ":" << line_ << "\n";
   output_callback_(stream_.data(), stream_.size());
@@ -148,7 +148,7 @@ Logger::~Logger() noexcept
   }
 }
 
-void Logger::FormatTime() noexcept
+void Logger::FormatTime() KANON_NOEXCEPT
 {
   struct timeval tv;
   kanon::GetTimeOfDay(&tv, NULL);

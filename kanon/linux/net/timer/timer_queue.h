@@ -18,7 +18,7 @@ class TimerQueue : public ITimerQueuePlatform {
   using Base = ITimerQueuePlatform;
 
   explicit TimerQueue(EventLoop *loop);
-  ~TimerQueue() noexcept override;
+  ~TimerQueue() KANON_NOEXCEPT override;
 
   virtual TimerId AddTimer(TimerCallback cb, TimeStamp time,
                            double interval) override;
@@ -71,13 +71,13 @@ class TimerQueue : public ITimerQueuePlatform {
       }
     };
 
-    inline bool operator()(Helper const &x, Heler const &y) const noexcept
+    KANON_INLINE bool operator()(Helper const &x, Heler const &y) const KANON_NOEXCEPT
     {
       return x.key < y.key;
     }
 #else
-    inline bool operator()(TimerEntry const &x,
-                           TimerEntry const &y) const noexcept
+    KANON_INLINE bool operator()(TimerEntry const &x,
+                           TimerEntry const &y) const KANON_NOEXCEPT
     {
       int res = (x.first->expiration().GetMicrosecondsSinceEpoch() -
                  y.first->expiration().GetMicrosecondsSinceEpoch());
@@ -178,7 +178,7 @@ class TimerQueue : public ITimerQueuePlatform {
    * calling callback will be cleared.
    */
   struct TimerEntryHash {
-    inline uint64_t operator()(TimerEntry const &x) const noexcept
+    KANON_INLINE uint64_t operator()(TimerEntry const &x) const KANON_NOEXCEPT
     {
       return XXH64(&x.first, sizeof x.first, time(NULL)) ^
              (XXH64(&x.second, sizeof x.second, time(NULL)) << 1);

@@ -7,7 +7,7 @@ namespace kanon {
 
 using FdType = SOCKET;
 
-enum ShutdownDirection {
+enum KANON_NET_NO_API ShutdownDirection {
   SHUT_READ = SD_RECEIVE,
   SHUT_WRITE = SD_SEND,
   SHUT_BOTH = SD_BOTH,

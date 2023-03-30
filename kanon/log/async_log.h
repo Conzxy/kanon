@@ -26,35 +26,30 @@ namespace kanon {
 /**
  * \brief Log message to specified devices or files asynchronously
  * \warning
- *   If main thread exits, then backthread which write message to disk will also stop.
- *   Therefore, it is best that this used for such service which is long-running
- *   (Fortunately, server is usually long-running).
- * \note 
- *   This should used by Logger.
- *   Must be thread safe
+ *   If main thread exits, then backthread which write message to disk will also
+ * stop. Therefore, it is best that this used for such service which is
+ * long-running (Fortunately, server is usually long-running). \note This should
+ * used by Logger. Must be thread safe
  */
-class AsyncLog : noncopyable {
-public:
-  /** 
+class KANON_CORE_API AsyncLog : noncopyable {
+ public:
+  /**
+   *
    * \see LogFile
    */
-  AsyncLog(
-      StringView basename,
-      size_t roll_size,
-      StringView prefix = "",
-      size_t log_file_num = UINT_MAX,
-      size_t roll_interval = 86400,
-      size_t flush_interval = 3);
-  
-  ~AsyncLog() noexcept;
-  
-  void Append(char const* data, size_t num) noexcept;
-  void Flush() noexcept;
+  AsyncLog(StringView basename, size_t roll_size, StringView prefix = "",
+           size_t log_file_num = UINT_MAX, size_t roll_interval = 86400,
+           size_t flush_interval = 3);
+
+  ~AsyncLog() KANON_NOEXCEPT;
+
+  void Append(char const *data, size_t num) KANON_NOEXCEPT;
+  void Flush() KANON_NOEXCEPT;
 
   void StartRun();
-  void Stop() noexcept;
+  void Stop() KANON_NOEXCEPT;
 
-private:
+ private:
   typedef detail::LargeFixedBuffer Buffer;
 
   // Don't expose the FixedBuffer
@@ -64,7 +59,7 @@ private:
   // Forward parameter to LogFile
   std::string basename_;
   size_t roll_size_;
-  std::string prefix_;  
+  std::string prefix_;
   size_t log_file_num_;
   size_t roll_interval_;
   size_t flush_interval_;
@@ -94,22 +89,23 @@ private:
 };
 
 /**
- * \warning 
+ * \warning
  *  -- construct before any logic, e.g. the first statement in main()
  */
-inline void SetupAsyncLog(StringView basename, 
-                          size_t roll_size,
-                          StringView prefix = "",
-                          size_t log_file_num = UINT_MAX,
-                          size_t roll_interval = 86400,
-                          size_t flush_interval = 3) {
-  static AsyncLog al(basename, roll_size, prefix, log_file_num, roll_interval, flush_interval);
+KANON_INLINE void SetupAsyncLog(StringView basename, size_t roll_size,
+                                StringView prefix = "",
+                                size_t log_file_num = UINT_MAX,
+                                size_t roll_interval = 86400,
+                                size_t flush_interval = 3)
+{
+  static AsyncLog al(basename, roll_size, prefix, log_file_num, roll_interval,
+                     flush_interval);
 
-  Logger::SetFlushCallback([](){
+  Logger::SetFlushCallback([]() {
     al.Flush();
   });
 
-  Logger::SetOutputCallback([](char const* data, size_t len) {
+  Logger::SetOutputCallback([](char const *data, size_t len) {
     al.Append(data, len);
   });
 

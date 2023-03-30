@@ -29,12 +29,12 @@ TcpClient::TcpClient(EventLoop *loop, InetAddr const &serv_addr,
                   << " is constructed";
 }
 
-InetAddr const &TcpClient::GetServerAddr() const noexcept
+InetAddr const &TcpClient::GetServerAddr() const KANON_NOEXCEPT
 {
   return connector_->GetServerAddr();
 }
 
-TcpClient::~TcpClient() noexcept
+TcpClient::~TcpClient() KANON_NOEXCEPT
 {
   LOG_TRACE_KANON << "TcpClient-[" << name_ << "]"
                   << " is destructed";

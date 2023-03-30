@@ -6,7 +6,7 @@
 
 using namespace kanon;
 
-optional<uint64_t> kanon::StringViewToU64(StringView const &sv, int base) noexcept
+optional<uint64_t> kanon::StringViewToU64(StringView const &sv, int base) KANON_NOEXCEPT
 {
   assert(sv.size() < 64);
   static char buf[64];
@@ -20,7 +20,7 @@ optional<uint64_t> kanon::StringViewToU64(StringView const &sv, int base) noexce
   return ret;
 }
 
-optional<uint32_t> kanon::StringViewToU32(StringView const &sv, int base) noexcept
+optional<uint32_t> kanon::StringViewToU32(StringView const &sv, int base) KANON_NOEXCEPT
 {
   assert(sv.size() < 32);
   static char buf[32];
@@ -34,7 +34,7 @@ optional<uint32_t> kanon::StringViewToU32(StringView const &sv, int base) noexce
   return ret;
 }
 
-optional<int32_t> kanon::StringViewTo32(StringView const &sv, int base) noexcept
+optional<int32_t> kanon::StringViewTo32(StringView const &sv, int base) KANON_NOEXCEPT
 {
   assert(sv.size() < 32);
   static char buf[32];
@@ -48,7 +48,7 @@ optional<int32_t> kanon::StringViewTo32(StringView const &sv, int base) noexcept
   return ret;
 }
 
-optional<int64_t> kanon::StringViewTo64(StringView const &sv, int base) noexcept
+optional<int64_t> kanon::StringViewTo64(StringView const &sv, int base) KANON_NOEXCEPT
 {
   assert(sv.size() < 64);
   static char buf[64];

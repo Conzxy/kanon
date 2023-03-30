@@ -12,7 +12,7 @@ class ObjectMemoryPool {
     : base_(chunk_per_block)
   {}
   
-  ~ObjectMemoryPool() noexcept = default;
+  ~ObjectMemoryPool() KANON_NOEXCEPT = default;
   ObjectMemoryPool(ObjectMemoryPool const &) = delete;
   ObjectMemoryPool(ObjectMemoryPool &&) = delete;
 
@@ -34,7 +34,7 @@ class ObjectMemoryPool {
     return base_.Shrink(sizeof(T));
   }
 
-  size_t GetUsage() const noexcept
+  size_t GetUsage() const KANON_NOEXCEPT
   {
     return base_.GetUsage(sizeof(T));
   }

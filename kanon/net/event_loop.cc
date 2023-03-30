@@ -44,7 +44,7 @@ namespace detail {
 /**
  * Event fd API
  */
-static inline int CreateEventFd() noexcept
+static KANON_INLINE int CreateEventFd() KANON_NOEXCEPT
 {
   int evfd = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
 
@@ -64,14 +64,14 @@ static inline int CreateEventFd() noexcept
  * Therefore, the dummy of write is must not be zero.
  * \see man eventfd(2)
  */
-static inline void ReadEventFd(int evfd) noexcept
+static KANON_INLINE void ReadEventFd(int evfd) KANON_NOEXCEPT
 {
   uint64_t dummy;
   if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
     LOG_SYSERROR << "ReadEventFd() error occurred";
 }
 
-static inline void WriteEventFd(int evfd) noexcept
+static KANON_INLINE void WriteEventFd(int evfd) KANON_NOEXCEPT
 {
   uint64_t dummy = 1;
   if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
@@ -87,7 +87,11 @@ EventLoop::EventLoop()
 }
 
 EventLoop::EventLoop(bool is_poller)
+#if KANON___THREAD_DEFINED
   : owner_thread_id_{(PId)CurrentThread::t_tid}
+#else
+  : owner_thread_id_{(PId)CurrentThread::GetTid()}
+#endif
   , looping_{false}
   , quit_{false}
   , calling_functors_{false}
@@ -259,14 +263,14 @@ void EventLoop::CallFunctors()
   calling_functors_ = false;
 }
 
-void EventLoop::EvRead() noexcept
+void EventLoop::EvRead() KANON_NOEXCEPT
 {
 #ifdef KANON_ON_UNIX
   detail::ReadEventFd(ev_channel_->GetFd());
 #endif
 }
 
-void EventLoop::Wakeup() noexcept
+void EventLoop::Wakeup() KANON_NOEXCEPT
 {
   // FIXME Thread-safe
 #ifdef KANON_ON_UNIX
@@ -279,7 +283,7 @@ void EventLoop::Wakeup() noexcept
 #endif
 }
 
-void EventLoop::Quit() noexcept
+void EventLoop::Quit() KANON_NOEXCEPT
 {
   if (quit_) return;
   quit_ = true;
@@ -312,12 +316,12 @@ void EventLoop::CancelTimer(TimerId timer_id)
   timer_queue_->CancelTimer(timer_id);
 }
 
-void EventLoop::AbortNotInThread() noexcept
+void EventLoop::AbortNotInThread() KANON_NOEXCEPT
 {
   LOG_FATAL << "The policy of \"One Loop Per Thread\" has destroyed!";
 }
 
-void EventLoop::SetEdgeTriggerMode() noexcept
+void EventLoop::SetEdgeTriggerMode() KANON_NOEXCEPT
 {
 #ifdef ENABLE_EPOLL
   if (!is_poller_) {
@@ -335,7 +339,7 @@ void EventLoop::SetEdgeTriggerMode() noexcept
 #endif
 }
 
-bool EventLoop::IsEdgeTriggerMode() const noexcept
+bool EventLoop::IsEdgeTriggerMode() const KANON_NOEXCEPT
 {
 #ifdef ENABLE_EPOLL
   if (!is_poller_) {
@@ -350,5 +354,12 @@ bool EventLoop::IsEdgeTriggerMode() const noexcept
   return false;
 #endif
 }
+
+#if !KANON___THREAD_DEFINED
+bool EventLoop::IsLoopInThread() KANON_NOEXCEPT
+{
+  return CurrentThread::GetTid() == owner_thread_id_;
+}
+#endif
 
 } // namespace kanon

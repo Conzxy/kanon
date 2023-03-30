@@ -42,18 +42,18 @@ class ForwardListBase
     throw;
   }
 
-  ForwardListBase(ForwardListBase &&other) noexcept
+  ForwardListBase(ForwardListBase &&other) KANON_NOEXCEPT
     : header_(other.header_)
   {
     other.header_ = nullptr;
   }
 
-  ~ForwardListBase() noexcept
+  ~ForwardListBase() KANON_NOEXCEPT
   {
     HeaderAllocTraits::deallocate(*this, header_, sizeof(Header));
   }
 
-  void reset() noexcept
+  void reset() KANON_NOEXCEPT
   {
     header_->prev = header_;
     header_->next = nullptr;
@@ -136,7 +136,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   /**
    * Special member function
    */
-  ~ForwardList() noexcept { clear(); }
+  ~ForwardList() KANON_NOEXCEPT { clear(); }
 
   ForwardList(ForwardList const &other)
     : Base()
@@ -144,20 +144,20 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
     insert_after(cbefore_begin(), other.cbegin(), other.cend());
   }
 
-  ForwardList(ForwardList &&other) noexcept
+  ForwardList(ForwardList &&other) KANON_NOEXCEPT
     : Base(std::move(other))
   {
   }
 
   Self &operator=(Self const &other);
 
-  Self &operator=(Self &&other) noexcept
+  Self &operator=(Self &&other) KANON_NOEXCEPT
   {
     this->swap(other);
     return *this;
   }
 
-  allocator_type get_allocator() const noexcept { return allocator_type{}; }
+  allocator_type get_allocator() const KANON_NOEXCEPT { return allocator_type{}; }
 
   void assign(SizeType count, ValueType const &value);
   template <typename InputIterator,
@@ -236,77 +236,77 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   KANON_INLINE Iterator erase_after(ConstIterator first, ConstIterator last);
   KANON_INLINE Iterator erase_after_size(ConstIterator first,
                                          ConstIterator last, size_t sz);
-  KANON_INLINE void clear() noexcept;
+  KANON_INLINE void clear() KANON_NOEXCEPT;
 
   /**
    * DropCb is a callback that accepts Node* as parameter
    */
   template <typename DropCb>
-  KANON_INLINE void clear(DropCb cb) noexcept;
+  KANON_INLINE void clear(DropCb cb) KANON_NOEXCEPT;
 
-  KANON_INLINE void clear_size(size_t sz) noexcept;
+  KANON_INLINE void clear_size(size_t sz) KANON_NOEXCEPT;
 
   // The implematation detail of pop_front() and erase_after()
   // But these don't free the node in fact, just remove it from list
   // The user can reuse the returnd node
   // Not standard required
-  KANON_INLINE Iterator extract_front() noexcept
+  KANON_INLINE Iterator extract_front() KANON_NOEXCEPT
   {
     return Iterator(extract_front_node());
   }
 
-  KANON_INLINE Iterator extract_after(ConstIterator pos) noexcept
+  KANON_INLINE Iterator extract_after(ConstIterator pos) KANON_NOEXCEPT
   {
     return Iterator(extract_after_node(pos));
   }
 
   // accessor
-  Iterator begin() noexcept { return Iterator(header_->next); }
+  Iterator begin() KANON_NOEXCEPT { return Iterator(header_->next); }
   // Don't write as header_->prev->next since header_->prev may be nullptr
-  Iterator end() noexcept { return Iterator(nullptr); }
-  ConstIterator begin() const noexcept { return ConstIterator(header_->next); }
-  ConstIterator end() const noexcept { return ConstIterator(nullptr); }
-  ConstIterator cbegin() const noexcept { return begin(); }
-  ConstIterator cend() const noexcept { return end(); }
-  Iterator before_begin() noexcept { return header_; }
-  ConstIterator before_begin() const noexcept { return header_; }
-  ConstIterator cbefore_begin() const noexcept { return header_; }
+  Iterator end() KANON_NOEXCEPT { return Iterator(nullptr); }
+  ConstIterator begin() const KANON_NOEXCEPT { return ConstIterator(header_->next); }
+  ConstIterator end() const KANON_NOEXCEPT { return ConstIterator(nullptr); }
+  ConstIterator cbegin() const KANON_NOEXCEPT { return begin(); }
+  ConstIterator cend() const KANON_NOEXCEPT { return end(); }
+  Iterator before_begin() KANON_NOEXCEPT { return header_; }
+  ConstIterator before_begin() const KANON_NOEXCEPT { return header_; }
+  ConstIterator cbefore_begin() const KANON_NOEXCEPT { return header_; }
 
   // Not standard required
-  Iterator before_end() noexcept { return header_->prev; }
-  ConstIterator before_end() const noexcept { return header_->prev; }
-  ConstIterator cbefore_end() const noexcept { return header_->prev; }
+  Iterator before_end() KANON_NOEXCEPT { return header_->prev; }
+  ConstIterator before_end() const KANON_NOEXCEPT { return header_->prev; }
+  ConstIterator cbefore_end() const KANON_NOEXCEPT { return header_->prev; }
 
-  Ref front() noexcept
+  Ref front() KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->next);
   }
-  ConstRef front() const noexcept
+  ConstRef front() const KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->next);
   }
 
   // Not standard required
-  Ref back() noexcept
+  Ref back() KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->prev);
   }
-  ConstRef back() const noexcept
+  ConstRef back() const KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->prev);
   }
 
   // capacity
-  SizeType max_size() const noexcept { return static_cast<SizeType>(-1); }
-  bool empty() const noexcept { return header_->next == nullptr; }
+  SizeType max_size() const KANON_NOEXCEPT { return static_cast<SizeType>(-1); }
+  bool empty() const KANON_NOEXCEPT { return header_->next == nullptr; }
   // STL don't provide the size() API
   // Not standard required
-  SizeType size() const noexcept { return header_->count; }
-  KANON_INLINE void swap(Self &other) noexcept;
+  SizeType size() const KANON_NOEXCEPT { return header_->count; }
+  KANON_INLINE void swap(Self &other) KANON_NOEXCEPT;
 
   // Search the before iterator of the given value.
   // It's useful for calling erase_after() and insert_after().
@@ -385,7 +385,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   template <typename UnaryPred>
   SizeType remove_if(UnaryPred pred);
 
-  void reverse() noexcept;
+  void reverse() KANON_NOEXCEPT;
 
   // In C++20, the return type is modified to size_type(i.e. SizeType here).
   // It indicates the number of removed elements
@@ -413,11 +413,11 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   // It take the quick sort, but the performance is wrong than sort()
   void sort2();
 
-  KANON_INLINE Node *extract_front_node() noexcept;
-  KANON_INLINE Node *extract_after_node(ConstIterator pos) noexcept;
+  KANON_INLINE Node *extract_front_node() KANON_NOEXCEPT;
+  KANON_INLINE Node *extract_after_node(ConstIterator pos) KANON_NOEXCEPT;
 
-  KANON_INLINE void push_front(Node *new_node) noexcept;
-  KANON_INLINE void push_back(Node *new_node) noexcept;
+  KANON_INLINE void push_front(Node *new_node) KANON_NOEXCEPT;
+  KANON_INLINE void push_back(Node *new_node) KANON_NOEXCEPT;
   KANON_INLINE void insert_after(ConstIterator pos, Node *new_node);
 
   /*
@@ -446,7 +446,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
     return create_node_size(0, std::forward<Args>(args)...);
   }
 
-  void drop_node(BaseNode *_node) noexcept
+  void drop_node(BaseNode *_node) KANON_NOEXCEPT
   {
     auto node = static_cast<Node *>(_node);
     AllocTraits::destroy(*this, node);
@@ -461,7 +461,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   }
 #ifdef FORWARD_LIST_DEBUG
   // For Debugging
-  void print() const noexcept;
+  void print() const KANON_NOEXCEPT;
 #endif
 
  private:

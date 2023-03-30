@@ -7,9 +7,11 @@ namespace kanon {
 
 class UnixConnection : public ConnectionBase<UnixConnection> {
   using Base = ConnectionBase<UnixConnection>;
-public:
-  UnixConnection(EventLoop* loop, std::string const& name, int sockfd);
-  ~UnixConnection() noexcept;
+
+ public:
+  KANON_NET_API UnixConnection(EventLoop *loop, std::string const &name,
+                               int sockfd);
+  KANON_NET_API ~UnixConnection() KANON_NOEXCEPT;
 };
 
 } // namespace kanon

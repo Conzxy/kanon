@@ -6,7 +6,7 @@
 
 namespace kanon {
 
-KANON_INLINE int GetTimeOfDay(struct timeval *tv, struct timezone *ts) noexcept
+KANON_INLINE int GetTimeOfDay(struct timeval *tv, struct timezone *ts) KANON_NOEXCEPT
 {
   return ::gettimeofday(tv, ts);
 }

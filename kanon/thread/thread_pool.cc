@@ -13,7 +13,7 @@ ThreadPool::ThreadPool(int max_queue_size,
   , name_{ name }
 { }
 
-ThreadPool::~ThreadPool() noexcept {
+ThreadPool::~ThreadPool() KANON_NOEXCEPT {
   for (auto& thr : threads_) {
     thr->Join();
   }
