@@ -1,5 +1,0 @@
-<map id="kanon::ITimerQueuePlatform" name="kanon::ITimerQueuePlatform">
-<area shape="rect" id="node1" title="A FIFO data structure that manage timers." alt="" coords="5,171,215,197"/>
-<area shape="rect" id="node2" title=" " alt="" coords="52,5,157,32"/>
-<area shape="rect" id="node3" href="$classkanon_1_1EventLoop.html" title="A loop that process various events." alt="" coords="126,81,265,108"/>
-</map>

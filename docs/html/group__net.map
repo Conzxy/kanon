@@ -1,8 +1,0 @@
-<map id="Net" name="Net">
-<area shape="rect" id="node1" href="$group__demultiplexer.html" title="As the role of the Synchronous Event Demultiplexer in Reactor pattern." alt="" coords="99,5,213,31"/>
-<area shape="rect" id="node2" href="$group__server.html" title="Server parts." alt="" coords="124,55,188,80"/>
-<area shape="rect" id="node3" href="$group__client.html" title="Client parts." alt="" coords="126,104,186,129"/>
-<area shape="rect" id="node4" href="$group__EventLoop.html" title="event loop facilities" alt="" coords="111,153,201,179"/>
-<area shape="rect" id="node5" title="Network module, including event loop in reactor mode and tcp server/client, etc." alt="" coords="5,104,51,129"/>
-<area shape="rect" id="node6" href="$group__timer.html" title="Manage timer and process timer events." alt="" coords="127,203,185,228"/>
-</map>

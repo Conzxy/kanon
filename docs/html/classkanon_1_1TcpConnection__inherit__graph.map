@@ -1,6 +1,0 @@
-<map id="kanon::TcpConnection" name="kanon::TcpConnection">
-<area shape="rect" id="node1" title="Represents a tcp connection." alt="" coords="68,184,232,211"/>
-<area shape="rect" id="node2" href="$classkanon_1_1ConnectionBase.html" title=" " alt="" coords="63,95,237,136"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,13,111,39"/>
-<area shape="rect" id="node4" title=" " alt="" coords="135,5,349,47"/>
-</map>

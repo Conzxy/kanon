@@ -1,5 +1,0 @@
-<map id="kanon::Epoller" name="kanon::Epoller">
-<area shape="rect" id="node1" title="Demultiplexer (epoll(2) wrapper)" alt="" coords="17,155,132,181"/>
-<area shape="rect" id="node2" href="$classkanon_1_1PollerBase.html" title="Abstract base class of Poller and Epoller." alt="" coords="5,80,144,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="22,5,127,32"/>
-</map>

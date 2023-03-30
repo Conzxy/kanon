@@ -1,6 +1,0 @@
-<map id="kanon::IocpPoller" name="kanon::IocpPoller">
-<area shape="rect" id="node1" title=" " alt="" coords="7,247,142,273"/>
-<area shape="rect" id="node2" href="$classkanon_1_1PollerBase.html" title="Abstract base class of Poller and Epoller." alt="" coords="5,171,144,197"/>
-<area shape="rect" id="node3" title=" " alt="" coords="17,5,122,32"/>
-<area shape="rect" id="node4" href="$classkanon_1_1EventLoop.html" title="A loop that process various events." alt="" coords="91,81,229,108"/>
-</map>

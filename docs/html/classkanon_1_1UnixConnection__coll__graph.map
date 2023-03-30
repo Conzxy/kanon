@@ -1,9 +1,0 @@
-<map id="kanon::UnixConnection" name="kanon::UnixConnection">
-<area shape="rect" id="node1" title=" " alt="" coords="756,89,929,116"/>
-<area shape="rect" id="node2" href="$classkanon_1_1ConnectionBase.html" title=" " alt="" coords="532,82,707,123"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,5,111,32"/>
-<area shape="rect" id="node5" href="$classkanon_1_1EventLoop.html" title="A loop that process various events." alt="" coords="203,31,341,57"/>
-<area shape="rect" id="node4" title=" " alt="" coords="160,82,384,123"/>
-<area shape="rect" id="node6" title=" " alt="" coords="229,148,315,175"/>
-<area shape="rect" id="node7" title=" " alt="" coords="241,199,303,225"/>
-</map>
