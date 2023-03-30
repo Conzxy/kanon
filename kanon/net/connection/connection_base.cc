@@ -57,7 +57,10 @@ void ConnectionBase<D>::ConnectionEstablished()
   channel_->EnableReading();
   int saved_errno = 0;
   LOG_DEBUG << "Fd = " << channel_->GetFd();
+
+#ifdef KANON_ON_WIN
   kanon::BufferOverlapRecv(input_buffer_, channel_->GetFd(), saved_errno, this);
+#endif
   LOG_TRACE_KANON << "Connection [" << name_ << "] is established";
 
   assert(connection_callback_);
