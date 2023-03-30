@@ -14,7 +14,7 @@ FileTransferSession::FileTransferSession(TcpConnection* conn)
     &kanon::LengthHeaderCodec::OnMessage, std::ref(codec_), kanon::_1, kanon::_2, kanon::_3));
 }
 
-FileTransferSession::~FileTransferSession() noexcept {
+FileTransferSession::~FileTransferSession() KANON_NOEXCEPT {
   LOG_DEBUG << "FileTransferSession destroyed";
 }
 
@@ -97,7 +97,7 @@ void FileTransferSession::OnLengthMessage(
   }
 }
 
-void FileTransferSession::Reset() noexcept
+void FileTransferSession::Reset() KANON_NOEXCEPT
 {
   local_path_.clear();
   seq_ = 0;

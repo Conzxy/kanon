@@ -20,45 +20,47 @@ class EventLoopThread;
  * \see
  *   EventLoopThread
  */
-class EventLoopPool : noncopyable {
+class KANON_NET_NO_API EventLoopPool : noncopyable {
   using LoopThreadVector = std::vector<std::unique_ptr<EventLoopThread>>;
   using ThreadInitCallback = EventLoopThread::ThreadInitCallback;
-public:
+
+ public:
   /**
    * \brief Construct a EventLoopPool object
    * \param base_loop The loop that call this(i.e. owner of the pool)
    * \param name The base name of the thread
    */
-  explicit EventLoopPool(EventLoop* base_loop, std::string const& name = {});
-  ~EventLoopPool() noexcept;
-  
-  //! Set pool size 
-  void SetLoopNum(int loop_num) noexcept { loop_num_ = loop_num; }
-  int GetLoopNum() const noexcept { return loop_num_; }
-  
+  explicit EventLoopPool(EventLoop *base_loop, std::string const &name = {});
+  ~EventLoopPool() KANON_NOEXCEPT;
+
+  //! Set pool size
+  void SetLoopNum(int loop_num) KANON_NOEXCEPT { loop_num_ = loop_num; }
+  int GetLoopNum() const KANON_NOEXCEPT { return loop_num_; }
+
   //! Ask whether pool has started
-  bool IsStarted() const noexcept { return started_; }
-  
+  bool IsStarted() const KANON_NOEXCEPT { return started_; }
+
   /**
    * \brief Start run
-   * \warning 
+   * \warning
    *   Should be called once
    */
-  void StartRun(ThreadInitCallback const &cb); 
-  void StartRun() { StartRun({}); }  
+  void StartRun(ThreadInitCallback const &cb);
+  void StartRun() { StartRun({}); }
 
   /**
-   * \brief Get the next event loop in the pool based on RR(round-robin) scheduling algorithm
+   * \brief Get the next event loop in the pool based on RR(round-robin)
+   * scheduling algorithm
    */
-  EventLoop* GetNextLoop();
+  EventLoop *GetNextLoop();
 
-private: 
-  EventLoop* base_loop_; //!< caller thread
-  bool started_; //!< used for check of invariants
-  int loop_num_; //!< The size of pool
-  int next_; //!< Index of next IO thread(used for RR)
-  
-  std::string name_; //!< base name of event loop thread
+ private:
+  EventLoop *base_loop_; //!< caller thread
+  bool started_;         //!< used for check of invariants
+  int loop_num_;         //!< The size of pool
+  int next_;             //!< Index of next IO thread(used for RR)
+
+  std::string name_;              //!< base name of event loop thread
   LoopThreadVector loop_threads_; //!< IO loopthreads
 };
 

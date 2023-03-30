@@ -166,7 +166,7 @@ InetAddr::InetAddr(StringArg hostname, StringArg service)
   *this = std::move(addrs.front());
 }
 
-InetAddr::Port InetAddr::GetPort() const noexcept
+InetAddr::Port InetAddr::GetPort() const KANON_NOEXCEPT
 {
   return sock::ToHostByteOrder16(static_cast<Port>(addr_.sin_port));
 }

@@ -32,16 +32,19 @@ class Timer : noncopyable {
   {
   }
 
-  TimeStamp expiration() const noexcept { return expiration_; }
-  double interval() const noexcept { return interval_; }
-  bool repeat() const noexcept { return interval_ > 0.0; }
-  uint64_t sequence() const noexcept { return sequence_; }
-  TimerQueue *timer_queue() noexcept { return timer_queue_; }
+  TimeStamp expiration() const KANON_NOEXCEPT { return expiration_; }
+  double interval() const KANON_NOEXCEPT { return interval_; }
+  bool repeat() const KANON_NOEXCEPT { return interval_ > 0.0; }
+  uint64_t sequence() const KANON_NOEXCEPT { return sequence_; }
+  TimerQueue *timer_queue() KANON_NOEXCEPT { return timer_queue_; }
 
-  void BindTimerQueue(TimerQueue *queue) noexcept { timer_queue_ = queue; }
+  void BindTimerQueue(TimerQueue *queue) KANON_NOEXCEPT
+  {
+    timer_queue_ = queue;
+  }
 
   void run() { callback_(); }
-  void restart(TimeStamp now) noexcept
+  void restart(TimeStamp now) KANON_NOEXCEPT
   {
     expiration_ = AddTime(now, interval_);
   }
@@ -53,7 +56,7 @@ class Timer : noncopyable {
   uint64_t sequence_;
   TimerQueue *timer_queue_ = nullptr;
 
-  static AtomicCounter64 s_counter_;
+  KANON_NET_NO_API static AtomicCounter64 s_counter_;
 };
 
 //!@}

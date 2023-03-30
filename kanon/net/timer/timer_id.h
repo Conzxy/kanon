@@ -15,7 +15,7 @@ class TimerQueue;
  * \note
  *   This class is exposed to user and has value semantic.
  */
-class TimerId {
+class KANON_NET_API TimerId {
   friend class TimerQueue;
 
  public:

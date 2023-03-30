@@ -8,7 +8,7 @@
 
 namespace kanon {
 
-TimeStamp TimeStamp::Now() noexcept
+TimeStamp TimeStamp::Now() KANON_NOEXCEPT
 {
   struct timeval time;
   GetTimeOfDay(&time, NULL);

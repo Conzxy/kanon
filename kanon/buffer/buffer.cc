@@ -16,7 +16,7 @@ Buffer::~Buffer() = default;
 void Buffer::Shrink(size_type n)
 {
   // Buffer tmp;
-  // tmp.MakeSpace(GetReadableSize() + n);
+  // tmp.ReserveWriteSpace(GetReadableSize() + n);
   // tmp.Append(ToStringView());
   // swap(tmp);
   if (read_index_ != BUFFER_PREFIX_SIZE) {
@@ -33,7 +33,7 @@ void Buffer::Shrink(size_type n)
   data_.Shrink(GetReadableSize() + n);
 }
 
-void Buffer::MakeSpace(size_type len)
+void Buffer::ReserveWriteSpace(size_type len) KANON_NOEXCEPT
 {
   if (len <= GetWritableSize()) {
     return;

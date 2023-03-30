@@ -17,7 +17,7 @@
 
 namespace kanon {
 
-ChunkList::~ChunkList() noexcept
+ChunkList::~ChunkList() KANON_NOEXCEPT
 {
   auto first_size = free_buffers_.front().GetMaxSize();
   if (first_size < CHUNK_SIZE) buffers_.pop_front_size(first_size);
@@ -103,7 +103,7 @@ void ChunkList::AdvanceRead(size_t len)
   }
 }
 
-auto ChunkList::GetReadableSize() const noexcept -> SizeType
+auto ChunkList::GetReadableSize() const KANON_NOEXCEPT -> SizeType
 {
   if (IsEmpty()) {
     return 0;
@@ -128,7 +128,7 @@ auto ChunkList::GetReadableSize() const noexcept -> SizeType
   }
 }
 
-bool ChunkList::PutToFreeChunk() noexcept
+bool ChunkList::PutToFreeChunk() KANON_NOEXCEPT
 {
   if (buffers_.front().GetMaxSize() != CHUNK_SIZE) {
     return false;
@@ -176,7 +176,7 @@ void ChunkList::ReserveWriteChunk(size_t chunk_size)
     buffers_.push_back(buffers_.create_node_size(CHUNK_SIZE));
 }
 
-auto ChunkList::GetFreeChunk() noexcept -> ListType::Iterator
+auto ChunkList::GetFreeChunk() KANON_NOEXCEPT -> ListType::Iterator
 {
   if (!free_buffers_.empty()) {
     return free_buffers_.extract_front();

@@ -19,7 +19,7 @@ EventLoopPool::EventLoopPool(EventLoop *base_loop, std::string const &name)
 {
 }
 
-EventLoopPool::~EventLoopPool() noexcept { assert(started_); }
+EventLoopPool::~EventLoopPool() KANON_NOEXCEPT { assert(started_); }
 
 void EventLoopPool::StartRun(ThreadInitCallback const &cb)
 {

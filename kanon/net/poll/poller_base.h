@@ -27,15 +27,16 @@ class EventLoop;
  * \brief Abstract base class of Poller and Epoller
  * \warning Internal class
  */
-class PollerBase : noncopyable {
-public:
-  using ChannelVec = std::vector<Channel*>;
+class KANON_NET_NO_API PollerBase : noncopyable {
+ public:
+  using ChannelVec = std::vector<Channel *>;
 
-  explicit PollerBase(EventLoop* loop)
-    : loop_{ loop }
-  { }
-  
-  virtual ~PollerBase() noexcept = default;
+  explicit PollerBase(EventLoop *loop)
+    : loop_{loop}
+  {
+  }
+
+  virtual ~PollerBase() KANON_NOEXCEPT = default;
 
   /**
    * \brief Get the channels that are ready
@@ -44,24 +45,23 @@ public:
    * \return
    *   A timestamp indicates when events occurred
    */
-  virtual TimeStamp Poll(int ms, ChannelVec& active_channels) = 0;
+  virtual TimeStamp Poll(int ms, ChannelVec &active_channels) = 0;
 
-  
   /**
    * \brief Update interested event of a channel
    *
    * \note
-   *   If there are no events are interested, 
+   *   If there are no events are interested,
    *     - To Poller, set fd to negative that make
    *       poll() ignores it.
    *     - To Epoller, remove fd from kernel evenst table
    * \param ch Channel that will be updated
    */
-  virtual void UpdateChannel(Channel* ch) = 0;
+  virtual void UpdateChannel(Channel *ch) = 0;
 
   /**
    * \brief Remove channel from the interested table
-   * 
+   *
    * Call this indicates channel has reached the end of lifetime
    * That is no longer a valid channel
    *
@@ -71,20 +71,18 @@ public:
    *
    * \param ch Channel that will be removed
    */
-  virtual void RemoveChannel(Channel* ch) = 0;
+  virtual void RemoveChannel(Channel *ch) = 0;
 
-protected:
+ protected:
   //! Used by derived class to ensure "One loop per thread"
-  void AssertInThread() noexcept {
-    loop_->AssertInThread();
-  }
+  void AssertInThread() KANON_NOEXCEPT { loop_->AssertInThread(); }
 
-private:
-  /* 
+ private:
+  /*
    * Since AssertInThread is exposed to derived class
    * There no need to expose this to them
    */
-  EventLoop* loop_;
+  EventLoop *loop_;
 };
 
 //!@}

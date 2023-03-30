@@ -12,7 +12,7 @@
 // intervals since January 1, 1601 (UTC) until 00:00:00 January 1, 1970
 static constexpr uint64_t EPOCH = ((uint64_t)116444736000000000ULL);
 
-int kanon::GetTimeOfDay(struct timeval *tv, struct timezone *tz) noexcept
+int kanon::GetTimeOfDay(struct timeval *tv, struct timezone *tz) KANON_NOEXCEPT
 {
   SYSTEMTIME system_time;
   FILETIME file_time;

@@ -46,14 +46,14 @@ class Buffer {
    * \brief Construct a Buffer object
    * \param init_size The initialized size of write region
    */
-  explicit Buffer(size_type init_size = BUFFER_INIT_SIZE);
-  ~Buffer();
+  KANON_CORE_API explicit Buffer(size_type init_size = BUFFER_INIT_SIZE);
+  KANON_CORE_API ~Buffer();
 
   //! \name conversion
   //!@{
 
   //! Convert to StringView(A readonly string slice)
-  StringView ToStringView() const noexcept
+  StringView ToStringView() const KANON_NOEXCEPT
   {
     return StringView{data_.data() + read_index_,
                       static_cast<StringView::size_type>(GetReadableSize())};
@@ -65,16 +65,16 @@ class Buffer {
   //!@{
 
   //! Get the begin position of read region(Readonly)
-  const_pointer GetReadBegin() const noexcept
+  const_pointer GetReadBegin() const KANON_NOEXCEPT
   {
     return data_.data() + read_index_;
   }
 
   //! Get the begin position of read region
-  pointer GetReadBegin() noexcept { return data_.data() + read_index_; }
+  pointer GetReadBegin() KANON_NOEXCEPT { return data_.data() + read_index_; }
 
   //! Get the begin position of write region
-  pointer GetWriteBegin() noexcept { return data_.data() + write_index_; }
+  pointer GetWriteBegin() KANON_NOEXCEPT { return data_.data() + write_index_; }
 
   //!@}
 
@@ -91,7 +91,7 @@ class Buffer {
    *   If you want retrive string from buffer,
    *   you should use FindCrLf(string&)
    */
-  bool FindCrLf(StringView &buffer) noexcept
+  bool FindCrLf(StringView &buffer) KANON_NOEXCEPT
   {
     auto tmp = ToStringView();
     StringView::size_type idx = 0;
@@ -114,7 +114,7 @@ class Buffer {
    *   If you want retrive string from buffer,
    *   you should use FindLf(string&)
    */
-  bool FindLf(StringView &buffer) noexcept
+  bool FindLf(StringView &buffer) KANON_NOEXCEPT
   {
     auto tmp = ToStringView();
     StringView::size_type idx = 0;
@@ -171,7 +171,7 @@ class Buffer {
   //! Append contents of string view to buffer
   void Append(StringView str)
   {
-    MakeSpace(str.size());
+    ReserveWriteSpace(str.size());
 
     std::copy(str.begin(), str.end(), offset(write_index_));
     write_index_ += str.size();
@@ -281,7 +281,7 @@ class Buffer {
   //!@{
 
 #define GetReadBegin_Macro(size)                                               \
-  uint##size##_t GetReadBegin##size() const noexcept                           \
+  uint##size##_t GetReadBegin##size() const KANON_NOEXCEPT                     \
   {                                                                            \
     uint##size##_t i;                                                          \
     ::memcpy(&i, GetReadBegin(), sizeof i);                                    \
@@ -293,7 +293,7 @@ class Buffer {
    * \note
    *   Returned value no need to be converted to host byte order
    */
-  uint8_t GetReadBegin8() const noexcept
+  uint8_t GetReadBegin8() const KANON_NOEXCEPT
   {
     uint8_t i;
     ::memcpy(&i, GetReadBegin(), sizeof i);
@@ -323,7 +323,7 @@ class Buffer {
   GetReadBegin_Macro(64)
 
 #define Read_Macro(size)                                                       \
-  uint##size##_t Read##size() noexcept                                         \
+  uint##size##_t Read##size() KANON_NOEXCEPT                                   \
   {                                                                            \
     auto ret = GetReadBegin##size();                                           \
     AdvanceRead##size();                                                       \
@@ -367,14 +367,14 @@ class Buffer {
   //!@{
 
   //! Advance the read pointer in @p n
-  void AdvanceRead(size_type n) noexcept
+  void AdvanceRead(size_type n) KANON_NOEXCEPT
   {
     assert(n <= GetReadableSize());
 
     // Reset read and write index to
     // make GetWritableSize() larger,
-    // then reduce the number of the call to makeSpace()
-    // (Although it also reset index in makeSpace()
+    // then reduce the number of the call to ReserveWriteSpace()
+    // (Although it also reset index in ReserveWriteSpace()
     // but now is a good chance to reset).
     if (n == GetReadableSize()) {
       read_index_ = write_index_ = BUFFER_PREFIX_SIZE;
@@ -384,10 +384,10 @@ class Buffer {
   }
 
   //! Advance the read pointer to write pointer(i.e. read region become empty)
-  void AdvanceAll() noexcept { AdvanceRead(GetReadableSize()); }
+  void AdvanceAll() KANON_NOEXCEPT { AdvanceRead(GetReadableSize()); }
 
 #define AdvanceRead_Macro(size)                                                \
-  void AdvanceRead##size() noexcept                                            \
+  void AdvanceRead##size() KANON_NOEXCEPT                                      \
   {                                                                            \
     AdvanceRead(sizeof(uint##size##_t));                                       \
   }
@@ -417,14 +417,14 @@ class Buffer {
   AdvanceRead_Macro(8)
 
   //! Advance write pointer in @p n
-  void AdvanceWrite(size_type n) noexcept
+  void AdvanceWrite(size_type n) KANON_NOEXCEPT
   {
     assert(n <= GetWritableSize());
 
     write_index_ += n;
   }
 
-  void SetWriteIndex(size_type n) noexcept
+  void SetWriteIndex(size_type n) KANON_NOEXCEPT
   {
     assert(n >= read_index_ && n <= GetCapacity());
     write_index_ = n;
@@ -482,28 +482,31 @@ class Buffer {
   //!@{
 
   //! Get the storage data structure(In fact, this is just a std::vector<char>)
-  data_type const &GetData() const noexcept { return data_; }
+  data_type const &GetData() const KANON_NOEXCEPT { return data_; }
 
   //! Get the size of prepend region
-  size_type GetPrependableSize() const noexcept { return read_index_; }
+  size_type GetPrependableSize() const KANON_NOEXCEPT { return read_index_; }
 
   //! Ask whether has readable contents
-  bool HasReadable() const noexcept { return read_index_ != write_index_; }
+  bool HasReadable() const KANON_NOEXCEPT
+  {
+    return read_index_ != write_index_;
+  }
 
   //! Get the size of read region
-  size_type GetReadableSize() const noexcept
+  size_type GetReadableSize() const KANON_NOEXCEPT
   {
     return write_index_ - read_index_;
   }
 
   //! Get the sizeof write region
-  size_type GetWritableSize() const noexcept
+  size_type GetWritableSize() const KANON_NOEXCEPT
   {
     return data_.size() - write_index_;
   }
 
   //! Get the capacity of storage data structure
-  size_type GetCapacity() const noexcept
+  size_type GetCapacity() const KANON_NOEXCEPT
   // { return data_.capacity(); }
   {
     return data_.size();
@@ -515,15 +518,15 @@ class Buffer {
   //!@{
 
   //! Like std::vector::reserve(), to ensure buffer has @p len space at least
-  void ReserveWriteSpace(uint32_t len) noexcept { MakeSpace(len); }
+  KANON_CORE_API void ReserveWriteSpace(size_type len) KANON_NOEXCEPT;
 
   //! Like std::vector::shrink_to_fit(), to shrink the buffer to (readable size
   //! + 8)
-  void Shrink(size_type n = 0);
+  KANON_CORE_API void Shrink(size_type n = 0);
 
   //!@}
 
-  void swap(Buffer &other) noexcept
+  void swap(Buffer &other) KANON_NOEXCEPT
   {
     std::swap(write_index_, other.write_index_);
     std::swap(read_index_, other.read_index_);
@@ -534,14 +537,12 @@ class Buffer {
   typedef data_type::const_iterator const_iterator;
   typedef data_type::iterator iterator;
 
-  void MakeSpace(size_type len);
-
-  const_iterator offset(size_type n) const noexcept
+  const_iterator offset(size_type n) const KANON_NOEXCEPT
   {
     return data_.cbegin() + n;
   }
 
-  iterator offset(size_type n) noexcept { return data_.begin() + n; }
+  iterator offset(size_type n) KANON_NOEXCEPT { return data_.begin() + n; }
 
   size_type read_index_; //!< Read pointer(i.e. begin position of read region)
   size_type

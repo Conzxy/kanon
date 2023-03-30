@@ -46,16 +46,16 @@ class LogFile : noncopyable {
           StringView prefix = StringView{}, size_t log_file_num = UINT_MAX,
           size_t roll_interval = kRollPerSeconds_, size_t flush_interval = 3);
 
-  ~LogFile() noexcept;
+  ~LogFile() KANON_NOEXCEPT;
 
-  void Append(char const *data, size_t num) noexcept;
-  void Flush() noexcept;
+  void Append(char const *data, size_t num) KANON_NOEXCEPT;
+  void Flush() KANON_NOEXCEPT;
 
  private:
   void RollFile();
   std::string GetLogFilename(time_t &now);
 
-  static std::string FormatTime() noexcept;
+  static std::string FormatTime() KANON_NOEXCEPT;
 
  private:
   std::string basename_; //!< The basename of process

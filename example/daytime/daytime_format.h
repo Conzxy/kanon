@@ -3,8 +3,8 @@
 
 #include <string>
 
-char const* ToMonthStr(int m) noexcept;
-char const* ToWeekdayStr(int w) noexcept;
+char const* ToMonthStr(int m) KANON_NOEXCEPT;
+char const* ToWeekdayStr(int w) KANON_NOEXCEPT;
 
 std::string GetDaytime();
 

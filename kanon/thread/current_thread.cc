@@ -16,7 +16,6 @@
 // namespace kanon::CurrentThread
 //
 namespace kanon {
-
 namespace CurrentThread {
 
 KANON_TLS int t_tid = 0;
@@ -24,25 +23,8 @@ KANON_TLS char t_tidString[32] = {};
 KANON_TLS int t_tidLength = 0;
 KANON_TLS char const *t_name = nullptr;
 
-// because main thread is not created by pthread_create()
-// need explicit cache
-struct MainThreadInit {
-  MainThreadInit()
-  {
-    CurrentThread::t_name = "main";
-    CurrentThread::tid();
-  }
-};
-
-void MainThreadInitialize()
-{
-  CurrentThread::t_name = "main";
-  CurrentThread::tid();
-}
-
-MainThreadInit mainThreadInit{};
-
-void cacheTid() noexcept
+#if !KANON___THREAD_DEFINED
+void cacheTid() KANON_NOEXCEPT
 {
   t_tid = gettid();
   auto view = lexical_cast<StringView>(t_tid);
@@ -50,10 +32,46 @@ void cacheTid() noexcept
   strncpy(t_tidString, view.data(), view.size());
 }
 
-KANON_INLINE bool isMainThread() noexcept
+int tid() KANON_NOEXCEPT
+{
+  if (KANON_UNLIKELY(t_tid == 0)) {
+    cacheTid();
+  }
+  return t_tid;
+}
+
+int GetTid() KANON_NOEXCEPT { return t_tid; }
+
+char const *tidString() KANON_NOEXCEPT { return t_tidString; }
+int tidLength() KANON_NOEXCEPT { return t_tidLength; }
+char const *tidName() KANON_NOEXCEPT { return t_name; }
+
+bool isMainThread() KANON_NOEXCEPT
 {
   return CurrentThread::t_tid == process::Pid();
 }
+#endif //! !KANON___THREAD_DEFINED
+
+// because main thread is not created by pthread_create()
+// need explicit cache
+struct MainThreadInit {
+  MainThreadInit()
+  {
+    t_name = "main";
+    cacheTid();
+  }
+};
+
+void MainThreadInitialize()
+{
+  t_name = "main";
+  cacheTid();
+}
+
+/* To compatible old code, don't remove this.
+   In new code, you should call KanonCoreInitialize()
+   to init global states */
+MainThreadInit mainThreadInit{};
 
 } // namespace CurrentThread
 } // namespace kanon

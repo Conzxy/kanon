@@ -18,37 +18,42 @@ class Thread;
 /**
  * \brief Bounded thread pool
  * \note
- *   Using condition variable and mutex to implemetation(i.e. producer-consumer problem)
+ *   Using condition variable and mutex to implemetation(i.e. producer-consumer
+ * problem)
  */
 class ThreadPool : noncopyable {
-public:
+ public:
   typedef std::function<void()> Task;
 
-  explicit ThreadPool(int max_queue_size = 5,
-                      std::string const& name = "ThreadPool");
+  KANON_CORE_API explicit ThreadPool(int max_queue_size = 5,
+                                     std::string const &name = "ThreadPool");
 
   /**
-    * \brief join all thread to reclaim their resource
-    */
-  ~ThreadPool() noexcept;
-  
-  /**
-    * \brief start the thread pool and run them
-    * \param threadNum number of threads in pool
-    */
-  void StartRun(int thread_num);
+   * \brief join all thread to reclaim their resource
+   */
+  KANON_CORE_API ~ThreadPool() KANON_NOEXCEPT;
 
   /**
-    * \brief push task to task queue and then notify Pop() to consume it
-    */
-  void Push(Task task);
+   * \brief start the thread pool and run them
+   * \param threadNum number of threads in pool
+   */
+  KANON_CORE_API void StartRun(int thread_num);
 
-  void SetMaxQueueSize(int num) noexcept
-  { if (num > 0) max_queue_size_ = num; }
-private:
   /**
-    * \brief pop the task from queue, and notify Push() to produce which can produce more task
-    */
+   * \brief push task to task queue and then notify Pop() to consume it
+   */
+  KANON_CORE_API void Push(Task task);
+
+  void SetMaxQueueSize(int num) KANON_NOEXCEPT
+  {
+    if (num > 0) max_queue_size_ = num;
+  }
+
+ private:
+  /**
+   * \brief pop the task from queue, and notify Push() to produce which can
+   * produce more task
+   */
   Task Pop();
 
   mutable MutexLock mutex_;

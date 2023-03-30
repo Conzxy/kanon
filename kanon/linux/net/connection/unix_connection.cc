@@ -10,7 +10,7 @@ UnixConnection::UnixConnection(EventLoop* loop, string const& name, int sockfd)
   LOG_TRACE_KANON << "UnixConnection [" << name << "]" << "is created";
 }
 
-UnixConnection::~UnixConnection() noexcept {
+UnixConnection::~UnixConnection() KANON_NOEXCEPT {
   LOG_TRACE_KANON << "UnixConnection [" << name_ << "]" << "is destroyed";
 }
 

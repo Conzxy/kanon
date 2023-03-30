@@ -40,7 +40,7 @@ using namespace kanon;
   
 // }
 
-// TcpConnection::~TcpConnection() noexcept {
+// TcpConnection::~TcpConnection() KANON_NOEXCEPT {
 //   assert(state_ == kDisconnected);
 //   LOG_TRACE_KANON << "TcpConnection::dtor [" << name_ << "] destroyed";
 // }
@@ -58,13 +58,13 @@ TcpConnection::TcpConnection(EventLoop* loop,
   LOG_TRACE_KANON << "TcpConnection::ctor [" << name_ << "] created";
 }
 
-TcpConnection::~TcpConnection() noexcept {
+TcpConnection::~TcpConnection() KANON_NOEXCEPT {
   LOG_TRACE_KANON << "TcpConnection::dtor [" << name_ << "] destroyed";
 }
 
-void TcpConnection::SetNoDelay(bool flag) noexcept
+void TcpConnection::SetNoDelay(bool flag) KANON_NOEXCEPT
 { socket_->SetNoDelay(flag); }
 
-void TcpConnection::SetKeepAlive(bool flag) noexcept
+void TcpConnection::SetKeepAlive(bool flag) KANON_NOEXCEPT
 { socket_->SetKeepAlive(flag); }
 

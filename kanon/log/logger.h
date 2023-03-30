@@ -15,18 +15,18 @@ namespace kanon {
 // __thread time_t t_lastSecond;
 // __thread char t_timebuf[64];
 
-extern bool g_kanon_log;
-extern bool g_all_log;
+KANON_CORE_API extern bool g_kanon_log;
+KANON_CORE_API extern bool g_all_log;
 
 /**
  * Enable/Disable the logging of kanon library
  */
-inline void SetKanonLog(bool val) noexcept { g_kanon_log = val; }
+KANON_INLINE void SetKanonLog(bool val) KANON_NOEXCEPT { g_kanon_log = val; }
 
 /**
  * Control the logging of logger(i.e. All logs output by kanon)
  */
-inline void EnableAllLog(bool value) noexcept { g_all_log = value; }
+KANON_INLINE void EnableAllLog(bool value) KANON_NOEXCEPT { g_all_log = value; }
 
 /**
  * \brief Format the log message to specified device
@@ -62,7 +62,7 @@ class Logger : noncopyable {
    * e.g. current log level is DEBUG, user call LOG_TRACE is no effect
    * i.e. Log condiftion is current log level <= XXX
    */
-  enum LogLevel {
+  enum KANON_CORE_API LogLevel {
     KANON_LL_TRACE = 0,
     KANON_LL_DEBUG,
     KANON_LL_INFO,
@@ -75,14 +75,18 @@ class Logger : noncopyable {
   };
 
   // Since __FIEL__ is fullname, including all parent path
-  struct SourceFile {
+  struct KANON_CORE_NO_API SourceFile {
     // user-defined conversion char const* --> SourceFile
     // so dose not declared "explicit" keyword
-    template <unsigned N>
-    SourceFile(char const (&fullname)[N])
-      : SourceFile(MakeStringView(fullname))
-    {
-    }
+    //
+    // This is not a good habit to use template argument deduction
+    // to get the length of string literal.
+    //
+    // template <unsigned N>
+    // SourceFile(char const (&fullname)[N])
+    //  : SourceFile(MakeStringView(fullname))
+    //{
+    //}
 
     SourceFile(char const *fullname)
       : SourceFile(StringView(fullname))
@@ -114,62 +118,73 @@ class Logger : noncopyable {
 
   // INFO WARN
   // This is also a forward constructor of others
-  Logger(SourceFile basefile, size_t line, LogLevel level);
+  KANON_CORE_API Logger(SourceFile basefile, size_t line, LogLevel level);
 
   // ERROR FATAL SYS_ERROR SYS_FATAL
   // Because I don't let INFO and WARN also check whether this is a
   // SYS_ERROR/SYS_FATAL, split them to two parts
-  Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys);
+  KANON_CORE_API Logger(SourceFile basefile, size_t line, LogLevel level,
+                        bool is_sys);
 
   // Do output and flush
-  ~Logger() noexcept;
+  KANON_CORE_API ~Logger() KANON_NOEXCEPT;
 
-  LogStream &stream() noexcept { return stream_; }
+  KANON_INLINE LogStream &stream() KANON_NOEXCEPT { return stream_; }
 
-  static void SetColor(bool c) noexcept { need_color_ = c; }
-  static LogLevel GetLogLevel() noexcept { return log_level_; }
-  static void SetLogLevel(LogLevel level) noexcept { log_level_ = level; }
-  static OutputCallback GetOutputCallback() noexcept
+  KANON_INLINE static void SetColor(bool c) KANON_NOEXCEPT { need_color_ = c; }
+  KANON_INLINE static LogLevel GetLogLevel() KANON_NOEXCEPT
+  {
+    return log_level_;
+  }
+  KANON_INLINE static void SetLogLevel(LogLevel level) KANON_NOEXCEPT
+  {
+    log_level_ = level;
+  }
+  KANON_INLINE static OutputCallback GetOutputCallback() KANON_NOEXCEPT
   {
     return output_callback_;
   }
-  static void SetOutputCallback(OutputCallback output) noexcept
+
+  static void SetOutputCallback(OutputCallback output) KANON_NOEXCEPT
   {
     output_callback_ = output;
   }
-  static FlushCallback GetFlushCallback() noexcept { return flush_callback_; }
-  static void SetFlushCallback(FlushCallback flush) noexcept
+  static FlushCallback GetFlushCallback() KANON_NOEXCEPT
+  {
+    return flush_callback_;
+  }
+  static void SetFlushCallback(FlushCallback flush) KANON_NOEXCEPT
   {
     flush_callback_ = flush;
   }
 
  private:
+  void FormatTime() KANON_NOEXCEPT;
+
   StringView basename_; /** Filename(may including slash) */
   LogLevel cur_log_level_;
   size_t line_; /** Line number */
 
   LogStream stream_;
 
-  void FormatTime() noexcept;
-
   static char const *s_log_level_names_[KANON_LL_NUM_LOG_LEVEL];
   /**
    * Current Log Level, initial value is INFO
    * You can define environment variable to specify WARN or TRACE
    */
-  static LogLevel log_level_;
-  static bool need_color_;
-  static OutputCallback output_callback_;
-  static FlushCallback flush_callback_;
+  KANON_CORE_API static LogLevel log_level_;
+  KANON_CORE_API static bool need_color_;
+  KANON_CORE_API static OutputCallback output_callback_;
+  KANON_CORE_API static FlushCallback flush_callback_;
 };
 
-char const *strerror_tl(int _errno);
+KANON_CORE_API char const *strerror_tl(int _errno);
 #ifdef KANON_ON_WIN
-char const *win_last_strerror(int win_errno);
+KANON_CORE_API char const *win_last_strerror(int win_errno);
 #endif
 
-void DefaultFlush();
-void DefaultOutput(char const *, size_t);
+KANON_CORE_API void DefaultFlush();
+KANON_CORE_API void DefaultOutput(char const *, size_t);
 
 #define LOG_TRACE                                                              \
   if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_TRACE &&         \

@@ -6,10 +6,7 @@
 namespace kanon {
 namespace CurrentThread {
 
-static KANON_INLINE process::PId gettid() noexcept
-{
-  return ::GetCurrentThreadId();
-}
+KANON_INLINE process::PId gettid() KANON_NOEXCEPT { return ::GetCurrentThreadId(); }
 
 } // namespace CurrentThread
 } // namespace kanon

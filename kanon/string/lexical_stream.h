@@ -22,64 +22,64 @@ class LexicalStream : noncopyable
 public:
 
   LexicalStream() = default;
-  LexicalStream(LexicalStream&&) noexcept;
-  LexicalStream& operator=(LexicalStream&&) noexcept;  
+  LexicalStream(LexicalStream&&) KANON_NOEXCEPT;
+  LexicalStream& operator=(LexicalStream&&) KANON_NOEXCEPT;  
 
-  void Append(char const* buf, unsigned len) noexcept 
+  void Append(char const* buf, unsigned len) KANON_NOEXCEPT 
   { buffer_.Append(buf, len); }
   
-  void reset() noexcept
+  void reset() KANON_NOEXCEPT
   { buffer_.reset(); }
 
-  char const* data() const noexcept
+  char const* data() const KANON_NOEXCEPT
   { return buffer_.data(); }
   
-  Buffer& buffer() noexcept
+  Buffer& buffer() KANON_NOEXCEPT
   { return buffer_; }
   
-  unsigned size() const noexcept
+  unsigned size() const KANON_NOEXCEPT
   { return buffer_.len(); }
   
-  unsigned maxsize() const noexcept
+  unsigned maxsize() const KANON_NOEXCEPT
   { return SZ; }
 
-  inline Self& operator<<(bool);
-  inline Self& operator<<(char);
+  KANON_INLINE Self& operator<<(bool);
+  KANON_INLINE Self& operator<<(char);
 
-  inline Self& operator<<(short);
-  inline Self& operator<<(unsigned short);
-  inline Self& operator<<(int);
-  inline Self& operator<<(unsigned);
-  inline Self& operator<<(long);
-  inline Self& operator<<(unsigned long);
-  inline Self& operator<<(long long);
-  inline Self& operator<<(unsigned long long);
-  inline Self& operator<<(unsigned char);
+  KANON_INLINE Self& operator<<(short);
+  KANON_INLINE Self& operator<<(unsigned short);
+  KANON_INLINE Self& operator<<(int);
+  KANON_INLINE Self& operator<<(unsigned);
+  KANON_INLINE Self& operator<<(long);
+  KANON_INLINE Self& operator<<(unsigned long);
+  KANON_INLINE Self& operator<<(long long);
+  KANON_INLINE Self& operator<<(unsigned long long);
+  KANON_INLINE Self& operator<<(unsigned char);
 
   Self& operator<<(float f)
   { return *this << static_cast<double>(f); }
 
-  inline Self& operator<<(double);
+  KANON_INLINE Self& operator<<(double);
   
-  inline Self& operator<<(char const*);
-  inline Self& operator<<(std::string const& str);
-  inline Self& operator<<(StringView);
+  KANON_INLINE Self& operator<<(char const*);
+  KANON_INLINE Self& operator<<(std::string const& str);
+  KANON_INLINE Self& operator<<(StringView);
 
-  inline Self& operator<<(void const*);
+  KANON_INLINE Self& operator<<(void const*);
 private:
   Buffer buffer_;
 };
 
 /**
- * To inline, we don't put them to source file
+ * To KANON_INLINE, we don't put them to source file
  */
 template<unsigned SZ>
-LexicalStream<SZ>::LexicalStream(LexicalStream&& other) noexcept
+LexicalStream<SZ>::LexicalStream(LexicalStream&& other) KANON_NOEXCEPT
   : buffer_(other.buffer())
 { }
 
 template<unsigned SZ>
-LexicalStream<SZ>& LexicalStream<SZ>::operator=(LexicalStream&& other) noexcept
+LexicalStream<SZ>& LexicalStream<SZ>::operator=(LexicalStream&& other) KANON_NOEXCEPT
 {
   buffer_.swap(other.buffer_);  
   return *this;
@@ -176,10 +176,10 @@ public:
     : Fmt(str.c_str(), str.size()) 
   { }
   
-  char const* buf() const noexcept
+  char const* buf() const KANON_NOEXCEPT
   { return buf_; }
 
-  unsigned len() const noexcept
+  unsigned len() const KANON_NOEXCEPT
   { return len_; }
 
 private:

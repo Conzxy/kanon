@@ -46,7 +46,7 @@ class ObjectPoolAllocator {
     return reinterpret_cast<T*>(pool_->Malloc(sizeof(T)));
   }
 
-  void deallocate(pointer p, size_type n) noexcept {
+  void deallocate(pointer p, size_type n) KANON_NOEXCEPT {
     (void)n;
     pool_->Free(p);
   } 
@@ -73,11 +73,11 @@ class ObjectPoolAllocator {
   }
  
   template <typename U>
-  friend bool operator==(ObjectPoolAllocator const &l, ObjectPoolAllocator<U> const &r) noexcept
+  friend bool operator==(ObjectPoolAllocator const &l, ObjectPoolAllocator<U> const &r) KANON_NOEXCEPT
   { return l.pool_ == r.pool_; }
   
   template <typename U>
-  friend bool operator!=(ObjectPoolAllocator const &l, ObjectPoolAllocator<U> const &r) noexcept
+  friend bool operator!=(ObjectPoolAllocator const &l, ObjectPoolAllocator<U> const &r) KANON_NOEXCEPT
   { return !(l == r); }
 
  private:

@@ -16,9 +16,9 @@ RWLock::RWLock()
 {
 }
 
-RWLock::~RWLock() noexcept = default;
+RWLock::~RWLock() KANON_NOEXCEPT = default;
 
-void RWLock::RLock() noexcept
+void RWLock::RLock() KANON_NOEXCEPT
 {
   MutexGuard g(mutex_);
   
@@ -29,7 +29,7 @@ void RWLock::RLock() noexcept
   ++reader_num_;
 }
 
-void RWLock::RUnlock() noexcept
+void RWLock::RUnlock() KANON_NOEXCEPT
 {
   MutexGuard g(mutex_);
 
@@ -56,7 +56,7 @@ void RWLock::RUnlock() noexcept
   }
 }
 
-void RWLock::WLock() noexcept
+void RWLock::WLock() KANON_NOEXCEPT
 {
   MutexGuard g(mutex_);
 
@@ -73,7 +73,7 @@ void RWLock::WLock() noexcept
   }
 }
 
-void RWLock::WUnlock() noexcept
+void RWLock::WUnlock() KANON_NOEXCEPT
 {
   MutexGuard g(mutex_);
 

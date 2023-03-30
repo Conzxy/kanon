@@ -7,4 +7,4 @@ ITimerQueuePlatform::ITimerQueuePlatform(EventLoop *loop)
 {
 }
 
-ITimerQueuePlatform::~ITimerQueuePlatform() noexcept {}
+ITimerQueuePlatform::~ITimerQueuePlatform() KANON_NOEXCEPT {}

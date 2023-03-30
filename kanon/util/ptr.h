@@ -19,14 +19,14 @@ struct Is_unbounded_array<T[]> : std::true_type {};
 
 template <typename T, typename... Args,
           typename std::enable_if<!std::is_array<T>::value, char>::type = 0>
-inline std::unique_ptr<T> make_unique(Args &&...args)
+KANON_INLINE std::unique_ptr<T> make_unique(Args &&...args)
 {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
 template <typename T,
           typename std::enable_if<Is_unbounded_array<T>::value, int>::type = 0>
-inline std::unique_ptr<T> make_unique(size_t num)
+KANON_INLINE std::unique_ptr<T> make_unique(size_t num)
 {
   return std::unique_ptr<T>(new typename std::remove_extent<T>::type[num]);
 }
@@ -37,19 +37,19 @@ using std::make_unique;
 
 // compatible with smart_pointer and raw pointer
 template <typename T, typename D>
-inline T *GetPointer(std::unique_ptr<T, D> const &ptr) noexcept
+KANON_INLINE T *GetPointer(std::unique_ptr<T, D> const &ptr) KANON_NOEXCEPT
 {
   return ptr.get();
 }
 
 template <typename T>
-inline T *GetPointer(std::shared_ptr<T> const &ptr) noexcept
+KANON_INLINE T *GetPointer(std::shared_ptr<T> const &ptr) KANON_NOEXCEPT
 {
   return ptr.get();
 }
 
 template <typename T>
-inline T *GetPointer(T *const ptr) noexcept
+KANON_INLINE T *GetPointer(T *const ptr) KANON_NOEXCEPT
 {
   return ptr;
 }
@@ -77,7 +77,7 @@ template <typename T>
 using KeyUniquePtr = std::unique_ptr<T, KeyDeleter<T>>;
 
 template <typename T>
-KeyUniquePtr<T> MakeUniquePtrAsKey(T *p) noexcept
+KeyUniquePtr<T> MakeUniquePtrAsKey(T *p) KANON_NOEXCEPT
 {
   return KeyUniquePtr<T>(p, KeyDeleter<T>(false));
 }
@@ -91,7 +91,7 @@ KeyUniquePtr<T> MakeUniquePtrAsKey(T *p) noexcept
 //! If you want use it as a temp object, Please use this:
 //! down_pointer_cast(ptr.get()).
 template <typename T, typename F, typename D>
-inline std::unique_ptr<T, D> down_pointer_cast(std::unique_ptr<F, D> &ptr)
+KANON_INLINE std::unique_ptr<T, D> down_pointer_cast(std::unique_ptr<F, D> &ptr)
 {
 #ifndef NDEBUG
   assert(ptr != nullptr && dynamic_cast<T *>(ptr.get()) != nullptr);
@@ -100,7 +100,7 @@ inline std::unique_ptr<T, D> down_pointer_cast(std::unique_ptr<F, D> &ptr)
 }
 
 template <typename T, typename F>
-inline std::shared_ptr<T> down_pointer_cast(std::shared_ptr<F> &ptr)
+KANON_INLINE std::shared_ptr<T> down_pointer_cast(std::shared_ptr<F> &ptr)
 {
 #ifndef NDEBUG
   assert(ptr != nullptr && std::dynamic_pointer_cast<T>(ptr) != nullptr);
@@ -109,7 +109,7 @@ inline std::shared_ptr<T> down_pointer_cast(std::shared_ptr<F> &ptr)
 }
 
 template <typename T, typename F>
-inline T *down_pointer_cast(F *ptr)
+KANON_INLINE T *down_pointer_cast(F *ptr)
 {
 #ifndef NDEBUG
   assert(ptr != nullptr && dynamic_cast<T *>(ptr) != nullptr);
@@ -141,7 +141,7 @@ using DeferDelete2 = std::unique_ptr<T, D>;
  * \see https://stackoverflow.com/a/56676533
  */
 template <typename T, typename... Args>
-inline std::shared_ptr<T> MakeSharedFromProtected(Args &&...args)
+KANON_INLINE std::shared_ptr<T> MakeSharedFromProtected(Args &&...args)
 {
   struct ProtectedProxy : public T {
     /* Here, must declares the type of arguments be Args&&.
@@ -158,8 +158,8 @@ inline std::shared_ptr<T> MakeSharedFromProtected(Args &&...args)
 }
 
 template <typename T, typename Alloc, typename... Args>
-inline std::shared_ptr<T> AllocateSharedFromProtected(Alloc const &alloc,
-                                                      Args &&...args)
+KANON_INLINE std::shared_ptr<T> AllocateSharedFromProtected(Alloc const &alloc,
+                                                            Args &&...args)
 {
   struct ProtectedProxy : public T {
     /* Here, must declares the type of arguments be Args&&.

@@ -48,13 +48,13 @@ AppendFile::AppendFile(StringArg filename)
   setvbuf(fp_, buf_, _IOFBF, sizeof buf_);
 }
 
-AppendFile::~AppendFile() noexcept
+AppendFile::~AppendFile() KANON_NOEXCEPT
 {
   Flush();
   if (fp_) ::fclose(fp_);
 }
 
-void AppendFile::_Append(char const *data, size_t num) noexcept
+void AppendFile::_Append(char const *data, size_t num) KANON_NOEXCEPT
 {
   size_t written = 0;
 

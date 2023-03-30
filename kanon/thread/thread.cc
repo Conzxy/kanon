@@ -131,7 +131,7 @@ namespace detail {
 
 void *Run(void *arg)
 {
-  KANON_UNUSED(CurrentThread::tid());
+  CurrentThread::cacheTid();
   auto thread = reinterpret_cast<Thread *>(arg);
   CurrentThread::t_name =
       thread->name_.empty() ? "KanonThread" : thread->name_.c_str();

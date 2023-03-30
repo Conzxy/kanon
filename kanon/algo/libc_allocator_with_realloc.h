@@ -44,19 +44,19 @@ class LibcAllocatorWithRealloc {
 
   LibcAllocatorWithRealloc() = default;
   
-  pointer address(reference x) const noexcept { return &x; }
+  pointer address(reference x) const KANON_NOEXCEPT { return &x; }
 
-  const_pointer address(const_reference x) noexcept { return &x; }
+  const_pointer address(const_reference x) KANON_NOEXCEPT { return &x; }
   
-  T* allocate(size_type n) noexcept {
+  T* allocate(size_type n) KANON_NOEXCEPT {
     return reinterpret_cast<T*>(::malloc(n*sizeof(T))); 
   }
   
-  T* reallocate(pointer p, size_type n) noexcept {
+  T* reallocate(pointer p, size_type n) KANON_NOEXCEPT {
     return reinterpret_cast<T*>(::realloc(p, n*sizeof(T))); 
   } 
 
-  void deallocate(pointer p, size_type n) noexcept {
+  void deallocate(pointer p, size_type n) KANON_NOEXCEPT {
     (void)n;
     // If p is NULL, free() do nothing
     ::free(p);

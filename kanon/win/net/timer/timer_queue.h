@@ -10,23 +10,23 @@
 
 namespace kanon {
 
-VOID timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired);
+KANON_NET_NO_API VOID timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired);
 
-class TimerQueue : public ITimerQueuePlatform {
+class KANON_NET_NO_API TimerQueue : public ITimerQueuePlatform {
   friend VOID timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired);
 
  public:
   using Base = ITimerQueuePlatform;
 
   explicit TimerQueue(EventLoop *loop);
-  ~TimerQueue() noexcept override;
+  ~TimerQueue() KANON_NOEXCEPT override;
 
   virtual TimerId AddTimer(TimerCallback cb, TimeStamp time,
                            double interval) override;
 
   virtual void CancelTimer(TimerId const id) override;
 
-  EventLoop *loop() noexcept { return loop_; }
+  EventLoop *loop() KANON_NOEXCEPT { return loop_; }
 
  private:
   HANDLE timer_queue_ = INVALID_HANDLE_VALUE;

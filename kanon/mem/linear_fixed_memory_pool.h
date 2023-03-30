@@ -32,7 +32,7 @@ class LinearFixedMemoryPool {
       free_hset_.insert(i);
   }
   
-  ~LinearFixedMemoryPool() noexcept
+  ~LinearFixedMemoryPool() KANON_NOEXCEPT
   {
     free(pool_);
     size_ = 0;
@@ -76,8 +76,8 @@ class LinearFixedMemoryPool {
     }
   }
   
-  size_t size() const noexcept { return size_; }
-  size_t freesize() const noexcept { return free_hset_.size(); }
+  size_t size() const KANON_NOEXCEPT { return size_; }
+  size_t freesize() const KANON_NOEXCEPT { return free_hset_.size(); }
  private:
   T *pool_;
   std::unordered_set<size_t> free_hset_;

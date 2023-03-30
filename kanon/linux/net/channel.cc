@@ -22,7 +22,7 @@ Channel::Channel(EventLoop *loop, FdType fd)
   LOG_TRACE_KANON << "Channel fd = " << fd_ << " created";
 }
 
-Channel::~Channel() noexcept
+Channel::~Channel() KANON_NOEXCEPT
 {
 #ifndef NDEBUG
   // In the handling events phase, close_callback_ remove the connection(i.e.
@@ -43,7 +43,7 @@ void Channel::Update()
   loop_->UpdateChannel(this);
 }
 
-void Channel::Remove() noexcept { loop_->RemoveChannel(this); }
+void Channel::Remove() KANON_NOEXCEPT { loop_->RemoveChannel(this); }
 
 void Channel::HandleEvents(TimeStamp receive_time)
 {

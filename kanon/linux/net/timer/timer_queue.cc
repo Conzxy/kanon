@@ -19,7 +19,7 @@ namespace detail {
 
 static constexpr int64_t kNanosecond = 1000000000;
 
-static inline int CreateTimerFd() noexcept
+static KANON_INLINE int CreateTimerFd() KANON_NOEXCEPT
 {
   auto timerfd = ::timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 
@@ -32,7 +32,7 @@ static inline int CreateTimerFd() noexcept
   return timerfd;
 }
 
-static inline struct timespec GetTimeFromNow(TimeStamp time) noexcept
+static KANON_INLINE struct timespec GetTimeFromNow(TimeStamp time) KANON_NOEXCEPT
 {
   int64_t interval = time.GetMicrosecondsSinceEpoch() -
                      TimeStamp::Now().GetMicrosecondsSinceEpoch();
@@ -47,7 +47,7 @@ static inline struct timespec GetTimeFromNow(TimeStamp time) noexcept
   return expire;
 }
 
-static inline struct timespec GetTimerInterval(double interval) noexcept
+static KANON_INLINE struct timespec GetTimerInterval(double interval) KANON_NOEXCEPT
 {
   const int64_t val = interval * kNanosecond;
   struct timespec spec;
@@ -58,7 +58,7 @@ static inline struct timespec GetTimerInterval(double interval) noexcept
   return spec;
 }
 
-static inline void PrintItimerspec(struct itimerspec const &spec)
+static KANON_INLINE void PrintItimerspec(struct itimerspec const &spec)
 {
 #ifndef NDEBUG
   LOG_DEBUG_KANON << "Reset the expiration(sec, nsec): ("
@@ -67,8 +67,8 @@ static inline void PrintItimerspec(struct itimerspec const &spec)
 #endif
 }
 
-static inline void SetTimerFd(int timerfd, Timer const &timer,
-                              bool set_interval = false) noexcept
+static KANON_INLINE void SetTimerFd(int timerfd, Timer const &timer,
+                              bool set_interval = false) KANON_NOEXCEPT
 {
   struct itimerspec new_value;
   MemoryZero(new_value.it_interval);
@@ -91,7 +91,7 @@ static inline void SetTimerFd(int timerfd, Timer const &timer,
   }
 }
 
-static inline void ReadTimerFd(int timerfd) noexcept
+static KANON_INLINE void ReadTimerFd(int timerfd) KANON_NOEXCEPT
 {
   uint64_t dummy = 0;
   uint64_t n = 0;
@@ -120,7 +120,7 @@ TimerQueue::TimerQueue(EventLoop *loop)
   timer_channel_->EnableReading();
 }
 
-TimerQueue::~TimerQueue() noexcept
+TimerQueue::~TimerQueue() KANON_NOEXCEPT
 {
   for (auto &timer_seq : timers_) {
     delete timer_seq.first;

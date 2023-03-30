@@ -14,7 +14,7 @@ static LPFN_CONNECTEX connect_ex_fn = NULL;
 static GUID guid_accept_ex = WSAID_ACCEPTEX;
 static GUID guid_connect_ex = WSAID_CONNECTEX;
 
-void sock::Listen(FdType fd) noexcept
+void sock::Listen(FdType fd) KANON_NOEXCEPT
 {
   auto ret = ::listen(fd, SOMAXCONN);
 
@@ -44,7 +44,7 @@ void sock::Listen(FdType fd) noexcept
   }
 }
 
-FdType sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept
+FdType sock::CreateNonBlockAndCloExecSocket(bool ipv6) KANON_NOEXCEPT
 {
   auto sockfd = ::WSASocket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP,
                             NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -57,7 +57,7 @@ FdType sock::CreateNonBlockAndCloExecSocket(bool ipv6) noexcept
   return sockfd;
 }
 
-FdType sock::CreateOverlappedSocket(bool ipv6) noexcept
+FdType sock::CreateOverlappedSocket(bool ipv6) KANON_NOEXCEPT
 {
   auto sockfd = ::WSASocket(ipv6 ? AF_INET6 : AF_INET, SOCK_STREAM, IPPROTO_TCP,
                             NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -70,7 +70,7 @@ FdType sock::CreateOverlappedSocket(bool ipv6) noexcept
   return sockfd;
 }
 
-FdType sock::Accept(FdType fd, sockaddr_in6 *addr) noexcept
+FdType sock::Accept(FdType fd, sockaddr_in6 *addr) KANON_NOEXCEPT
 {
   socklen_t socklen = sizeof(struct sockaddr_in6);
 
@@ -115,7 +115,7 @@ FdType sock::Accept(FdType fd, sockaddr_in6 *addr) noexcept
 }
 
 bool sock::WinConnect(FdType fd, sockaddr const *addr,
-                      CompletionContext *ctx) noexcept
+                      CompletionContext *ctx) KANON_NOEXCEPT
 {
   KANON_ASSERT(ctx, "The Completion Context of connect can't be null!");
   if (!connect_ex_fn) {
@@ -165,7 +165,7 @@ bool sock::WinConnect(FdType fd, sockaddr const *addr,
   return bRetVal;
 }
 
-int sock::GetSocketError(FdType fd) noexcept
+int sock::GetSocketError(FdType fd) KANON_NOEXCEPT
 {
   int optval;
   auto len = static_cast<socklen_t>(sizeof optval);

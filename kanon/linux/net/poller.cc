@@ -15,12 +15,12 @@ Poller::Poller(EventLoop* loop)
   LOG_TRACE_KANON << "Poller is created";
 }
 
-Poller::~Poller() noexcept
+Poller::~Poller() KANON_NOEXCEPT
 {
   LOG_TRACE_KANON << "Poller is destroyed";
 }
 
-TimeStamp Poller::Poll(int ms, ChannelVec& active_channels) noexcept {
+TimeStamp Poller::Poll(int ms, ChannelVec& active_channels) KANON_NOEXCEPT {
   AssertInThread();
 
   auto ret = ::poll(pollfds_.data(), 

@@ -9,17 +9,17 @@
 
 namespace kanon {
 
-class IocpPoller : public PollerBase {
+class KANON_NET_NO_API IocpPoller final : public PollerBase {
  public:
   explicit IocpPoller(EventLoop *loop);
 
-  virtual ~IocpPoller() noexcept;
+  virtual ~IocpPoller() KANON_NOEXCEPT;
 
   virtual TimeStamp Poll(int ms, ChannelVec &active_channels) override;
   virtual void UpdateChannel(Channel *ch) override;
   virtual void RemoveChannel(Channel *ch) override;
 
-  HANDLE completion_port() noexcept { return completion_port_; }
+  HANDLE completion_port() KANON_NOEXCEPT { return completion_port_; }
 
  private:
   HANDLE completion_port_ = INVALID_HANDLE_VALUE;

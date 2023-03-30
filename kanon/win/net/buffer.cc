@@ -9,18 +9,6 @@
 
 using namespace kanon;
 
-#if 0
-static void CALLBACk recv_completion_callback(DWORD error, DWORD transferred,
-                                     LPWSAOVERLAPPED overlapped, DWORD flags)
-{
-  auto conn = (TcpConnection *)overlapped;
-  auto ch = conn->channel();
-  // ch->SetRevents(ch->GetRevents() | Event::ReadEvent);
-}
-#endif
-
-static CompletionContext *cached_completion_context = nullptr;
-
 void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
                               void *overlap)
 {
@@ -40,7 +28,6 @@ void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
   completion_context_init(completion_ctx);
   completion_ctx->event = Event::ReadEvent;
   ch->RegisterCompletionContext(completion_ctx);
-  // cached_completion_context = completion_ctx;
   auto ret = WSARecv(fd, bufs.data(), 1, &recv_bytes, &flags,
                      (LPWSAOVERLAPPED)completion_ctx, NULL);
 
@@ -55,8 +42,6 @@ void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
       auto err = WSAGetLastError();
       if (err != WSA_IO_PENDING) {
         LOG_SYSERROR << "Failed to call WSARecv()";
-      } else {
-        cached_completion_context = nullptr;
       }
     } break;
   }

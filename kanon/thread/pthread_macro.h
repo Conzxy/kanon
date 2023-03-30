@@ -3,9 +3,9 @@
 
 #include "kanon/util/check.h"
 
-#define TCHECK(ret) \
-  ({ \
-    ASSERT(ret); \
-   })
+#define TCHECK(ret)                                                            \
+  {                                                                            \
+    ASSERT(ret);                                                               \
+  }
 
 #endif

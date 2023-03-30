@@ -8,7 +8,7 @@
 namespace zstl {
 namespace forward_list_detail {
 
-void push_front(Header *header, BaseLinkedNode *new_node) noexcept
+void push_front(Header *header, BaseLinkedNode *new_node) KANON_NOEXCEPT
 {
   // Update header_->prev only when list is empty
   if (FORWARD_LIST_EMPTY) {
@@ -20,7 +20,7 @@ void push_front(Header *header, BaseLinkedNode *new_node) noexcept
   header->next = new_node;
 }
 
-void push_back(Header *header, BaseLinkedNode *new_node) noexcept
+void push_back(Header *header, BaseLinkedNode *new_node) KANON_NOEXCEPT
 {
   if (header->prev != header) {
     header->prev->next = new_node;
@@ -33,7 +33,7 @@ void push_back(Header *header, BaseLinkedNode *new_node) noexcept
   header->prev = new_node;
 }
 
-BaseLinkedNode *extract_front(Header *header) noexcept
+BaseLinkedNode *extract_front(Header *header) KANON_NOEXCEPT
 {
   assert(!FORWARD_LIST_EMPTY);
 
@@ -51,7 +51,7 @@ BaseLinkedNode *extract_front(Header *header) noexcept
 }
 
 void insert_after(Header *header, BaseLinkedNode *pos,
-                  BaseLinkedNode *new_node) noexcept
+                  BaseLinkedNode *new_node) KANON_NOEXCEPT
 {
   // Push to back, update header_->prev
   // If pos == header, and FORWARD_LIST_EMPTY == true
@@ -64,7 +64,7 @@ void insert_after(Header *header, BaseLinkedNode *pos,
   pos->next = new_node;
 }
 
-BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *pos) noexcept
+BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *pos) KANON_NOEXCEPT
 {
   KANON_ASSERT(pos != nullptr, "The position argument must not be end()");
   KANON_ASSERT(!FORWARD_LIST_EMPTY, "ForwardList must be not empty");
@@ -86,7 +86,7 @@ BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *pos) noexcept
 }
 
 BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *first,
-                              BaseLinkedNode *last) noexcept
+                              BaseLinkedNode *last) KANON_NOEXCEPT
 {
   // The length of the range must be 1 at least
   assert(first);
@@ -107,7 +107,7 @@ BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *first,
   return nullptr;
 }
 
-void reverse(Header *header) noexcept
+void reverse(Header *header) KANON_NOEXCEPT
 {
   auto cur = header->next;
   BaseLinkedNode *prev = nullptr;

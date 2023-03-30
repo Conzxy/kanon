@@ -8,6 +8,7 @@ ChatClient::ChatClient(kanon::EventLoop *loop, InetAddr const &server_addr)
   : client_{NewTcpClient(loop, server_addr, "Chat Client")}
   , codec_{[this](TcpConnectionPtr const &conn, Buffer &msg,
                   TimeStamp receive_time) {
+    msg.GetData();
     this->OnStringMessage(conn, msg.ToStringView().ToString(), receive_time);
     msg.AdvanceAll();
   }}

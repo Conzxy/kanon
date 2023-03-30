@@ -12,14 +12,14 @@
 
 using namespace kanon;
 
-Socket::~Socket() noexcept { sock::Close(fd_); }
+Socket::~Socket() KANON_NOEXCEPT { sock::Close(fd_); }
 
-void Socket::BindAddress(InetAddr const &addr) noexcept
+void Socket::BindAddress(InetAddr const &addr) KANON_NOEXCEPT
 {
   sock::Bind(fd_, addr.ToSockaddr());
 }
 
-int Socket::Accpet(InetAddr &addr) noexcept
+int Socket::Accpet(InetAddr &addr) KANON_NOEXCEPT
 {
   struct sockaddr_in6 addr6;
   auto cli_fd = sock::Accept(fd_, &addr6);
@@ -35,7 +35,7 @@ int Socket::Accpet(InetAddr &addr) noexcept
   return cli_fd;
 }
 
-void Socket::ShutdownWrite() noexcept
+void Socket::ShutdownWrite() KANON_NOEXCEPT
 {
   LOG_TRACE_KANON << "Shutdown peer in write direction";
 
@@ -44,7 +44,7 @@ void Socket::ShutdownWrite() noexcept
   }
 }
 
-void Socket::ShutdownTwoDirection() noexcept
+void Socket::ShutdownTwoDirection() KANON_NOEXCEPT
 {
   LOG_TRACE_KANON << "Shutdown peer in two dierction(read/write)";
 

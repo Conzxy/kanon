@@ -14,9 +14,8 @@
 namespace kanon {
 namespace process {
 
-StringView PidString() noexcept;
-
-StringView Hostname() noexcept;
+KANON_CORE_API StringView PidString() KANON_NOEXCEPT;
+KANON_CORE_API StringView Hostname() KANON_NOEXCEPT;
 
 } // namespace process
 } // namespace kanon

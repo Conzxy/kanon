@@ -12,7 +12,7 @@ EventLoopThread::EventLoopThread(std::string const &name)
 {
 }
 
-EventLoopThread::~EventLoopThread() noexcept
+EventLoopThread::~EventLoopThread() KANON_NOEXCEPT
 {
   // if Quit() is not called through pointer return from StartRun()
   // we should call quit explicitly

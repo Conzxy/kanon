@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char const* ToMonthStr(int m) noexcept
+char const* ToMonthStr(int m) KANON_NOEXCEPT
 {
   switch (m) {
     case 1:
@@ -37,7 +37,7 @@ char const* ToMonthStr(int m) noexcept
   }
 }
 
-char const* ToWeekdayStr(int w) noexcept
+char const* ToWeekdayStr(int w) KANON_NOEXCEPT
 {
   switch (w) {
     case 0:

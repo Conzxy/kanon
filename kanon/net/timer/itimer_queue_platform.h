@@ -24,7 +24,7 @@ class EventLoop;
  * and can cancel a timer also.
  * \warning This is a internal class used for EventLoop
  */
-class ITimerQueuePlatform : noncopyable {
+class KANON_NET_NO_API ITimerQueuePlatform : noncopyable {
  public:
   using TimerCallback = Timer::TimerCallback;
 
@@ -33,7 +33,7 @@ class ITimerQueuePlatform : noncopyable {
    * \param loop EventLoop object
    */
   explicit ITimerQueuePlatform(EventLoop *loop);
-  virtual ~ITimerQueuePlatform() noexcept;
+  virtual ~ITimerQueuePlatform() KANON_NOEXCEPT;
 
   /**
    * \brief Add a timer to TimerQueue

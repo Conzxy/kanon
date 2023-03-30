@@ -4,7 +4,7 @@
 namespace kanon {
 
 template<typename SM, typename T>
-inline bool contains(SM const& set_or_map, T const& key_or_iter) {
+KANON_INLINE bool contains(SM const& set_or_map, T const& key_or_iter) {
   return set_or_map.find(key_or_iter) != set_or_map.end();
 }
 

@@ -37,7 +37,7 @@ AsyncLog::AsyncLog(
   Logger::SetColor(false); 
 }
 
-AsyncLog::~AsyncLog() noexcept {
+AsyncLog::~AsyncLog() KANON_NOEXCEPT {
   if (running_) {
     Stop();
   }
@@ -151,7 +151,7 @@ void AsyncLog::StartRun() {
   latch_.Wait();
 }
 
-void AsyncLog::Stop() noexcept {
+void AsyncLog::Stop() KANON_NOEXCEPT {
   assert(running_);
 
   running_ = false;
@@ -159,7 +159,7 @@ void AsyncLog::Stop() noexcept {
   back_thr_.Join();
 }
 
-void AsyncLog::Append(char const* data, size_t len) noexcept {
+void AsyncLog::Append(char const* data, size_t len) KANON_NOEXCEPT {
     MutexGuard guard{ mutex_ };
   
     // If there are no space for data in @var current_buffer_,
@@ -181,6 +181,6 @@ void AsyncLog::Append(char const* data, size_t len) noexcept {
     }
 }
 
-void AsyncLog::Flush() noexcept {
+void AsyncLog::Flush() KANON_NOEXCEPT {
   // The flush operation is called in back thread
 }

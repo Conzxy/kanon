@@ -259,7 +259,7 @@ void Session::doRetrieve(Tokenizer::iterator beg, Tokenizer::iterator end) {
   }
 }
 
-void Session::resetRequestParam() noexcept {
+void Session::resetRequestParam() KANON_NOEXCEPT {
   noreply_ = false;
   command_ = kInvalid;
   hasReceiveBytes_ = 0;

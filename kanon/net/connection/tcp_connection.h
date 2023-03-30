@@ -42,9 +42,10 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
 
  protected:
  public:
-  TcpConnection(EventLoop *loop, std::string const &name, int sockfd,
-                InetAddr const &local_addr, InetAddr const &peer_addr);
-  ~TcpConnection() noexcept;
+  KANON_NET_API TcpConnection(EventLoop *loop, std::string const &name,
+                              int sockfd, InetAddr const &local_addr,
+                              InetAddr const &peer_addr);
+  KANON_NET_API ~TcpConnection() KANON_NOEXCEPT;
 
   /**
    * \brief Create a TcpConnection instance correctly
@@ -65,16 +66,15 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
         a, loop, name, sockfd, local_addr, peer_addr);
   }
 
-  static TcpConnectionPtr NewTcpConnection(EventLoop *loop,
-                                           std::string const &name, int sockfd,
-                                           InetAddr const &local_addr,
-                                           InetAddr const &peer_addr)
+  KANON_NET_API static TcpConnectionPtr
+  NewTcpConnection(EventLoop *loop, std::string const &name, int sockfd,
+                   InetAddr const &local_addr, InetAddr const &peer_addr)
   {
     return NewTcpConnection(loop, name, sockfd, local_addr, peer_addr,
                             std::allocator<TcpConnection>());
   }
 
-  static TcpConnectionPtr
+  KANON_NET_API static TcpConnectionPtr
   NewTcpConnectionRaw(EventLoop *loop, std::string const &name, int sockfd,
                       InetAddr const &local_addr, InetAddr const &peer_addr)
   {
@@ -85,7 +85,7 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
         });
   }
 
-  static TcpConnectionPtr
+  KANON_NET_API static TcpConnectionPtr
   NewTcpConnectionShared(EventLoop *loop, std::string const &name, int sockfd,
                          InetAddr const &local_addr, InetAddr const &peer_addr)
   {
@@ -103,13 +103,13 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
   // }
 
   //! Whether disable Negele algorithm
-  void SetNoDelay(bool flag) noexcept;
+  KANON_NET_API void SetNoDelay(bool flag) KANON_NOEXCEPT;
   //! Whether disable keep-alive timer
-  void SetKeepAlive(bool flag) noexcept;
+  KANON_NET_API void SetKeepAlive(bool flag) KANON_NOEXCEPT;
 
-  InetAddr const &GetLocalAddr() const noexcept { return local_addr_; }
+  InetAddr const &GetLocalAddr() const KANON_NOEXCEPT { return local_addr_; }
 
-  InetAddr const &GetPeerAddr() const noexcept { return peer_addr_; }
+  InetAddr const &GetPeerAddr() const KANON_NOEXCEPT { return peer_addr_; }
 
  private:
   InetAddr const local_addr_;
@@ -119,7 +119,7 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
 // Default connection callback.
 // It is called when connection established and closed.
 // Log message abont peer and local simply(trace level only)
-inline void DefaultConnectionCallback(TcpConnectionPtr const &conn)
+KANON_INLINE void DefaultConnectionCallback(TcpConnectionPtr const &conn)
 {
   LOG_TRACE_KANON << conn->GetLocalAddr().ToIpPort() << "->"
                   << conn->GetPeerAddr().ToIpPort() << " "

@@ -11,18 +11,18 @@
 
 namespace kanon {
 
-class RWLock {
-public:
-  RWLock(); 
-  ~RWLock() noexcept;
-  
-  void RLock() noexcept;
-  void RUnlock() noexcept;
+class KANON_CORE_API RWLock : noncopyable {
+ public:
+  RWLock();
+  ~RWLock() KANON_NOEXCEPT;
 
-  void WLock() noexcept;
-  void WUnlock() noexcept;
+  void RLock() KANON_NOEXCEPT;
+  void RUnlock() KANON_NOEXCEPT;
 
-private: 
+  void WLock() KANON_NOEXCEPT;
+  void WUnlock() KANON_NOEXCEPT;
+
+ private:
   DISABLE_EVIL_COPYABLE(RWLock)
 
   MutexLock mutex_;
@@ -36,48 +36,46 @@ private:
   /**
    * To avoid thundering herd all writer,
    * just notify one writer
-   */ 
+   */
   Condition cond_r_; //!< Wait when read_num_ > 0
 
   bool has_writer_;
-  uint32_t reader_num_; 
+  uint32_t reader_num_;
 };
 
 class RLockGuard {
-public:
-  RLockGuard(RWLock& lock)
+ public:
+  RLockGuard(RWLock &lock)
     : lock_(lock)
   {
     lock_.RLock();
   }
 
-  ~RLockGuard() noexcept { lock_.RUnlock(); }
+  ~RLockGuard() KANON_NOEXCEPT { lock_.RUnlock(); }
 
-private:
+ private:
   DISABLE_EVIL_COPYABLE(RLockGuard)
-  RWLock& lock_;
+  RWLock &lock_;
 };
 
 class WLockGuard {
-public:
-  WLockGuard(RWLock& lock)
+ public:
+  WLockGuard(RWLock &lock)
     : lock_(lock)
   {
     lock_.WLock();
   }
 
-  ~WLockGuard() noexcept { lock_.WUnlock(); }
+  ~WLockGuard() KANON_NOEXCEPT { lock_.WUnlock(); }
 
-private:
+ private:
   DISABLE_EVIL_COPYABLE(WLockGuard)
-  RWLock& lock_;
+  RWLock &lock_;
 };
 
-#define RLockGuard(x) \
-  assert(false, "This is temporary object")
+#define RLockGuard(x) assert(false, "This is temporary object")
 
-#define WLockGuard(x) \
-  assert(false, "This is temporary object")
+#define WLockGuard(x) assert(false, "This is temporary object")
 
 } // namespace kanon
 

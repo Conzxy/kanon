@@ -38,7 +38,7 @@ class Channel;
  *  Connector no such API to disconnect peer which is managed by the client,
  *  otherwise the handler of disconnect will be coupled to the server.
  */
-class Connector
+class KANON_NET_NO_API Connector
   : public std::enable_shared_from_this<Connector>
   , noncopyable {
   enum State : uint8_t {
@@ -62,7 +62,7 @@ class Connector
     return kanon::MakeSharedFromProtected<Connector>(loop, serv_addr);
   }
 
-  ~Connector() noexcept;
+  ~Connector() KANON_NOEXCEPT;
 
   /**
    * \brief Start connect to peer
@@ -93,17 +93,20 @@ class Connector
    */
   void Restrat();
 
-  void SetNewConnectionCallback(NewConnectionCallback cb) noexcept
+  void SetNewConnectionCallback(NewConnectionCallback cb) KANON_NOEXCEPT
   {
     new_connection_callback_ = std::move(cb);
   }
 
-  InetAddr const &GetServerAddr() const noexcept { return serv_addr_; }
+  InetAddr const &GetServerAddr() const KANON_NOEXCEPT { return serv_addr_; }
 
-  std::unique_ptr<Channel> channel() noexcept { return std::move(channel_); }
+  std::unique_ptr<Channel> channel() KANON_NOEXCEPT
+  {
+    return std::move(channel_);
+  }
 
  private:
-  void SetState(State s) noexcept { state_ = s; }
+  void SetState(State s) KANON_NOEXCEPT { state_ = s; }
 
   void Connect();
 

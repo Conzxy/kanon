@@ -86,13 +86,13 @@ private:
   
   // Maintained by Session instead of Item
   // !No need plus 2, since valueLen() contains.
-  u32 needBytes(Item* item) const noexcept {
+  u32 needBytes(Item* item) const KANON_NOEXCEPT {
     return item->valueLen() - hasReceiveBytes_;
   }
   
   // When process of a request has finished,
   // reset all state variable about this request.
-  void resetRequestParam() noexcept;
+  void resetRequestParam() KANON_NOEXCEPT;
 
 
 

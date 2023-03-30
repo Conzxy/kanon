@@ -59,13 +59,13 @@ class TcpServer : noncopyable {
   /**
    * \param reuseport
    */
-  TcpServer(EventLoop *loop, InetAddr const &listen_addr, StringArg name,
-            bool reuseport = false);
+  KANON_NET_API TcpServer(EventLoop *loop, InetAddr const &listen_addr,
+                          StringArg name, bool reuseport = false);
 
-  ~TcpServer() noexcept;
+  KANON_NET_API ~TcpServer() KANON_NOEXCEPT;
 
   //! Set the number of IO loop
-  void SetLoopNum(int num) noexcept;
+  KANON_NET_API void SetLoopNum(int num) KANON_NOEXCEPT;
 
 #if 0
   void SetPoolSize(size_t sz)
@@ -90,30 +90,30 @@ class TcpServer : noncopyable {
    * It is harmless although this is called many times.
    * thread-safe
    */
-  void StartRun() noexcept;
+  KANON_NET_API void StartRun() KANON_NOEXCEPT;
 
   //! \name getter
   //!@{
 
   //! Whether the server is running
-  bool IsRunning() noexcept;
+  KANON_NET_API bool IsRunning() KANON_NOEXCEPT;
 
-  void SetConnectionCallback(ConnectionCallback cb) noexcept
+  void SetConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
   {
     connection_callback_ = std::move(cb);
   }
 
-  void SetMessageCallback(MessageCallback cb) noexcept
+  void SetMessageCallback(MessageCallback cb) KANON_NOEXCEPT
   {
     message_callback_ = std::move(cb);
   }
 
-  void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
+  void SetWriteCompleteCallback(WriteCompleteCallback cb) KANON_NOEXCEPT
   {
     write_complete_callback_ = std::move(cb);
   }
 
-  EventLoop *GetLoop() noexcept { return loop_; }
+  EventLoop *GetLoop() KANON_NOEXCEPT { return loop_; }
 
   //!@}
   //
@@ -121,7 +121,10 @@ class TcpServer : noncopyable {
   //!@{
   void EnablePool(bool enable) { enable_pool_ = enable; }
 
-  void SetChunkPerBlock(size_t n) noexcept { conn_pool_.SetChunkPerBlock(n); }
+  void SetChunkPerBlock(size_t n) KANON_NOEXCEPT
+  {
+    conn_pool_.SetChunkPerBlock(n);
+  }
 
   //!@}
 

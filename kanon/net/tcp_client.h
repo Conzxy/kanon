@@ -43,46 +43,46 @@ class TcpClient
    * \param serv_addr Address of server that you want to connect
    * \param name Can be empty
    */
-  TcpClient(EventLoop *loop, InetAddr const &serv_addr,
-            std::string const &name = {});
+  KANON_NET_API TcpClient(EventLoop *loop, InetAddr const &serv_addr,
+                          std::string const &name = {});
 
  public:
-  ~TcpClient() noexcept;
+  KANON_NET_API ~TcpClient() KANON_NOEXCEPT;
 
-  void SetConnectionCallback(ConnectionCallback cb) noexcept
+  void SetConnectionCallback(ConnectionCallback cb) KANON_NOEXCEPT
   {
     connection_callback_ = std::move(cb);
   }
 
-  void SetMessageCallback(MessageCallback cb) noexcept
+  void SetMessageCallback(MessageCallback cb) KANON_NOEXCEPT
   {
     message_callback_ = std::move(cb);
   }
 
-  void SetWriteCompleteCallback(WriteCompleteCallback cb) noexcept
+  void SetWriteCompleteCallback(WriteCompleteCallback cb) KANON_NOEXCEPT
   {
     write_complete_callback_ = std::move(cb);
   }
 
   //! Active connect
-  void Connect();
+  KANON_NET_API void Connect();
   //! Active close
-  void Disconnect();
+  KANON_NET_API void Disconnect();
 
   /**
    * \brief Stop connecting to the server
    * \note Only useful when connection isn't established successfully
    */
-  void Stop();
+  KANON_NET_API void Stop();
 
-  InetAddr const &GetServerAddr() const noexcept;
+  KANON_NET_API InetAddr const &GetServerAddr() const KANON_NOEXCEPT;
 
   /**
    * Enable the client retry connect when client
    * is closed by peer(But if you call disconnect
    * early, this is useless)
    */
-  void EnableRetry() noexcept { retry_ = true; }
+  void EnableRetry() KANON_NOEXCEPT { retry_ = true; }
 
   //! \name getter
   //!@{
@@ -102,26 +102,27 @@ class TcpClient
    *   This only return nullptr or established conection.
    * \note Thread-safe
    */
-  TcpConnectionPtr GetConnection() const noexcept
+  TcpConnectionPtr GetConnection() const KANON_NOEXCEPT
   {
     MutexGuard guard{mutex_};
     return conn_;
   }
 
-  EventLoop *GetLoop() noexcept { return loop_; }
+  EventLoop *GetLoop() KANON_NOEXCEPT { return loop_; }
 
   //!@}
  private:
-  friend TcpClientPtr NewTcpClient(EventLoop *, InetAddr const &,
-                                   std::string const &, bool);
+  KANON_NET_API friend TcpClientPtr NewTcpClient(EventLoop *, InetAddr const &,
+                                                 std::string const &, bool);
 
   /* Register the callback
    * since can't do it in the ctor */
   void Init();
 
   /* Callback of Connector::NewConnection */
-  static void NewConnection(FdType sockfd, InetAddr const &serv_addr,
-                            std::weak_ptr<TcpClient> const &cli);
+  KANON_NET_NO_API static void
+  NewConnection(FdType sockfd, InetAddr const &serv_addr,
+                std::weak_ptr<TcpClient> const &cli);
 
   EventLoop *loop_;
   std::shared_ptr<Connector> connector_;
@@ -151,8 +152,10 @@ class TcpClient
  * \brief Create a tcp client in correct approach
  * \param compact Call std::make_shared if true, otherwise use `new` operator
  */
-TcpClientPtr NewTcpClient(EventLoop *loop, InetAddr const &serv_add,
-                          std::string const &name = {}, bool compact = true);
+KANON_NET_API TcpClientPtr NewTcpClient(EventLoop *loop,
+                                        InetAddr const &serv_add,
+                                        std::string const &name = {},
+                                        bool compact = true);
 
 //!@}
 } // namespace kanon

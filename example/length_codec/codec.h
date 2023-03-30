@@ -22,7 +22,7 @@ public:
   LengthHeaderCodec();
   explicit LengthHeaderCodec(MessageCallback cb);
 
-  void SetMaximumAcceptLength(uint64_t len) noexcept
+  void SetMaximumAcceptLength(uint64_t len) KANON_NOEXCEPT
   { max_accept_len_ = len; }
 
   void Send(TcpConnectionPtr const& conn, StringView msg);
