@@ -4,15 +4,15 @@ on:
   push:
     branches: ['win', 'master']
     paths:
-      - '**/win/**.cc'
-      - '**/win/**.h'
-      - '**/win/**.inl'
+      - '**/kanon/**.cc'
+      - '**/kanon/**.h'
+      - '**/kanon/**.inl'
   pull_request:
     branches: ['win']
     paths:
-      - '**/win/**.cc'
-      - '**/win/**.h'
-      - '**/win/**.inl'
+      - '**/kanon/**.cc'
+      - '**/kanon/**.h'
+      - '**/kanon/**.inl'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

@@ -4,15 +4,15 @@ on:
   push:
     branches: ['linux', 'master']
     paths:
-      - '**/linux/**.cc'
-      - '**/linux/**.h'
-      - '**/linux/**.inl'
+      - '**/kanon/**.cc'
+      - '**/kanon/**.h'
+      - '**/kanon/**.inl'
   pull_request:
     branches: ['linux']
     paths:
-      - '**/linux/**.cc'
-      - '**/linux/**.h'
-      - '**/linux/**.inl'
+      - '**/kanon/**.cc'
+      - '**/kanon/**.h'
+      - '**/kanon/**.inl'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
