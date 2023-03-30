@@ -2,9 +2,17 @@ name: Kanon CMake Windows CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ['win', 'master']
+    paths:
+      - '**/win/**.cc'
+      - '**/win/**.h'
+      - '**/win/**.inl'
   pull_request:
-    branches: [ "master" ]
+    branches: ['win']
+    paths:
+      - '**/win/**.cc'
+      - '**/win/**.h'
+      - '**/win/**.inl'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -46,7 +54,7 @@ jobs:
       # Build your program with the given configuration
       run: |
         cd ${{github.workspace}}/build
-        cmake --build . --parallel $(nproc)
+        cmake --build . --parallel 2 --config ${{env.BUILD_TYPE}}
       shell: pwsh
       
     - name: CMake Install

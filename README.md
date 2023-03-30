@@ -1,5 +1,6 @@
 # kanon
-![](https://img.shields.io/badge/LICENSE-MIT-red) ![](https://img.shields.io/badge/Language-C%2B%2B11-orange) ![](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue)
+![license](https://img.shields.io/github/license/conzxy/kanon) ![](https://img.shields.io/badge/Language-C%2B%2B11-orange) ![](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue)  
+![win-build](https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-windows.yml?label=Win%20build&logo=windows&logoColor=blue) ![linux-build](https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-linux.yml?label=Linux%20build&logo=Linux) ![commit-date](https://img.shields.io/github/last-commit/conzxy/kanon)
 ## Introduction
 `kanon`是一个使用`C++11`编写的基于**事件驱动**(event-driven)的网络库(network libaray)。  
 具体来说，该库基于`Reactor`模式，其网络模型是`同步非阻塞`（synchronized-unblocking），依赖的的API是：`poll()`(unix-like/linux)，`epoll`(linux)、`GetQueuedCompletionStatusEx()`(Windows)。  
