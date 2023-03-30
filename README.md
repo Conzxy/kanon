@@ -98,10 +98,3 @@ void OnConnection(TcpConnectionPtr const& conn)
 除此之外，你也可以注册`OnMessage`回调以处理信息（比如请求等），还有其他回调你也可以参考[tcp_connection.h](https://github.com/Conzxy/kanon/blob/master/kanon/net/tcp_connection.h)。
 
 其他的例子可以参考[example](https://github.com/Conzxy/kanon/tree/master/example) 目录。
-## Document
-目前仅有网络模块的API文档，是通过`Doxygen`生成的。
-
-> 目前已关闭
-Website: http://47.99.92.230/
-（由[kanon_httpd](https://github.com/Conzxy/kanon_httpd)支持）
-
