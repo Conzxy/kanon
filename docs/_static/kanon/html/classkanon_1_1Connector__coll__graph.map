@@ -1,0 +1,7 @@
+<map id="kanon::Connector" name="kanon::Connector">
+<area shape="rect" id="node1" title="Connect to peer(server)" alt="" coords="471,89,607,115"/>
+<area shape="rect" id="node2" title=" " alt="" coords="160,5,347,47"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,97,111,123"/>
+<area shape="rect" id="node4" href="$classkanon_1_1EventLoop.html" title="A loop that process various events." alt="" coords="184,122,323,149"/>
+<area shape="rect" id="node5" href="$classkanon_1_1InetAddr.html" title="Represent a internet address(Ipv4 or Ipv6)" alt="" coords="191,173,316,199"/>
+</map>

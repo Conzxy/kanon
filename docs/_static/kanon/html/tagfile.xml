@@ -1,0 +1,1866 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<tagfile>
+  <compound kind="class">
+    <name>kanon::Acceptor</name>
+    <filename>classkanon_1_1Acceptor.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>Acceptor</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a330571712fefc0a225a48ad30cb8b121</anchor>
+      <arglist>(EventLoop *loop, InetAddr const &amp;addr, bool reuseport=false)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>Listening</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a2927e7d6af69e1615ccceef68f17768b</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>Listen</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a38bc164ccb3f25e4be6881f048504e44</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>EventLoop *</type>
+      <name>loop_</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a58fb617044a0ec5767ddd38c1723bfc7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>Socket</type>
+      <name>socket_</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a81231c51ba6558e5f64751c31455bc05</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>Channel</type>
+      <name>channel_</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a83990c1d56eacf006355d52bb5073f28</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::atomic_bool</type>
+      <name>listening_</name>
+      <anchorfile>classkanon_1_1Acceptor.html</anchorfile>
+      <anchor>a8ba61c137fa06b50de2867aa0666114e</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::ConnectionBase</name>
+    <filename>classkanon_1_1ConnectionBase.html</filename>
+    <templarg></templarg>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe37856ba73ff4f259d0e348bd6de9a8</anchor>
+      <arglist>(InputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a14be29a7c26594a1b747d0726b6b11ac</anchor>
+      <arglist>(OutputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3f28f952a51766e3c02aab0e801a4245</anchor>
+      <arglist>(void const *data, size_t len)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1d693c624e80b1ace8b44f44bbb2bad9</anchor>
+      <arglist>(StringView data)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ShutdownWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aca960ac097b4bc921149e45afada0099</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ForceClose</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3d602c9f16242b005cb68cbc5b472563</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetContext</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a99ec871277612385b75d4829a68ab142</anchor>
+      <arglist>(ContextType context) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>DisbaleRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a8de8ea8f2a4e24946026a369ed41415a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>EnableRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a245915ba42151e69fa7ea202ae611f45</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetLoop</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a70833120286ce321a94007c5f0774caa</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsConnected</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a976c8669ccdcb8798a751eedcd433167</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>HandleLtRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a9cdf87d774565753e8842e8e2a249bd3</anchor>
+      <arglist>(TimeStamp recv_time)</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>HandleLtWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a01c35f9771349e72de15044aa31fc42b</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>InputBuffer</type>
+      <name>input_buffer_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1b29d93f448f5d3c953667e67e0f9884</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>OutputBuffer</type>
+      <name>output_buffer_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a13afc4e90efb72a3f54789103afb4ae3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>MessageCallback</type>
+      <name>message_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1a58c40f2d64576e245aeecff69dc08f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>ConnectionCallback</type>
+      <name>connection_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a9575c20633813ffd32cfd69b79fc89dc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>WriteCompleteCallback</type>
+      <name>write_complete_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a89cb00ad8d796b498a03a8bebe85afeb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>HighWaterMarkCallback</type>
+      <name>high_water_mark_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a85444715814685c4f1147d64aee4157b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>CloseCallback</type>
+      <name>close_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>ad7cd09430710a1d7dbab837ba7fee246</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>RawAny</type>
+      <name>context_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aa469443fccc9deeae33f18aa2e779b81</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>State</type>
+      <name>state_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe3dd15427b0c199329f976d1dfebfae</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe37856ba73ff4f259d0e348bd6de9a8</anchor>
+      <arglist>(InputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a14be29a7c26594a1b747d0726b6b11ac</anchor>
+      <arglist>(OutputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3f28f952a51766e3c02aab0e801a4245</anchor>
+      <arglist>(void const *data, size_t len)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1d693c624e80b1ace8b44f44bbb2bad9</anchor>
+      <arglist>(StringView data)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ShutdownWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aca960ac097b4bc921149e45afada0099</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ForceClose</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3d602c9f16242b005cb68cbc5b472563</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetContext</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a99ec871277612385b75d4829a68ab142</anchor>
+      <arglist>(ContextType context) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>DisbaleRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a8de8ea8f2a4e24946026a369ed41415a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>EnableRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a245915ba42151e69fa7ea202ae611f45</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetLoop</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a70833120286ce321a94007c5f0774caa</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsConnected</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a976c8669ccdcb8798a751eedcd433167</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>ConnectionBase&lt; TcpConnection &gt;</name>
+    <filename>classkanon_1_1ConnectionBase.html</filename>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe37856ba73ff4f259d0e348bd6de9a8</anchor>
+      <arglist>(InputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a14be29a7c26594a1b747d0726b6b11ac</anchor>
+      <arglist>(OutputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3f28f952a51766e3c02aab0e801a4245</anchor>
+      <arglist>(void const *data, size_t len)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1d693c624e80b1ace8b44f44bbb2bad9</anchor>
+      <arglist>(StringView data)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ShutdownWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aca960ac097b4bc921149e45afada0099</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ForceClose</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3d602c9f16242b005cb68cbc5b472563</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetContext</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a99ec871277612385b75d4829a68ab142</anchor>
+      <arglist>(ContextType context) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>DisbaleRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a8de8ea8f2a4e24946026a369ed41415a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>EnableRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a245915ba42151e69fa7ea202ae611f45</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetLoop</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a70833120286ce321a94007c5f0774caa</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsConnected</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a976c8669ccdcb8798a751eedcd433167</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>HandleLtRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a9cdf87d774565753e8842e8e2a249bd3</anchor>
+      <arglist>(TimeStamp recv_time)</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>HandleLtWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a01c35f9771349e72de15044aa31fc42b</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>InputBuffer</type>
+      <name>input_buffer_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1b29d93f448f5d3c953667e67e0f9884</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>OutputBuffer</type>
+      <name>output_buffer_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a13afc4e90efb72a3f54789103afb4ae3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>MessageCallback</type>
+      <name>message_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1a58c40f2d64576e245aeecff69dc08f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>ConnectionCallback</type>
+      <name>connection_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a9575c20633813ffd32cfd69b79fc89dc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>WriteCompleteCallback</type>
+      <name>write_complete_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a89cb00ad8d796b498a03a8bebe85afeb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>HighWaterMarkCallback</type>
+      <name>high_water_mark_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a85444715814685c4f1147d64aee4157b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>CloseCallback</type>
+      <name>close_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>ad7cd09430710a1d7dbab837ba7fee246</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>RawAny</type>
+      <name>context_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aa469443fccc9deeae33f18aa2e779b81</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>State</type>
+      <name>state_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe3dd15427b0c199329f976d1dfebfae</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe37856ba73ff4f259d0e348bd6de9a8</anchor>
+      <arglist>(InputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a14be29a7c26594a1b747d0726b6b11ac</anchor>
+      <arglist>(OutputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3f28f952a51766e3c02aab0e801a4245</anchor>
+      <arglist>(void const *data, size_t len)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1d693c624e80b1ace8b44f44bbb2bad9</anchor>
+      <arglist>(StringView data)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ShutdownWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aca960ac097b4bc921149e45afada0099</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ForceClose</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3d602c9f16242b005cb68cbc5b472563</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetContext</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a99ec871277612385b75d4829a68ab142</anchor>
+      <arglist>(ContextType context) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>DisbaleRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a8de8ea8f2a4e24946026a369ed41415a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>EnableRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a245915ba42151e69fa7ea202ae611f45</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetLoop</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a70833120286ce321a94007c5f0774caa</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsConnected</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a976c8669ccdcb8798a751eedcd433167</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>ConnectionBase&lt; UnixConnection &gt;</name>
+    <filename>classkanon_1_1ConnectionBase.html</filename>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe37856ba73ff4f259d0e348bd6de9a8</anchor>
+      <arglist>(InputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a14be29a7c26594a1b747d0726b6b11ac</anchor>
+      <arglist>(OutputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3f28f952a51766e3c02aab0e801a4245</anchor>
+      <arglist>(void const *data, size_t len)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1d693c624e80b1ace8b44f44bbb2bad9</anchor>
+      <arglist>(StringView data)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ShutdownWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aca960ac097b4bc921149e45afada0099</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ForceClose</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3d602c9f16242b005cb68cbc5b472563</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetContext</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a99ec871277612385b75d4829a68ab142</anchor>
+      <arglist>(ContextType context) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>DisbaleRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a8de8ea8f2a4e24946026a369ed41415a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>EnableRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a245915ba42151e69fa7ea202ae611f45</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetLoop</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a70833120286ce321a94007c5f0774caa</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsConnected</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a976c8669ccdcb8798a751eedcd433167</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>HandleLtRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a9cdf87d774565753e8842e8e2a249bd3</anchor>
+      <arglist>(TimeStamp recv_time)</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>HandleLtWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a01c35f9771349e72de15044aa31fc42b</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>InputBuffer</type>
+      <name>input_buffer_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1b29d93f448f5d3c953667e67e0f9884</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>OutputBuffer</type>
+      <name>output_buffer_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a13afc4e90efb72a3f54789103afb4ae3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>MessageCallback</type>
+      <name>message_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1a58c40f2d64576e245aeecff69dc08f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>ConnectionCallback</type>
+      <name>connection_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a9575c20633813ffd32cfd69b79fc89dc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>WriteCompleteCallback</type>
+      <name>write_complete_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a89cb00ad8d796b498a03a8bebe85afeb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>HighWaterMarkCallback</type>
+      <name>high_water_mark_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a85444715814685c4f1147d64aee4157b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>CloseCallback</type>
+      <name>close_callback_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>ad7cd09430710a1d7dbab837ba7fee246</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>RawAny</type>
+      <name>context_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aa469443fccc9deeae33f18aa2e779b81</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>State</type>
+      <name>state_</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe3dd15427b0c199329f976d1dfebfae</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>abe37856ba73ff4f259d0e348bd6de9a8</anchor>
+      <arglist>(InputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a14be29a7c26594a1b747d0726b6b11ac</anchor>
+      <arglist>(OutputBuffer &amp;buf)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3f28f952a51766e3c02aab0e801a4245</anchor>
+      <arglist>(void const *data, size_t len)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Send</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a1d693c624e80b1ace8b44f44bbb2bad9</anchor>
+      <arglist>(StringView data)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ShutdownWrite</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>aca960ac097b4bc921149e45afada0099</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>ForceClose</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a3d602c9f16242b005cb68cbc5b472563</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetContext</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a99ec871277612385b75d4829a68ab142</anchor>
+      <arglist>(ContextType context) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>DisbaleRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a8de8ea8f2a4e24946026a369ed41415a</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>EnableRead</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a245915ba42151e69fa7ea202ae611f45</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetLoop</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a70833120286ce321a94007c5f0774caa</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsConnected</name>
+      <anchorfile>classkanon_1_1ConnectionBase.html</anchorfile>
+      <anchor>a976c8669ccdcb8798a751eedcd433167</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::Connector</name>
+    <filename>classkanon_1_1Connector.html</filename>
+    <member kind="function">
+      <type>void</type>
+      <name>StartRun</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a0b060e29ba27679b5c67c846e9e9a3b7</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>Stop</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a6c93037e24ba97f1020cd2d046f14f6c</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>Restrat</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>afc90758f0d265a266137238d629c0177</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>void</type>
+      <name>CompleteConnect</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a937746292f7225896dd90796181fd1c7</anchor>
+      <arglist>(FdType sockfd)</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>void</type>
+      <name>Retry</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a7ba8db38fdaff3544c92cc49280709c4</anchor>
+      <arglist>(FdType sockfd)</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>void</type>
+      <name>ResetChannel</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a771fbc451a3f6afabb0da51b80a60dd5</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>uint32_t</type>
+      <name>retry_interval_</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a842ce0e19a16169490e1b338469d7b43</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>State</type>
+      <name>state_</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a3bb208aec5f9e6750a414ee0fcbf2de3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>bool</type>
+      <name>connect_</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>ac2c3cb0712dc28d6e349dc0a52e7bd02</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>kanon::optional&lt; TimerId &gt;</type>
+      <name>timer_</name>
+      <anchorfile>classkanon_1_1Connector.html</anchorfile>
+      <anchor>a7ab63bd2f1310905404264c5b910e9ab</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::Epoller</name>
+    <filename>classkanon_1_1Epoller.html</filename>
+    <base>kanon::PollerBase</base>
+    <member kind="function">
+      <type></type>
+      <name>Epoller</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>abe1e1036a35b81bc17e5a03211e773d3</anchor>
+      <arglist>(EventLoop *loop)</arglist>
+    </member>
+    <member kind="function">
+      <type>TimeStamp</type>
+      <name>Poll</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>aff3a8219f247320ff728863effbdb95e</anchor>
+      <arglist>(int ms, ChannelVec &amp;active_channels) KANON_OVERRIDE</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>UpdateChannel</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>a3544aab8f5e03295d4e683a9f9854da5</anchor>
+      <arglist>(Channel *ch) KANON_OVERRIDE</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>RemoveChannel</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>aa9dbe17c8ab9f9aad70eab232c7a3950</anchor>
+      <arglist>(Channel *ch) KANON_OVERRIDE</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetEdgeTriggertMode</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>a40067bbcb6388e77746aa285cf062bc4</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsEdgeTriggerMode</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>af0ea9d603cfb8e5b0f5d0c9fd31ebb64</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>void</type>
+      <name>FillActiveChannels</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>a74739276b2db36e6e92418e395fbdec9</anchor>
+      <arglist>(int ev_nums, ChannelVec &amp;activeChannels) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>void</type>
+      <name>UpdateEpollEvent</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>a43751048e21e7f368f0682dfd67ffc35</anchor>
+      <arglist>(int op, Channel *ch) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>int</type>
+      <name>epoll_fd_</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>a94aefdcd88890fb61da8d3bb0c30c3da</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::vector&lt; Event &gt;</type>
+      <name>events_</name>
+      <anchorfile>classkanon_1_1Epoller.html</anchorfile>
+      <anchor>a82f2c63d5f70346249449759b877a078</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::EventLoop</name>
+    <filename>classkanon_1_1EventLoop.html</filename>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>EventLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>abd469c63f6cab327e33e9fa60ab72ea7</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>EventLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a0eef68cbc3888161f15980cb407a1dd4</anchor>
+      <arglist>(bool is_poller)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>StartLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ad0330b5c5ac235af724c35c3f16766c2</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Quit</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a8a3ce58166373896a3435b6b8ec0e858</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>RunInLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ad63e69b85ca69bed5cdcc079d5a38ff0</anchor>
+      <arglist>(FunctorCallback)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>QueueToLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a54b9beb628bf28d429a0aadbe13ff3e7</anchor>
+      <arglist>(FunctorCallback)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetEdgeTriggerMode</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a47170f55eacbb913e3d7e72bf7c3d8b6</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API bool</type>
+      <name>IsEdgeTriggerMode</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>adb1e0a45fd4623986947d6946d9b577f</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API TimerId</type>
+      <name>RunAt</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a9796c3553533a937c8d9f467b44b6051</anchor>
+      <arglist>(TimerCallback cb, TimeStamp expiration)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE TimerId</type>
+      <name>RunAfter</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a48da65ed77e5b994b5ebb9a6b510bcf5</anchor>
+      <arglist>(TimerCallback cb, double delay)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API TimerId</type>
+      <name>RunEvery</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ac75a8db5a1f53381ac97074b8960d64a</anchor>
+      <arglist>(TimerCallback cb, TimeStamp expiration, double interval)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE TimerId</type>
+      <name>RunEvery</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a9f4f9d81603af281b9aa2473237c1f8e</anchor>
+      <arglist>(TimerCallback cb, double interval)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>CancelTimer</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a3957e9a626865dd0c2aa35a5fdcd9d40</anchor>
+      <arglist>(TimerId timer_id)</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>KANON_NET_API void</type>
+      <name>Wakeup</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a78fcf7f34b510ee335883ee04ee08ab1</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>KANON_NET_API void</type>
+      <name>CallFunctors</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a58c7d87acd14a0598386ddc705b72739</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>KANON_NET_API void</type>
+      <name>EvRead</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>af823f1988d0a3da72690d13ff9468b1d</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>KANON_NET_API void</type>
+      <name>AbortNotInThread</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a0e3e055025e6b603bbb2ccdf94f7cecc</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="private">
+      <type>std::vector&lt; FunctorCallback &gt; functors_</type>
+      <name>GUARDED_BY</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a8578ab8176860a549c180004289374b3</anchor>
+      <arglist>(lock_)</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>const process::PId</type>
+      <name>owner_thread_id_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a9415af5eca9086069feb2511e6bcea90</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>bool</type>
+      <name>looping_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>afec6b6116ff334fe7f90a2ee16acb36f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::atomic&lt; bool &gt;</type>
+      <name>quit_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a59f01cdf9e000872c18fb1f696d678d4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>bool</type>
+      <name>calling_functors_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a7fc5f697ebbc1410aebd5ba791b6174e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>bool</type>
+      <name>is_poller_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a5ec7868bdca75b9efad8fcf43ab835a2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::unique_ptr&lt; PollerBase &gt;</type>
+      <name>poller_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a3711f0b35e81abeb55799793c939fc6e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::unique_ptr&lt; Channel &gt;</type>
+      <name>ev_channel_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>aa0f837a2b80071accc09962c03067fd5</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>MutexLock</type>
+      <name>lock_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>acd468c6ff29f6035273d4d137fd32702</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::unique_ptr&lt; TimerQueue &gt;</type>
+      <name>timer_queue_</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ad32212a9e938a89c72e61ac0270f4303</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>StartLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ad0330b5c5ac235af724c35c3f16766c2</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Quit</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a8a3ce58166373896a3435b6b8ec0e858</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>RunInLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ad63e69b85ca69bed5cdcc079d5a38ff0</anchor>
+      <arglist>(FunctorCallback)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>QueueToLoop</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a54b9beb628bf28d429a0aadbe13ff3e7</anchor>
+      <arglist>(FunctorCallback)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetEdgeTriggerMode</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a47170f55eacbb913e3d7e72bf7c3d8b6</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API bool</type>
+      <name>IsEdgeTriggerMode</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>adb1e0a45fd4623986947d6946d9b577f</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API TimerId</type>
+      <name>RunAt</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a9796c3553533a937c8d9f467b44b6051</anchor>
+      <arglist>(TimerCallback cb, TimeStamp expiration)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE TimerId</type>
+      <name>RunAfter</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a48da65ed77e5b994b5ebb9a6b510bcf5</anchor>
+      <arglist>(TimerCallback cb, double delay)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API TimerId</type>
+      <name>RunEvery</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>ac75a8db5a1f53381ac97074b8960d64a</anchor>
+      <arglist>(TimerCallback cb, TimeStamp expiration, double interval)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE TimerId</type>
+      <name>RunEvery</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a9f4f9d81603af281b9aa2473237c1f8e</anchor>
+      <arglist>(TimerCallback cb, double interval)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>CancelTimer</name>
+      <anchorfile>classkanon_1_1EventLoop.html</anchorfile>
+      <anchor>a3957e9a626865dd0c2aa35a5fdcd9d40</anchor>
+      <arglist>(TimerId timer_id)</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::EventLoopPool</name>
+    <filename>classkanon_1_1EventLoopPool.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>EventLoopPool</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>a4af219814936757b5c2c13d95db90e41</anchor>
+      <arglist>(EventLoop *base_loop, std::string const &amp;name={})</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>SetLoopNum</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>a35fdf138ba54f9f822a5b9308f490ea9</anchor>
+      <arglist>(int loop_num) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>IsStarted</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>abba8cc09421b562ac39f3d24a20daeb2</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>StartRun</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>ab4f1a98bc882b92d2ae1086c4bcbdb0d</anchor>
+      <arglist>(ThreadInitCallback const &amp;cb)</arglist>
+    </member>
+    <member kind="function">
+      <type>EventLoop *</type>
+      <name>GetNextLoop</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>abf93128a1776542d142f15a88ee155db</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>EventLoop *</type>
+      <name>base_loop_</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>a7e9d1422dde959933c07a71cbbe63718</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>bool</type>
+      <name>started_</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>adc992eca4508dd353ac7b44a9915abd1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>int</type>
+      <name>loop_num_</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>a557906abaed1643a9ed69d30e5be363b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>int</type>
+      <name>next_</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>ac8e173333728d3656e555ae53cffac39</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::string</type>
+      <name>name_</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>ae9c181a0bdd723246bfc412f510b76c3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>LoopThreadVector</type>
+      <name>loop_threads_</name>
+      <anchorfile>classkanon_1_1EventLoopPool.html</anchorfile>
+      <anchor>a95798aab21f05cada0b6e880171bbea5</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::EventLoopThread</name>
+    <filename>classkanon_1_1EventLoopThread.html</filename>
+    <member kind="function">
+      <type>KANON_INLINE EventLoop *</type>
+      <name>StartRun</name>
+      <anchorfile>classkanon_1_1EventLoopThread.html</anchorfile>
+      <anchor>a1a5dd52a5ceaed4f10911b2867c90f11</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::InetAddr</name>
+    <filename>classkanon_1_1InetAddr.html</filename>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>InetAddr</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a5fb32f9a95b038453e63bb6284b02cd0</anchor>
+      <arglist>(StringArg hostname, StringArg service)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>InetAddr</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>ae4cc0dafea26fcf779fc769a99df0b4b</anchor>
+      <arglist>(Port port=0, bool loopback=false, bool v6=false)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>InetAddr</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>af2e2ea4b65e60141b507a6815ca05ac9</anchor>
+      <arglist>(StringView ip, Port port)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>InetAddr</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a9f7d0a31c2c6b14fcfaeda4d0eb9b700</anchor>
+      <arglist>(StringView address)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>InetAddr</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>afb73a789b4bd29bb5dcc3b4640c15cc2</anchor>
+      <arglist>(struct sockaddr_in addr)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>InetAddr</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a39dbd51ece7805c0d48c39c06b0af693</anchor>
+      <arglist>(struct sockaddr_in6 addr6)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API std::string</type>
+      <name>ToIpPort</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a2c6bf6e9c496c5048f8f8302df559881</anchor>
+      <arglist>() const</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API std::string</type>
+      <name>ToIp</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a3415da1203c14b334486758d4987b421</anchor>
+      <arglist>() const</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE struct sockaddr_in const  *</type>
+      <name>ToIpv4</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>acf43ac7971d15bb8783f9685ee39d19c</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE struct sockaddr_in6 const  *</type>
+      <name>ToIpv6</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>abcb6c1884198de76637a1bc7935db3fe</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE Family</type>
+      <name>GetFamily</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>ad86ef32a41542ad1ed03e5f116bb4600</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API Port</type>
+      <name>GetPort</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>adb334d688c6782ed52ebf783120eb199</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE bool</type>
+      <name>IsIpv4</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a20d859ed0509767a1e2a3b9656b12f0d</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static KANON_NET_API std::vector&lt; InetAddr &gt;</type>
+      <name>Resolve</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a0716f6951fd1dd984dfdcdbac0f7f12b</anchor>
+      <arglist>(StringArg hostname, StringArg service, bool is_server=false)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static KANON_NET_API std::vector&lt; InetAddr &gt;</type>
+      <name>Resolve</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>ace316dc27977499d17fa67f732f50618</anchor>
+      <arglist>(StringArg hostname, StringArg service, struct addrinfo const *hint)</arglist>
+    </member>
+    <member kind="variable">
+      <type>sockaddr_in</type>
+      <name>addr_</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>ab47a873c76bfb1e29986525b9af50546</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>sockaddr_in6</type>
+      <name>addr6_</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a546ebb45b4d8aac6b2179b2d1d6032ca</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API std::string</type>
+      <name>ToIpPort</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a2c6bf6e9c496c5048f8f8302df559881</anchor>
+      <arglist>() const</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API std::string</type>
+      <name>ToIp</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a3415da1203c14b334486758d4987b421</anchor>
+      <arglist>() const</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE struct sockaddr_in const  *</type>
+      <name>ToIpv4</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>acf43ac7971d15bb8783f9685ee39d19c</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE struct sockaddr_in6 const  *</type>
+      <name>ToIpv6</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>abcb6c1884198de76637a1bc7935db3fe</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE Family</type>
+      <name>GetFamily</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>ad86ef32a41542ad1ed03e5f116bb4600</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API Port</type>
+      <name>GetPort</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>adb334d688c6782ed52ebf783120eb199</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_INLINE bool</type>
+      <name>IsIpv4</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a20d859ed0509767a1e2a3b9656b12f0d</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static KANON_NET_API std::vector&lt; InetAddr &gt;</type>
+      <name>Resolve</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>a0716f6951fd1dd984dfdcdbac0f7f12b</anchor>
+      <arglist>(StringArg hostname, StringArg service, bool is_server=false)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static KANON_NET_API std::vector&lt; InetAddr &gt;</type>
+      <name>Resolve</name>
+      <anchorfile>classkanon_1_1InetAddr.html</anchorfile>
+      <anchor>ace316dc27977499d17fa67f732f50618</anchor>
+      <arglist>(StringArg hostname, StringArg service, struct addrinfo const *hint)</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::InetAddrException</name>
+    <filename>classkanon_1_1InetAddrException.html</filename>
+  </compound>
+  <compound kind="class">
+    <name>kanon::IocpPoller</name>
+    <filename>classkanon_1_1IocpPoller.html</filename>
+    <base>kanon::PollerBase</base>
+    <member kind="function" virtualness="virtual">
+      <type>virtual TimeStamp</type>
+      <name>Poll</name>
+      <anchorfile>classkanon_1_1IocpPoller.html</anchorfile>
+      <anchor>a4e7584547c63f23515eb427744743baa</anchor>
+      <arglist>(int ms, ChannelVec &amp;active_channels) override</arglist>
+    </member>
+    <member kind="function" virtualness="virtual">
+      <type>virtual void</type>
+      <name>UpdateChannel</name>
+      <anchorfile>classkanon_1_1IocpPoller.html</anchorfile>
+      <anchor>a199c41d1995fdafb6e5dcd711ba7d5ec</anchor>
+      <arglist>(Channel *ch) override</arglist>
+    </member>
+    <member kind="function" virtualness="virtual">
+      <type>virtual void</type>
+      <name>RemoveChannel</name>
+      <anchorfile>classkanon_1_1IocpPoller.html</anchorfile>
+      <anchor>add7d36977a8468c139ec0a2670a14479</anchor>
+      <arglist>(Channel *ch) override</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::ITimerQueuePlatform</name>
+    <filename>classkanon_1_1ITimerQueuePlatform.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>ITimerQueuePlatform</name>
+      <anchorfile>classkanon_1_1ITimerQueuePlatform.html</anchorfile>
+      <anchor>ab8de2a101ea5f5c70171bacafb8d9902</anchor>
+      <arglist>(EventLoop *loop)</arglist>
+    </member>
+    <member kind="function" virtualness="pure">
+      <type>virtual TimerId</type>
+      <name>AddTimer</name>
+      <anchorfile>classkanon_1_1ITimerQueuePlatform.html</anchorfile>
+      <anchor>a11a577248b61daae457bc61cda726e96</anchor>
+      <arglist>(TimerCallback cb, TimeStamp time, double interval)=0</arglist>
+    </member>
+    <member kind="function" virtualness="pure">
+      <type>virtual void</type>
+      <name>CancelTimer</name>
+      <anchorfile>classkanon_1_1ITimerQueuePlatform.html</anchorfile>
+      <anchor>a26d7f491df834ca36ac6e841fc4d4a82</anchor>
+      <arglist>(TimerId const id)=0</arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>EventLoop *</type>
+      <name>loop_</name>
+      <anchorfile>classkanon_1_1ITimerQueuePlatform.html</anchorfile>
+      <anchor>a946c7bf55575eeb8b0e463919a6c1455</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::Poller</name>
+    <filename>classkanon_1_1Poller.html</filename>
+    <base>kanon::PollerBase</base>
+    <member kind="function">
+      <type></type>
+      <name>Poller</name>
+      <anchorfile>classkanon_1_1Poller.html</anchorfile>
+      <anchor>ab93177414346efb2124297febc955018</anchor>
+      <arglist>(EventLoop *loop)</arglist>
+    </member>
+    <member kind="function">
+      <type>TimeStamp</type>
+      <name>Poll</name>
+      <anchorfile>classkanon_1_1Poller.html</anchorfile>
+      <anchor>ab4d39c623d554db8682301440622ab7e</anchor>
+      <arglist>(int ms, ChannelVec &amp;active_channels) KANON_NOEXCEPT KANON_OVERRIDE</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>UpdateChannel</name>
+      <anchorfile>classkanon_1_1Poller.html</anchorfile>
+      <anchor>a1c383ee18e9265a6b0774cf009a7f5e1</anchor>
+      <arglist>(Channel *ch) KANON_OVERRIDE</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>RemoveChannel</name>
+      <anchorfile>classkanon_1_1Poller.html</anchorfile>
+      <anchor>a60e69919a03d48ad6c6e51c8254c4471</anchor>
+      <arglist>(Channel *ch) KANON_OVERRIDE</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::vector&lt; struct pollfd &gt;</type>
+      <name>pollfds_</name>
+      <anchorfile>classkanon_1_1Poller.html</anchorfile>
+      <anchor>ad01de9ac9d44c29dff196f710ab637fc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::unordered_map&lt; int, Channel * &gt;</type>
+      <name>channels_map_</name>
+      <anchorfile>classkanon_1_1Poller.html</anchorfile>
+      <anchor>ac60e0e0664e229f2bc4a7598644aa62d</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::PollerBase</name>
+    <filename>classkanon_1_1PollerBase.html</filename>
+    <member kind="function" virtualness="pure">
+      <type>virtual TimeStamp</type>
+      <name>Poll</name>
+      <anchorfile>classkanon_1_1PollerBase.html</anchorfile>
+      <anchor>ae30605d74f47c08594e8ab8e6edb103b</anchor>
+      <arglist>(int ms, ChannelVec &amp;active_channels)=0</arglist>
+    </member>
+    <member kind="function" virtualness="pure">
+      <type>virtual void</type>
+      <name>UpdateChannel</name>
+      <anchorfile>classkanon_1_1PollerBase.html</anchorfile>
+      <anchor>a5aa72b173ab86fe0faeb624aac54b417</anchor>
+      <arglist>(Channel *ch)=0</arglist>
+    </member>
+    <member kind="function" virtualness="pure">
+      <type>virtual void</type>
+      <name>RemoveChannel</name>
+      <anchorfile>classkanon_1_1PollerBase.html</anchorfile>
+      <anchor>a7e4aceca85d3d68ad9e451f583bdc4a6</anchor>
+      <arglist>(Channel *ch)=0</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>AssertInThread</name>
+      <anchorfile>classkanon_1_1PollerBase.html</anchorfile>
+      <anchor>a3b153912e918677c05ae3c6c04ce13de</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::Socket</name>
+    <filename>classkanon_1_1Socket.html</filename>
+  </compound>
+  <compound kind="class">
+    <name>kanon::TcpClient</name>
+    <filename>classkanon_1_1TcpClient.html</filename>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Connect</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a89df4643669a0e02596c1ade2dab8b7c</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Disconnect</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a833bee91787684fabb8dd5cf6b9a5afb</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>Stop</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a443e967102416741ed8332c3bb65a90e</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>EnableRetry</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>ac5ea59666703b67db2cd5b59141fb64f</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>TcpConnectionPtr</type>
+      <name>GetConnection</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a64e9299602ade5b5b745a34ce468a4b9</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>KANON_NET_API</type>
+      <name>TcpClient</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a9f729cc2d6dc63e4cc420254237f8e52</anchor>
+      <arglist>(EventLoop *loop, InetAddr const &amp;serv_addr, std::string const &amp;name={})</arglist>
+    </member>
+    <member kind="friend" protection="private">
+      <type>KANON_NET_API friend TcpClientPtr</type>
+      <name>NewTcpClient</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a2eb7a411ad27ef66983f86ffff0b49b4</anchor>
+      <arglist>(EventLoop *, InetAddr const &amp;, std::string const &amp;, bool)</arglist>
+    </member>
+    <member kind="function">
+      <type>TcpConnectionPtr</type>
+      <name>GetConnection</name>
+      <anchorfile>classkanon_1_1TcpClient.html</anchorfile>
+      <anchor>a64e9299602ade5b5b745a34ce468a4b9</anchor>
+      <arglist>() const KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::TcpConnection</name>
+    <filename>classkanon_1_1TcpConnection.html</filename>
+    <base>ConnectionBase&lt; TcpConnection &gt;</base>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetNoDelay</name>
+      <anchorfile>group__net.html</anchorfile>
+      <anchor>ga164fd0019b21e235ece2768ec234cebe</anchor>
+      <arglist>(bool flag) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetKeepAlive</name>
+      <anchorfile>group__net.html</anchorfile>
+      <anchor>ga7e4814d31a00df6af50f70bdb27cda6d</anchor>
+      <arglist>(bool flag) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static TcpConnectionPtr</type>
+      <name>NewTcpConnection</name>
+      <anchorfile>group__net.html</anchorfile>
+      <anchor>ga26e350c7fa8a166e81ccc0f6137d2c55</anchor>
+      <arglist>(EventLoop *loop, std::string const &amp;name, int sockfd, InetAddr const &amp;local_addr, InetAddr const &amp;peer_addr, Alloc const &amp;a)</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::TcpServer</name>
+    <filename>classkanon_1_1TcpServer.html</filename>
+    <member kind="function">
+      <type>KANON_NET_API</type>
+      <name>TcpServer</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>abda39b198d7d9faa41fc5c021815f3f8</anchor>
+      <arglist>(EventLoop *loop, InetAddr const &amp;listen_addr, StringArg name, bool reuseport=false)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetLoopNum</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>af25d100f88263ab66fa89c12da2cdcdc</anchor>
+      <arglist>(int num) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>StartRun</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>acafebe49f73b35c65d473d705ffa378c</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API bool</type>
+      <name>IsRunning</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>af91f7b63dad32e88a358ced717933ad4</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>ConnectionMap</type>
+      <name>connections_</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>a6fc6f99c35dac96789fc387d820a3b85</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::atomic&lt; bool &gt;</type>
+      <name>start_once_</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>a186e66cf1e97c57fab33cb75a0019c7f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>std::atomic&lt; bool &gt;</type>
+      <name>enable_pool_</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>a245284665edc50ebe83cfdc8a23cecbe</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>ThreadInitCallback</type>
+      <name>init_cb_</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>ac6a4a9fd84d990aa558c1265754b9207</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="private">
+      <type>FixedChunkMemoryPool</type>
+      <name>conn_pool_</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>af4b801d3567faffae28293c578302ad6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API bool</type>
+      <name>IsRunning</name>
+      <anchorfile>classkanon_1_1TcpServer.html</anchorfile>
+      <anchor>af91f7b63dad32e88a358ced717933ad4</anchor>
+      <arglist>() KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>kanon::Timer</name>
+    <filename>classkanon_1_1Timer.html</filename>
+  </compound>
+  <compound kind="class">
+    <name>kanon::TimerId</name>
+    <filename>classkanon_1_1TimerId.html</filename>
+  </compound>
+  <compound kind="class">
+    <name>kanon::UnixConnection</name>
+    <filename>classkanon_1_1UnixConnection.html</filename>
+    <base>ConnectionBase&lt; UnixConnection &gt;</base>
+  </compound>
+  <compound kind="group">
+    <name>server</name>
+    <title>Server</title>
+    <filename>group__server.html</filename>
+    <class kind="class">kanon::Acceptor</class>
+    <class kind="class">kanon::TcpServer</class>
+  </compound>
+  <compound kind="group">
+    <name>net</name>
+    <title>Net</title>
+    <filename>group__net.html</filename>
+    <subgroup>server</subgroup>
+    <subgroup>client</subgroup>
+    <subgroup>EventLoop</subgroup>
+    <subgroup>demultiplexer</subgroup>
+    <subgroup>timer</subgroup>
+    <class kind="class">kanon::TcpConnection</class>
+    <class kind="class">kanon::InetAddr</class>
+    <class kind="class">kanon::Socket</class>
+    <member kind="function" static="yes">
+      <type>static TcpConnectionPtr</type>
+      <name>NewTcpConnection</name>
+      <anchorfile>group__net.html</anchorfile>
+      <anchor>ga26e350c7fa8a166e81ccc0f6137d2c55</anchor>
+      <arglist>(EventLoop *loop, std::string const &amp;name, int sockfd, InetAddr const &amp;local_addr, InetAddr const &amp;peer_addr, Alloc const &amp;a)</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetNoDelay</name>
+      <anchorfile>group__net.html</anchorfile>
+      <anchor>ga164fd0019b21e235ece2768ec234cebe</anchor>
+      <arglist>(bool flag) KANON_NOEXCEPT</arglist>
+    </member>
+    <member kind="function">
+      <type>KANON_NET_API void</type>
+      <name>SetKeepAlive</name>
+      <anchorfile>group__net.html</anchorfile>
+      <anchor>ga7e4814d31a00df6af50f70bdb27cda6d</anchor>
+      <arglist>(bool flag) KANON_NOEXCEPT</arglist>
+    </member>
+  </compound>
+  <compound kind="group">
+    <name>client</name>
+    <title>Client</title>
+    <filename>group__client.html</filename>
+    <class kind="class">kanon::Connector</class>
+    <class kind="class">kanon::TcpClient</class>
+    <member kind="function">
+      <type>KANON_NET_API TcpClientPtr</type>
+      <name>NewTcpClient</name>
+      <anchorfile>group__client.html</anchorfile>
+      <anchor>ga6d166dccf7f75dde5575d1501cf03d80</anchor>
+      <arglist>(EventLoop *loop, InetAddr const &amp;serv_add, std::string const &amp;name={}, bool compact=true)</arglist>
+    </member>
+  </compound>
+  <compound kind="group">
+    <name>EventLoop</name>
+    <title>EventLoop</title>
+    <filename>group__EventLoop.html</filename>
+    <class kind="class">kanon::EventLoop</class>
+    <class kind="class">kanon::EventLoopPool</class>
+    <class kind="class">kanon::EventLoopThread</class>
+  </compound>
+  <compound kind="group">
+    <name>demultiplexer</name>
+    <title>Demultiplexer</title>
+    <filename>group__demultiplexer.html</filename>
+    <class kind="class">kanon::Epoller</class>
+    <class kind="class">kanon::Poller</class>
+    <class kind="class">kanon::PollerBase</class>
+  </compound>
+  <compound kind="group">
+    <name>timer</name>
+    <title>Timer</title>
+    <filename>group__timer.html</filename>
+    <class kind="class">kanon::ITimerQueuePlatform</class>
+    <class kind="class">kanon::Timer</class>
+    <class kind="class">kanon::TimerId</class>
+  </compound>
+  <compound kind="page">
+    <name>md__root_kanon_kanon_net_timer_README</name>
+    <title>定时器设施</title>
+    <filename>md__root_kanon_kanon_net_timer_README</filename>
+  </compound>
+  <compound kind="page">
+    <name>index</name>
+    <title>kanon</title>
+    <filename>index</filename>
+  </compound>
+</tagfile>

@@ -1,0 +1,14 @@
+.. meta::10842740283eac3c28dbae2991b1d287596353119b5c8062937401cb965f620a734ec7b9e3bc2e8e942df956f449992347041cc31459b3269beddc07ce746f66
+
+:orphan:
+
+.. title:: kanon: /root/kanon Directory Reference
+
+/root/kanon Directory Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_718bd45f0c64bf2354ecd0ddf6d040c6.html
