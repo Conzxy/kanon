@@ -1,0 +1,14 @@
+.. meta::69db6e84678b91ca32f53508d0bbe13bfc4b40f852fb8e11527cbf1dd0e9e01e6d8e712a87a70cf006cc4fe4f43e7d134fec05aca19e09e4a48632cfcbc4b058
+
+:orphan:
+
+.. title:: kanon: kanon::Acceptor Class Reference
+
+Acceptor Class Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1Acceptor.html

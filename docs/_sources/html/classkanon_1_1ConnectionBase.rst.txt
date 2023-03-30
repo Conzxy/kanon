@@ -1,0 +1,14 @@
+.. meta::a9da42875d831c6e18111b9aa10409d9944d64a44cdb07a090f42806bad0e560281a1cf3be13f40f39ad14fe6ef04704154c096bf4bf5a7e52dedbe06bef5975
+
+:orphan:
+
+.. title:: kanon: kanon::ConnectionBase< D > Class Template Reference
+
+ConnectionBase< D > Class Template Reference
+============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1ConnectionBase.html

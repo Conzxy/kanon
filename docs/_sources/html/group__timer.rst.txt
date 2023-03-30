@@ -1,0 +1,14 @@
+.. meta::4a7eb958dccf568b277199e7fd372a3ccc9b87b0bb84568f778ae3b3e5a2013157cdb0896d4dd4920b1c13e890e371b67b44b0ce614d357330b0425f60df48ec
+
+:orphan:
+
+.. title:: kanon: Timer
+
+Timer
+=====
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__timer.html

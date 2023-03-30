@@ -1,0 +1,6 @@
+<map id="kanon::TcpClient" name="kanon::TcpClient">
+<area shape="rect" id="node1" title="A Tcp client instance." alt="" coords="84,185,213,212"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,111,32"/>
+<area shape="rect" id="node4" href="$classkanon_1_1EventLoop.html" title="A loop that process various events." alt="" coords="79,89,218,115"/>
+<area shape="rect" id="node3" title=" " alt="" coords="243,81,423,123"/>
+</map>

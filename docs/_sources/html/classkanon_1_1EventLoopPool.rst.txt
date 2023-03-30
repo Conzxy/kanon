@@ -1,0 +1,14 @@
+.. meta::233874c956c7e6822f23342388439d484982f14d452f97f1f89bef66027df209fa5de62a88b11949535a19365e639a527753a4bc617b3f2c9d3e43aa5bb41d50
+
+:orphan:
+
+.. title:: kanon: kanon::EventLoopPool Class Reference
+
+EventLoopPool Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1EventLoopPool.html

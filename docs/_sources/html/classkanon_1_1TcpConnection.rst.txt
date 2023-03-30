@@ -1,0 +1,14 @@
+.. meta::ee03ea7f387931726db8e90f495006ae996897ccf2788e228ccd73342debd942b00467f16d5a0a85f698930be7757860a3da52b37a761694c6b3c4b172663bb4
+
+:orphan:
+
+.. title:: kanon: kanon::TcpConnection Class Reference
+
+TcpConnection Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1TcpConnection.html

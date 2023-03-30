@@ -1,0 +1,14 @@
+.. meta::2dcf8509db27ff27e807b5d37172127816ef99241dc17a8f9a62ae0a9821d8abe61411db6dd3b81d056c4b7a708d0c3932f59c3ff6bb07edf9e86c382a2217f3
+
+:orphan:
+
+.. title:: kanon: kanon::PollerBase Class Reference
+
+PollerBase Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1PollerBase.html

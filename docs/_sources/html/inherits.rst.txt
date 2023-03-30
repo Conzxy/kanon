@@ -1,0 +1,14 @@
+.. meta::45a0bacb647008af16b177bf239c256ee2e6dd69046a86178ec7c081e31e96079f7ffba602a739d1986620ae46282290f2737d789d21020b8d6be2c5316e7575
+
+:orphan:
+
+.. title:: kanon: Class Hierarchy
+
+Class Hierarchy
+===============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: inherits.html

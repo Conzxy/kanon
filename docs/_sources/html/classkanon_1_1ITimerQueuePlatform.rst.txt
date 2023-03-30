@@ -1,0 +1,14 @@
+.. meta::353a6a3b375eb28e4915c2fe90c2233cafa736099d85f0d20fd581fd12cd21b44d769c22cbde141ac3fd7b835663e8548e3e7560f7283f8fc561646206e6a85a
+
+:orphan:
+
+.. title:: kanon: kanon::ITimerQueuePlatform Class Reference
+
+ITimerQueuePlatform Class Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1ITimerQueuePlatform.html

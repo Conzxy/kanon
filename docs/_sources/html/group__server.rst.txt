@@ -1,0 +1,14 @@
+.. meta::bdba3a803f3a3409cbc66f10fb1be528394b5969c5c75a8e922c9719280d70653e19102566723978216db22e9636011d236c41a3c11703d29563cf7f3810e1d2
+
+:orphan:
+
+.. title:: kanon: Server
+
+Server
+======
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__server.html

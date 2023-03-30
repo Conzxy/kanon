@@ -1,0 +1,14 @@
+.. meta::65f3ea95f7c1dedf66e8f28ac5da7c62b4f6b6e17f7b881781c6dee23046d5512bd4776a431819b57927b28500ba4a0d58dabfa138eea2baf8d9aa0760ef1340
+
+:orphan:
+
+.. title:: kanon: kanon::InetAddrException Class Reference
+
+InetAddrException Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1InetAddrException.html

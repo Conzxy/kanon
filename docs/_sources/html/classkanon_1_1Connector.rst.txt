@@ -1,0 +1,14 @@
+.. meta::91cf8ff2a03c2caf6bce8d08d4e07cc7ba7557f99832c783da81bb796f6f8eb54b9b605ec9ee40f60670d2af21258ce814828312042892a60a00d776f2ac3430
+
+:orphan:
+
+.. title:: kanon: kanon::Connector Class Reference
+
+Connector Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1Connector.html

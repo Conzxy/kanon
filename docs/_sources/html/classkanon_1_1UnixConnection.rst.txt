@@ -1,0 +1,14 @@
+.. meta::0543e0ece991d1a650466ec3b1ad841ec7eaa24b525fbc86d968bce0b5576a062508ee204b88d383f0a96ae5fe988e286168632eb90b4bafa0680ea55a6ca286
+
+:orphan:
+
+.. title:: kanon: kanon::UnixConnection Class Reference
+
+UnixConnection Class Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1UnixConnection.html

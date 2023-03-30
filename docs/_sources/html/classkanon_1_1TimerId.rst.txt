@@ -1,0 +1,14 @@
+.. meta::02764532243ee4a2c0cdb7c0762ef57240344432d0d2ccb4dac43dbc71441f7053fd04ba77244aec48f37e853c9c57e1c6e71eb0779cef6ea05c8f6d1a05507b
+
+:orphan:
+
+.. title:: kanon: kanon::TimerId Class Reference
+
+TimerId Class Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1TimerId.html

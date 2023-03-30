@@ -1,0 +1,14 @@
+.. meta::e81a5054aeb6670eb9b97c1e0ffd79799cd957e513face7ca1d601da42e3a80ed8a31cba0088450706983577b6a0ce4aa4f0fb3f3f947699ee4563da94bb0d33
+
+:orphan:
+
+.. title:: kanon: kanon::Socket Class Reference
+
+Socket Class Reference
+======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1Socket.html

@@ -1,0 +1,14 @@
+.. meta::ef7a2154218d2272869b902dbe634fbbabf224819c42131c9d09d5e5e259e1726bb08e9a8eddf0bf67ed35af91369d80b43ed3d5c6296170958acf3342411577
+
+:orphan:
+
+.. title:: kanon: kanon::TcpClient Class Reference
+
+TcpClient Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1TcpClient.html

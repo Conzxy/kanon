@@ -1,0 +1,5 @@
+<map id="kanon::EventLoopPool" name="kanon::EventLoopPool">
+<area shape="rect" id="node1" title="Like ThreadPool, but the elements are EventLoopThread." alt="" coords="5,171,172,197"/>
+<area shape="rect" id="node2" title=" " alt="" coords="31,5,136,32"/>
+<area shape="rect" id="node3" href="$classkanon_1_1EventLoop.html" title="A loop that process various events." alt="" coords="105,81,243,108"/>
+</map>

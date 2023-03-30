@@ -1,0 +1,14 @@
+.. meta::b574d183072f137e45ef31d3c65a1ed8d090ea97bb25d7e97274237a4f0b7f3e850aaf670327caf8b2fd5e4352fe7165c6db52575a4c4b289e06ec7f317cb915
+
+:orphan:
+
+.. title:: kanon: kanon::Timer Class Reference
+
+Timer Class Reference
+=====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1Timer.html

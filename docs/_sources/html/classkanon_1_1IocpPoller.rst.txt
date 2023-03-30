@@ -1,0 +1,14 @@
+.. meta::117e9faf0494b29cc7b1c6e7c5c307b8dcf95274c987cc883b33b2880d8b9514498fcfc92ca55a8a1bca4cc7c51f52465a746257786064fc4ffa2df46ee666e7
+
+:orphan:
+
+.. title:: kanon: kanon::IocpPoller Class Reference
+
+IocpPoller Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classkanon_1_1IocpPoller.html
