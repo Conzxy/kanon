@@ -16,6 +16,8 @@
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Related Pages" href="pages.html" />
+    <link rel="prev" title="This is API Document of Kanonn" href="../../../api/index.html" />
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -83,19 +85,19 @@ $(function() {
  <img src="https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-windows.yml?label=Win%20build&amp;logo=windows&amp;logoColor=blue" alt="win-build" class="inline"/> <img src="https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-linux.yml?label=Linux%20build&amp;logo=Linux" alt="linux-build" class="inline"/> <img src="https://img.shields.io/github/last-commit/conzxy/kanon" alt="commit-date" class="inline"/> </p>
 <h1><a class="anchor" id="autotoc_md5"></a>
 Introduction</h1>
-<p><code>kanon</code>是一个使用<code>C++11</code>编写的基于**事件驱动**(event-driven)的网络库(network libaray)。 <br  />
+<p><code>kanon</code>是一个使用<code>C++11</code>编写的基于**事件驱动** (event-driven)的网络库(network libaray)。 <br  />
  具体来说，该库基于<code>Reactor</code>模式，其网络模型是<code>同步非阻塞</code>（synchronized-unblocking），依赖的的API是：<code>poll()</code>(unix-like/linux)，<code>epoll</code>(linux)、<code>GetQueuedCompletionStatusEx()</code>(Windows)。 <br  />
- 但是，实际上该库是暴露**回调注册接口**来处理各种IO事件，因此在使用上是类似<code>异步</code>的，这也是事件驱动的一个体现和优势。 <br  />
- 除此之外，为了充分利用**多核优势**，该库支持启动多个线程，而**主线程仅接受(accept)连接**，而这些线程处理**IO事件**，因此一般这些线程称作<code>IO线程</code>。</p>
+ 但是，实际上该库是暴露**回调注册接口** 来处理各种IO事件，因此在使用上是类似<code>异步</code>的，这也是事件驱动的一个体现和优势。 <br  />
+ 除此之外，为了充分利用**多核优势** ，该库支持启动多个线程，而**主线程仅接受(accept)连接** ，而这些线程处理**IO事件** ，因此一般这些线程称作<code>IO线程</code>。</p>
 <blockquote class="doxtable">
 <p>旧：该库目前不考虑跨平台，因为<code>Windows</code>的网络API不贴近<code>Reactor</code>，兼容的话要承担一定的额外开销，同时，对现在的我而言也没这个必要。 <br  />
- 新：现在kanon支持Windows的**Client**，底层采用IOCP抽象为Poller来进行同步等待。 </p>
+ 新：现在kanon支持Windows的**Client** ，底层采用IOCP抽象为Poller来进行同步等待。 </p>
 </blockquote>
-<p>另外，该库也实现了其他有用的组件，它们也是构成网络库的一部分，但对于编写应用程序的其他**非网络模块**也是十分有用的: </p><table class="markdownTable">
+<p>另外，该库也实现了其他有用的组件，它们也是构成网络库的一部分，但对于编写应用程序的其他**非网络模块** 也是十分有用的: </p><table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">模块 </th><th class="markdownTableHeadNone">描述 </th><th class="markdownTableHeadNone">相关文件  </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">log </td><td class="markdownTableBodyNone">支持输出到<code>终端</code>（terminal）/<code>文件</code>(*同步*或**异步**） </td><td class="markdownTableBodyNone">/kanon/log  </td></tr>
+<td class="markdownTableBodyNone">log </td><td class="markdownTableBodyNone">支持输出到<code>终端</code>（terminal）/<code>文件</code>(<em>同步</em> 或**异步** ） </td><td class="markdownTableBodyNone">/kanon/log  </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">thread </td><td class="markdownTableBodyNone">Pthread：<code>互斥锁</code>（mutex），<code>条件变量</code>（condition），以及基于此实现的<code>CountdownLatch</code>等 </td><td class="markdownTableBodyNone">/kanon/thread  </td></tr>
 <tr class="markdownTableRowOdd">
@@ -110,18 +112,18 @@ Introduction</h1>
 <p>更多的可以通过源码了解。</p>
 <h1><a class="anchor" id="autotoc_md6"></a>
 Buffer</h1>
-<p>对于网络库而言，想必对其使用的**读写缓冲区**(read/write buffer)很感兴趣，因为涉及**收发信息**(receive/send message)的性能。</p>
+<p>对于网络库而言，想必对其使用的**读写缓冲区** (read/write buffer)很感兴趣，因为涉及**收发信息** (receive/send message)的性能。</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">缓冲 </th><th class="markdownTableHeadNone">描述 </th><th class="markdownTableHeadNone">相关文件  </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">kanon::Buffer </td><td class="markdownTableBodyNone">**读**缓冲，支持*prepend size header*的**连续**容器，由于是基于<code>kanon::ReservedArray</code>实现的，因此比基于<code>std::vector</code>的性能要好 </td><td class="markdownTableBodyNone">algo/reserved_array.h, buffer/buffer.h,cc  </td></tr>
+<td class="markdownTableBodyNone">kanon::Buffer </td><td class="markdownTableBodyNone"><b>读</b> 缓冲，支持*prepend size header* 的**连续** 容器，由于是基于<code>kanon::ReservedArray</code>实现的，因此比基于<code>std::vector</code>的性能要好 </td><td class="markdownTableBodyNone">algo/reserved_array.h, buffer/buffer.h,cc  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">kanon::ChunkList </td><td class="markdownTableBodyNone">**写**缓冲，**固定页面**的单链表（支持O(1) append)，分配的节点除非用户主动收缩，否则不释放，自然也支持*prepend size header*（因为每个节点本身就支持可变长度），细节参考相关文件 </td><td class="markdownTableBodyNone">algo/forward_list.h, algo/forward_list/*, buffer/chunk_list.h,cc  </td></tr>
+<td class="markdownTableBodyNone">kanon::ChunkList </td><td class="markdownTableBodyNone"><b>写</b> 缓冲，**固定页面** 的单链表（支持O(1) append)，分配的节点除非用户主动收缩，否则不释放，自然也支持*prepend size header* （因为每个节点本身就支持可变长度），细节参考相关文件 </td><td class="markdownTableBodyNone">algo/forward_list.h, algo/forward_list/*, buffer/chunk_list.h,cc  </td></tr>
 </table>
-<p>之所以这么设计，是因为接受的信息一般需要**解析**/**反序列化**(parse/deserialize)，因此如果不是连续的，那么得付出拼接完整信息的额外开销（overhead），这是划不来的，所以采用特化的连续容器。 <br  />
- 而对于发送消息，我们并不关心其完整性，因此采用*基于节点*的非连续容器，即单链表可以避免因连续容器再分配带来的*memcpy*的开销。 <br  />
- 实际上，通过<code>ReservedArray</code>实现的<code>Buffer</code>在一些情况下是可以进行*原地再分配*的(inplace reallocate)，因此*benchmark*的结果表现略优于<code>ChunkList</code>，但根据现实的*工作负载*(workload)来考虑，写缓冲还是考虑用<code>ChunkList</code>，在我看来，这至少不是个坏主意(Bad IDEA)。 <br  />
+<p>之所以这么设计，是因为接受的信息一般需要**解析** /**反序列化** (parse/deserialize)，因此如果不是连续的，那么得付出拼接完整信息的额外开销（overhead），这是划不来的，所以采用特化的连续容器。 <br  />
+ 而对于发送消息，我们并不关心其完整性，因此采用*基于节点* 的非连续容器，即单链表可以避免因连续容器再分配带来的*memcpy* 的开销。 <br  />
+ 实际上，通过<code>ReservedArray</code>实现的<code>Buffer</code>在一些情况下是可以进行*原地再分配* 的(inplace reallocate)，因此*benchmark* 的结果表现略优于<code>ChunkList</code>，但根据现实的*工作负载* (workload)来考虑，写缓冲还是考虑用<code>ChunkList</code>，在我看来，这至少不是个坏主意(Bad IDEA)。 <br  />
  写缓冲支持size header的O(1) prepend，在我看来是个很不错的想法，在处理二进制协议时，这是十分有必要的，因此<code>Buffer</code>和<code>ChunkList</code>都支持这个特性。</p>
 <h1><a class="anchor" id="autotoc_md7"></a>
 Build</h1>
@@ -203,11 +205,18 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api/index.html">This is API Document of Kanonn</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../api/index.html">This is API Document of Kanonn</a><ul>
+      <li>Previous: <a href="../../../api/index.html" title="previous chapter">This is API Document of Kanonn</a></li>
+      <li>Next: <a href="pages.html" title="next chapter">Related Pages</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
