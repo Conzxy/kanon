@@ -5,7 +5,6 @@
 #include "kanon/util/macro.h"
 
 namespace kanon {
-
 namespace process {
 
 using PId = pid_t;
