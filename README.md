@@ -69,6 +69,19 @@ $ cmake --install .
 $ cmake .. -DCMAKE_INSTALL_INCLUDEDIR=... -DCMAKE_INSTALL_LIBDIR=...
 ```
 
+## Usage
+安装了之后可以按照CMake的惯例做法使用`kanon`：
+### CMake
+```
+[...]
+find_package(kanon REQUIRED)
+message(STATUS "Kanon version: ${KANON_VERSION}")
+
+add_executable(kanon_test main.cc ...)
+target_link_libraries(kanon_test PRIVATE kanon::kanon_base kanon::kanon_net)
+[...]
+```
+
 ## Example
 一个简单的例子是[daytime](https://www.ietf.org/rfc/rfc867.txt)服务器。  
 根据`daytime`协议，我们仅需要注册`OnConnection`回调即可。
