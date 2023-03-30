@@ -7,14 +7,5 @@ Welcome to kanon's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   :maxdepth: 1
+   doxygen/kanon/html/index.rst
