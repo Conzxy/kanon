@@ -1,7 +1,7 @@
 #ifndef KANON_UTIL_COMPILER_MACRO_H__
 #define KANON_UTIL_COMPILER_MACRO_H__
 
-#if defined(__GUNC__) || defined(__clang__) || defined(__GUNG__)
+#if defined(__GNUC__) || defined(__clang__) || defined(__GNUG__)
 #define KANON_EXPORT_ATTR     __attribute__((visibility("default")))
 #define KANON_IMPORT_ATTR     __attribute__((visibility("default")))
 #define KANON_DEPRECATED_ATTR __attribute__((__deprecated__))
@@ -11,7 +11,7 @@
 #define KANON_IMPORT_ATTR     __declspec(dllimport)
 #define KANON_DEPRECATED_ATTR __declspec(deprecated)
 #define KANON_NO_EXPORT
-#endif //! defined(__GUNC__) || defined(__clang__) || defined(__GUNG__)
+#endif //! defined(__GNUC__) || defined(__clang__) || defined(__GNUG__)
 
 // For GCC,
 // There is no need to specify KANON_BUILDING_DSO since KANON_CORE_API no
