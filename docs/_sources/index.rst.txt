@@ -9,4 +9,4 @@ Welcome to kanon's documentation!
 .. toctree::
    :maxdepth: 1
 
-   api/index.rst
+   API Doc <api/index.rst>
