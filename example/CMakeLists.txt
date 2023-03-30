@@ -13,6 +13,7 @@ function (GenExample exec_name)
     PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example
   )
+  kanon_copy_dll_to_target_dir(${exec_name})
 endfunction ()
 
 add_subdirectory(daytime)

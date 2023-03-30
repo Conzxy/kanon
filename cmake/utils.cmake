@@ -36,6 +36,14 @@ function (GenLib lib)
   message(STATUS "Lib ${lib} Sources: ${ARGN}")
 endfunction ()
 
+function (conzxy_copy_dll_to_target_dir)
+  cmake_parse_arguments(PARSE_ARGV 0 CONZXY "" "DLL_PATH;TARGET" "")
+  add_custom_command(TARGET ${CONZXY_TARGET} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CONZXY_DLL_PATH}"
+    "$<TARGET_FILE_DIR:${CONZXY_TARGET}>")  
+endfunction ()
+
 # Check if kanon is being used directly or via add_subdirectory, but allow overriding
 if(NOT DEFINED KANON_MAIN_PROJECT)
     if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
