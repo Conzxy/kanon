@@ -24,6 +24,7 @@ class KANON_NET_NO_API IocpPoller final : public PollerBase {
  private:
   HANDLE completion_port_ = INVALID_HANDLE_VALUE;
   std::vector<OVERLAPPED_ENTRY> entries_;
+  ULONG last_completion_cnt_ = 0;
 };
 } // namespace kanon
 

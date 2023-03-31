@@ -1,5 +1,6 @@
 #include "kanon/net/poll/iocp_poller.h"
 
+#include "kanon/win/net/completion_context.h"
 #include <windows.h>
 #include <ioapiset.h>
 
@@ -20,7 +21,7 @@ IocpPoller::IocpPoller(EventLoop *loop)
   if (!completion_port_) {
     LOG_SYSFATAL << "Failed to create io completion port";
   }
-  LOG_TRACE << "Completion port: " << this << " has constructed";
+  LOG_TRACE_KANON << "Completion port: " << this << " has constructed";
 }
 
 IocpPoller::~IocpPoller() KANON_NOEXCEPT { ::CloseHandle(completion_port_); }
@@ -28,28 +29,47 @@ IocpPoller::~IocpPoller() KANON_NOEXCEPT { ::CloseHandle(completion_port_); }
 TimeStamp IocpPoller::Poll(int ms, ChannelVec &active_channels)
 {
   ULONG removed_entries_num = 0;
-  auto success = GetQueuedCompletionStatusEx(completion_port_, &entries_[0],
-                                             entries_.size(),
-                                             &removed_entries_num, ms, FALSE);
+  bool success = false;
+  if (last_completion_cnt_ > 1) {
+    success = GetQueuedCompletionStatusEx(completion_port_, &entries_[0],
+                                          entries_.size(), &removed_entries_num,
+                                          ms, FALSE);
+  } else {
+    LOG_TRACE_KANON << "Use GetQueueCompletionStatus()";
+
+    auto *entry = &entries_[0];
+    removed_entries_num = 1;
+    success = GetQueuedCompletionStatus(
+        completion_port_, &entry->dwNumberOfBytesTransferred,
+        &entry->lpCompletionKey, &entry->lpOverlapped, ms);
+  }
 
   TimeStamp now{TimeStamp::Now()};
   if (!success) {
     auto err = GetLastError();
     switch (err) {
       case WAIT_TIMEOUT:
-        LOG_TRACE << "GetQueueCompletionStatus timeout";
+        LOG_TRACE_KANON << "GetQueueCompletionStatus() timeout";
         break;
       case WAIT_IO_COMPLETION:
-        LOG_TRACE << "APC queued, don't handle";
+        LOG_TRACE_KANON << "APC queued, don't handle";
         break;
+      /* Call GetQueuedCompletionStatus() may get error code
+         ERROR_CONNECTION_REFUSED when WSA_IO_PENDING is returned
+         by ConnectEx() */
+      case ERROR_CONNECTION_REFUSED: {
+        auto ctx = (CompletionContext *)entries_[0].lpOverlapped;
+        (*ctx->write_event_callback)();
+      } break;
       default:
         LOG_SYSFATAL << "Faild to call GetQueuedCompletionStatusEx()";
     }
     return now;
   }
 
+  last_completion_cnt_ = removed_entries_num;
   if (removed_entries_num > 0) {
-    LOG_TRACE << "Complection packet num = " << removed_entries_num;
+    LOG_TRACE_KANON << "Complection packet num = " << removed_entries_num;
     for (size_t i = 0; i < removed_entries_num; ++i) {
       auto &entry = entries_[i];
       auto ch = (Channel *)entry.lpCompletionKey;
@@ -63,7 +83,7 @@ TimeStamp IocpPoller::Poll(int ms, ChannelVec &active_channels)
       entries_.resize(removed_entries_num << 1);
     }
   } else {
-    LOG_TRACE << "No packet has completed";
+    LOG_TRACE_KANON << "No packet has completed";
   }
   return now;
 }
@@ -71,8 +91,8 @@ TimeStamp IocpPoller::Poll(int ms, ChannelVec &active_channels)
 void IocpPoller::UpdateChannel(Channel *ch)
 {
   if (ch->GetIndex() == EventStatus::kNew) {
-    LOG_TRACE << "Register channel: [" << ch << "] to completion port";
-    LOG_TRACE << "Fd = " << ch->GetFd();
+    LOG_TRACE_KANON << "Register channel: [" << ch << "] to completion port";
+    LOG_TRACE_KANON << "Fd = " << ch->GetFd();
     ch->SetIndex(EventStatus::kAdded);
     if (!CreateIoCompletionPort((HANDLE)ch->GetFd(), completion_port_,
                                 (DWORD_PTR)ch, 0))
