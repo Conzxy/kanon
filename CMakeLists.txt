@@ -13,9 +13,9 @@ include(cmake/install.cmake)
 function (kanon_copy_dll_to_target_dir kanon_target)
   if (KANON_ON_WIN)
     conzxy_copy_dll_to_target_dir(TARGET ${kanon_target}
-      DLL_PATH "${CMAKE_BINARY_DIR}/kanon/kanon_base.dll") 
+      DLL_PATH "${CMAKE_BINARY_DIR}/kanon/bin/kanon_base.dll") 
     conzxy_copy_dll_to_target_dir(TARGET ${kanon_target} 
-      DLL_PATH "${CMAKE_BINARY_DIR}/kanon/kanon_net.dll")
+      DLL_PATH "${CMAKE_BINARY_DIR}/kanon/bin/kanon_net.dll")
   endif ()
 endfunction ()
 
