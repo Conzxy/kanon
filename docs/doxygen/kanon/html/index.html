@@ -192,17 +192,18 @@ $(function() {
   <div class="headertitle"><div class="title">kanon </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__root_kanon_README"></a><img src="https://img.shields.io/github/license/conzxy/kanon" alt="license" class="inline"/> <img src="https://img.shields.io/badge/Language-C%2B%2B11-orange" alt="" class="inline"/> <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue" alt="" class="inline"/> <br  />
- <img src="https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-windows.yml?label=Win%20build&amp;logo=windows&amp;logoColor=blue" alt="win-build" class="inline"/> <img src="https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-linux.yml?label=Linux%20build&amp;logo=Linux" alt="linux-build" class="inline"/> <img src="https://img.shields.io/github/last-commit/conzxy/kanon" alt="commit-date" class="inline"/> </p>
+<div class="textblock"><p><a class="anchor" id="md__root_kanon_README"></a><img src="https://img.shields.io/github/license/conzxy/kanon" alt="license" class="inline"/> <img src="https://img.shields.io/github/languages/top/conzxy/kanon" alt="code-top" class="inline"/> <img src="https://img.shields.io/badge/Standard-C%2B%2B11-orange" alt="" class="inline"/> <br  />
+ <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue" alt="" class="inline"/> <img src="https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-windows.yml?label=Win%20build&amp;logo=windows&amp;logoColor=blue" alt="win-build" class="inline"/> <img src="https://img.shields.io/github/actions/workflow/status/conzxy/kanon/cmake-linux.yml?label=Linux%20build&amp;logo=Linux" alt="linux-build" class="inline"/> <br  />
+ <img src="https://img.shields.io/github/v/tag/conzxy/kanon" alt="version" class="inline"/> <img src="https://img.shields.io/github/last-commit/conzxy/kanon" alt="commit-date" class="inline"/> </p>
 <h1><a class="anchor" id="autotoc_md5"></a>
 Introduction</h1>
 <p><code>kanon</code>是一个使用<code>C++11</code>编写的基于 <b>事件驱动</b> (event-driven)的网络库(network libaray)。 <br  />
  具体来说，该库基于<code>Reactor</code>模式，其网络模型是<code>同步非阻塞</code>（synchronized-unblocking），依赖的的API是：<code>poll()</code>(unix-like/linux)，<code>epoll</code>(linux)、<code>GetQueuedCompletionStatusEx()</code>(Windows)。 <br  />
  但是，实际上该库是暴露 <b>回调注册接口</b> 来处理各种IO事件，因此在使用上是类似<code>异步</code>的，这也是事件驱动的一个体现和优势。 <br  />
- 除此之外，为了充分利用 <b>多核优势</b> ，该库支持启动多个线程，而 <b>主线程仅接受(accept)连接</b> ，而这些线程处理 <b>IO事件</b> ，因此一般这些线程称作<code>IO线程</code>。</p>
-<blockquote class="doxtable">
-<p>&zwj;旧：该库目前不考虑跨平台，因为<code>Windows</code>的网络API不贴近<code>Reactor</code>，兼容的话要承担一定的额外开销，同时，对现在的我而言也没这个必要。 <br  />
- 新：现在kanon支持Windows的 <b>Client</b> ，底层采用IOCP抽象为Poller来进行同步等待。 </p>
+ 除此之外，为了充分利用 <b>多核优势</b> ，该库支持启动多个线程，而 <b>主线程仅接受(accept)连接</b> ，而这些线程处理 <b>IO事件</b> ，因此一般这些线程称作<code>IO线程</code>。 <br  />
+ </p><blockquote class="doxtable">
+<p>&zwj;注意：该库现在仅可在Windows和Linux编译，其中Windows目前仅支持Client，Server请不要使用！ <br  />
+ </p>
 </blockquote>
 <p>另外，该库也实现了其他有用的组件，它们也是构成网络库的一部分，但对于编写应用程序的其他 <b>非网络模块</b> 也是十分有用的: </p><table class="markdownTable">
 <tr class="markdownTableHead">
