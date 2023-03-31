@@ -8,7 +8,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 # Include useful module
 include(cmake/utils.cmake)
-include(cmake/install.cmake)
 
 function (kanon_copy_dll_to_target_dir kanon_target)
   if (KANON_ON_WIN)
@@ -30,6 +29,7 @@ include(cmake/compile_flag.cmake)
 include(cmake/build_type.cmake)
 include(cmake/cache_var.cmake)
 include(cmake/platform.cmake)
+include(cmake/install.cmake)
 
 # Add third-party before kanon
 add_subdirectory(third-party)
