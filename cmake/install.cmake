@@ -1,7 +1,8 @@
+include(GNUInstallDirs)
+
 function (conzxy_install)
   cmake_parse_arguments(PARSE_ARGV 0 CONZXY "" "PROJECT;NAMESPACE" "TARGETS")
 
-  include(GNUInstallDirs)
   set(project_config_in_file "${CMAKE_CURRENT_LIST_DIR}/cmake/${CONZXY_PROJECT}Config.cmake.in")
   set(project_config_out_file "${CMAKE_CURRENT_BINARY_DIR}/${CONZXY_PROJECT}Config.cmake")
   set(config_targets_filename "${CONZXY_PROJECT}ConfigTargets.cmake")
@@ -43,3 +44,8 @@ function (conzxy_install)
   # Install Config.cmake and ConfigVersion.cmake
   install(FILES "${project_config_out_file}" "${config_version_file}" DESTINATION "${export_dest_dir}")
 endfunction ()
+
+message(STATUS "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
+message(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
+message(STATUS "CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_LIBDIR}")
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")

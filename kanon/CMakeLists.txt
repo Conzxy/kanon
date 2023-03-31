@@ -101,7 +101,7 @@ endif ()
 ###########################################################
 # Install the headers to /usr/include/*
 ############################################################
-set(KANON_INSTALL_INCLUDE_PREFIX "${CMAKE_INSTALL_INCLUDEDIR}/kanon")
+set(KANON_INSTALL_INCLUDE_PREFIX "${CMAKE_INSTALL_PREFIX}/include/kanon")
 
 if (KANON_INSTALL)
   install(FILES ${LOG_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/log)
