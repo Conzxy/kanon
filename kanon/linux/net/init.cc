@@ -4,5 +4,10 @@
 
 void kanon::KanonNetInitialize()
 {
-  LOG_INFO << "Kanon Net Module initialize successfully";
+  LOG_TRACE_KANON << "Kanon net resources initialization: OK";
+}
+
+void kanon::KanonNetTeardown() KANON_NOEXCEPT
+{
+  LOG_TRACE_KANON << "Kanon net resources teardown: OK";
 }

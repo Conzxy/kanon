@@ -91,13 +91,13 @@ class EventLoop : noncopyable {
    * \brief Remove channel in poller_
    * \warning This is internal API, user don't call it.
    */
-  KANON_NET_API void RemoveChannel(Channel *ch);
+  KANON_NET_NO_API void RemoveChannel(Channel *ch);
 
   /**
    * \brief Add or update channel in poller_
    * \warning This is internal API, user don't call it.
    */
-  KANON_NET_API void UpdateChannel(Channel *ch);
+  KANON_NET_NO_API void UpdateChannel(Channel *ch);
   //! \endcond
 
   /**
@@ -197,7 +197,6 @@ class EventLoop : noncopyable {
   KANON_NET_API bool IsLoopInThread() KANON_NOEXCEPT;
 #endif
   //! \endcond
- private:
   /**
    * \brief Wakeup the (e)poller to avoid sleep blocking this thread
    *
@@ -207,18 +206,19 @@ class EventLoop : noncopyable {
    */
   KANON_NET_API void Wakeup() KANON_NOEXCEPT;
 
+ private:
   /**
    * \brief Call all functors in functors_(better name: callable)
    */
-  KANON_NET_API void CallFunctors();
+  KANON_NET_NO_API void CallFunctors();
 
   /**
    * \brief Read callback of eventfd
    */
-  KANON_NET_API void EvRead() KANON_NOEXCEPT;
+  KANON_NET_NO_API void EvRead() KANON_NOEXCEPT;
 
   //! Abort the program if not satify the "One loop per thread" policy
-  KANON_NET_API void AbortNotInThread() KANON_NOEXCEPT;
+  KANON_NET_NO_API void AbortNotInThread() KANON_NOEXCEPT;
 
  private:
   /**

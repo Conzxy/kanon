@@ -32,18 +32,20 @@ void Connector::Connect()
 
   if (!ret) {
     auto saved_errno = ::WSAGetLastError();
-
+    auto err = GetLastError();
+    LOG_ERROR << "err = " << err;
+    LOG_ERROR << "wsa error = " << saved_errno;
     switch (saved_errno) {
       case WSA_IO_PENDING:
         // case WSAEINPROGRESS:
         // case WSAEINTR:
-        LOG_TRACE << "Connect inprogress";
+        LOG_TRACE_KANON << "Connect inprogress";
         CompleteConnect(sockfd);
         break;
-      case WSAEREFUSED:
+      case WSAECONNREFUSED:
       case WSAENETUNREACH:
       case WSAETIMEDOUT:
-        LOG_TRACE << "Failed to connect but retry";
+        LOG_TRACE_KANON << "Failed to connect but retry";
         Retry(sockfd);
         break;
       default:
@@ -88,10 +90,10 @@ void Connector::CompleteConnect(FdType sockfd)
           can_retry = true;
         } else {
           LOG_DEBUG << "Connection has been established " << seconds
-                    << " seconds"; 
+                    << " seconds";
         }
       }
-      
+
       if (can_retry) {
         Retry(sockfd);
         return;

@@ -10,4 +10,20 @@ KANON_INLINE void KanonInitialize()
   KanonNetInitialize();
 }
 
+KANON_INLINE void KanonTeardown() KANON_NOEXCEPT
+{
+  KanonNetTeardown();
+  KanonCoreTeardown();
+}
+
+struct KanonInitGuard {
+  KanonInitGuard() { KanonInitialize(); }
+  ~KanonInitGuard() KANON_NOEXCEPT { KanonTeardown(); }
+};
+
+#define KANON_INIT_GUARD                                                       \
+  KanonInitGuard salkj2432974dfkhasuigalfg                                     \
+  {                                                                            \
+  }
+
 } // namespace kanon

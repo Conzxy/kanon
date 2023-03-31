@@ -6,6 +6,7 @@
 namespace kanon {
 
 KANON_NET_API void KanonNetInitialize();
+KANON_NET_API void KanonNetTeardown() KANON_NOEXCEPT;
 
 } // namespace kanon
 

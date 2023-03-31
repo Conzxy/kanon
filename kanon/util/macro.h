@@ -10,45 +10,53 @@
 /* In windows, you add /Zc:__cplusplus option to MSVC,
    the __cplusplus >= 201402L at least(i.e. c++14) */
 #if __cplusplus >= 201103L
-#define CXX_STANDARD_11
+#  ifndef CXX_STANDARD_11
+#    define CXX_STANDARD_11
+#  endif
 #endif
 
 #if __cplusplus >= 201402L
-#define CXX_STANDARD_14
+#  ifndef CXX_STANDARD_14
+#    define CXX_STANDARD_14
+#  endif
 #endif
 
 #if __cplusplus >= 201703L
-#define CXX_STANDARD_17
+#  ifndef CXX_STANDARD_17
+#    define CXX_STANDARD_17
+#  endif
 #endif
 
 #if __cplusplus < 201103L
-#define CXX_STANDARD_LESS_THAN_11
+#  ifndef CXX_STANDARD_LESS_THAN_11
+#    define CXX_STANDARD_LESS_THAN_11
+#  endif
 #endif
 
 #ifdef CXX_STANDARD_11
-#define KANON_NOEXCEPT       noexcept
-#define KANON_NOEXCEPT_OP(x) noexcept(x)
-#define KANON_OVERRIDE       override
+#  define KANON_NOEXCEPT       noexcept
+#  define KANON_NOEXCEPT_OP(x) noexcept(x)
+#  define KANON_OVERRIDE       override
 #else
-#define KANON_NOEXCEPT throw()
-#define KANON_NOEXCEPT_OP(x)
-#define KANON_OVERRIDE
+#  define KANON_NOEXCEPT throw()
+#  define KANON_NOEXCEPT_OP(x)
+#  define KANON_OVERRIDE
 #endif
 
 #if defined(__GNUC__) || defined(__clang__)
-#define KANON_ALWAYS_INLINE __attribute__((always_inline))
+#  define KANON_ALWAYS_INLINE __attribute__((always_inline))
 #elif defined(_MSC_VER) /* && !defined(__clang__) */
-#define KANON_ALWAYS_INLINE __forceinline
+#  define KANON_ALWAYS_INLINE __forceinline
 #else
-#define KANON_ALWAYS_INLINE
+#  define KANON_ALWAYS_INLINE
 #endif // !defined(__GUNC__) || defined(__clang__)
 
 #define KANON_INLINE inline KANON_ALWAYS_INLINE
 
 #ifdef CXX_STANDARD_14
-#define KANON_CONSTEXPR constexpr
+#  define KANON_CONSTEXPR constexpr
 #else
-#define KANON_CONSTEXPR KANON_INLINE
+#  define KANON_CONSTEXPR KANON_INLINE
 #endif
 
 #define KANON_RETHROW      throw
@@ -63,23 +71,23 @@
 #define KANON_ASSERT(cond, msg) assert((cond) && (msg))
 
 #if defined(__GUNC__) || defined(__clang__)
-#define KANON_LIKELY(cond)   KANON_BUILTIN_EXPECT(!!(cond), 1)
-#define KANON_UNLIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 0)
+#  define KANON_LIKELY(cond)   KANON_BUILTIN_EXPECT(!!(cond), 1)
+#  define KANON_UNLIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 0)
 #else
-#define KANON_LIKELY(cond)   (cond)
-#define KANON_UNLIKELY(cond) (cond)
+#  define KANON_LIKELY(cond)   (cond)
+#  define KANON_UNLIKELY(cond) (cond)
 #endif
 
 #if defined(__GUNC__) || defined(__clang__)
-#define KANON_TLS __thread
+#  define KANON_TLS __thread
 #elif defined(_MSC_VER)
-#define KANON_TLS __declspec(thread)
+#  define KANON_TLS __declspec(thread)
 #else
-#ifdef CXX_STANDARD_11
-#define KANON_TLS thread_local
-#else
-#define KANON_TLS
-#endif
+#  ifdef CXX_STANDARD_11
+#    define KANON_TLS thread_local
+#  else
+#    define KANON_TLS
+#  endif
 #endif
 
 #endif // KANON_UTIL_MACRO_H

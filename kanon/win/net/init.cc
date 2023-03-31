@@ -6,12 +6,14 @@
 void kanon::KanonNetInitialize()
 {
   WSAData wsa_data;
-  auto err = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-  switch (err) {
-    case 0:
-      LOG_INFO << "Kanon Net Module initialize successfully";
-      return;
+  const auto err = ::WSAStartup(MAKEWORD(2, 2), &wsa_data);
+  if (err == 0) {
+    LOG_TRACE_KANON << "Kanon net resources initialization: OK";
+    return;
+  }
+  LOG_ERROR << "Kanon net resources initialization: Failed";
 
+  switch (err) {
     case WSASYSNOTREADY:
       LOG_SYSFATAL << "The network system isn't ready";
       break;
@@ -24,5 +26,31 @@ void kanon::KanonNetInitialize()
     case WSAEFAULT:
       LOG_SYSFATAL << "wsa data is invalid";
       break;
+  }
+}
+
+void kanon::KanonNetTeardown() KANON_NOEXCEPT
+{
+  const auto ret = ::WSACleanup();
+
+  if (ret == SOCKET_ERROR) {
+    const auto err = ::WSAGetLastError();
+    switch (err) {
+      case WSANOTINITIALISED:
+        LOG_ERROR << "KanonNetTeardown() has called successfully before "
+                     "calling this function";
+        break;
+      case WSAENETDOWN:
+        LOG_SYSFATAL << "The network system of host is down";
+        break;
+      case WSAEINPROGRESS:
+        return;
+      default:
+        LOG_ERROR << "Kanon net resources teardown: Failed";
+        LOG_SYSFATAL
+            << "Unexpected error occurred when releasing net resources";
+    }
+  } else {
+    LOG_TRACE_KANON << "Kanon net resources teardown: OK";
   }
 }

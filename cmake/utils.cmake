@@ -29,9 +29,39 @@ function (GenLib lib)
   if (KANON_BUILD_STATIC_LIBS)
     message(STATUS "Build static library: ${lib}")
     add_library(${lib} STATIC ${ARGN})
+
+    set(archive_output_path "${CMAKE_BINARY_DIR}/kanon/lib")
+    message(STATUS "${lib} output dir: ${archive_output_path}")
+    set_target_properties(${lib}
+     PROPERTIES
+     ARCHIVE_OUTPUT_DIRECTORY
+     ${archive_output_path})
   else ()
     message(STATUS "Build shared library: ${lib}")
     add_library(${lib} SHARED ${ARGN})
+    if (WIN32)
+      set(so_output_dir bin)
+    else ()
+      set(so_output_dir lib)
+    endif ()
+    set(shared_output_path "${CMAKE_BINARY_DIR}/kanon/${so_output_dir}")
+    message(STATUS "${lib} output dir: ${shared_output_path}")
+    if (WIN32)
+      set_target_properties(${lib}
+       PROPERTIES
+       RUNTIME_OUTPUT_DIRECTORY 
+       ${shared_output_path})
+      set(dll_lib_output_dir ${shared_output_path}/lib)
+      message(STATUS "DLL lib output dir: ${dll_lib_output_dir}")
+      set_target_properties(${lib}
+       PROPERTIES
+       ARCHIVE_OUTPUT_DIRECTORY 
+       ${dll_lib_output_dir})
+    endif ()
+    set_target_properties(${lib}
+     PROPERTIES
+     LIBRARY_OUTPUT_DIRECTORY 
+     ${shared_output_path})
   endif ()
   message(STATUS "Lib ${lib} Sources: ${ARGN}")
 endfunction ()
