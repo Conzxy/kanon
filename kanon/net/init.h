@@ -1,7 +1,7 @@
 #ifndef KANON_NET_UTIL_H__
 #define KANON_NET_UTIL_H__
 
-#include "kanon/util/compiler_macro.h"
+#include "kanon/util/macro.h"
 
 namespace kanon {
 
