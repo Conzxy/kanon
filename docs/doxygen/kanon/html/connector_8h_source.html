@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html  lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-      <title>kanon: /root/kanon/kanon/net/connector.h Source File</title>
-    
-          <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-          <link rel="stylesheet" href="../../../_static/theme.css " type="text/css" />
-      
-      <!-- sphinx script_files -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kanon: /root/kanon/kanon/net/connector.h Source File &mdash; kanon v1.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
 
-      
-      <!-- bundled in js (rollup iife) -->
-      <!-- <script src="../../../_static/theme-vendors.js"></script> -->
-      <script src="../../../_static/theme.js" defer></script>
-    
-  <link rel="index" title="Index" href="../../../genindex.html" />
-  <link rel="search" title="Search" href="../../../search.html" /> 
-  </head>
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  <body>
-    <div id="app">
-    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../../../index.html" class="home-link">
-    
-      <span class="site-name">kanon</span>
-    
-  </router-link>
-
-  <div class="links">
-    <navlinks class="can-hide">
-
-
-
-    </navlinks>
-  </div>
-</navbar>
-
-      
-      <div class="sidebar-mask" @click="toggleSidebar(false)">
-      </div>
-        <sidebar @toggle-sidebar="toggleSidebar">
           
-          <navlinks>
-            
-
-
-
-            
-          </navlinks><div id="searchbox" class="searchbox" role="search">
-  <div class="caption"><span class="caption-text">Quick search</span>
-    <div class="searchformwrapper">
-      <form class="search" action="../../../search.html" method="get">
-        <input type="text" name="q" />
-        <input type="submit" value="Search" />
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </form>
-    </div>
-  </div>
-</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
-  
-    <div class="sidebar-group">
-      <p class="caption">
-        <span class="caption-text"><a href="../../../api/index.html#this-is-api-document-of-kanonn">this is api document of kanonn</a></span>
-      </p>
-      <ul class="">
-        
-          <li class="toctree-l1 ">
-            
-              <a href="index.html" class="reference internal ">Home Page</a>
-            
-
-            
-          </li>
-
-        
-      </ul>
-    </div>
-  
+          
+          <a href="../../../index.html" class="icon icon-home">
+            kanon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-        </sidebar>
-
-      <page>
-          <div class="body-header" role="navigation" aria-label="navigation">
-  
-  <ul class="breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-    
-    <li>kanon: /root/kanon/kanon/net/connector.h Source File</li>
-  </ul>
-  
-
-  <ul class="page-nav">
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Doc</a></li>
 </ul>
-  
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">kanon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">kanon: /root/kanon/kanon/net/connector.h Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/doxygen/kanon/html/connector_8h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-<hr>
-          <div class="content" role="main" v-pre>
-            
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="root-kanon-kanon-net-connector-h-source-file">
-<h1>/root/kanon/kanon/net/connector.h Source File<a class="headerlink" href="#root-kanon-kanon-net-connector-h-source-file" title="Permalink to this heading">¶</a></h1>
+<h1>/root/kanon/kanon/net/connector.h Source File<a class="headerlink" href="#root-kanon-kanon-net-connector-h-source-file" title="Permalink to this heading"></a></h1>
 <div class="doxygen-content docutils container">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>kanon: /root/kanon/kanon/net/connector.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
+ <tr id="projectrow">
+  <td id="projectalign">
    <div id="projectname">kanon
    </div>
    <div id="projectbrief">A event-driven network library based on reactor mode</div>
@@ -136,15 +99,16 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Generated by Doxygen 1.8.17 -->
+<!-- Generated by Doxygen 1.9.6 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',false,false,'search.php','Search');
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
@@ -152,126 +116,124 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle">
-<div class="title">connector.h</div>  </div>
+  <div class="headertitle"><div class="title">connector.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef KANON_NET_CONNECTOR_H</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define KANON_NET_CONNECTOR_H</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;atomic&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;kanon/net/timer/timer_id.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;kanon/util/macro.h&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;kanon/util/noncopyable.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;kanon/util/optional.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;kanon/util/ptr.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;kanon/net/type.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;kanon/net/inet_addr.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>kanon {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>EventLoop;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>Channel;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html">   41</a></span>&#160;<span class="keyword">class </span>KANON_NET_NO_API <a class="code" href="classkanon_1_1Connector.html">Connector</a></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  : <span class="keyword">public</span> std::enable_shared_from_this&lt;Connector&gt;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  , noncopyable {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">enum</span> State : uint8_t {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    kConnecting,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    kConnected,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    kDisconnected,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  };</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">/* Don&#39;t restrict to tcp connection,</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">     user can pack sockfd to other structure</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">     which is also based connection */</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">typedef</span> std::function&lt;void(FdType sockfd)&gt; NewConnectionCallback;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="classkanon_1_1Connector.html">Connector</a>(<a class="code" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, <a class="code" href="classkanon_1_1InetAddr.html">InetAddr</a> <span class="keyword">const</span> &amp;serv_addr);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">static</span> std::shared_ptr&lt;Connector&gt; NewConnector(<a class="code" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                                 <a class="code" href="classkanon_1_1InetAddr.html">InetAddr</a> <span class="keyword">const</span> &amp;serv_addr)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> kanon::MakeSharedFromProtected&lt;Connector&gt;(loop, serv_addr);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  ~<a class="code" href="classkanon_1_1Connector.html">Connector</a>() KANON_NOEXCEPT;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> StartRun();</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordtype">void</span> Stop();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordtype">void</span> Restrat();</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">void</span> SetNewConnectionCallback(NewConnectionCallback cb) KANON_NOEXCEPT</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    new_connection_callback_ = std::move(cb);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  }</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <a class="code" href="classkanon_1_1InetAddr.html">InetAddr</a> <span class="keyword">const</span> &amp;GetServerAddr() <span class="keyword">const</span> KANON_NOEXCEPT { <span class="keywordflow">return</span> serv_addr_; }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::unique_ptr&lt;Channel&gt; channel() KANON_NOEXCEPT</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  {</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> std::move(channel_);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordtype">void</span> SetState(State s) KANON_NOEXCEPT { state_ = s; }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordtype">void</span> Connect();</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordtype">void</span> CompleteConnect(FdType sockfd);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordtype">void</span> Retry(FdType sockfd);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="keywordtype">void</span> ResetChannel();</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="keywordtype">void</span> StopInLoop();</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <a class="code" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop_;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <a class="code" href="classkanon_1_1InetAddr.html">InetAddr</a> serv_addr_;</div>
-<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a842ce0e19a16169490e1b338469d7b43">  146</a></span>&#160;  uint32_t <a class="code" href="classkanon_1_1Connector.html#a842ce0e19a16169490e1b338469d7b43">retry_interval_</a>; </div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  std::unique_ptr&lt;Channel&gt; channel_;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  NewConnectionCallback new_connection_callback_;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="comment">/*</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment">   * The connect_ and state_ are necessary.</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment">   * e.g. Stop() need remove channel and close fd</span></div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="comment">   * when connector in the connecting state</span></div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; </div>
-<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a3bb208aec5f9e6750a414ee0fcbf2de3">  158</a></span>&#160;  State <a class="code" href="classkanon_1_1Connector.html#a3bb208aec5f9e6750a414ee0fcbf2de3">state_</a>; </div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
-<div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#ac2c3cb0712dc28d6e349dc0a52e7bd02">  163</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classkanon_1_1Connector.html#ac2c3cb0712dc28d6e349dc0a52e7bd02">connect_</a>;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a7ab63bd2f1310905404264c5b910e9ab">  165</a></span>&#160;  kanon::optional&lt;TimerId&gt; <a class="code" href="classkanon_1_1Connector.html#a7ab63bd2f1310905404264c5b910e9ab">timer_</a>; </div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;};</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;} <span class="comment">// namespace kanon</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="preprocessor">#endif // KANON_NET_CONNECTOR_H</span></div>
-</div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclasskanon_1_1Connector_html_a842ce0e19a16169490e1b338469d7b43"><div class="ttname"><a href="classkanon_1_1Connector.html#a842ce0e19a16169490e1b338469d7b43">kanon::Connector::retry_interval_</a></div><div class="ttdeci">uint32_t retry_interval_</div><div class="ttdoc">Time interval of retry connect.</div><div class="ttdef"><b>Definition:</b> connector.h:146</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html"><div class="ttname"><a href="classkanon_1_1InetAddr.html">kanon::InetAddr</a></div><div class="ttdoc">Represent a internet address(Ipv4 or Ipv6)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:97</div></div>
-<div class="ttc" id="aclasskanon_1_1EventLoop_html"><div class="ttname"><a href="classkanon_1_1EventLoop.html">kanon::EventLoop</a></div><div class="ttdoc">A loop that process various events.</div><div class="ttdef"><b>Definition:</b> event_loop.h:40</div></div>
-<div class="ttc" id="aclasskanon_1_1Connector_html"><div class="ttname"><a href="classkanon_1_1Connector.html">kanon::Connector</a></div><div class="ttdoc">Connect to peer(server)</div><div class="ttdef"><b>Definition:</b> connector.h:41</div></div>
-<div class="ttc" id="aclasskanon_1_1Connector_html_a7ab63bd2f1310905404264c5b910e9ab"><div class="ttname"><a href="classkanon_1_1Connector.html#a7ab63bd2f1310905404264c5b910e9ab">kanon::Connector::timer_</a></div><div class="ttdeci">kanon::optional&lt; TimerId &gt; timer_</div><div class="ttdoc">Retry timer.</div><div class="ttdef"><b>Definition:</b> connector.h:165</div></div>
-<div class="ttc" id="aclasskanon_1_1Connector_html_ac2c3cb0712dc28d6e349dc0a52e7bd02"><div class="ttname"><a href="classkanon_1_1Connector.html#ac2c3cb0712dc28d6e349dc0a52e7bd02">kanon::Connector::connect_</a></div><div class="ttdeci">bool connect_</div><div class="ttdef"><b>Definition:</b> connector.h:163</div></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef KANON_NET_CONNECTOR_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define KANON_NET_CONNECTOR_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;kanon/net/timer/timer_id.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;kanon/util/macro.h&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;kanon/util/noncopyable.h&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;kanon/util/optional.h&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;kanon/util/ptr.h&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;kanon/net/type.h&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;kanon/net/inet_addr.h&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>kanon {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>EventLoop;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Channel;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html">   41</a></span><span class="keyword">class </span>KANON_NET_NO_API <a class="code hl_class" href="classkanon_1_1Connector.html">Connector</a></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  : <span class="keyword">public</span> std::enable_shared_from_this&lt;Connector&gt;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  , noncopyable {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">enum</span> State : uint8_t {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    kConnecting,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    kConnected,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    kDisconnected,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  };</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="comment">/* Don&#39;t restrict to tcp connection,</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment">     user can pack sockfd to other structure</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">     which is also based connection */</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keyword">typedef</span> std::function&lt;void(FdType sockfd)&gt; NewConnectionCallback;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <a class="code hl_class" href="classkanon_1_1Connector.html">Connector</a>(<a class="code hl_class" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a> <span class="keyword">const</span> &amp;serv_addr);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keyword">static</span> std::shared_ptr&lt;Connector&gt; NewConnector(<a class="code hl_class" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                                                 <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a> <span class="keyword">const</span> &amp;serv_addr)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> kanon::MakeSharedFromProtected&lt;Connector&gt;(loop, serv_addr);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  <a class="code hl_class" href="classkanon_1_1Connector.html">~Connector</a>() KANON_NOEXCEPT;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <span class="keywordtype">void</span> StartRun();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="keywordtype">void</span> Stop();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keywordtype">void</span> Restrat();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keywordtype">void</span> SetNewConnectionCallback(NewConnectionCallback cb) KANON_NOEXCEPT</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    new_connection_callback_ = std::move(cb);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a> <span class="keyword">const</span> &amp;GetServerAddr() <span class="keyword">const</span> KANON_NOEXCEPT { <span class="keywordflow">return</span> serv_addr_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  std::unique_ptr&lt;Channel&gt; channel() KANON_NOEXCEPT</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> std::move(channel_);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keywordtype">void</span> SetState(State s) KANON_NOEXCEPT { state_ = s; }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keywordtype">void</span> Connect();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a937746292f7225896dd90796181fd1c7">  120</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classkanon_1_1Connector.html#a937746292f7225896dd90796181fd1c7">CompleteConnect</a>(FdType sockfd);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keywordtype">void</span> Retry(FdType sockfd);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordtype">void</span> ResetChannel();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <span class="keywordtype">void</span> StopInLoop();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  <a class="code hl_class" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop_;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a> serv_addr_;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a842ce0e19a16169490e1b338469d7b43">  146</a></span>  uint32_t <a class="code hl_variable" href="classkanon_1_1Connector.html#a842ce0e19a16169490e1b338469d7b43">retry_interval_</a>; </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  std::unique_ptr&lt;Channel&gt; channel_;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  NewConnectionCallback new_connection_callback_;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  <span class="comment">/*</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="comment">   * The connect_ and state_ are necessary.</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">   * e.g. Stop() need remove channel and close fd</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="comment">   * when connector in the connecting state</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a3bb208aec5f9e6750a414ee0fcbf2de3">  158</a></span>  State <a class="code hl_variable" href="classkanon_1_1Connector.html#a3bb208aec5f9e6750a414ee0fcbf2de3">state_</a>; </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#ac2c3cb0712dc28d6e349dc0a52e7bd02">  163</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classkanon_1_1Connector.html#ac2c3cb0712dc28d6e349dc0a52e7bd02">connect_</a>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classkanon_1_1Connector.html#a7ab63bd2f1310905404264c5b910e9ab">  165</a></span>  kanon::optional&lt;TimerId&gt; <a class="code hl_variable" href="classkanon_1_1Connector.html#a7ab63bd2f1310905404264c5b910e9ab">timer_</a>; </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>};</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>} <span class="comment">// namespace kanon</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="preprocessor">#endif </span><span class="comment">// KANON_NET_CONNECTOR_H</span></div>
+<div class="ttc" id="aclasskanon_1_1Connector_html"><div class="ttname"><a href="classkanon_1_1Connector.html">kanon::Connector</a></div><div class="ttdoc">Connect to peer(server)</div><div class="ttdef"><b>Definition:</b> connector.h:43</div></div>
 <div class="ttc" id="aclasskanon_1_1Connector_html_a3bb208aec5f9e6750a414ee0fcbf2de3"><div class="ttname"><a href="classkanon_1_1Connector.html#a3bb208aec5f9e6750a414ee0fcbf2de3">kanon::Connector::state_</a></div><div class="ttdeci">State state_</div><div class="ttdoc">Current stage, used for checking.</div><div class="ttdef"><b>Definition:</b> connector.h:158</div></div>
+<div class="ttc" id="aclasskanon_1_1Connector_html_a7ab63bd2f1310905404264c5b910e9ab"><div class="ttname"><a href="classkanon_1_1Connector.html#a7ab63bd2f1310905404264c5b910e9ab">kanon::Connector::timer_</a></div><div class="ttdeci">kanon::optional&lt; TimerId &gt; timer_</div><div class="ttdoc">Retry timer.</div><div class="ttdef"><b>Definition:</b> connector.h:165</div></div>
+<div class="ttc" id="aclasskanon_1_1Connector_html_a842ce0e19a16169490e1b338469d7b43"><div class="ttname"><a href="classkanon_1_1Connector.html#a842ce0e19a16169490e1b338469d7b43">kanon::Connector::retry_interval_</a></div><div class="ttdeci">uint32_t retry_interval_</div><div class="ttdoc">Time interval of retry connect.</div><div class="ttdef"><b>Definition:</b> connector.h:146</div></div>
+<div class="ttc" id="aclasskanon_1_1Connector_html_a937746292f7225896dd90796181fd1c7"><div class="ttname"><a href="classkanon_1_1Connector.html#a937746292f7225896dd90796181fd1c7">kanon::Connector::CompleteConnect</a></div><div class="ttdeci">void CompleteConnect(FdType sockfd)</div></div>
+<div class="ttc" id="aclasskanon_1_1Connector_html_ac2c3cb0712dc28d6e349dc0a52e7bd02"><div class="ttname"><a href="classkanon_1_1Connector.html#ac2c3cb0712dc28d6e349dc0a52e7bd02">kanon::Connector::connect_</a></div><div class="ttdeci">bool connect_</div><div class="ttdef"><b>Definition:</b> connector.h:163</div></div>
+<div class="ttc" id="aclasskanon_1_1EventLoop_html"><div class="ttname"><a href="classkanon_1_1EventLoop.html">kanon::EventLoop</a></div><div class="ttdoc">A loop that process various events.</div><div class="ttdef"><b>Definition:</b> event_loop.h:40</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html"><div class="ttname"><a href="classkanon_1_1InetAddr.html">kanon::InetAddr</a></div><div class="ttdoc">Represent a internet address(Ipv4 or Ipv6)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:97</div></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
 </small></address>
 </body>
 </html>
@@ -279,19 +241,31 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 </section>
 
 
+           </div>
           </div>
-          <div class="page-nav">
-            <div class="inner"><ul class="page-nav">
-</ul><div class="footer" role="contentinfo">
-      &#169; Copyright 2023, conzxy.
-    <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
-</div>
-            </div>
-          </div>
-      </page>
-    </div></div>
-    
-    
-  </body>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, conzxy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html  lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-      <title>kanon: kanon::EventLoop Class Reference</title>
-    
-          <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-          <link rel="stylesheet" href="../../../_static/theme.css " type="text/css" />
-      
-      <!-- sphinx script_files -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kanon: kanon::EventLoop Class Reference &mdash; kanon v1.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
 
-      
-      <!-- bundled in js (rollup iife) -->
-      <!-- <script src="../../../_static/theme-vendors.js"></script> -->
-      <script src="../../../_static/theme.js" defer></script>
-    
-  <link rel="index" title="Index" href="../../../genindex.html" />
-  <link rel="search" title="Search" href="../../../search.html" /> 
-  </head>
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  <body>
-    <div id="app">
-    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../../../index.html" class="home-link">
-    
-      <span class="site-name">kanon</span>
-    
-  </router-link>
-
-  <div class="links">
-    <navlinks class="can-hide">
-
-
-
-    </navlinks>
-  </div>
-</navbar>
-
-      
-      <div class="sidebar-mask" @click="toggleSidebar(false)">
-      </div>
-        <sidebar @toggle-sidebar="toggleSidebar">
           
-          <navlinks>
-            
-
-
-
-            
-          </navlinks><div id="searchbox" class="searchbox" role="search">
-  <div class="caption"><span class="caption-text">Quick search</span>
-    <div class="searchformwrapper">
-      <form class="search" action="../../../search.html" method="get">
-        <input type="text" name="q" />
-        <input type="submit" value="Search" />
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </form>
-    </div>
-  </div>
-</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
-  
-    <div class="sidebar-group">
-      <p class="caption">
-        <span class="caption-text"><a href="../../../api/index.html#this-is-api-document-of-kanonn">this is api document of kanonn</a></span>
-      </p>
-      <ul class="">
-        
-          <li class="toctree-l1 ">
-            
-              <a href="index.html" class="reference internal ">Home Page</a>
-            
-
-            
-          </li>
-
-        
-      </ul>
-    </div>
-  
+          
+          <a href="../../../index.html" class="icon icon-home">
+            kanon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-        </sidebar>
-
-      <page>
-          <div class="body-header" role="navigation" aria-label="navigation">
-  
-  <ul class="breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-    
-    <li>kanon: kanon::EventLoop Class Reference</li>
-  </ul>
-  
-
-  <ul class="page-nav">
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Doc</a></li>
 </ul>
-  
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">kanon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">kanon: kanon::EventLoop Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/doxygen/kanon/html/classkanon_1_1EventLoop.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-<hr>
-          <div class="content" role="main" v-pre>
-            
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="eventloop-class-reference">
-<h1>EventLoop Class Reference<a class="headerlink" href="#eventloop-class-reference" title="Permalink to this heading">¶</a></h1>
+<h1>EventLoop Class Reference<a class="headerlink" href="#eventloop-class-reference" title="Permalink to this heading"></a></h1>
 <div class="doxygen-content docutils container">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>kanon: kanon::EventLoop Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
+ <tr id="projectrow">
+  <td id="projectalign">
    <div id="projectname">kanon
    </div>
    <div id="projectbrief">A event-driven network library based on reactor mode</div>
@@ -136,15 +99,16 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Generated by Doxygen 1.8.17 -->
+<!-- Generated by Doxygen 1.9.6 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',false,false,'search.php','Search');
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
@@ -158,8 +122,7 @@ $(function() {
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classkanon_1_1EventLoop-members.html">List of all members</a>  </div>
-  <div class="headertitle">
-<div class="title">kanon::EventLoop Class Reference<div class="ingroups"><a class="el" href="group__net.html">Net</a> &raquo; <a class="el" href="group__EventLoop.html">EventLoop</a></div></div>  </div>
+  <div class="headertitle"><div class="title">kanon::EventLoop Class Reference<div class="ingroups"><a class="el" href="group__net.html">Net</a> &raquo; <a class="el" href="group__EventLoop.html">EventLoop</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -170,127 +133,129 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for kanon::EventLoop:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1EventLoop__inherit__graph.svg" width="150" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1EventLoop__inherit__graph.svg" width="150" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for kanon::EventLoop:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1EventLoop__coll__graph.svg" width="150" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1EventLoop__coll__graph.svg" width="150" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:afba38c1057694a00e187ab5159efcca1"><td class="memItemLeft" align="right" valign="top"><a id="afba38c1057694a00e187ab5159efcca1"></a>
+<tr class="memitem:afba38c1057694a00e187ab5159efcca1"><td class="memItemLeft" align="right" valign="top"><a id="afba38c1057694a00e187ab5159efcca1" name="afba38c1057694a00e187ab5159efcca1"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>FunctorCallback</b> = std::function&lt; void()&gt;</td></tr>
 <tr class="separator:afba38c1057694a00e187ab5159efcca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abd469c63f6cab327e33e9fa60ab72ea7"><td class="memItemLeft" align="right" valign="top"><a id="abd469c63f6cab327e33e9fa60ab72ea7"></a>
-KANON_NET_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#abd469c63f6cab327e33e9fa60ab72ea7">EventLoop</a> ()</td></tr>
+<tr class="memitem:abd469c63f6cab327e33e9fa60ab72ea7"><td class="memItemLeft" align="right" valign="top"><a id="abd469c63f6cab327e33e9fa60ab72ea7" name="abd469c63f6cab327e33e9fa60ab72ea7"></a>
+KANON_NET_API&#160;</td><td class="memItemRight" valign="bottom"><b>EventLoop</b> ()</td></tr>
 <tr class="memdesc:abd469c63f6cab327e33e9fa60ab72ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct default eventloop that use epoll(2) as the demultiplexer. <br /></td></tr>
 <tr class="separator:abd469c63f6cab327e33e9fa60ab72ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0eef68cbc3888161f15980cb407a1dd4"><td class="memItemLeft" align="right" valign="top">KANON_NET_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a0eef68cbc3888161f15980cb407a1dd4">EventLoop</a> (bool is_poller)</td></tr>
-<tr class="memdesc:a0eef68cbc3888161f15980cb407a1dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct eventloop whose demultiplexer is specified by user.  <a href="classkanon_1_1EventLoop.html#a0eef68cbc3888161f15980cb407a1dd4">More...</a><br /></td></tr>
+<tr class="memdesc:a0eef68cbc3888161f15980cb407a1dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct eventloop whose demultiplexer is specified by user.  <br /></td></tr>
 <tr class="separator:a0eef68cbc3888161f15980cb407a1dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Loop API</div></td></tr>
-<tr class="memitem:ad0330b5c5ac235af724c35c3f16766c2"><td class="memItemLeft" align="right" valign="top"><a id="ad0330b5c5ac235af724c35c3f16766c2"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#ad0330b5c5ac235af724c35c3f16766c2">StartLoop</a> ()</td></tr>
+<tr class="memitem:ad0330b5c5ac235af724c35c3f16766c2"><td class="memItemLeft" align="right" valign="top"><a id="ad0330b5c5ac235af724c35c3f16766c2" name="ad0330b5c5ac235af724c35c3f16766c2"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>StartLoop</b> ()</td></tr>
 <tr class="memdesc:ad0330b5c5ac235af724c35c3f16766c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a event loop to process events. <br /></td></tr>
 <tr class="separator:ad0330b5c5ac235af724c35c3f16766c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a3ce58166373896a3435b6b8ec0e858"><td class="memItemLeft" align="right" valign="top">KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a8a3ce58166373896a3435b6b8ec0e858">Quit</a> () KANON_NOEXCEPT</td></tr>
-<tr class="memdesc:a8a3ce58166373896a3435b6b8ec0e858"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quit loop.  <a href="classkanon_1_1EventLoop.html#a8a3ce58166373896a3435b6b8ec0e858">More...</a><br /></td></tr>
+<tr class="memdesc:a8a3ce58166373896a3435b6b8ec0e858"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quit loop.  <br /></td></tr>
 <tr class="separator:a8a3ce58166373896a3435b6b8ec0e858"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad63e69b85ca69bed5cdcc079d5a38ff0"><td class="memItemLeft" align="right" valign="top">KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#ad63e69b85ca69bed5cdcc079d5a38ff0">RunInLoop</a> (FunctorCallback)</td></tr>
-<tr class="memdesc:ad63e69b85ca69bed5cdcc079d5a38ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run functor in the loop.  <a href="classkanon_1_1EventLoop.html#ad63e69b85ca69bed5cdcc079d5a38ff0">More...</a><br /></td></tr>
+<tr class="memdesc:ad63e69b85ca69bed5cdcc079d5a38ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run functor in the loop.  <br /></td></tr>
 <tr class="separator:ad63e69b85ca69bed5cdcc079d5a38ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54b9beb628bf28d429a0aadbe13ff3e7"><td class="memItemLeft" align="right" valign="top">KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a54b9beb628bf28d429a0aadbe13ff3e7">QueueToLoop</a> (FunctorCallback)</td></tr>
-<tr class="memdesc:a54b9beb628bf28d429a0aadbe13ff3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue the functor to event loop.  <a href="classkanon_1_1EventLoop.html#a54b9beb628bf28d429a0aadbe13ff3e7">More...</a><br /></td></tr>
+<tr class="memdesc:a54b9beb628bf28d429a0aadbe13ff3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue the functor to event loop.  <br /></td></tr>
 <tr class="separator:a54b9beb628bf28d429a0aadbe13ff3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Edge trigger mode</div></td></tr>
-<tr class="memitem:a47170f55eacbb913e3d7e72bf7c3d8b6"><td class="memItemLeft" align="right" valign="top"><a id="a47170f55eacbb913e3d7e72bf7c3d8b6"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a47170f55eacbb913e3d7e72bf7c3d8b6">SetEdgeTriggerMode</a> () KANON_NOEXCEPT</td></tr>
+<tr class="memitem:a47170f55eacbb913e3d7e72bf7c3d8b6"><td class="memItemLeft" align="right" valign="top"><a id="a47170f55eacbb913e3d7e72bf7c3d8b6" name="a47170f55eacbb913e3d7e72bf7c3d8b6"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>SetEdgeTriggerMode</b> () KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:a47170f55eacbb913e3d7e72bf7c3d8b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set event loop work in edge trigger mode of epoller() <br /></td></tr>
 <tr class="separator:a47170f55eacbb913e3d7e72bf7c3d8b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb1e0a45fd4623986947d6946d9b577f"><td class="memItemLeft" align="right" valign="top"><a id="adb1e0a45fd4623986947d6946d9b577f"></a>
-KANON_NET_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#adb1e0a45fd4623986947d6946d9b577f">IsEdgeTriggerMode</a> () const KANON_NOEXCEPT</td></tr>
+<tr class="memitem:adb1e0a45fd4623986947d6946d9b577f"><td class="memItemLeft" align="right" valign="top"><a id="adb1e0a45fd4623986947d6946d9b577f" name="adb1e0a45fd4623986947d6946d9b577f"></a>
+KANON_NET_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsEdgeTriggerMode</b> () const KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:adb1e0a45fd4623986947d6946d9b577f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check event loop if work in trigger mode. <br /></td></tr>
 <tr class="separator:adb1e0a45fd4623986947d6946d9b577f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Timer API</div></td></tr>
 <tr class="memitem:a9796c3553533a937c8d9f467b44b6051"><td class="memItemLeft" align="right" valign="top">KANON_NET_API <a class="el" href="classkanon_1_1TimerId.html">TimerId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a9796c3553533a937c8d9f467b44b6051">RunAt</a> (TimerCallback cb, TimeStamp expiration)</td></tr>
-<tr class="memdesc:a9796c3553533a937c8d9f467b44b6051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> at specific time point <code>expiration</code>.  <a href="classkanon_1_1EventLoop.html#a9796c3553533a937c8d9f467b44b6051">More...</a><br /></td></tr>
+<tr class="memdesc:a9796c3553533a937c8d9f467b44b6051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> at specific time point <code>expiration</code>.  <br /></td></tr>
 <tr class="separator:a9796c3553533a937c8d9f467b44b6051"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48da65ed77e5b994b5ebb9a6b510bcf5"><td class="memItemLeft" align="right" valign="top">KANON_INLINE <a class="el" href="classkanon_1_1TimerId.html">TimerId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a48da65ed77e5b994b5ebb9a6b510bcf5">RunAfter</a> (TimerCallback cb, double delay)</td></tr>
-<tr class="memdesc:a48da65ed77e5b994b5ebb9a6b510bcf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> after a time interval <code>delay</code>.  <a href="classkanon_1_1EventLoop.html#a48da65ed77e5b994b5ebb9a6b510bcf5">More...</a><br /></td></tr>
+<tr class="memdesc:a48da65ed77e5b994b5ebb9a6b510bcf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> after a time interval <code>delay</code>.  <br /></td></tr>
 <tr class="separator:a48da65ed77e5b994b5ebb9a6b510bcf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57d0e1b8088bc90adeed11525913a141"><td class="memItemLeft" align="right" valign="top"><a id="a57d0e1b8088bc90adeed11525913a141"></a>
+<tr class="memitem:a57d0e1b8088bc90adeed11525913a141"><td class="memItemLeft" align="right" valign="top"><a id="a57d0e1b8088bc90adeed11525913a141" name="a57d0e1b8088bc90adeed11525913a141"></a>
 KANON_INLINE <a class="el" href="classkanon_1_1TimerId.html">TimerId</a>&#160;</td><td class="memItemRight" valign="bottom"><b>RunAfterMs</b> (TimerCallback cb, uint64_t delay)</td></tr>
 <tr class="separator:a57d0e1b8088bc90adeed11525913a141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c557a2f14c718c9dae43f9568662f5"><td class="memItemLeft" align="right" valign="top"><a id="a15c557a2f14c718c9dae43f9568662f5"></a>
+<tr class="memitem:a15c557a2f14c718c9dae43f9568662f5"><td class="memItemLeft" align="right" valign="top"><a id="a15c557a2f14c718c9dae43f9568662f5" name="a15c557a2f14c718c9dae43f9568662f5"></a>
 KANON_INLINE <a class="el" href="classkanon_1_1TimerId.html">TimerId</a>&#160;</td><td class="memItemRight" valign="bottom"><b>RunAfterUs</b> (TimerCallback cb, uint64_t delay)</td></tr>
 <tr class="separator:a15c557a2f14c718c9dae43f9568662f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac75a8db5a1f53381ac97074b8960d64a"><td class="memItemLeft" align="right" valign="top">KANON_NET_API <a class="el" href="classkanon_1_1TimerId.html">TimerId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#ac75a8db5a1f53381ac97074b8960d64a">RunEvery</a> (TimerCallback cb, TimeStamp expiration, double interval)</td></tr>
-<tr class="memdesc:ac75a8db5a1f53381ac97074b8960d64a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> at a specific time pointer then run <code>cb</code> in a fixed period.  <a href="classkanon_1_1EventLoop.html#ac75a8db5a1f53381ac97074b8960d64a">More...</a><br /></td></tr>
+<tr class="memdesc:ac75a8db5a1f53381ac97074b8960d64a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> at a specific time pointer then run <code>cb</code> in a fixed period.  <br /></td></tr>
 <tr class="separator:ac75a8db5a1f53381ac97074b8960d64a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f4f9d81603af281b9aa2473237c1f8e"><td class="memItemLeft" align="right" valign="top">KANON_INLINE <a class="el" href="classkanon_1_1TimerId.html">TimerId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a9f4f9d81603af281b9aa2473237c1f8e">RunEvery</a> (TimerCallback cb, double interval)</td></tr>
-<tr class="memdesc:a9f4f9d81603af281b9aa2473237c1f8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> in a fixed period.  <a href="classkanon_1_1EventLoop.html#a9f4f9d81603af281b9aa2473237c1f8e">More...</a><br /></td></tr>
+<tr class="memdesc:a9f4f9d81603af281b9aa2473237c1f8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run callback <code>cb</code> in a fixed period.  <br /></td></tr>
 <tr class="separator:a9f4f9d81603af281b9aa2473237c1f8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3957e9a626865dd0c2aa35a5fdcd9d40"><td class="memItemLeft" align="right" valign="top">KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a3957e9a626865dd0c2aa35a5fdcd9d40">CancelTimer</a> (<a class="el" href="classkanon_1_1TimerId.html">TimerId</a> timer_id)</td></tr>
-<tr class="memdesc:a3957e9a626865dd0c2aa35a5fdcd9d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove timer from event loop.  <a href="classkanon_1_1EventLoop.html#a3957e9a626865dd0c2aa35a5fdcd9d40">More...</a><br /></td></tr>
+<tr class="memdesc:a3957e9a626865dd0c2aa35a5fdcd9d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove timer from event loop.  <br /></td></tr>
 <tr class="separator:a3957e9a626865dd0c2aa35a5fdcd9d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a78fcf7f34b510ee335883ee04ee08ab1"><td class="memItemLeft" align="right" valign="top">KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a78fcf7f34b510ee335883ee04ee08ab1">Wakeup</a> () KANON_NOEXCEPT</td></tr>
-<tr class="memdesc:a78fcf7f34b510ee335883ee04ee08ab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wakeup the (e)poller to avoid sleep blocking this thread.  <a href="classkanon_1_1EventLoop.html#a78fcf7f34b510ee335883ee04ee08ab1">More...</a><br /></td></tr>
+<tr class="memdesc:a78fcf7f34b510ee335883ee04ee08ab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wakeup the (e)poller to avoid sleep blocking this thread.  <br /></td></tr>
 <tr class="separator:a78fcf7f34b510ee335883ee04ee08ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58c7d87acd14a0598386ddc705b72739"><td class="memItemLeft" align="right" valign="top"><a id="a58c7d87acd14a0598386ddc705b72739"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a58c7d87acd14a0598386ddc705b72739">CallFunctors</a> ()</td></tr>
+<tr class="memitem:a58c7d87acd14a0598386ddc705b72739"><td class="memItemLeft" align="right" valign="top"><a id="a58c7d87acd14a0598386ddc705b72739" name="a58c7d87acd14a0598386ddc705b72739"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>CallFunctors</b> ()</td></tr>
 <tr class="memdesc:a58c7d87acd14a0598386ddc705b72739"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call all functors in functors_(better name: callable) <br /></td></tr>
 <tr class="separator:a58c7d87acd14a0598386ddc705b72739"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af823f1988d0a3da72690d13ff9468b1d"><td class="memItemLeft" align="right" valign="top"><a id="af823f1988d0a3da72690d13ff9468b1d"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#af823f1988d0a3da72690d13ff9468b1d">EvRead</a> () KANON_NOEXCEPT</td></tr>
+<tr class="memitem:af823f1988d0a3da72690d13ff9468b1d"><td class="memItemLeft" align="right" valign="top"><a id="af823f1988d0a3da72690d13ff9468b1d" name="af823f1988d0a3da72690d13ff9468b1d"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>EvRead</b> () KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:af823f1988d0a3da72690d13ff9468b1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read callback of eventfd. <br /></td></tr>
 <tr class="separator:af823f1988d0a3da72690d13ff9468b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e3e055025e6b603bbb2ccdf94f7cecc"><td class="memItemLeft" align="right" valign="top"><a id="a0e3e055025e6b603bbb2ccdf94f7cecc"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a0e3e055025e6b603bbb2ccdf94f7cecc">AbortNotInThread</a> () KANON_NOEXCEPT</td></tr>
+<tr class="memitem:a0e3e055025e6b603bbb2ccdf94f7cecc"><td class="memItemLeft" align="right" valign="top"><a id="a0e3e055025e6b603bbb2ccdf94f7cecc" name="a0e3e055025e6b603bbb2ccdf94f7cecc"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>AbortNotInThread</b> () KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:a0e3e055025e6b603bbb2ccdf94f7cecc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abort the program if not satify the "One loop per thread" policy. <br /></td></tr>
 <tr class="separator:a0e3e055025e6b603bbb2ccdf94f7cecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8578ab8176860a549c180004289374b3"><td class="memItemLeft" align="right" valign="top"><a id="a8578ab8176860a549c180004289374b3"></a>
-std::vector&lt; FunctorCallback &gt; functors_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a8578ab8176860a549c180004289374b3">GUARDED_BY</a> (<a class="el" href="classkanon_1_1EventLoop.html#acd468c6ff29f6035273d4d137fd32702">lock_</a>)</td></tr>
-<tr class="memdesc:a8578ab8176860a549c180004289374b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store all functors that register before phase3. <br /></td></tr>
-<tr class="separator:a8578ab8176860a549c180004289374b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaf52275536b98bec46279af57477bce"><td class="memItemLeft" align="right" valign="top"><a id="acaf52275536b98bec46279af57477bce" name="acaf52275536b98bec46279af57477bce"></a>
+std::vector&lt; FunctorCallback &gt; functors_&#160;</td><td class="memItemRight" valign="bottom"><b>GUARDED_BY</b> (<a class="el" href="classkanon_1_1EventLoop.html#acd468c6ff29f6035273d4d137fd32702">lock_</a>)</td></tr>
+<tr class="memdesc:acaf52275536b98bec46279af57477bce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store all functors that register before phase3. <br /></td></tr>
+<tr class="separator:acaf52275536b98bec46279af57477bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a9415af5eca9086069feb2511e6bcea90"><td class="memItemLeft" align="right" valign="top">const process::PId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a9415af5eca9086069feb2511e6bcea90">owner_thread_id_</a></td></tr>
-<tr class="memdesc:a9415af5eca9086069feb2511e6bcea90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current thread Id.  <a href="classkanon_1_1EventLoop.html#a9415af5eca9086069feb2511e6bcea90">More...</a><br /></td></tr>
+<tr class="memdesc:a9415af5eca9086069feb2511e6bcea90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current thread Id.  <br /></td></tr>
 <tr class="separator:a9415af5eca9086069feb2511e6bcea90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afec6b6116ff334fe7f90a2ee16acb36f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#afec6b6116ff334fe7f90a2ee16acb36f">looping_</a></td></tr>
-<tr class="memdesc:afec6b6116ff334fe7f90a2ee16acb36f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this loop is working.  <a href="classkanon_1_1EventLoop.html#afec6b6116ff334fe7f90a2ee16acb36f">More...</a><br /></td></tr>
+<tr class="memdesc:afec6b6116ff334fe7f90a2ee16acb36f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this loop is working.  <br /></td></tr>
 <tr class="separator:afec6b6116ff334fe7f90a2ee16acb36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59f01cdf9e000872c18fb1f696d678d4"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a59f01cdf9e000872c18fb1f696d678d4">quit_</a></td></tr>
-<tr class="memdesc:a59f01cdf9e000872c18fb1f696d678d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this loop will be quited.  <a href="classkanon_1_1EventLoop.html#a59f01cdf9e000872c18fb1f696d678d4">More...</a><br /></td></tr>
+<tr class="memdesc:a59f01cdf9e000872c18fb1f696d678d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this loop will be quited.  <br /></td></tr>
 <tr class="separator:a59f01cdf9e000872c18fb1f696d678d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc5f697ebbc1410aebd5ba791b6174e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a7fc5f697ebbc1410aebd5ba791b6174e">calling_functors_</a></td></tr>
-<tr class="memdesc:a7fc5f697ebbc1410aebd5ba791b6174e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether functors are being called.  <a href="classkanon_1_1EventLoop.html#a7fc5f697ebbc1410aebd5ba791b6174e">More...</a><br /></td></tr>
+<tr class="memdesc:a7fc5f697ebbc1410aebd5ba791b6174e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether functors are being called.  <br /></td></tr>
 <tr class="separator:a7fc5f697ebbc1410aebd5ba791b6174e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ec7868bdca75b9efad8fcf43ab835a2"><td class="memItemLeft" align="right" valign="top"><a id="a5ec7868bdca75b9efad8fcf43ab835a2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a5ec7868bdca75b9efad8fcf43ab835a2">is_poller_</a></td></tr>
+<tr class="memitem:a5ec7868bdca75b9efad8fcf43ab835a2"><td class="memItemLeft" align="right" valign="top"><a id="a5ec7868bdca75b9efad8fcf43ab835a2" name="a5ec7868bdca75b9efad8fcf43ab835a2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_poller_</b></td></tr>
 <tr class="memdesc:a5ec7868bdca75b9efad8fcf43ab835a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whther demultipler(poller_) is working in poller() <br /></td></tr>
 <tr class="separator:a5ec7868bdca75b9efad8fcf43ab835a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3711f0b35e81abeb55799793c939fc6e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classkanon_1_1PollerBase.html">PollerBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#a3711f0b35e81abeb55799793c939fc6e">poller_</a></td></tr>
-<tr class="memdesc:a3711f0b35e81abeb55799793c939fc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Demultiplexer.  <a href="classkanon_1_1EventLoop.html#a3711f0b35e81abeb55799793c939fc6e">More...</a><br /></td></tr>
+<tr class="memdesc:a3711f0b35e81abeb55799793c939fc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Demultiplexer.  <br /></td></tr>
 <tr class="separator:a3711f0b35e81abeb55799793c939fc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0f837a2b80071accc09962c03067fd5"><td class="memItemLeft" align="right" valign="top"><a id="aa0f837a2b80071accc09962c03067fd5"></a>
-std::unique_ptr&lt; Channel &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#aa0f837a2b80071accc09962c03067fd5">ev_channel_</a></td></tr>
+<tr class="memitem:aa0f837a2b80071accc09962c03067fd5"><td class="memItemLeft" align="right" valign="top"><a id="aa0f837a2b80071accc09962c03067fd5" name="aa0f837a2b80071accc09962c03067fd5"></a>
+std::unique_ptr&lt; Channel &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ev_channel_</b></td></tr>
 <tr class="memdesc:aa0f837a2b80071accc09962c03067fd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used for wakeuping. <br /></td></tr>
 <tr class="separator:aa0f837a2b80071accc09962c03067fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd468c6ff29f6035273d4d137fd32702"><td class="memItemLeft" align="right" valign="top">MutexLock&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#acd468c6ff29f6035273d4d137fd32702">lock_</a></td></tr>
-<tr class="memdesc:acd468c6ff29f6035273d4d137fd32702"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect functors_.  <a href="classkanon_1_1EventLoop.html#acd468c6ff29f6035273d4d137fd32702">More...</a><br /></td></tr>
+<tr class="memdesc:acd468c6ff29f6035273d4d137fd32702"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect functors_.  <br /></td></tr>
 <tr class="separator:acd468c6ff29f6035273d4d137fd32702"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad32212a9e938a89c72e61ac0270f4303"><td class="memItemLeft" align="right" valign="top"><a id="ad32212a9e938a89c72e61ac0270f4303"></a>
-std::unique_ptr&lt; TimerQueue &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1EventLoop.html#ad32212a9e938a89c72e61ac0270f4303">timer_queue_</a></td></tr>
+<tr class="memitem:ad32212a9e938a89c72e61ac0270f4303"><td class="memItemLeft" align="right" valign="top"><a id="ad32212a9e938a89c72e61ac0270f4303" name="ad32212a9e938a89c72e61ac0270f4303"></a>
+std::unique_ptr&lt; TimerQueue &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>timer_queue_</b></td></tr>
 <tr class="memdesc:ad32212a9e938a89c72e61ac0270f4303"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used for timer API. <br /></td></tr>
 <tr class="separator:ad32212a9e938a89c72e61ac0270f4303"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -301,8 +266,8 @@ std::unique_ptr&lt; TimerQueue &gt;&#160;</td><td class="memItemRight" valign="b
 (3)functors -&gt; (1) <br  />
 They constrcut a loop to accept event and handle them, and also handle the functors that user pushs. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a0eef68cbc3888161f15980cb407a1dd4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0eef68cbc3888161f15980cb407a1dd4">&#9670;&nbsp;</a></span>EventLoop()</h2>
+<a id="a0eef68cbc3888161f15980cb407a1dd4" name="a0eef68cbc3888161f15980cb407a1dd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eef68cbc3888161f15980cb407a1dd4">&#9670;&#160;</a></span>EventLoop()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -336,8 +301,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3957e9a626865dd0c2aa35a5fdcd9d40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3957e9a626865dd0c2aa35a5fdcd9d40">&#9670;&nbsp;</a></span>CancelTimer()</h2>
+<a id="a3957e9a626865dd0c2aa35a5fdcd9d40" name="a3957e9a626865dd0c2aa35a5fdcd9d40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3957e9a626865dd0c2aa35a5fdcd9d40">&#9670;&#160;</a></span>CancelTimer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -357,8 +322,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a54b9beb628bf28d429a0aadbe13ff3e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54b9beb628bf28d429a0aadbe13ff3e7">&#9670;&nbsp;</a></span>QueueToLoop()</h2>
+<a id="a54b9beb628bf28d429a0aadbe13ff3e7" name="a54b9beb628bf28d429a0aadbe13ff3e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54b9beb628bf28d429a0aadbe13ff3e7">&#9670;&#160;</a></span>QueueToLoop()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -378,8 +343,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a8a3ce58166373896a3435b6b8ec0e858"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a3ce58166373896a3435b6b8ec0e858">&#9670;&nbsp;</a></span>Quit()</h2>
+<a id="a8a3ce58166373896a3435b6b8ec0e858" name="a8a3ce58166373896a3435b6b8ec0e858"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3ce58166373896a3435b6b8ec0e858">&#9670;&#160;</a></span>Quit()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -398,8 +363,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a48da65ed77e5b994b5ebb9a6b510bcf5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48da65ed77e5b994b5ebb9a6b510bcf5">&#9670;&nbsp;</a></span>RunAfter()</h2>
+<a id="a48da65ed77e5b994b5ebb9a6b510bcf5" name="a48da65ed77e5b994b5ebb9a6b510bcf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48da65ed77e5b994b5ebb9a6b510bcf5">&#9670;&#160;</a></span>RunAfter()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -443,8 +408,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a9796c3553533a937c8d9f467b44b6051"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9796c3553533a937c8d9f467b44b6051">&#9670;&nbsp;</a></span>RunAt()</h2>
+<a id="a9796c3553533a937c8d9f467b44b6051" name="a9796c3553533a937c8d9f467b44b6051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9796c3553533a937c8d9f467b44b6051">&#9670;&#160;</a></span>RunAt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -474,8 +439,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a9f4f9d81603af281b9aa2473237c1f8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f4f9d81603af281b9aa2473237c1f8e">&#9670;&nbsp;</a></span>RunEvery() <span class="overload">[1/2]</span></h2>
+<a id="a9f4f9d81603af281b9aa2473237c1f8e" name="a9f4f9d81603af281b9aa2473237c1f8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f4f9d81603af281b9aa2473237c1f8e">&#9670;&#160;</a></span>RunEvery() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -513,8 +478,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="ac75a8db5a1f53381ac97074b8960d64a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac75a8db5a1f53381ac97074b8960d64a">&#9670;&nbsp;</a></span>RunEvery() <span class="overload">[2/2]</span></h2>
+<a id="ac75a8db5a1f53381ac97074b8960d64a" name="ac75a8db5a1f53381ac97074b8960d64a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac75a8db5a1f53381ac97074b8960d64a">&#9670;&#160;</a></span>RunEvery() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -550,8 +515,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="ad63e69b85ca69bed5cdcc079d5a38ff0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad63e69b85ca69bed5cdcc079d5a38ff0">&#9670;&nbsp;</a></span>RunInLoop()</h2>
+<a id="ad63e69b85ca69bed5cdcc079d5a38ff0" name="ad63e69b85ca69bed5cdcc079d5a38ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad63e69b85ca69bed5cdcc079d5a38ff0">&#9670;&#160;</a></span>RunInLoop()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -571,8 +536,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a78fcf7f34b510ee335883ee04ee08ab1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78fcf7f34b510ee335883ee04ee08ab1">&#9670;&nbsp;</a></span>Wakeup()</h2>
+<a id="a78fcf7f34b510ee335883ee04ee08ab1" name="a78fcf7f34b510ee335883ee04ee08ab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78fcf7f34b510ee335883ee04ee08ab1">&#9670;&#160;</a></span>Wakeup()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -600,8 +565,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a7fc5f697ebbc1410aebd5ba791b6174e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7fc5f697ebbc1410aebd5ba791b6174e">&#9670;&nbsp;</a></span>calling_functors_</h2>
+<a id="a7fc5f697ebbc1410aebd5ba791b6174e" name="a7fc5f697ebbc1410aebd5ba791b6174e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fc5f697ebbc1410aebd5ba791b6174e">&#9670;&#160;</a></span>calling_functors_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -625,8 +590,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="acd468c6ff29f6035273d4d137fd32702"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acd468c6ff29f6035273d4d137fd32702">&#9670;&nbsp;</a></span>lock_</h2>
+<a id="acd468c6ff29f6035273d4d137fd32702" name="acd468c6ff29f6035273d4d137fd32702"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd468c6ff29f6035273d4d137fd32702">&#9670;&#160;</a></span>lock_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -650,8 +615,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="afec6b6116ff334fe7f90a2ee16acb36f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afec6b6116ff334fe7f90a2ee16acb36f">&#9670;&nbsp;</a></span>looping_</h2>
+<a id="afec6b6116ff334fe7f90a2ee16acb36f" name="afec6b6116ff334fe7f90a2ee16acb36f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afec6b6116ff334fe7f90a2ee16acb36f">&#9670;&#160;</a></span>looping_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -675,8 +640,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a9415af5eca9086069feb2511e6bcea90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9415af5eca9086069feb2511e6bcea90">&#9670;&nbsp;</a></span>owner_thread_id_</h2>
+<a id="a9415af5eca9086069feb2511e6bcea90" name="a9415af5eca9086069feb2511e6bcea90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9415af5eca9086069feb2511e6bcea90">&#9670;&#160;</a></span>owner_thread_id_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -700,8 +665,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a3711f0b35e81abeb55799793c939fc6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3711f0b35e81abeb55799793c939fc6e">&#9670;&nbsp;</a></span>poller_</h2>
+<a id="a3711f0b35e81abeb55799793c939fc6e" name="a3711f0b35e81abeb55799793c939fc6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3711f0b35e81abeb55799793c939fc6e">&#9670;&#160;</a></span>poller_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -725,8 +690,8 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 
 </div>
 </div>
-<a id="a59f01cdf9e000872c18fb1f696d678d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59f01cdf9e000872c18fb1f696d678d4">&#9670;&nbsp;</a></span>quit_</h2>
+<a id="a59f01cdf9e000872c18fb1f696d678d4" name="a59f01cdf9e000872c18fb1f696d678d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59f01cdf9e000872c18fb1f696d678d4">&#9670;&#160;</a></span>quit_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -757,9 +722,7 @@ They constrcut a loop to accept event and handle them, and also handle the funct
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
 </small></address>
 </body>
 </html>
@@ -767,19 +730,31 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 </section>
 
 
+           </div>
           </div>
-          <div class="page-nav">
-            <div class="inner"><ul class="page-nav">
-</ul><div class="footer" role="contentinfo">
-      &#169; Copyright 2023, conzxy.
-    <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
-</div>
-            </div>
-          </div>
-      </page>
-    </div></div>
-    
-    
-  </body>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, conzxy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

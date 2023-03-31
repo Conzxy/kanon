@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html  lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-      <title>kanon: /root/kanon/kanon/net/inet_addr.h Source File</title>
-    
-          <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-          <link rel="stylesheet" href="../../../_static/theme.css " type="text/css" />
-      
-      <!-- sphinx script_files -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kanon: /root/kanon/kanon/net/inet_addr.h Source File &mdash; kanon v1.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
 
-      
-      <!-- bundled in js (rollup iife) -->
-      <!-- <script src="../../../_static/theme-vendors.js"></script> -->
-      <script src="../../../_static/theme.js" defer></script>
-    
-  <link rel="index" title="Index" href="../../../genindex.html" />
-  <link rel="search" title="Search" href="../../../search.html" /> 
-  </head>
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  <body>
-    <div id="app">
-    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../../../index.html" class="home-link">
-    
-      <span class="site-name">kanon</span>
-    
-  </router-link>
-
-  <div class="links">
-    <navlinks class="can-hide">
-
-
-
-    </navlinks>
-  </div>
-</navbar>
-
-      
-      <div class="sidebar-mask" @click="toggleSidebar(false)">
-      </div>
-        <sidebar @toggle-sidebar="toggleSidebar">
           
-          <navlinks>
-            
-
-
-
-            
-          </navlinks><div id="searchbox" class="searchbox" role="search">
-  <div class="caption"><span class="caption-text">Quick search</span>
-    <div class="searchformwrapper">
-      <form class="search" action="../../../search.html" method="get">
-        <input type="text" name="q" />
-        <input type="submit" value="Search" />
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </form>
-    </div>
-  </div>
-</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
-  
-    <div class="sidebar-group">
-      <p class="caption">
-        <span class="caption-text"><a href="../../../api/index.html#this-is-api-document-of-kanonn">this is api document of kanonn</a></span>
-      </p>
-      <ul class="">
-        
-          <li class="toctree-l1 ">
-            
-              <a href="index.html" class="reference internal ">Home Page</a>
-            
-
-            
-          </li>
-
-        
-      </ul>
-    </div>
-  
+          
+          <a href="../../../index.html" class="icon icon-home">
+            kanon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-        </sidebar>
-
-      <page>
-          <div class="body-header" role="navigation" aria-label="navigation">
-  
-  <ul class="breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-    
-    <li>kanon: /root/kanon/kanon/net/inet_addr.h Source File</li>
-  </ul>
-  
-
-  <ul class="page-nav">
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Doc</a></li>
 </ul>
-  
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">kanon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">kanon: /root/kanon/kanon/net/inet_addr.h Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/doxygen/kanon/html/inet__addr_8h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-<hr>
-          <div class="content" role="main" v-pre>
-            
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="root-kanon-kanon-net-inet-addr-h-source-file">
-<h1>/root/kanon/kanon/net/inet_addr.h Source File<a class="headerlink" href="#root-kanon-kanon-net-inet-addr-h-source-file" title="Permalink to this heading">¶</a></h1>
+<h1>/root/kanon/kanon/net/inet_addr.h Source File<a class="headerlink" href="#root-kanon-kanon-net-inet-addr-h-source-file" title="Permalink to this heading"></a></h1>
 <div class="doxygen-content docutils container">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>kanon: /root/kanon/kanon/net/inet_addr.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
+ <tr id="projectrow">
+  <td id="projectalign">
    <div id="projectname">kanon
    </div>
    <div id="projectbrief">A event-driven network library based on reactor mode</div>
@@ -136,15 +99,16 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Generated by Doxygen 1.8.17 -->
+<!-- Generated by Doxygen 1.9.6 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',false,false,'search.php','Search');
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
@@ -152,202 +116,197 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle">
-<div class="title">inet_addr.h</div>  </div>
+  <div class="headertitle"><div class="title">inet_addr.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef KANON_INET_ADDR_H</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define KANON_INET_ADDR_H</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;kanon/util/platform_macro.h&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifdef KANON_ON_WIN</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;winsock2.h&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;windows.h&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;Ws2tcpip.h&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#elif defined(KANON_ON_UNIX)</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;arpa/inet.h&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;netinet/in.h&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;exception&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;kanon/util/macro.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;kanon/string/string_view.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * Generic socket address(old but also useful)</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * struct sockaddr {</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> *    sa_family_t sa_family;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> *    char        sa_data[14];</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"> * }</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"> * IPv4 socket address structure</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"> * struct sockaddr_in {</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> *     sa_family_t     sin_family;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> *     in_port_t       sin_port;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> *     struct in_addr  sin_addr;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"> * };</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment"> * struct in_addr {</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"> *     in_addr_t s_addr;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment"> * };</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment"> * IPv6 socket address structure</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment"> * struct sockaddr_in6 {</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment"> *     sa_family_t     sin6_family;</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment"> *     in_port_t       sin6_port;</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment"> *     uint32_t        sin6_flowinfo;</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"> *     struct in6_addr sin6_addr;</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment"> *     uint32_t        sin6_scoped_id;</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment"> * };</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment"> * struct in6_addr {</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"> *     unsigned char s6_addr[16];</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"> * };</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"> * obviously, the offset of family and port field is same,</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> * so in union, we use these field which no need to distinguish.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> * struct addrinfo {</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"> *   int                ai_flags;     // Hints argument flags</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"> *   int                ai_family;    // specified ip family(1st arg)</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"> *   int                ai_socktype;  // specified socket type(2nd arg)</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment"> *   int                ai_protocol;  // specified protocol(3rd arg)</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment"> *   socklen_t          ai_addrlen;   // address length</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment"> *   struct  sockaddr*  ai_addr;      // point to the sockaddr structure</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment"> *   char*              ai_canonname; // official name</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"> *   struct addrinfo*   ai_next;      // point to next item in linked list</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"> * };</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">struct </span>addrinfo;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">namespace </span>kanon {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddrException.html">   72</a></span>&#160;<span class="keyword">class </span><a class="code" href="classkanon_1_1InetAddrException.html">InetAddrException</a> : <span class="keyword">public</span> std::exception {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classkanon_1_1InetAddrException.html">InetAddrException</a>(StringView msg)</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    : msg_(msg.ToString())</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">char</span> <span class="keyword">const</span> *what() <span class="keyword">const</span> KANON_NOEXCEPT <span class="keyword">override</span> { <span class="keywordflow">return</span> msg_.c_str(); }</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  std::string msg_;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;};</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html">   97</a></span>&#160;<span class="keyword">class </span><a class="code" href="classkanon_1_1InetAddr.html">InetAddr</a> {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keyword">using</span> Port = uint16_t;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#ifdef KANON_ON_WIN</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keyword">using</span> Family = decltype(sockaddr::sa_family);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#elif defined(KANON_ON_UNIX)</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">using</span> Family = sa_family_t;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  KANON_NET_API <a class="code" href="classkanon_1_1InetAddr.html#a5fb32f9a95b038453e63bb6284b02cd0">InetAddr</a>(StringArg hostname, StringArg service);</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  KANON_NET_API <span class="keyword">explicit</span> <a class="code" href="classkanon_1_1InetAddr.html#a5fb32f9a95b038453e63bb6284b02cd0">InetAddr</a>(Port port = 0, <span class="keywordtype">bool</span> loopback = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                                  <span class="keywordtype">bool</span> v6 = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  KANON_NET_API <a class="code" href="classkanon_1_1InetAddr.html#a5fb32f9a95b038453e63bb6284b02cd0">InetAddr</a>(StringView ip, Port port);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  KANON_NET_API <a class="code" href="classkanon_1_1InetAddr.html#a5fb32f9a95b038453e63bb6284b02cd0">InetAddr</a>(StringView address);</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
-<div class="line"><a name="l00160"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#afb73a789b4bd29bb5dcc3b4640c15cc2">  160</a></span>&#160;  <a class="code" href="classkanon_1_1InetAddr.html#afb73a789b4bd29bb5dcc3b4640c15cc2">InetAddr</a>(<span class="keyword">struct</span> sockaddr_in addr)</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    : <a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>{addr}</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  }</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a39dbd51ece7805c0d48c39c06b0af693">  170</a></span>&#160;  <a class="code" href="classkanon_1_1InetAddr.html#a39dbd51ece7805c0d48c39c06b0af693">InetAddr</a>(<span class="keyword">struct</span> sockaddr_in6 addr6)</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    : <a class="code" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">addr6_</a>{addr6}</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  {</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  }</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  KANON_NET_API std::string <a class="code" href="classkanon_1_1InetAddr.html#a2c6bf6e9c496c5048f8f8302df559881">ToIpPort</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  KANON_NET_API std::string <a class="code" href="classkanon_1_1InetAddr.html#a3415da1203c14b334486758d4987b421">ToIp</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
-<div class="line"><a name="l00200"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#acf43ac7971d15bb8783f9685ee39d19c">  200</a></span>&#160;  KANON_INLINE <span class="keyword">struct </span>sockaddr_in const *<a class="code" href="classkanon_1_1InetAddr.html#acf43ac7971d15bb8783f9685ee39d19c">ToIpv4</a>() const KANON_NOEXCEPT</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  {</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    KANON_ASSERT(<a class="code" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">IsIpv4</a>(), <span class="stringliteral">&quot;The InetAddr doesn&#39;t represent an ipv4 address&quot;</span>);</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="keywordflow">return</span> &amp;<a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  }</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160; </div>
-<div class="line"><a name="l00212"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#abcb6c1884198de76637a1bc7935db3fe">  212</a></span>&#160;  KANON_INLINE <span class="keyword">struct </span>sockaddr_in6 const *<a class="code" href="classkanon_1_1InetAddr.html#abcb6c1884198de76637a1bc7935db3fe">ToIpv6</a>() const KANON_NOEXCEPT</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  {</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    KANON_ASSERT(!<a class="code" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">IsIpv4</a>(), <span class="stringliteral">&quot;The InetAddr doesn&#39;t represent an ipv6 address&quot;</span>);</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <span class="keywordflow">return</span> &amp;<a class="code" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">addr6_</a>;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  }</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160; </div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  KANON_INLINE <span class="keyword">struct </span>sockaddr *ToSockaddr() KANON_NOEXCEPT</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  {</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>sockaddr *<span class="keyword">&gt;</span>(&amp;<a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  }</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160; </div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  KANON_INLINE <span class="keyword">struct </span>sockaddr const *ToSockaddr() const KANON_NOEXCEPT</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  {</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>sockaddr <span class="keyword">const </span>*<span class="keyword">&gt;</span>(&amp;<a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>);</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160; </div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
-<div class="line"><a name="l00233"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#ad86ef32a41542ad1ed03e5f116bb4600">  233</a></span>&#160;  KANON_INLINE Family <a class="code" href="classkanon_1_1InetAddr.html#ad86ef32a41542ad1ed03e5f116bb4600">GetFamily</a>() const KANON_NOEXCEPT</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  {</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>.sin_family;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  }</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  KANON_NET_API Port <a class="code" href="classkanon_1_1InetAddr.html#adb334d688c6782ed52ebf783120eb199">GetPort</a>() const KANON_NOEXCEPT;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
-<div class="line"><a name="l00242"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">  242</a></span>&#160;  KANON_INLINE <span class="keywordtype">bool</span> <a class="code" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">IsIpv4</a>() const KANON_NOEXCEPT</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  {</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>.sin_family == AF_INET;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160; </div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  KANON_NET_API <span class="keyword">static</span> std::vector&lt;InetAddr&gt;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <a class="code" href="classkanon_1_1InetAddr.html#a0716f6951fd1dd984dfdcdbac0f7f12b">Resolve</a>(StringArg hostname, StringArg service, <span class="keywordtype">bool</span> is_server = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160; </div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  KANON_NET_API <span class="keyword">static</span> std::vector&lt;InetAddr&gt;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <a class="code" href="classkanon_1_1InetAddr.html#a0716f6951fd1dd984dfdcdbac0f7f12b">Resolve</a>(StringArg hostname, StringArg service, <span class="keyword">struct</span> addrinfo <span class="keyword">const</span> *hint);</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keyword">union </span>{</div>
-<div class="line"><a name="l00289"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">  289</a></span>&#160;    sockaddr_in <a class="code" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>;   </div>
-<div class="line"><a name="l00290"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">  290</a></span>&#160;    sockaddr_in6 <a class="code" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">addr6_</a>; </div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  };</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;};</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; </div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160; </div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;} <span class="comment">// namespace kanon</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor">#endif // KANON_INET_ADDR_H</span></div>
-</div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_afb73a789b4bd29bb5dcc3b4640c15cc2"><div class="ttname"><a href="classkanon_1_1InetAddr.html#afb73a789b4bd29bb5dcc3b4640c15cc2">kanon::InetAddr::InetAddr</a></div><div class="ttdeci">InetAddr(struct sockaddr_in addr)</div><div class="ttdoc">Compatible with C struct sockaddr_in.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:160</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_abcb6c1884198de76637a1bc7935db3fe"><div class="ttname"><a href="classkanon_1_1InetAddr.html#abcb6c1884198de76637a1bc7935db3fe">kanon::InetAddr::ToIpv6</a></div><div class="ttdeci">KANON_INLINE struct sockaddr_in6 const  * ToIpv6() const KANON_NOEXCEPT</div><div class="ttdoc">Convert to Ipv6 address(sockaddr_in6)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:212</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_a39dbd51ece7805c0d48c39c06b0af693"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a39dbd51ece7805c0d48c39c06b0af693">kanon::InetAddr::InetAddr</a></div><div class="ttdeci">InetAddr(struct sockaddr_in6 addr6)</div><div class="ttdoc">Compatible with C struct sockaddr_in6.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:170</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html"><div class="ttname"><a href="classkanon_1_1InetAddr.html">kanon::InetAddr</a></div><div class="ttdoc">Represent a internet address(Ipv4 or Ipv6)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:97</div></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef KANON_INET_ADDR_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define KANON_INET_ADDR_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;kanon/util/platform_macro.h&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifdef KANON_ON_WIN</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;winsock2.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;windows.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;Ws2tcpip.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#elif defined(KANON_ON_UNIX)</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;arpa/inet.h&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;netinet/in.h&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;kanon/util/macro.h&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;kanon/string/string_view.h&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> * Generic socket address(old but also useful)</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> * struct sockaddr {</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> *    sa_family_t sa_family;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> *    char        sa_data[14];</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> * }</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> * IPv4 socket address structure</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> * struct sockaddr_in {</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> *     sa_family_t     sin_family;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> *     in_port_t       sin_port;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> *     struct in_addr  sin_addr;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"> * };</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> * struct in_addr {</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> *     in_addr_t s_addr;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"> * };</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"> * IPv6 socket address structure</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment"> * struct sockaddr_in6 {</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment"> *     sa_family_t     sin6_family;</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment"> *     in_port_t       sin6_port;</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment"> *     uint32_t        sin6_flowinfo;</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="comment"> *     struct in6_addr sin6_addr;</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment"> *     uint32_t        sin6_scoped_id;</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment"> * };</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="comment"> * struct in6_addr {</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment"> *     unsigned char s6_addr[16];</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment"> * };</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment"> * obviously, the offset of family and port field is same,</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment"> * so in union, we use these field which no need to distinguish.</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment"> * struct addrinfo {</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment"> *   int                ai_flags;     // Hints argument flags</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment"> *   int                ai_family;    // specified ip family(1st arg)</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment"> *   int                ai_socktype;  // specified socket type(2nd arg)</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment"> *   int                ai_protocol;  // specified protocol(3rd arg)</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="comment"> *   socklen_t          ai_addrlen;   // address length</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment"> *   struct  sockaddr*  ai_addr;      // point to the sockaddr structure</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment"> *   char*              ai_canonname; // official name</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment"> *   struct addrinfo*   ai_next;      // point to next item in linked list</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment"> * };</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">struct </span>addrinfo;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">namespace </span>kanon {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddrException.html">   72</a></span><span class="keyword">class </span><a class="code hl_class" href="classkanon_1_1InetAddrException.html">InetAddrException</a> : <span class="keyword">public</span> std::exception {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keyword">explicit</span> <a class="code hl_class" href="classkanon_1_1InetAddrException.html">InetAddrException</a>(StringView msg)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    : msg_(msg.ToString())</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordtype">char</span> <span class="keyword">const</span> *what() <span class="keyword">const</span> KANON_NOEXCEPT <span class="keyword">override</span> { <span class="keywordflow">return</span> msg_.c_str(); }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  std::string msg_;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html">   97</a></span><span class="keyword">class </span><a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a> {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="keyword">using </span>Port = uint16_t;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#ifdef KANON_ON_WIN</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <span class="keyword">using </span>Family = <span class="keyword">decltype</span>(sockaddr::sa_family);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#elif defined(KANON_ON_UNIX)</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  <span class="keyword">using </span>Family = sa_family_t;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  KANON_NET_API <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a>(StringArg hostname, StringArg service);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>  KANON_NET_API <span class="keyword">explicit</span> <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a>(Port port = 0, <span class="keywordtype">bool</span> loopback = <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                  <span class="keywordtype">bool</span> v6 = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>  KANON_NET_API <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a>(StringView ip, Port port);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  KANON_NET_API <a class="code hl_class" href="classkanon_1_1InetAddr.html">InetAddr</a>(StringView address);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#afb73a789b4bd29bb5dcc3b4640c15cc2">  160</a></span>  <a class="code hl_function" href="classkanon_1_1InetAddr.html#afb73a789b4bd29bb5dcc3b4640c15cc2">InetAddr</a>(<span class="keyword">struct</span> sockaddr_in addr)</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    : <a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>{addr}</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a39dbd51ece7805c0d48c39c06b0af693">  170</a></span>  <a class="code hl_function" href="classkanon_1_1InetAddr.html#a39dbd51ece7805c0d48c39c06b0af693">InetAddr</a>(<span class="keyword">struct</span> sockaddr_in6 addr6)</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    : <a class="code hl_variable" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">addr6_</a>{addr6}</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>  KANON_NET_API std::string <a class="code hl_function" href="classkanon_1_1InetAddr.html#a2c6bf6e9c496c5048f8f8302df559881">ToIpPort</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  KANON_NET_API std::string <a class="code hl_function" href="classkanon_1_1InetAddr.html#a3415da1203c14b334486758d4987b421">ToIp</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#af41f3adea1d28b668292f2de5b518e67">  200</a></span>  KANON_INLINE <span class="keyword">struct </span>sockaddr_in const *<a class="code hl_function" href="classkanon_1_1InetAddr.html#af41f3adea1d28b668292f2de5b518e67">ToIpv4</a>() const KANON_NOEXCEPT</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>  {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    KANON_ASSERT(<a class="code hl_function" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">IsIpv4</a>(), <span class="stringliteral">&quot;The InetAddr doesn&#39;t represent an ipv4 address&quot;</span>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a7cf93e1aa727ad2c6ce02092009ab830">  212</a></span>  KANON_INLINE <span class="keyword">struct </span>sockaddr_in6 const *<a class="code hl_function" href="classkanon_1_1InetAddr.html#a7cf93e1aa727ad2c6ce02092009ab830">ToIpv6</a>() const KANON_NOEXCEPT</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>  {</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    KANON_ASSERT(!<a class="code hl_function" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">IsIpv4</a>(), <span class="stringliteral">&quot;The InetAddr doesn&#39;t represent an ipv6 address&quot;</span>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">addr6_</a>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>  }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  KANON_INLINE <span class="keyword">struct </span>sockaddr *ToSockaddr() KANON_NOEXCEPT</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>  {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>sockaddr *<span class="keyword">&gt;</span>(&amp;<a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>);</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>  }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>  KANON_INLINE <span class="keyword">struct </span>sockaddr const *ToSockaddr() const KANON_NOEXCEPT</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>  {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>sockaddr <span class="keyword">const </span>*<span class="keyword">&gt;</span>(&amp;<a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>  }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#ad86ef32a41542ad1ed03e5f116bb4600">  233</a></span>  KANON_INLINE Family <a class="code hl_function" href="classkanon_1_1InetAddr.html#ad86ef32a41542ad1ed03e5f116bb4600">GetFamily</a>() const KANON_NOEXCEPT</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  {</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>.sin_family;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>  }</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>  KANON_NET_API Port <a class="code hl_function" href="classkanon_1_1InetAddr.html#adb334d688c6782ed52ebf783120eb199">GetPort</a>() const KANON_NOEXCEPT;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">  242</a></span>  KANON_INLINE <span class="keywordtype">bool</span> <a class="code hl_function" href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">IsIpv4</a>() const KANON_NOEXCEPT</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  {</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>.sin_family == AF_INET;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>  }</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  KANON_NET_API <span class="keyword">static</span> std::vector&lt;InetAddr&gt;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  <a class="code hl_function" href="classkanon_1_1InetAddr.html#a0716f6951fd1dd984dfdcdbac0f7f12b">Resolve</a>(StringArg hostname, StringArg service, <span class="keywordtype">bool</span> is_server = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>  KANON_NET_API <span class="keyword">static</span> std::vector&lt;InetAddr&gt;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>  <a class="code hl_function" href="classkanon_1_1InetAddr.html#a0716f6951fd1dd984dfdcdbac0f7f12b">Resolve</a>(StringArg hostname, StringArg service, <span class="keyword">struct</span> addrinfo <span class="keyword">const</span> *hint);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  <span class="keyword">union </span>{</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">  289</a></span>    sockaddr_in <a class="code hl_variable" href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">addr_</a>;   </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno"><a class="line" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">  290</a></span>    sockaddr_in6 <a class="code hl_variable" href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">addr6_</a>; </div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  };</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>};</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>} <span class="comment">// namespace kanon</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span><span class="preprocessor">#endif </span><span class="comment">// KANON_INET_ADDR_H</span></div>
 <div class="ttc" id="aclasskanon_1_1InetAddrException_html"><div class="ttname"><a href="classkanon_1_1InetAddrException.html">kanon::InetAddrException</a></div><div class="ttdef"><b>Definition:</b> inet_addr.h:72</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_a546ebb45b4d8aac6b2179b2d1d6032ca"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">kanon::InetAddr::addr6_</a></div><div class="ttdeci">sockaddr_in6 addr6_</div><div class="ttdoc">Ipv6 address.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:290</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_acf43ac7971d15bb8783f9685ee39d19c"><div class="ttname"><a href="classkanon_1_1InetAddr.html#acf43ac7971d15bb8783f9685ee39d19c">kanon::InetAddr::ToIpv4</a></div><div class="ttdeci">KANON_INLINE struct sockaddr_in const  * ToIpv4() const KANON_NOEXCEPT</div><div class="ttdoc">Convert to Ipv4 address(sockaddr_in)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:200</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_ad86ef32a41542ad1ed03e5f116bb4600"><div class="ttname"><a href="classkanon_1_1InetAddr.html#ad86ef32a41542ad1ed03e5f116bb4600">kanon::InetAddr::GetFamily</a></div><div class="ttdeci">KANON_INLINE Family GetFamily() const KANON_NOEXCEPT</div><div class="ttdoc">Get the inet family.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:233</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_a3415da1203c14b334486758d4987b421"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a3415da1203c14b334486758d4987b421">kanon::InetAddr::ToIp</a></div><div class="ttdeci">KANON_NET_API std::string ToIp() const</div><div class="ttdoc">Convert to string that represent ip.</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:183</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_a2c6bf6e9c496c5048f8f8302df559881"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a2c6bf6e9c496c5048f8f8302df559881">kanon::InetAddr::ToIpPort</a></div><div class="ttdeci">KANON_NET_API std::string ToIpPort() const</div><div class="ttdoc">Convert to string that represent ip and port.</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:174</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html"><div class="ttname"><a href="classkanon_1_1InetAddr.html">kanon::InetAddr</a></div><div class="ttdoc">Represent a internet address(Ipv4 or Ipv6)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:97</div></div>
 <div class="ttc" id="aclasskanon_1_1InetAddr_html_a0716f6951fd1dd984dfdcdbac0f7f12b"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a0716f6951fd1dd984dfdcdbac0f7f12b">kanon::InetAddr::Resolve</a></div><div class="ttdeci">static KANON_NET_API std::vector&lt; InetAddr &gt; Resolve(StringArg hostname, StringArg service, bool is_server=false)</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:192</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_a5fb32f9a95b038453e63bb6284b02cd0"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a5fb32f9a95b038453e63bb6284b02cd0">kanon::InetAddr::InetAddr</a></div><div class="ttdeci">KANON_NET_API InetAddr(StringArg hostname, StringArg service)</div><div class="ttdoc">Construct address from the hostname and service(port)</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:159</div></div>
 <div class="ttc" id="aclasskanon_1_1InetAddr_html_a20d859ed0509767a1e2a3b9656b12f0d"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a20d859ed0509767a1e2a3b9656b12f0d">kanon::InetAddr::IsIpv4</a></div><div class="ttdeci">KANON_INLINE bool IsIpv4() const KANON_NOEXCEPT</div><div class="ttdoc">Check whether this is a Ipv4 address.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:242</div></div>
-<div class="ttc" id="aclasskanon_1_1InetAddr_html_adb334d688c6782ed52ebf783120eb199"><div class="ttname"><a href="classkanon_1_1InetAddr.html#adb334d688c6782ed52ebf783120eb199">kanon::InetAddr::GetPort</a></div><div class="ttdeci">KANON_NET_API Port GetPort() const KANON_NOEXCEPT</div><div class="ttdoc">Get the decimal port number.</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:169</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_a2c6bf6e9c496c5048f8f8302df559881"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a2c6bf6e9c496c5048f8f8302df559881">kanon::InetAddr::ToIpPort</a></div><div class="ttdeci">KANON_NET_API std::string ToIpPort() const</div><div class="ttdoc">Convert to string that represent ip and port.</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:174</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_a3415da1203c14b334486758d4987b421"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a3415da1203c14b334486758d4987b421">kanon::InetAddr::ToIp</a></div><div class="ttdeci">KANON_NET_API std::string ToIp() const</div><div class="ttdoc">Convert to string that represent ip.</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:183</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_a39dbd51ece7805c0d48c39c06b0af693"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a39dbd51ece7805c0d48c39c06b0af693">kanon::InetAddr::InetAddr</a></div><div class="ttdeci">InetAddr(struct sockaddr_in6 addr6)</div><div class="ttdoc">Compatible with C struct sockaddr_in6.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:170</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_a546ebb45b4d8aac6b2179b2d1d6032ca"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a546ebb45b4d8aac6b2179b2d1d6032ca">kanon::InetAddr::addr6_</a></div><div class="ttdeci">sockaddr_in6 addr6_</div><div class="ttdoc">Ipv6 address.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:290</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_a7cf93e1aa727ad2c6ce02092009ab830"><div class="ttname"><a href="classkanon_1_1InetAddr.html#a7cf93e1aa727ad2c6ce02092009ab830">kanon::InetAddr::ToIpv6</a></div><div class="ttdeci">KANON_INLINE struct sockaddr_in6 const * ToIpv6() const KANON_NOEXCEPT</div><div class="ttdoc">Convert to Ipv6 address(sockaddr_in6)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:212</div></div>
 <div class="ttc" id="aclasskanon_1_1InetAddr_html_ab47a873c76bfb1e29986525b9af50546"><div class="ttname"><a href="classkanon_1_1InetAddr.html#ab47a873c76bfb1e29986525b9af50546">kanon::InetAddr::addr_</a></div><div class="ttdeci">sockaddr_in addr_</div><div class="ttdoc">Ipv4 address.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:289</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_ad86ef32a41542ad1ed03e5f116bb4600"><div class="ttname"><a href="classkanon_1_1InetAddr.html#ad86ef32a41542ad1ed03e5f116bb4600">kanon::InetAddr::GetFamily</a></div><div class="ttdeci">KANON_INLINE Family GetFamily() const KANON_NOEXCEPT</div><div class="ttdoc">Get the inet family.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:233</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_adb334d688c6782ed52ebf783120eb199"><div class="ttname"><a href="classkanon_1_1InetAddr.html#adb334d688c6782ed52ebf783120eb199">kanon::InetAddr::GetPort</a></div><div class="ttdeci">KANON_NET_API Port GetPort() const KANON_NOEXCEPT</div><div class="ttdoc">Get the decimal port number.</div><div class="ttdef"><b>Definition:</b> inet_addr.cc:169</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_af41f3adea1d28b668292f2de5b518e67"><div class="ttname"><a href="classkanon_1_1InetAddr.html#af41f3adea1d28b668292f2de5b518e67">kanon::InetAddr::ToIpv4</a></div><div class="ttdeci">KANON_INLINE struct sockaddr_in const * ToIpv4() const KANON_NOEXCEPT</div><div class="ttdoc">Convert to Ipv4 address(sockaddr_in)</div><div class="ttdef"><b>Definition:</b> inet_addr.h:200</div></div>
+<div class="ttc" id="aclasskanon_1_1InetAddr_html_afb73a789b4bd29bb5dcc3b4640c15cc2"><div class="ttname"><a href="classkanon_1_1InetAddr.html#afb73a789b4bd29bb5dcc3b4640c15cc2">kanon::InetAddr::InetAddr</a></div><div class="ttdeci">InetAddr(struct sockaddr_in addr)</div><div class="ttdoc">Compatible with C struct sockaddr_in.</div><div class="ttdef"><b>Definition:</b> inet_addr.h:160</div></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
 </small></address>
 </body>
 </html>
@@ -355,19 +314,31 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 </section>
 
 
+           </div>
           </div>
-          <div class="page-nav">
-            <div class="inner"><ul class="page-nav">
-</ul><div class="footer" role="contentinfo">
-      &#169; Copyright 2023, conzxy.
-    <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
-</div>
-            </div>
-          </div>
-      </page>
-    </div></div>
-    
-    
-  </body>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, conzxy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html  lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-      <title>kanon: kanon::Timer Class Reference</title>
-    
-          <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-          <link rel="stylesheet" href="../../../_static/theme.css " type="text/css" />
-      
-      <!-- sphinx script_files -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kanon: kanon::Timer Class Reference &mdash; kanon v1.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
 
-      
-      <!-- bundled in js (rollup iife) -->
-      <!-- <script src="../../../_static/theme-vendors.js"></script> -->
-      <script src="../../../_static/theme.js" defer></script>
-    
-  <link rel="index" title="Index" href="../../../genindex.html" />
-  <link rel="search" title="Search" href="../../../search.html" /> 
-  </head>
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  <body>
-    <div id="app">
-    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../../../index.html" class="home-link">
-    
-      <span class="site-name">kanon</span>
-    
-  </router-link>
-
-  <div class="links">
-    <navlinks class="can-hide">
-
-
-
-    </navlinks>
-  </div>
-</navbar>
-
-      
-      <div class="sidebar-mask" @click="toggleSidebar(false)">
-      </div>
-        <sidebar @toggle-sidebar="toggleSidebar">
           
-          <navlinks>
-            
-
-
-
-            
-          </navlinks><div id="searchbox" class="searchbox" role="search">
-  <div class="caption"><span class="caption-text">Quick search</span>
-    <div class="searchformwrapper">
-      <form class="search" action="../../../search.html" method="get">
-        <input type="text" name="q" />
-        <input type="submit" value="Search" />
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </form>
-    </div>
-  </div>
-</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
-  
-    <div class="sidebar-group">
-      <p class="caption">
-        <span class="caption-text"><a href="../../../api/index.html#this-is-api-document-of-kanonn">this is api document of kanonn</a></span>
-      </p>
-      <ul class="">
-        
-          <li class="toctree-l1 ">
-            
-              <a href="index.html" class="reference internal ">Home Page</a>
-            
-
-            
-          </li>
-
-        
-      </ul>
-    </div>
-  
+          
+          <a href="../../../index.html" class="icon icon-home">
+            kanon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-        </sidebar>
-
-      <page>
-          <div class="body-header" role="navigation" aria-label="navigation">
-  
-  <ul class="breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-    
-    <li>kanon: kanon::Timer Class Reference</li>
-  </ul>
-  
-
-  <ul class="page-nav">
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Doc</a></li>
 </ul>
-  
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">kanon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">kanon: kanon::Timer Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/doxygen/kanon/html/classkanon_1_1Timer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-<hr>
-          <div class="content" role="main" v-pre>
-            
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="timer-class-reference">
-<h1>Timer Class Reference<a class="headerlink" href="#timer-class-reference" title="Permalink to this heading">¶</a></h1>
+<h1>Timer Class Reference<a class="headerlink" href="#timer-class-reference" title="Permalink to this heading"></a></h1>
 <div class="doxygen-content docutils container">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>kanon: kanon::Timer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
+ <tr id="projectrow">
+  <td id="projectalign">
    <div id="projectname">kanon
    </div>
    <div id="projectbrief">A event-driven network library based on reactor mode</div>
@@ -136,15 +99,16 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Generated by Doxygen 1.8.17 -->
+<!-- Generated by Doxygen 1.9.6 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',false,false,'search.php','Search');
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
@@ -158,8 +122,7 @@ $(function() {
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classkanon_1_1Timer-members.html">List of all members</a>  </div>
-  <div class="headertitle">
-<div class="title">kanon::Timer Class Reference<div class="ingroups"><a class="el" href="group__net.html">Net</a> &raquo; <a class="el" href="group__timer.html">Timer</a></div></div>  </div>
+  <div class="headertitle"><div class="title">kanon::Timer Class Reference<div class="ingroups"><a class="el" href="group__net.html">Net</a> &raquo; <a class="el" href="group__timer.html">Timer</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -170,71 +133,73 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for kanon::Timer:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Timer__inherit__graph.svg" width="118" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Timer__inherit__graph.svg" width="118" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for kanon::Timer:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Timer__coll__graph.svg" width="239" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Timer__coll__graph.svg" width="239" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a69f6ea5009b8c9e5111a4302b80ae2b8"><td class="memItemLeft" align="right" valign="top"><a id="a69f6ea5009b8c9e5111a4302b80ae2b8"></a>
+<tr class="memitem:a69f6ea5009b8c9e5111a4302b80ae2b8"><td class="memItemLeft" align="right" valign="top"><a id="a69f6ea5009b8c9e5111a4302b80ae2b8" name="a69f6ea5009b8c9e5111a4302b80ae2b8"></a>
 typedef std::function&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>TimerCallback</b></td></tr>
 <tr class="separator:a69f6ea5009b8c9e5111a4302b80ae2b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad93f636f16888fcac5d6c81118a9bcdc"><td class="memItemLeft" align="right" valign="top"><a id="ad93f636f16888fcac5d6c81118a9bcdc"></a>
+<tr class="memitem:ad93f636f16888fcac5d6c81118a9bcdc"><td class="memItemLeft" align="right" valign="top"><a id="ad93f636f16888fcac5d6c81118a9bcdc" name="ad93f636f16888fcac5d6c81118a9bcdc"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Timer</b> (TimerCallback cb, TimeStamp expiration, double interval)</td></tr>
 <tr class="separator:ad93f636f16888fcac5d6c81118a9bcdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5978cc2d945db72d7b4c7f96f34c2d87"><td class="memItemLeft" align="right" valign="top"><a id="a5978cc2d945db72d7b4c7f96f34c2d87"></a>
+<tr class="memitem:a5978cc2d945db72d7b4c7f96f34c2d87"><td class="memItemLeft" align="right" valign="top"><a id="a5978cc2d945db72d7b4c7f96f34c2d87" name="a5978cc2d945db72d7b4c7f96f34c2d87"></a>
 TimeStamp&#160;</td><td class="memItemRight" valign="bottom"><b>expiration</b> () const KANON_NOEXCEPT</td></tr>
 <tr class="separator:a5978cc2d945db72d7b4c7f96f34c2d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4962e6f410df771d722e03d6deb20f6e"><td class="memItemLeft" align="right" valign="top"><a id="a4962e6f410df771d722e03d6deb20f6e"></a>
+<tr class="memitem:a4962e6f410df771d722e03d6deb20f6e"><td class="memItemLeft" align="right" valign="top"><a id="a4962e6f410df771d722e03d6deb20f6e" name="a4962e6f410df771d722e03d6deb20f6e"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>interval</b> () const KANON_NOEXCEPT</td></tr>
 <tr class="separator:a4962e6f410df771d722e03d6deb20f6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9eb27f45c7719fe21a13bc4f069cd935"><td class="memItemLeft" align="right" valign="top"><a id="a9eb27f45c7719fe21a13bc4f069cd935"></a>
+<tr class="memitem:a9eb27f45c7719fe21a13bc4f069cd935"><td class="memItemLeft" align="right" valign="top"><a id="a9eb27f45c7719fe21a13bc4f069cd935" name="a9eb27f45c7719fe21a13bc4f069cd935"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>repeat</b> () const KANON_NOEXCEPT</td></tr>
 <tr class="separator:a9eb27f45c7719fe21a13bc4f069cd935"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac01f9f567aef8074a681c81676513c1c"><td class="memItemLeft" align="right" valign="top"><a id="ac01f9f567aef8074a681c81676513c1c"></a>
+<tr class="memitem:ac01f9f567aef8074a681c81676513c1c"><td class="memItemLeft" align="right" valign="top"><a id="ac01f9f567aef8074a681c81676513c1c" name="ac01f9f567aef8074a681c81676513c1c"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>sequence</b> () const KANON_NOEXCEPT</td></tr>
 <tr class="separator:ac01f9f567aef8074a681c81676513c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c79a6771b3d458c733309fe6be13506"><td class="memItemLeft" align="right" valign="top"><a id="a6c79a6771b3d458c733309fe6be13506"></a>
+<tr class="memitem:af6bd6a14da9a7c57f793949bb0bcd830"><td class="memItemLeft" align="right" valign="top"><a id="af6bd6a14da9a7c57f793949bb0bcd830" name="af6bd6a14da9a7c57f793949bb0bcd830"></a>
 TimerQueue *&#160;</td><td class="memItemRight" valign="bottom"><b>timer_queue</b> () KANON_NOEXCEPT</td></tr>
-<tr class="separator:a6c79a6771b3d458c733309fe6be13506"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ed145901190e087cfaca443b8b9e719"><td class="memItemLeft" align="right" valign="top"><a id="a2ed145901190e087cfaca443b8b9e719"></a>
+<tr class="separator:af6bd6a14da9a7c57f793949bb0bcd830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ed145901190e087cfaca443b8b9e719"><td class="memItemLeft" align="right" valign="top"><a id="a2ed145901190e087cfaca443b8b9e719" name="a2ed145901190e087cfaca443b8b9e719"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>BindTimerQueue</b> (TimerQueue *queue) KANON_NOEXCEPT</td></tr>
 <tr class="separator:a2ed145901190e087cfaca443b8b9e719"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7c0ed0a4f6592a93cb54ef5d9c39893"><td class="memItemLeft" align="right" valign="top"><a id="ac7c0ed0a4f6592a93cb54ef5d9c39893"></a>
+<tr class="memitem:ac7c0ed0a4f6592a93cb54ef5d9c39893"><td class="memItemLeft" align="right" valign="top"><a id="ac7c0ed0a4f6592a93cb54ef5d9c39893" name="ac7c0ed0a4f6592a93cb54ef5d9c39893"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>run</b> ()</td></tr>
 <tr class="separator:ac7c0ed0a4f6592a93cb54ef5d9c39893"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fe8b3870e8f56ebd22c8f24c201ce33"><td class="memItemLeft" align="right" valign="top"><a id="a5fe8b3870e8f56ebd22c8f24c201ce33"></a>
+<tr class="memitem:a5fe8b3870e8f56ebd22c8f24c201ce33"><td class="memItemLeft" align="right" valign="top"><a id="a5fe8b3870e8f56ebd22c8f24c201ce33" name="a5fe8b3870e8f56ebd22c8f24c201ce33"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>restart</b> (TimeStamp now) KANON_NOEXCEPT</td></tr>
 <tr class="separator:a5fe8b3870e8f56ebd22c8f24c201ce33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a92dcffa13b4a16fc48fff60f67bf1666"><td class="memItemLeft" align="right" valign="top"><a id="a92dcffa13b4a16fc48fff60f67bf1666"></a>
+<tr class="memitem:a92dcffa13b4a16fc48fff60f67bf1666"><td class="memItemLeft" align="right" valign="top"><a id="a92dcffa13b4a16fc48fff60f67bf1666" name="a92dcffa13b4a16fc48fff60f67bf1666"></a>
 TimerCallback&#160;</td><td class="memItemRight" valign="bottom"><b>callback_</b></td></tr>
 <tr class="separator:a92dcffa13b4a16fc48fff60f67bf1666"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecc9d2c41fd0f7bfa68a22d8dba8e1fa"><td class="memItemLeft" align="right" valign="top"><a id="aecc9d2c41fd0f7bfa68a22d8dba8e1fa"></a>
+<tr class="memitem:aecc9d2c41fd0f7bfa68a22d8dba8e1fa"><td class="memItemLeft" align="right" valign="top"><a id="aecc9d2c41fd0f7bfa68a22d8dba8e1fa" name="aecc9d2c41fd0f7bfa68a22d8dba8e1fa"></a>
 TimeStamp&#160;</td><td class="memItemRight" valign="bottom"><b>expiration_</b></td></tr>
 <tr class="separator:aecc9d2c41fd0f7bfa68a22d8dba8e1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af811bdff03e198df6352cc90e42709b1"><td class="memItemLeft" align="right" valign="top"><a id="af811bdff03e198df6352cc90e42709b1"></a>
+<tr class="memitem:af811bdff03e198df6352cc90e42709b1"><td class="memItemLeft" align="right" valign="top"><a id="af811bdff03e198df6352cc90e42709b1" name="af811bdff03e198df6352cc90e42709b1"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>interval_</b></td></tr>
 <tr class="separator:af811bdff03e198df6352cc90e42709b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f8e482d00f07fb99c2356f2581d8bdb"><td class="memItemLeft" align="right" valign="top"><a id="a7f8e482d00f07fb99c2356f2581d8bdb"></a>
+<tr class="memitem:a7f8e482d00f07fb99c2356f2581d8bdb"><td class="memItemLeft" align="right" valign="top"><a id="a7f8e482d00f07fb99c2356f2581d8bdb" name="a7f8e482d00f07fb99c2356f2581d8bdb"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>sequence_</b></td></tr>
 <tr class="separator:a7f8e482d00f07fb99c2356f2581d8bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09f36f0b8731ec62c3bf96902fb6d637"><td class="memItemLeft" align="right" valign="top"><a id="a09f36f0b8731ec62c3bf96902fb6d637"></a>
+<tr class="memitem:a09f36f0b8731ec62c3bf96902fb6d637"><td class="memItemLeft" align="right" valign="top"><a id="a09f36f0b8731ec62c3bf96902fb6d637" name="a09f36f0b8731ec62c3bf96902fb6d637"></a>
 TimerQueue *&#160;</td><td class="memItemRight" valign="bottom"><b>timer_queue_</b> = nullptr</td></tr>
 <tr class="separator:a09f36f0b8731ec62c3bf96902fb6d637"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
-<tr class="memitem:a1fd7fe7fb47f8489674333b3b3f358a9"><td class="memItemLeft" align="right" valign="top"><a id="a1fd7fe7fb47f8489674333b3b3f358a9"></a>
+<tr class="memitem:a1fd7fe7fb47f8489674333b3b3f358a9"><td class="memItemLeft" align="right" valign="top"><a id="a1fd7fe7fb47f8489674333b3b3f358a9" name="a1fd7fe7fb47f8489674333b3b3f358a9"></a>
 static KANON_NET_NO_API AtomicCounter64&#160;</td><td class="memItemRight" valign="bottom"><b>s_counter_</b> {}</td></tr>
 <tr class="separator:a1fd7fe7fb47f8489674333b3b3f358a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -247,9 +212,7 @@ static KANON_NET_NO_API AtomicCounter64&#160;</td><td class="memItemRight" valig
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
 </small></address>
 </body>
 </html>
@@ -257,19 +220,31 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 </section>
 
 
+           </div>
           </div>
-          <div class="page-nav">
-            <div class="inner"><ul class="page-nav">
-</ul><div class="footer" role="contentinfo">
-      &#169; Copyright 2023, conzxy.
-    <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
-</div>
-            </div>
-          </div>
-      </page>
-    </div></div>
-    
-    
-  </body>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, conzxy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

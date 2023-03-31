@@ -1,29 +1,12 @@
+@charset "UTF-8";
 .doxygen-content {
-  /* The standard CSS for doxygen 1.8.17 */
+  /* The standard CSS for doxygen 1.9.6*/
   /* @group Heading Levels */
   /* @end */
   /* @group Link Styling */
   /* @end */
   /* @group Code Colorization */
   /* @end */
-  /*
-  .search {
-  	color: #003399;
-  	font-weight: bold;
-  }
-
-  form.search {
-  	margin-bottom: 0px;
-  	margin-top: 0px;
-  }
-
-  input.search {
-  	font-size: 75%;
-  	color: #000080;
-  	font-weight: normal;
-  	background-color: #e8eef2;
-  }
-  */
   /* @group Member Descriptions */
   /* @end */
   /* @group Member Details */
@@ -34,62 +17,29 @@
   /* dl.note, dl.warning, dl.attention, dl.pre, dl.post, dl.invariant, dl.deprecated, dl.todo, dl.test, dl.bug, dl.examples */
   /* tooltip related style info */
   /* @group Markdown */
-  /*
-  table.markdownTable {
-  	border-collapse:collapse;
-          margin-top: 4px;
-          margin-bottom: 4px;
-  }
-
-  table.markdownTable td, table.markdownTable th {
-  	border: 1px solid #2D4068;
-  	padding: 3px 7px 2px;
-  }
-
-  table.markdownTableHead tr {
-  }
-
-  table.markdownTableBodyLeft td, table.markdownTable th {
-  	border: 1px solid #2D4068;
-  	padding: 3px 7px 2px;
-  }
-
-  th.markdownTableHeadLeft th.markdownTableHeadRight th.markdownTableHeadCenter th.markdownTableHeadNone {
-  	background-color: #374F7F;
-  	color: #FFFFFF;
-  	font-size: 110%;
-  	padding-bottom: 4px;
-  	padding-top: 5px;
-  }
-
-  th.markdownTableHeadLeft {
-  	text-align: left
-  }
-
-  th.markdownTableHeadRight {
-  	text-align: right
-  }
-
-  th.markdownTableHeadCenter {
-  	text-align: center
-  }
-  */
   /* @end */
 }
+.doxygen-content body {
+  background-color: white;
+  color: black;
+}
 .doxygen-content body, .doxygen-content table, .doxygen-content div, .doxygen-content p, .doxygen-content dl {
-  font: 400 14px/22px Roboto, sans-serif;
-}
-.doxygen-content p.reference, .doxygen-content p.definition {
-  font: 400 14px/22px Roboto, sans-serif;
-}
-.doxygen-content h1.groupheader {
-  font-size: 150%;
+  font-weight: 400;
+  font-size: 14px;
+  font-family: Roboto, sans-serif;
+  line-height: 22px;
 }
 .doxygen-content .title {
-  font: 400 14px/28px Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  font-family: Roboto, sans-serif;
+  line-height: 28px;
   font-size: 150%;
   font-weight: bold;
   margin: 10px 2px;
+}
+.doxygen-content h1.groupheader {
+  font-size: 150%;
 }
 .doxygen-content h2.groupheader {
   border-bottom: 1px solid #879ECB;
@@ -118,18 +68,10 @@
 .doxygen-content dt {
   font-weight: bold;
 }
-.doxygen-content ul.multicol {
-  -moz-column-gap: 1em;
-  -webkit-column-gap: 1em;
-  column-gap: 1em;
-  -moz-column-count: 3;
-  -webkit-column-count: 3;
-  column-count: 3;
-}
 .doxygen-content p.startli, .doxygen-content p.startdd {
   margin-top: 2px;
 }
-.doxygen-content th p.starttd, .doxygen-content p.intertd, .doxygen-content p.endtd {
+.doxygen-content th p.starttd, .doxygen-content th p.intertd, .doxygen-content th p.endtd {
   font-size: 100%;
   font-weight: 700;
 }
@@ -156,17 +98,73 @@
   font-size: 90%;
   text-align: center;
 }
-.doxygen-content div.qindex, .doxygen-content div.navtab {
-  background-color: #EBEFF6;
-  border: 1px solid #A3B4D7;
-  text-align: center;
+.doxygen-content div.navtab {
+  padding-right: 15px;
+  text-align: right;
+  line-height: 110%;
 }
-.doxygen-content div.qindex, .doxygen-content div.navpath {
+.doxygen-content div.navtab table {
+  border-spacing: 0;
+}
+.doxygen-content td.navtab {
+  padding-right: 6px;
+  padding-left: 6px;
+}
+.doxygen-content td.navtabHL {
+  background-image: url("tab_a.png");
+  background-repeat: repeat-x;
+  padding-right: 6px;
+  padding-left: 6px;
+}
+.doxygen-content td.navtabHL a, .doxygen-content td.navtabHL a:visited {
+  color: white;
+  text-shadow: 0px 1px 1px black;
+}
+.doxygen-content a.navtab {
+  font-weight: bold;
+}
+.doxygen-content div.qindex {
+  text-align: center;
   width: 100%;
   line-height: 140%;
+  font-size: 130%;
+  color: #A0A0A0;
 }
-.doxygen-content div.navtab {
-  margin-right: 15px;
+.doxygen-content dt.alphachar {
+  font-size: 180%;
+  font-weight: bold;
+}
+.doxygen-content .alphachar a {
+  color: black;
+}
+.doxygen-content .alphachar a:hover, .doxygen-content .alphachar a:visited {
+  text-decoration: none;
+}
+.doxygen-content .classindex dl {
+  padding: 25px;
+  column-count: 1;
+}
+.doxygen-content .classindex dd {
+  display: inline-block;
+  margin-left: 50px;
+  width: 90%;
+  line-height: 1.15em;
+}
+.doxygen-content .classindex dl.even {
+  background-color: white;
+}
+.doxygen-content .classindex dl.odd {
+  background-color: #F8F9FC;
+}
+@media (min-width: 1120px) {
+  .doxygen-content .classindex dl {
+    column-count: 2;
+  }
+}
+@media (min-width: 1320px) {
+  .doxygen-content .classindex dl {
+    column-count: 3;
+  }
 }
 .doxygen-content a {
   color: #3D578C;
@@ -179,18 +177,6 @@
 .doxygen-content a:hover {
   text-decoration: underline;
 }
-.doxygen-content a.qindex {
-  font-weight: bold;
-}
-.doxygen-content a.qindexHL {
-  font-weight: bold;
-  background-color: #9CAFD4;
-  color: #FFFFFF;
-  border: 1px double #869DCA;
-}
-.doxygen-content .contents a.qindexHL:visited {
-  color: #FFFFFF;
-}
 .doxygen-content a.el {
   font-weight: bold;
 }
@@ -200,12 +186,98 @@
 .doxygen-content a.codeRef, .doxygen-content a.codeRef:visited, .doxygen-content a.lineRef, .doxygen-content a.lineRef:visited {
   color: #4665A2;
 }
+.doxygen-content a.code.hl_class {
+  /* style for links to class names in code snippets */
+}
+.doxygen-content a.code.hl_struct {
+  /* style for links to struct names in code snippets */
+}
+.doxygen-content a.code.hl_union {
+  /* style for links to union names in code snippets */
+}
+.doxygen-content a.code.hl_interface {
+  /* style for links to interface names in code snippets */
+}
+.doxygen-content a.code.hl_protocol {
+  /* style for links to protocol names in code snippets */
+}
+.doxygen-content a.code.hl_category {
+  /* style for links to category names in code snippets */
+}
+.doxygen-content a.code.hl_exception {
+  /* style for links to exception names in code snippets */
+}
+.doxygen-content a.code.hl_service {
+  /* style for links to service names in code snippets */
+}
+.doxygen-content a.code.hl_singleton {
+  /* style for links to singleton names in code snippets */
+}
+.doxygen-content a.code.hl_concept {
+  /* style for links to concept names in code snippets */
+}
+.doxygen-content a.code.hl_namespace {
+  /* style for links to namespace names in code snippets */
+}
+.doxygen-content a.code.hl_package {
+  /* style for links to package names in code snippets */
+}
+.doxygen-content a.code.hl_define {
+  /* style for links to macro names in code snippets */
+}
+.doxygen-content a.code.hl_function {
+  /* style for links to function names in code snippets */
+}
+.doxygen-content a.code.hl_variable {
+  /* style for links to variable names in code snippets */
+}
+.doxygen-content a.code.hl_typedef {
+  /* style for links to typedef names in code snippets */
+}
+.doxygen-content a.code.hl_enumvalue {
+  /* style for links to enum value names in code snippets */
+}
+.doxygen-content a.code.hl_enumeration {
+  /* style for links to enumeration names in code snippets */
+}
+.doxygen-content a.code.hl_signal {
+  /* style for links to Qt signal names in code snippets */
+}
+.doxygen-content a.code.hl_slot {
+  /* style for links to Qt slot names in code snippets */
+}
+.doxygen-content a.code.hl_friend {
+  /* style for links to friend names in code snippets */
+}
+.doxygen-content a.code.hl_dcop {
+  /* style for links to KDE3 DCOP names in code snippets */
+}
+.doxygen-content a.code.hl_property {
+  /* style for links to property names in code snippets */
+}
+.doxygen-content a.code.hl_event {
+  /* style for links to event names in code snippets */
+}
+.doxygen-content a.code.hl_sequence {
+  /* style for links to sequence names in code snippets */
+}
+.doxygen-content a.code.hl_dictionary {
+  /* style for links to dictionary names in code snippets */
+}
 .doxygen-content dl.el {
   margin-left: -1cm;
 }
 .doxygen-content ul {
-  overflow: hidden;
-  /*Fixed: list item bullets overlap floating elements*/
+  overflow: visible;
+}
+.doxygen-content ul.multicol {
+  -moz-column-gap: 1em;
+  -webkit-column-gap: 1em;
+  column-gap: 1em;
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
+  column-count: 3;
+  list-style-type: none;
 }
 .doxygen-content #side-nav ul {
   overflow: visible;
@@ -225,6 +297,7 @@
 .doxygen-content pre.fragment {
   border: 1px solid #C4CFE5;
   background-color: #FBFCFD;
+  color: black;
   padding: 4px 6px;
   margin: 4px 8px 4px 2px;
   overflow: auto;
@@ -238,6 +311,7 @@
   padding: 0 0 1px 0;
   /*Fixed: last line underline overlap border*/
   margin: 4px 8px 4px 2px;
+  color: black;
   background-color: #FBFCFD;
   border: 1px solid #C4CFE5;
 }
@@ -282,15 +356,19 @@
 }
 .doxygen-content span.lineno {
   padding-right: 4px;
+  margin-right: 9px;
   text-align: right;
-  border-right: 2px solid #0F0;
+  border-right: 2px solid #00FF00;
+  color: black;
   background-color: #E8E8E8;
   white-space: pre;
 }
-.doxygen-content span.lineno a {
+.doxygen-content span.lineno a, .doxygen-content span.lineno a:visited {
+  color: #4665A2;
   background-color: #D8D8D8;
 }
 .doxygen-content span.lineno a:hover {
+  color: #4665A2;
   background-color: #C8C8C8;
 }
 .doxygen-content .lineno {
@@ -300,23 +378,6 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-.doxygen-content div.ah, .doxygen-content span.ah {
-  background-color: black;
-  font-weight: bold;
-  color: #FFFFFF;
-  margin-bottom: 3px;
-  margin-top: 3px;
-  padding: 0.2em;
-  border: solid thin #333;
-  border-radius: 0.5em;
-  -webkit-border-radius: 0.5em;
-  -moz-border-radius: 0.5em;
-  box-shadow: 2px 2px 3px #999;
-  -webkit-box-shadow: 2px 2px 3px #999;
-  -moz-box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 2px;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#000), color-stop(0.3, #444));
-  background-image: -moz-linear-gradient(center top, #eee 0%, #444 40%, #000 110%);
 }
 .doxygen-content div.classindex ul {
   list-style: none;
@@ -335,7 +396,6 @@
   font-style: italic;
 }
 .doxygen-content body {
-  background-color: white;
   color: black;
   margin: 0;
 }
@@ -344,26 +404,14 @@
   margin-left: 12px;
   margin-right: 8px;
 }
-.doxygen-content td.indexkey {
-  background-color: #EBEFF6;
-  font-weight: bold;
-  border: 1px solid #C4CFE5;
-  margin: 2px 0px 2px 0;
-  padding: 2px 10px;
-  white-space: nowrap;
-  vertical-align: top;
-}
-.doxygen-content td.indexvalue {
-  background-color: #EBEFF6;
-  border: 1px solid #C4CFE5;
-  padding: 2px 10px;
-  margin: 2px 0px;
-}
-.doxygen-content tr.memlist {
-  background-color: #EEF1F7;
-}
 .doxygen-content p.formulaDsp {
   text-align: center;
+}
+.doxygen-content img.dark-mode-visible {
+  display: none;
+}
+.doxygen-content img.light-mode-visible {
+  display: none;
 }
 .doxygen-content img.formulaInl, .doxygen-content img.inline {
   vertical-align: middle;
@@ -384,6 +432,12 @@
 .doxygen-content img.footer {
   border: 0px;
   vertical-align: middle;
+  width: 104px;
+}
+.doxygen-content .compoundTemplParams {
+  color: #4665A2;
+  font-size: 80%;
+  line-height: 120%;
 }
 .doxygen-content span.keyword {
   color: #008000;
@@ -392,7 +446,7 @@
   color: #604020;
 }
 .doxygen-content span.keywordflow {
-  color: #e08000;
+  color: #E08000;
 }
 .doxygen-content span.comment {
   color: #800000;
@@ -407,7 +461,7 @@
   color: #008080;
 }
 .doxygen-content span.vhdldigit {
-  color: #ff00ff;
+  color: #FF00FF;
 }
 .doxygen-content span.vhdlchar {
   color: #000000;
@@ -416,7 +470,7 @@
   color: #700070;
 }
 .doxygen-content span.vhdllogic {
-  color: #ff0000;
+  color: #FF0000;
 }
 .doxygen-content blockquote {
   background-color: #F7F8FB;
@@ -424,22 +478,17 @@
   margin: 0 24px 0 4px;
   padding: 0 12px 0 16px;
 }
-.doxygen-content blockquote.DocNodeRTL {
-  border-left: 0;
-  border-right: 2px solid #9CAFD4;
-  margin: 0 4px 0 24px;
-  padding: 0 16px 0 12px;
-}
 .doxygen-content td.tiny {
   font-size: 75%;
 }
 .doxygen-content .dirtab {
   padding: 4px;
   border-collapse: collapse;
-  border: 1px solid #A3B4D7;
+  border: 1px solid #2D4068;
 }
 .doxygen-content th.dirtab {
-  background: #EBEFF6;
+  background-color: #374F7F;
+  color: #FFFFFF;
   font-weight: bold;
 }
 .doxygen-content hr {
@@ -525,14 +574,6 @@
   font-weight: normal;
   margin-left: 9px;
 }
-.doxygen-content .memnav {
-  background-color: #EBEFF6;
-  border: 1px solid #A3B4D7;
-  text-align: center;
-  margin: 2px;
-  margin-right: 15px;
-  padding: 2px;
-}
 .doxygen-content .mempage {
   width: 100%;
 }
@@ -567,18 +608,11 @@
   font-weight: bold;
   text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9);
   background-color: #DFE5F1;
-  /* opera specific markup */
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
   border-top-right-radius: 4px;
-  /* firefox specific markup */
-  -moz-box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
-  -moz-border-radius-topright: 4px;
-  /* webkit specific markup */
-  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
-  -webkit-border-top-right-radius: 4px;
 }
 .doxygen-content .overload {
-  font-family: "courier new", courier, monospace;
+  font-family: monospace, fixed;
   font-size: 65%;
 }
 .doxygen-content .memdoc, .doxygen-content dl.reflist dd {
@@ -586,11 +620,10 @@
   border-left: 1px solid #A8B8D9;
   border-right: 1px solid #A8B8D9;
   padding: 6px 10px 2px 10px;
-  background-color: #FBFCFD;
   border-top-width: 0;
   background-image: url("nav_g.png");
   background-repeat: repeat-x;
-  background-color: #FFFFFF;
+  background-color: white;
   /* opera specific markup */
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -640,7 +673,7 @@
   vertical-align: top;
 }
 .doxygen-content .params .paramdir, .doxygen-content .tparams .paramdir {
-  font-family: "courier new", courier, monospace;
+  font-family: monospace, fixed;
   vertical-align: top;
 }
 .doxygen-content table.mlabels {
@@ -705,9 +738,13 @@
   padding-top: 3px;
   border-left: 1px solid rgba(0, 0, 0, 0.05);
 }
+.doxygen-content .directory tr.odd {
+  padding-left: 6px;
+  background-color: #F8F9FC;
+}
 .doxygen-content .directory tr.even {
   padding-left: 6px;
-  background-color: #F7F8FB;
+  background-color: white;
 }
 .doxygen-content .directory img {
   vertical-align: -30%;
@@ -739,6 +776,7 @@
 }
 .doxygen-content .icon {
   font-family: Arial, Helvetica;
+  line-height: normal;
   font-weight: bold;
   font-size: 12px;
   height: 14px;
@@ -786,9 +824,6 @@
   vertical-align: top;
   display: inline-block;
 }
-.doxygen-content table.directory {
-  font: 400 14px Roboto, sans-serif;
-}
 .doxygen-content div.dynheader {
   margin-top: 8px;
   -webkit-touch-callout: none;
@@ -822,15 +857,10 @@
   padding-top: 5px;
 }
 .doxygen-content table.fieldtable {
-  /*width: 100%;*/
   margin-bottom: 10px;
   border: 1px solid #A8B8D9;
   border-spacing: 0px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
   border-radius: 4px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 2px;
-  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.15);
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.15);
 }
 .doxygen-content .fieldtable td, .doxygen-content .fieldtable th {
@@ -847,7 +877,6 @@
 }
 .doxygen-content .fieldtable td.fielddoc {
   border-bottom: 1px solid #A8B8D9;
-  /*width: 100%;*/
 }
 .doxygen-content .fieldtable td.fielddoc p:first-child {
   margin-top: 0px;
@@ -868,10 +897,6 @@
   padding-top: 5px;
   text-align: left;
   font-weight: 400;
-  -moz-border-radius-topleft: 4px;
-  -moz-border-radius-topright: 4px;
-  -webkit-border-top-left-radius: 4px;
-  -webkit-border-top-right-radius: 4px;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   border-bottom: 1px solid #A8B8D9;
@@ -892,7 +917,7 @@
   background-position: 0 -5px;
   height: 30px;
   line-height: 30px;
-  color: #8AA0CC;
+  color: #283A5D;
   border: solid 1px #C2CDE4;
   overflow: hidden;
   margin: 0px;
@@ -919,7 +944,8 @@
   text-decoration: none;
 }
 .doxygen-content .navpath li.navelem a:hover {
-  color: #6884BD;
+  color: white;
+  text-shadow: 0px 1px 1px black;
 }
 .doxygen-content .navpath li.footer {
   list-style-type: none;
@@ -929,7 +955,7 @@
   background-image: none;
   background-repeat: no-repeat;
   background-position: right;
-  color: #364D7C;
+  color: #2A3D61;
   font-size: 8pt;
 }
 .doxygen-content div.summary {
@@ -981,23 +1007,10 @@
   margin-left: 0px;
   padding-left: 0px;
 }
-.doxygen-content dl.section.DocNodeRTL {
-  margin-right: 0px;
-  padding-right: 0px;
-}
 .doxygen-content dl.note {
   margin-left: -7px;
   padding-left: 3px;
   border-left: 4px solid;
-  border-color: #D0C000;
-}
-.doxygen-content dl.note.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
   border-color: #D0C000;
 }
 .doxygen-content dl.warning, .doxygen-content dl.attention {
@@ -1006,28 +1019,10 @@
   border-left: 4px solid;
   border-color: #FF0000;
 }
-.doxygen-content dl.warning.DocNodeRTL, .doxygen-content dl.attention.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
-  border-color: #FF0000;
-}
 .doxygen-content dl.pre, .doxygen-content dl.post, .doxygen-content dl.invariant {
   margin-left: -7px;
   padding-left: 3px;
   border-left: 4px solid;
-  border-color: #00D000;
-}
-.doxygen-content dl.pre.DocNodeRTL, .doxygen-content dl.post.DocNodeRTL, .doxygen-content dl.invariant.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
   border-color: #00D000;
 }
 .doxygen-content dl.deprecated {
@@ -1036,28 +1031,10 @@
   border-left: 4px solid;
   border-color: #505050;
 }
-.doxygen-content dl.deprecated.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
-  border-color: #505050;
-}
 .doxygen-content dl.todo {
   margin-left: -7px;
   padding-left: 3px;
   border-left: 4px solid;
-  border-color: #00C0E0;
-}
-.doxygen-content dl.todo.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
   border-color: #00C0E0;
 }
 .doxygen-content dl.test {
@@ -1066,32 +1043,17 @@
   border-left: 4px solid;
   border-color: #3030E0;
 }
-.doxygen-content dl.test.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
-  border-color: #3030E0;
-}
 .doxygen-content dl.bug {
   margin-left: -7px;
   padding-left: 3px;
   border-left: 4px solid;
   border-color: #C08050;
 }
-.doxygen-content dl.bug.DocNodeRTL {
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  margin-right: -7px;
-  padding-right: 3px;
-  border-right: 4px solid;
-  border-color: #C08050;
-}
 .doxygen-content dl.section dd {
   margin-bottom: 6px;
+}
+.doxygen-content #projectrow {
+  height: 56px;
 }
 .doxygen-content #projectlogo {
   text-align: center;
@@ -1103,19 +1065,23 @@
 }
 .doxygen-content #projectalign {
   vertical-align: middle;
+  padding-left: 0.5em;
 }
 .doxygen-content #projectname {
-  font: 300% Tahoma, Arial, sans-serif;
+  font-size: 200%;
+  font-family: Tahoma, Arial, sans-serif;
   margin: 0px;
   padding: 2px 0px;
 }
 .doxygen-content #projectbrief {
-  font: 120% Tahoma, Arial, sans-serif;
+  font-size: 90%;
+  font-family: Tahoma, Arial, sans-serif;
   margin: 0px;
   padding: 0px;
 }
 .doxygen-content #projectnumber {
-  font: 50% Tahoma, Arial, sans-serif;
+  font-size: 50%;
+  font-family: 50% Tahoma, Arial, sans-serif;
   margin: 0px;
   padding: 0px;
 }
@@ -1124,6 +1090,7 @@
   margin: 0px;
   width: 100%;
   border-bottom: 1px solid #5373B4;
+  background-color: white;
 }
 .doxygen-content .image {
   text-align: center;
@@ -1143,9 +1110,6 @@
 .doxygen-content .caption {
   font-weight: bold;
 }
-.doxygen-content div.zoom {
-  border: 1px solid #90A5CE;
-}
 .doxygen-content dl.citelist {
   margin-bottom: 50px;
 }
@@ -1155,9 +1119,11 @@
   font-weight: bold;
   margin-right: 10px;
   padding: 5px;
+  text-align: right;
+  width: 52px;
 }
 .doxygen-content dl.citelist dd {
-  margin: 2px 0;
+  margin: 2px 0 2px 72px;
   padding: 5px 0;
 }
 .doxygen-content div.toc {
@@ -1170,24 +1136,15 @@
   margin: 0 8px 10px 10px;
   width: 200px;
 }
-.doxygen-content .PageDocRTL-title div.toc {
-  float: left !important;
-  text-align: right;
-}
 .doxygen-content div.toc li {
   background: url("bdwn.png") no-repeat scroll 0 5px transparent;
-  font: 10px/1.2 Verdana, DejaVu Sans, Geneva, sans-serif;
+  font: 10px/1.2 Verdana, "DejaVu Sans", Geneva, sans-serif;
   margin-top: 5px;
   padding-left: 10px;
   padding-top: 2px;
 }
-.doxygen-content .PageDocRTL-title div.toc li {
-  background-position-x: right !important;
-  padding-left: 0 !important;
-  padding-right: 10px;
-}
 .doxygen-content div.toc h3 {
-  font: bold 12px/1.2 Arial, FreeSans, sans-serif;
+  font: bold 12px/1.2 Verdana, "DejaVu Sans", Geneva, sans-serif;
   color: #4665A2;
   border-bottom: 0 none;
   margin: 0;
@@ -1209,21 +1166,13 @@
 .doxygen-content div.toc li.level4 {
   margin-left: 45px;
 }
-.doxygen-content .PageDocRTL-title div.toc li.level1 {
-  margin-left: 0 !important;
-  margin-right: 0;
+.doxygen-content span.emoji {
+  /* font family used at the site: https://unicode.org/emoji/charts/full-emoji-list.html
+   * font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", Times, Symbola, Aegyptus, Code2000, Code2001, Code2002, Musica, serif, LastResort;
+   */
 }
-.doxygen-content .PageDocRTL-title div.toc li.level2 {
-  margin-left: 0 !important;
-  margin-right: 15px;
-}
-.doxygen-content .PageDocRTL-title div.toc li.level3 {
-  margin-left: 0 !important;
-  margin-right: 30px;
-}
-.doxygen-content .PageDocRTL-title div.toc li.level4 {
-  margin-left: 0 !important;
-  margin-right: 45px;
+.doxygen-content span.obfuscator {
+  display: none;
 }
 .doxygen-content .inherit_header {
   font-weight: bold;
@@ -1252,7 +1201,8 @@
 }
 .doxygen-content #powerTip {
   cursor: default;
-  white-space: nowrap;
+  /*white-space: nowrap;*/
+  color: black;
   background-color: white;
   border: 1px solid gray;
   border-radius: 4px 4px 4px 4px;
@@ -1272,6 +1222,9 @@
 .doxygen-content #powerTip div.ttname a {
   font-weight: bold;
 }
+.doxygen-content #powerTip a {
+  color: #4665A2;
+}
 .doxygen-content #powerTip div.ttname {
   font-weight: bold;
 }
@@ -1281,7 +1234,9 @@
 .doxygen-content #powerTip div {
   margin: 0px;
   padding: 0px;
-  font: 12px/16px Roboto, sans-serif;
+  font-size: 12px;
+  font-family: Roboto, sans-serif;
+  line-height: 16px;
 }
 .doxygen-content #powerTip:before, .doxygen-content #powerTip:after {
   content: "";
@@ -1320,12 +1275,12 @@
   top: 100%;
 }
 .doxygen-content #powerTip.n:after, .doxygen-content #powerTip.ne:after, .doxygen-content #powerTip.nw:after {
-  border-top-color: #FFFFFF;
+  border-top-color: white;
   border-width: 10px;
   margin: 0px -10px;
 }
-.doxygen-content #powerTip.n:before {
-  border-top-color: #808080;
+.doxygen-content #powerTip.n:before, .doxygen-content #powerTip.ne:before, .doxygen-content #powerTip.nw:before {
+  border-top-color: gray;
   border-width: 11px;
   margin: 0px -11px;
 }
@@ -1344,12 +1299,12 @@
   bottom: 100%;
 }
 .doxygen-content #powerTip.s:after, .doxygen-content #powerTip.se:after, .doxygen-content #powerTip.sw:after {
-  border-bottom-color: #FFFFFF;
+  border-bottom-color: white;
   border-width: 10px;
   margin: 0px -10px;
 }
 .doxygen-content #powerTip.s:before, .doxygen-content #powerTip.se:before, .doxygen-content #powerTip.sw:before {
-  border-bottom-color: #808080;
+  border-bottom-color: gray;
   border-width: 11px;
   margin: 0px -11px;
 }
@@ -1366,13 +1321,13 @@
   left: 100%;
 }
 .doxygen-content #powerTip.e:after {
-  border-left-color: #FFFFFF;
+  border-left-color: gray;
   border-width: 10px;
   top: 50%;
   margin-top: -10px;
 }
 .doxygen-content #powerTip.e:before {
-  border-left-color: #808080;
+  border-left-color: gray;
   border-width: 11px;
   top: 50%;
   margin-top: -11px;
@@ -1381,13 +1336,13 @@
   right: 100%;
 }
 .doxygen-content #powerTip.w:after {
-  border-right-color: #FFFFFF;
+  border-right-color: gray;
   border-width: 10px;
   top: 50%;
   margin-top: -10px;
 }
 .doxygen-content #powerTip.w:before {
-  border-right-color: #808080;
+  border-right-color: gray;
   border-width: 11px;
   top: 50%;
   margin-top: -11px;
@@ -1447,30 +1402,27 @@
 .doxygen-content th.markdownTableHeadCenter, .doxygen-content td.markdownTableBodyCenter {
   text-align: center;
 }
-.doxygen-content .DocNodeRTL {
-  text-align: right;
-  direction: rtl;
-}
-.doxygen-content .DocNodeLTR {
-  text-align: left;
-  direction: ltr;
-}
-.doxygen-content table.DocNodeRTL {
-  width: auto;
-  margin-right: 0;
-  margin-left: auto;
-}
-.doxygen-content table.DocNodeLTR {
-  width: auto;
-  margin-right: auto;
-  margin-left: 0;
-}
 .doxygen-content tt, .doxygen-content code, .doxygen-content kbd, .doxygen-content samp {
   display: inline-block;
-  direction: ltr;
 }
 .doxygen-content u {
   text-decoration: underline;
+}
+.doxygen-content details > summary {
+  list-style-type: none;
+}
+.doxygen-content details > summary::-webkit-details-marker {
+  display: none;
+}
+.doxygen-content details > summary::before {
+  content: "►";
+  padding-right: 4px;
+  font-size: 80%;
+}
+.doxygen-content details[open] > summary::before {
+  content: "▼";
+  padding-right: 4px;
+  font-size: 80%;
 }
 
 /**

@@ -1245,8 +1245,9 @@ HTML_STYLESHEET        =
 # list). For an example see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = /root/doxygen_theme_flat_design/src/doxygen-style.css
+#HTML_EXTRA_STYLESHEET  = /root/doxygen_theme_flat_design/src/doxygen-style.css
 
+HTML_EXTRA_STYLESHEET  = /root/kanon_doc/doxygen-awesome-css/doxygen-awesome.css
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
 # that these files will be copied to the base HTML output directory. Use the
@@ -1255,8 +1256,8 @@ HTML_EXTRA_STYLESHEET  = /root/doxygen_theme_flat_design/src/doxygen-style.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = /root/doxygen_theme_flat_design/src/img/*
-
+#HTML_EXTRA_FILES       = /root/doxygen_theme_flat_design/src/img/*
+HTML_EXTRA_FILES = 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
 # this color. Hue is specified as an angle on a colorwheel, see
@@ -1286,6 +1287,8 @@ HTML_COLORSTYLE_SAT    = 100
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 HTML_COLORSTYLE_GAMMA  = 80
+
+HTML_COLORSTYLE = LIGHT
 
 # If the HTML_TIMESTAMP tag is set to YES then the footer of each generated HTML
 # page will contain the date and time when the page was generated. Setting this
@@ -1526,6 +1529,7 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 DISABLE_INDEX          = NO
+FULL_SIDEBAR = NO
 
 # The GENERATE_TREEVIEW tag is used to specify whether a tree-like index
 # structure should be generated to display hierarchical information. If the tag

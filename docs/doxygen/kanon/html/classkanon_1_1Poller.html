@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html  lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-      <title>kanon: kanon::Poller Class Reference</title>
-    
-          <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-          <link rel="stylesheet" href="../../../_static/theme.css " type="text/css" />
-      
-      <!-- sphinx script_files -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kanon: kanon::Poller Class Reference &mdash; kanon v1.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
 
-      
-      <!-- bundled in js (rollup iife) -->
-      <!-- <script src="../../../_static/theme-vendors.js"></script> -->
-      <script src="../../../_static/theme.js" defer></script>
-    
-  <link rel="index" title="Index" href="../../../genindex.html" />
-  <link rel="search" title="Search" href="../../../search.html" /> 
-  </head>
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  <body>
-    <div id="app">
-    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../../../index.html" class="home-link">
-    
-      <span class="site-name">kanon</span>
-    
-  </router-link>
-
-  <div class="links">
-    <navlinks class="can-hide">
-
-
-
-    </navlinks>
-  </div>
-</navbar>
-
-      
-      <div class="sidebar-mask" @click="toggleSidebar(false)">
-      </div>
-        <sidebar @toggle-sidebar="toggleSidebar">
           
-          <navlinks>
-            
-
-
-
-            
-          </navlinks><div id="searchbox" class="searchbox" role="search">
-  <div class="caption"><span class="caption-text">Quick search</span>
-    <div class="searchformwrapper">
-      <form class="search" action="../../../search.html" method="get">
-        <input type="text" name="q" />
-        <input type="submit" value="Search" />
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </form>
-    </div>
-  </div>
-</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
-  
-    <div class="sidebar-group">
-      <p class="caption">
-        <span class="caption-text"><a href="../../../api/index.html#this-is-api-document-of-kanonn">this is api document of kanonn</a></span>
-      </p>
-      <ul class="">
-        
-          <li class="toctree-l1 ">
-            
-              <a href="index.html" class="reference internal ">Home Page</a>
-            
-
-            
-          </li>
-
-        
-      </ul>
-    </div>
-  
+          
+          <a href="../../../index.html" class="icon icon-home">
+            kanon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-        </sidebar>
-
-      <page>
-          <div class="body-header" role="navigation" aria-label="navigation">
-  
-  <ul class="breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-    
-    <li>kanon: kanon::Poller Class Reference</li>
-  </ul>
-  
-
-  <ul class="page-nav">
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Doc</a></li>
 </ul>
-  
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">kanon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">kanon: kanon::Poller Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/doxygen/kanon/html/classkanon_1_1Poller.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-<hr>
-          <div class="content" role="main" v-pre>
-            
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="poller-class-reference">
-<h1>Poller Class Reference<a class="headerlink" href="#poller-class-reference" title="Permalink to this heading">¶</a></h1>
+<h1>Poller Class Reference<a class="headerlink" href="#poller-class-reference" title="Permalink to this heading"></a></h1>
 <div class="doxygen-content docutils container">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>kanon: kanon::Poller Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
+ <tr id="projectrow">
+  <td id="projectalign">
    <div id="projectname">kanon
    </div>
    <div id="projectbrief">A event-driven network library based on reactor mode</div>
@@ -136,15 +99,16 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Generated by Doxygen 1.8.17 -->
+<!-- Generated by Doxygen 1.9.6 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',false,false,'search.php','Search');
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
@@ -156,8 +120,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classkanon_1_1Poller-members.html">List of all members</a>  </div>
-  <div class="headertitle">
-<div class="title">kanon::Poller Class Reference<span class="mlabels"><span class="mlabel">final</span></span><div class="ingroups"><a class="el" href="group__net.html">Net</a> &raquo; <a class="el" href="group__demultiplexer.html">Demultiplexer</a></div></div>  </div>
+  <div class="headertitle"><div class="title">kanon::Poller Class Reference<span class="mlabels"><span class="mlabel">final</span></span><div class="ingroups"><a class="el" href="group__net.html">Net</a> &raquo; <a class="el" href="group__demultiplexer.html">Demultiplexer</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -168,52 +131,63 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for kanon::Poller:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Poller__inherit__graph.svg" width="150" height="187"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Poller__inherit__graph.svg" width="150" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for kanon::Poller:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Poller__coll__graph.svg" width="235" height="279"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classkanon_1_1Poller__coll__graph.svg" width="235" height="274"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab93177414346efb2124297febc955018"><td class="memItemLeft" align="right" valign="top"><a id="ab93177414346efb2124297febc955018"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1Poller.html#ab93177414346efb2124297febc955018">Poller</a> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop)</td></tr>
+<tr class="memitem:ab93177414346efb2124297febc955018"><td class="memItemLeft" align="right" valign="top"><a id="ab93177414346efb2124297febc955018" name="ab93177414346efb2124297febc955018"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Poller</b> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop)</td></tr>
 <tr class="memdesc:ab93177414346efb2124297febc955018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classkanon_1_1Poller.html" title="Demultiplexer (poll(2) wrapper)">Poller</a>. <br /></td></tr>
 <tr class="separator:ab93177414346efb2124297febc955018"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4d39c623d554db8682301440622ab7e"><td class="memItemLeft" align="right" valign="top">TimeStamp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1Poller.html#ab4d39c623d554db8682301440622ab7e">Poll</a> (int ms, ChannelVec &amp;active_channels) KANON_NOEXCEPT KANON_OVERRIDE</td></tr>
-<tr class="memdesc:ab4d39c623d554db8682301440622ab7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the channels that are ready.  <a href="classkanon_1_1Poller.html#ab4d39c623d554db8682301440622ab7e">More...</a><br /></td></tr>
+<tr class="memdesc:ab4d39c623d554db8682301440622ab7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the channels that are ready.  <br /></td></tr>
 <tr class="separator:ab4d39c623d554db8682301440622ab7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c383ee18e9265a6b0774cf009a7f5e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1Poller.html#a1c383ee18e9265a6b0774cf009a7f5e1">UpdateChannel</a> (Channel *ch) KANON_OVERRIDE</td></tr>
-<tr class="memdesc:a1c383ee18e9265a6b0774cf009a7f5e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update interested event of a channel.  <a href="classkanon_1_1Poller.html#a1c383ee18e9265a6b0774cf009a7f5e1">More...</a><br /></td></tr>
+<tr class="memdesc:a1c383ee18e9265a6b0774cf009a7f5e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update interested event of a channel.  <br /></td></tr>
 <tr class="separator:a1c383ee18e9265a6b0774cf009a7f5e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60e69919a03d48ad6c6e51c8254c4471"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1Poller.html#a60e69919a03d48ad6c6e51c8254c4471">RemoveChannel</a> (Channel *ch) KANON_OVERRIDE</td></tr>
-<tr class="memdesc:a60e69919a03d48ad6c6e51c8254c4471"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove channel from the interested table.  <a href="classkanon_1_1Poller.html#a60e69919a03d48ad6c6e51c8254c4471">More...</a><br /></td></tr>
+<tr class="memdesc:a60e69919a03d48ad6c6e51c8254c4471"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove channel from the interested table.  <br /></td></tr>
 <tr class="separator:a60e69919a03d48ad6c6e51c8254c4471"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classkanon_1_1PollerBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classkanon_1_1PollerBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classkanon_1_1PollerBase.html">kanon::PollerBase</a></td></tr>
-<tr class="memitem:ac25bd42584f9f0233cf2fd0840f02f6f inherit pub_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top"><a id="ac25bd42584f9f0233cf2fd0840f02f6f"></a>
+<tr class="memitem:ac25bd42584f9f0233cf2fd0840f02f6f inherit pub_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top"><a id="ac25bd42584f9f0233cf2fd0840f02f6f" name="ac25bd42584f9f0233cf2fd0840f02f6f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PollerBase</b> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop)</td></tr>
 <tr class="separator:ac25bd42584f9f0233cf2fd0840f02f6f inherit pub_methods_classkanon_1_1PollerBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae30605d74f47c08594e8ab8e6edb103b inherit pub_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top">virtual TimeStamp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1PollerBase.html#ae30605d74f47c08594e8ab8e6edb103b">Poll</a> (int ms, ChannelVec &amp;active_channels)=0</td></tr>
+<tr class="memdesc:ae30605d74f47c08594e8ab8e6edb103b inherit pub_methods_classkanon_1_1PollerBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the channels that are ready.  <br /></td></tr>
+<tr class="separator:ae30605d74f47c08594e8ab8e6edb103b inherit pub_methods_classkanon_1_1PollerBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aa72b173ab86fe0faeb624aac54b417 inherit pub_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1PollerBase.html#a5aa72b173ab86fe0faeb624aac54b417">UpdateChannel</a> (Channel *ch)=0</td></tr>
+<tr class="memdesc:a5aa72b173ab86fe0faeb624aac54b417 inherit pub_methods_classkanon_1_1PollerBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update interested event of a channel.  <br /></td></tr>
+<tr class="separator:a5aa72b173ab86fe0faeb624aac54b417 inherit pub_methods_classkanon_1_1PollerBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e4aceca85d3d68ad9e451f583bdc4a6 inherit pub_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1PollerBase.html#a7e4aceca85d3d68ad9e451f583bdc4a6">RemoveChannel</a> (Channel *ch)=0</td></tr>
+<tr class="memdesc:a7e4aceca85d3d68ad9e451f583bdc4a6 inherit pub_methods_classkanon_1_1PollerBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove channel from the interested table.  <br /></td></tr>
+<tr class="separator:a7e4aceca85d3d68ad9e451f583bdc4a6 inherit pub_methods_classkanon_1_1PollerBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:ad01de9ac9d44c29dff196f710ab637fc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; struct pollfd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1Poller.html#ad01de9ac9d44c29dff196f710ab637fc">pollfds_</a></td></tr>
-<tr class="memdesc:ad01de9ac9d44c29dff196f710ab637fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array contains events.  <a href="classkanon_1_1Poller.html#ad01de9ac9d44c29dff196f710ab637fc">More...</a><br /></td></tr>
+<tr class="memdesc:ad01de9ac9d44c29dff196f710ab637fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array contains events.  <br /></td></tr>
 <tr class="separator:ad01de9ac9d44c29dff196f710ab637fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac60e0e0664e229f2bc4a7598644aa62d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; int, Channel * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1Poller.html#ac60e0e0664e229f2bc4a7598644aa62d">channels_map_</a></td></tr>
-<tr class="memdesc:ac60e0e0664e229f2bc4a7598644aa62d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map: fd-&gt;channel.  <a href="classkanon_1_1Poller.html#ac60e0e0664e229f2bc4a7598644aa62d">More...</a><br /></td></tr>
+<tr class="memdesc:ac60e0e0664e229f2bc4a7598644aa62d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map: fd-&gt;channel.  <br /></td></tr>
 <tr class="separator:ac60e0e0664e229f2bc4a7598644aa62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classkanon_1_1PollerBase"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classkanon_1_1PollerBase')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classkanon_1_1PollerBase.html">kanon::PollerBase</a></td></tr>
-<tr class="memitem:ae9ab2f4cde1addb6840e738d9c497691 inherit pub_types_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top"><a id="ae9ab2f4cde1addb6840e738d9c497691"></a>
+<tr class="memitem:ae9ab2f4cde1addb6840e738d9c497691 inherit pub_types_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top"><a id="ae9ab2f4cde1addb6840e738d9c497691" name="ae9ab2f4cde1addb6840e738d9c497691"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ChannelVec</b> = std::vector&lt; Channel * &gt;</td></tr>
 <tr class="separator:ae9ab2f4cde1addb6840e738d9c497691 inherit pub_types_classkanon_1_1PollerBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classkanon_1_1PollerBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classkanon_1_1PollerBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classkanon_1_1PollerBase.html">kanon::PollerBase</a></td></tr>
-<tr class="memitem:a3b153912e918677c05ae3c6c04ce13de inherit pro_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top"><a id="a3b153912e918677c05ae3c6c04ce13de"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1PollerBase.html#a3b153912e918677c05ae3c6c04ce13de">AssertInThread</a> () KANON_NOEXCEPT</td></tr>
+<tr class="memitem:a3b153912e918677c05ae3c6c04ce13de inherit pro_methods_classkanon_1_1PollerBase"><td class="memItemLeft" align="right" valign="top"><a id="a3b153912e918677c05ae3c6c04ce13de" name="a3b153912e918677c05ae3c6c04ce13de"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>AssertInThread</b> () KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:a3b153912e918677c05ae3c6c04ce13de inherit pro_methods_classkanon_1_1PollerBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used by derived class to ensure "One loop per thread". <br /></td></tr>
 <tr class="separator:a3b153912e918677c05ae3c6c04ce13de inherit pro_methods_classkanon_1_1PollerBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -223,8 +197,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="section note"><dt>Note</dt><dd>Support LT mode only</dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Internal class </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab4d39c623d554db8682301440622ab7e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4d39c623d554db8682301440622ab7e">&#9670;&nbsp;</a></span>Poll()</h2>
+<a id="ab4d39c623d554db8682301440622ab7e" name="ab4d39c623d554db8682301440622ab7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4d39c623d554db8682301440622ab7e">&#9670;&#160;</a></span>Poll()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,8 +245,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a60e69919a03d48ad6c6e51c8254c4471"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a60e69919a03d48ad6c6e51c8254c4471">&#9670;&nbsp;</a></span>RemoveChannel()</h2>
+<a id="a60e69919a03d48ad6c6e51c8254c4471" name="a60e69919a03d48ad6c6e51c8254c4471"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60e69919a03d48ad6c6e51c8254c4471">&#9670;&#160;</a></span>RemoveChannel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -312,8 +286,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a1c383ee18e9265a6b0774cf009a7f5e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c383ee18e9265a6b0774cf009a7f5e1">&#9670;&nbsp;</a></span>UpdateChannel()</h2>
+<a id="a1c383ee18e9265a6b0774cf009a7f5e1" name="a1c383ee18e9265a6b0774cf009a7f5e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c383ee18e9265a6b0774cf009a7f5e1">&#9670;&#160;</a></span>UpdateChannel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -354,8 +328,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="ac60e0e0664e229f2bc4a7598644aa62d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac60e0e0664e229f2bc4a7598644aa62d">&#9670;&nbsp;</a></span>channels_map_</h2>
+<a id="ac60e0e0664e229f2bc4a7598644aa62d" name="ac60e0e0664e229f2bc4a7598644aa62d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac60e0e0664e229f2bc4a7598644aa62d">&#9670;&#160;</a></span>channels_map_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -379,8 +353,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ad01de9ac9d44c29dff196f710ab637fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad01de9ac9d44c29dff196f710ab637fc">&#9670;&nbsp;</a></span>pollfds_</h2>
+<a id="ad01de9ac9d44c29dff196f710ab637fc" name="ad01de9ac9d44c29dff196f710ab637fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad01de9ac9d44c29dff196f710ab637fc">&#9670;&#160;</a></span>pollfds_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -412,9 +386,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
 </small></address>
 </body>
 </html>
@@ -422,19 +394,31 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 </section>
 
 
+           </div>
           </div>
-          <div class="page-nav">
-            <div class="inner"><ul class="page-nav">
-</ul><div class="footer" role="contentinfo">
-      &#169; Copyright 2023, conzxy.
-    <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
-</div>
-            </div>
-          </div>
-      </page>
-    </div></div>
-    
-    
-  </body>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, conzxy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

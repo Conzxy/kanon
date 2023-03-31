@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html  lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-      <title>kanon: Net</title>
-    
-          <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-          <link rel="stylesheet" href="../../../_static/theme.css " type="text/css" />
-      
-      <!-- sphinx script_files -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kanon: Net &mdash; kanon v1.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
 
-      
-      <!-- bundled in js (rollup iife) -->
-      <!-- <script src="../../../_static/theme-vendors.js"></script> -->
-      <script src="../../../_static/theme.js" defer></script>
-    
-  <link rel="index" title="Index" href="../../../genindex.html" />
-  <link rel="search" title="Search" href="../../../search.html" /> 
-  </head>
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  <body>
-    <div id="app">
-    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../../../index.html" class="home-link">
-    
-      <span class="site-name">kanon</span>
-    
-  </router-link>
-
-  <div class="links">
-    <navlinks class="can-hide">
-
-
-
-    </navlinks>
-  </div>
-</navbar>
-
-      
-      <div class="sidebar-mask" @click="toggleSidebar(false)">
-      </div>
-        <sidebar @toggle-sidebar="toggleSidebar">
           
-          <navlinks>
-            
-
-
-
-            
-          </navlinks><div id="searchbox" class="searchbox" role="search">
-  <div class="caption"><span class="caption-text">Quick search</span>
-    <div class="searchformwrapper">
-      <form class="search" action="../../../search.html" method="get">
-        <input type="text" name="q" />
-        <input type="submit" value="Search" />
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </form>
-    </div>
-  </div>
-</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
-  
-    <div class="sidebar-group">
-      <p class="caption">
-        <span class="caption-text"><a href="../../../api/index.html#this-is-api-document-of-kanonn">this is api document of kanonn</a></span>
-      </p>
-      <ul class="">
-        
-          <li class="toctree-l1 ">
-            
-              <a href="index.html" class="reference internal ">Home Page</a>
-            
-
-            
-          </li>
-
-        
-      </ul>
-    </div>
-  
+          
+          <a href="../../../index.html" class="icon icon-home">
+            kanon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-        </sidebar>
-
-      <page>
-          <div class="body-header" role="navigation" aria-label="navigation">
-  
-  <ul class="breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-    
-    <li>kanon: Net</li>
-  </ul>
-  
-
-  <ul class="page-nav">
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Doc</a></li>
 </ul>
-  
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">kanon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">kanon: Net</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/doxygen/kanon/html/group__net.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-<hr>
-          <div class="content" role="main" v-pre>
-            
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="net">
-<h1>Net<a class="headerlink" href="#net" title="Permalink to this heading">¶</a></h1>
+<h1>Net<a class="headerlink" href="#net" title="Permalink to this heading"></a></h1>
 <div class="doxygen-content docutils container">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>kanon: Net</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
+ <tr id="projectrow">
+  <td id="projectalign">
    <div id="projectname">kanon
    </div>
    <div id="projectbrief">A event-driven network library based on reactor mode</div>
@@ -136,15 +99,16 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Generated by Doxygen 1.8.17 -->
+<!-- Generated by Doxygen 1.9.6 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',false,false,'search.php','Search');
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 </div><!-- top -->
 <div class="header">
@@ -154,8 +118,7 @@ $(function() {
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle">
-<div class="title">Net</div>  </div>
+  <div class="headertitle"><div class="title">Net</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -164,10 +127,11 @@ $(function() {
 <div class="dynheader">
 Collaboration diagram for Net:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="group__net.svg" width="219" height="234"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="group__net.svg" width="219" height="234"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="groups" name="groups"></a>
 Modules</h2></td></tr>
 <tr class="memitem:group__server"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__server.html">Server</a></td></tr>
 <tr class="memdesc:group__server"><td class="mdescLeft">&#160;</td><td class="mdescRight">Server parts. <br /></td></tr>
@@ -185,7 +149,7 @@ Modules</h2></td></tr>
 <tr class="memdesc:group__timer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manage timer and process timer events. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classkanon_1_1TcpConnection.html">kanon::TcpConnection</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a tcp connection.  <a href="classkanon_1_1TcpConnection.html#details">More...</a><br /></td></tr>
@@ -197,62 +161,62 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents socket instance.  <a href="classkanon_1_1Socket.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ga6f147708ebac81475db20e3c35c4d3b5"><td class="memItemLeft" align="right" valign="top"><a id="ga6f147708ebac81475db20e3c35c4d3b5"></a>
+<tr class="memitem:ga6f147708ebac81475db20e3c35c4d3b5"><td class="memItemLeft" align="right" valign="top"><a id="ga6f147708ebac81475db20e3c35c4d3b5" name="ga6f147708ebac81475db20e3c35c4d3b5"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::Base</b> = <a class="el" href="classkanon_1_1ConnectionBase.html">ConnectionBase</a>&lt; <a class="el" href="classkanon_1_1TcpConnection.html">TcpConnection</a> &gt;</td></tr>
 <tr class="separator:ga6f147708ebac81475db20e3c35c4d3b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaff681244c3bcfcb48a08dfa518c6ca40"><td class="memItemLeft" align="right" valign="top"><a id="gaff681244c3bcfcb48a08dfa518c6ca40"></a>
+<tr class="memitem:gaff681244c3bcfcb48a08dfa518c6ca40"><td class="memItemLeft" align="right" valign="top"><a id="gaff681244c3bcfcb48a08dfa518c6ca40" name="gaff681244c3bcfcb48a08dfa518c6ca40"></a>
 KANON_NET_API&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::TcpConnection</b> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, std::string const &amp;name, int sockfd, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;local_addr, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;peer_addr)</td></tr>
 <tr class="separator:gaff681244c3bcfcb48a08dfa518c6ca40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga26e350c7fa8a166e81ccc0f6137d2c55"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
 <tr class="memitem:ga26e350c7fa8a166e81ccc0f6137d2c55"><td class="memTemplItemLeft" align="right" valign="top">static TcpConnectionPtr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__net.html#ga26e350c7fa8a166e81ccc0f6137d2c55">kanon::TcpConnection::NewTcpConnection</a> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, std::string const &amp;name, int sockfd, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;local_addr, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;peer_addr, Alloc const &amp;a)</td></tr>
-<tr class="memdesc:ga26e350c7fa8a166e81ccc0f6137d2c55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classkanon_1_1TcpConnection.html" title="Represents a tcp connection.">TcpConnection</a> instance correctly.  <a href="group__net.html#ga26e350c7fa8a166e81ccc0f6137d2c55">More...</a><br /></td></tr>
+<tr class="memdesc:ga26e350c7fa8a166e81ccc0f6137d2c55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classkanon_1_1TcpConnection.html" title="Represents a tcp connection.">TcpConnection</a> instance correctly.  <br /></td></tr>
 <tr class="separator:ga26e350c7fa8a166e81ccc0f6137d2c55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga39c946b2aa4ac123b003c88b60e33427"><td class="memItemLeft" align="right" valign="top"><a id="ga39c946b2aa4ac123b003c88b60e33427"></a>
+<tr class="memitem:ga39c946b2aa4ac123b003c88b60e33427"><td class="memItemLeft" align="right" valign="top"><a id="ga39c946b2aa4ac123b003c88b60e33427" name="ga39c946b2aa4ac123b003c88b60e33427"></a>
 static KANON_NET_API TcpConnectionPtr&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::NewTcpConnection</b> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, std::string const &amp;name, int sockfd, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;local_addr, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;peer_addr)</td></tr>
 <tr class="separator:ga39c946b2aa4ac123b003c88b60e33427"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafa282f2017e38088a8f5c3994213ce49"><td class="memItemLeft" align="right" valign="top"><a id="gafa282f2017e38088a8f5c3994213ce49"></a>
+<tr class="memitem:gafa282f2017e38088a8f5c3994213ce49"><td class="memItemLeft" align="right" valign="top"><a id="gafa282f2017e38088a8f5c3994213ce49" name="gafa282f2017e38088a8f5c3994213ce49"></a>
 static KANON_NET_API TcpConnectionPtr&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::NewTcpConnectionRaw</b> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, std::string const &amp;name, int sockfd, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;local_addr, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;peer_addr)</td></tr>
 <tr class="separator:gafa282f2017e38088a8f5c3994213ce49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4afe27637785dec78961c04d8d495ab0"><td class="memItemLeft" align="right" valign="top"><a id="ga4afe27637785dec78961c04d8d495ab0"></a>
+<tr class="memitem:ga4afe27637785dec78961c04d8d495ab0"><td class="memItemLeft" align="right" valign="top"><a id="ga4afe27637785dec78961c04d8d495ab0" name="ga4afe27637785dec78961c04d8d495ab0"></a>
 static KANON_NET_API TcpConnectionPtr&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::NewTcpConnectionShared</b> (<a class="el" href="classkanon_1_1EventLoop.html">EventLoop</a> *loop, std::string const &amp;name, int sockfd, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;local_addr, <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;peer_addr)</td></tr>
 <tr class="separator:ga4afe27637785dec78961c04d8d495ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga164fd0019b21e235ece2768ec234cebe"><td class="memItemLeft" align="right" valign="top"><a id="ga164fd0019b21e235ece2768ec234cebe"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__net.html#ga164fd0019b21e235ece2768ec234cebe">kanon::TcpConnection::SetNoDelay</a> (bool flag) KANON_NOEXCEPT</td></tr>
+<tr class="memitem:ga164fd0019b21e235ece2768ec234cebe"><td class="memItemLeft" align="right" valign="top"><a id="ga164fd0019b21e235ece2768ec234cebe" name="ga164fd0019b21e235ece2768ec234cebe"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::SetNoDelay</b> (bool flag) KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:ga164fd0019b21e235ece2768ec234cebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether disable Negele algorithm. <br /></td></tr>
 <tr class="separator:ga164fd0019b21e235ece2768ec234cebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7e4814d31a00df6af50f70bdb27cda6d"><td class="memItemLeft" align="right" valign="top"><a id="ga7e4814d31a00df6af50f70bdb27cda6d"></a>
-KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__net.html#ga7e4814d31a00df6af50f70bdb27cda6d">kanon::TcpConnection::SetKeepAlive</a> (bool flag) KANON_NOEXCEPT</td></tr>
+<tr class="memitem:ga7e4814d31a00df6af50f70bdb27cda6d"><td class="memItemLeft" align="right" valign="top"><a id="ga7e4814d31a00df6af50f70bdb27cda6d" name="ga7e4814d31a00df6af50f70bdb27cda6d"></a>
+KANON_NET_API void&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::SetKeepAlive</b> (bool flag) KANON_NOEXCEPT</td></tr>
 <tr class="memdesc:ga7e4814d31a00df6af50f70bdb27cda6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether disable keep-alive timer. <br /></td></tr>
 <tr class="separator:ga7e4814d31a00df6af50f70bdb27cda6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1fd659ba80feaaf833279a3283ea2c41"><td class="memItemLeft" align="right" valign="top"><a id="ga1fd659ba80feaaf833279a3283ea2c41"></a>
-const <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::GetLocalAddr</b> () const KANON_NOEXCEPT</td></tr>
-<tr class="separator:ga1fd659ba80feaaf833279a3283ea2c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaed8063945935a3af88867506af1ae3db"><td class="memItemLeft" align="right" valign="top"><a id="gaed8063945935a3af88867506af1ae3db"></a>
-const <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::GetPeerAddr</b> () const KANON_NOEXCEPT</td></tr>
-<tr class="separator:gaed8063945935a3af88867506af1ae3db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7755766a5354311525109b423e63fb9f"><td class="memItemLeft" align="right" valign="top"><a id="ga7755766a5354311525109b423e63fb9f"></a>
+<tr class="memitem:gaed6b3ea995166434b97e0d088c7b91a2"><td class="memItemLeft" align="right" valign="top"><a id="gaed6b3ea995166434b97e0d088c7b91a2" name="gaed6b3ea995166434b97e0d088c7b91a2"></a>
+<a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::GetLocalAddr</b> () const KANON_NOEXCEPT</td></tr>
+<tr class="separator:gaed6b3ea995166434b97e0d088c7b91a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga20006398a75f0afa5e4e858f61e79bd3"><td class="memItemLeft" align="right" valign="top"><a id="ga20006398a75f0afa5e4e858f61e79bd3" name="ga20006398a75f0afa5e4e858f61e79bd3"></a>
+<a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::GetPeerAddr</b> () const KANON_NOEXCEPT</td></tr>
+<tr class="separator:ga20006398a75f0afa5e4e858f61e79bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7755766a5354311525109b423e63fb9f"><td class="memItemLeft" align="right" valign="top"><a id="ga7755766a5354311525109b423e63fb9f" name="ga7755766a5354311525109b423e63fb9f"></a>
 KANON_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::DefaultConnectionCallback</b> (TcpConnectionPtr const &amp;conn)</td></tr>
 <tr class="separator:ga7755766a5354311525109b423e63fb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:gaf22cbd57c991b81f53d62a53566c4d09"><td class="memItemLeft" align="right" valign="top"><a id="gaf22cbd57c991b81f53d62a53566c4d09"></a>
-const <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::local_addr_</b></td></tr>
-<tr class="separator:gaf22cbd57c991b81f53d62a53566c4d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae128efe1de745c2c8ada64d84dc5854b"><td class="memItemLeft" align="right" valign="top"><a id="gae128efe1de745c2c8ada64d84dc5854b"></a>
-const <a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::peer_addr_</b></td></tr>
-<tr class="separator:gae128efe1de745c2c8ada64d84dc5854b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga38aef33ef3d6311fe40280b4b8c81a64"><td class="memItemLeft" align="right" valign="top"><a id="ga38aef33ef3d6311fe40280b4b8c81a64" name="ga38aef33ef3d6311fe40280b4b8c81a64"></a>
+<a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::local_addr_</b></td></tr>
+<tr class="separator:ga38aef33ef3d6311fe40280b4b8c81a64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaae6aa58e98468c993940bd565d07c1df"><td class="memItemLeft" align="right" valign="top"><a id="gaae6aa58e98468c993940bd565d07c1df" name="gaae6aa58e98468c993940bd565d07c1df"></a>
+<a class="el" href="classkanon_1_1InetAddr.html">InetAddr</a> const&#160;</td><td class="memItemRight" valign="bottom"><b>kanon::TcpConnection::peer_addr_</b></td></tr>
+<tr class="separator:gaae6aa58e98468c993940bd565d07c1df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Network module, including event loop in reactor mode and tcp server/client, etc. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga26e350c7fa8a166e81ccc0f6137d2c55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga26e350c7fa8a166e81ccc0f6137d2c55">&#9670;&nbsp;</a></span>NewTcpConnection()</h2>
+<a id="ga26e350c7fa8a166e81ccc0f6137d2c55" name="ga26e350c7fa8a166e81ccc0f6137d2c55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga26e350c7fa8a166e81ccc0f6137d2c55">&#9670;&#160;</a></span>NewTcpConnection()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -327,9 +291,7 @@ template&lt;typename Alloc &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
 </small></address>
 </body>
 </html>
@@ -337,19 +299,31 @@ Generated by &#160;<a href="http://www.doxygen.org/index.html">
 </section>
 
 
+           </div>
           </div>
-          <div class="page-nav">
-            <div class="inner"><ul class="page-nav">
-</ul><div class="footer" role="contentinfo">
-      &#169; Copyright 2023, conzxy.
-    <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
-</div>
-            </div>
-          </div>
-      </page>
-    </div></div>
-    
-    
-  </body>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, conzxy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>
