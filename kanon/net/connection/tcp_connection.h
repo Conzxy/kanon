@@ -42,9 +42,9 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
 
  protected:
  public:
-  KANON_NET_API TcpConnection(EventLoop *loop, std::string const &name,
-                              int sockfd, InetAddr const &local_addr,
-                              InetAddr const &peer_addr);
+  KANON_NET_NO_API TcpConnection(EventLoop *loop, std::string const &name,
+                                 int sockfd, InetAddr const &local_addr,
+                                 InetAddr const &peer_addr);
   KANON_NET_API ~TcpConnection() KANON_NOEXCEPT;
 
   /**
@@ -62,19 +62,20 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
                    InetAddr const &local_addr, InetAddr const &peer_addr,
                    Alloc const &a)
   {
-    return kanon::AllocateSharedFromProtected<TcpConnection>(
-        a, loop, name, sockfd, local_addr, peer_addr);
+    return std::allocate_shared<TcpConnection>(a, loop, name, sockfd,
+                                               local_addr, peer_addr);
   }
 
-  KANON_NET_API static TcpConnectionPtr
-  NewTcpConnection(EventLoop *loop, std::string const &name, int sockfd,
-                   InetAddr const &local_addr, InetAddr const &peer_addr)
+  static TcpConnectionPtr NewTcpConnection(EventLoop *loop,
+                                           std::string const &name, int sockfd,
+                                           InetAddr const &local_addr,
+                                           InetAddr const &peer_addr)
   {
     return NewTcpConnection(loop, name, sockfd, local_addr, peer_addr,
                             std::allocator<TcpConnection>());
   }
 
-  KANON_NET_API static TcpConnectionPtr
+  static TcpConnectionPtr
   NewTcpConnectionRaw(EventLoop *loop, std::string const &name, int sockfd,
                       InetAddr const &local_addr, InetAddr const &peer_addr)
   {
@@ -85,7 +86,7 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
         });
   }
 
-  KANON_NET_API static TcpConnectionPtr
+  static TcpConnectionPtr
   NewTcpConnectionShared(EventLoop *loop, std::string const &name, int sockfd,
                          InetAddr const &local_addr, InetAddr const &peer_addr)
   {

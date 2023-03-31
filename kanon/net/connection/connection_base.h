@@ -69,8 +69,8 @@ class ConnectionBase
       std::function<void(ConnectionPtr const &, InputBuffer &, TimeStamp)>;
 
  public:
-  KANON_NET_API ConnectionBase(EventLoop *loop, std::string const &name,
-                               int sockfd);
+  KANON_NET_NO_API ConnectionBase(EventLoop *loop, std::string const &name,
+                                  int sockfd);
   KANON_NET_API ~ConnectionBase();
 
   //! \name write operation

@@ -19,7 +19,7 @@ class TimerQueue;
  * \brief
  * Encapsulation of itimespec
  */
-class Timer : noncopyable {
+class KANON_NET_NO_API Timer : noncopyable {
  public:
   // friend class TimerQueue;
   typedef std::function<void()> TimerCallback;

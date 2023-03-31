@@ -15,23 +15,25 @@ class TimerQueue;
  * \note
  *   This class is exposed to user and has value semantic.
  */
-class KANON_NET_API TimerId {
+class TimerId {
   friend class TimerQueue;
 
  public:
-  TimerId() = default;
+  KANON_INLINE TimerId() = default;
 
-  TimerId(Timer *timer)
+  KANON_INLINE TimerId(Timer *timer)
     : timer_{timer}
     , seq_{timer->sequence()}
   {
   }
 
-  TimerId(Timer *timer, void *ctx)
+  KANON_INLINE TimerId(Timer *timer, void *ctx)
     : TimerId(timer)
   {
     ctx_ = ctx;
   }
+
+  KANON_INLINE ~TimerId() = default;
 
  private:
   Timer *timer_;

@@ -43,8 +43,8 @@ class TcpClient
    * \param serv_addr Address of server that you want to connect
    * \param name Can be empty
    */
-  KANON_NET_API TcpClient(EventLoop *loop, InetAddr const &serv_addr,
-                          std::string const &name = {});
+  KANON_NET_NO_API TcpClient(EventLoop *loop, InetAddr const &serv_addr,
+                             std::string const &name = {});
 
  public:
   KANON_NET_API ~TcpClient() KANON_NOEXCEPT;
