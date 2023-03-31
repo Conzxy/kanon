@@ -1,4 +1,4 @@
-This is API Document of Kanonn
+This is API Document of Kanon
 =================================
 目前只有网络部分的API，Core的doxygen注释不完善，暂时不公开。
 
