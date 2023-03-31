@@ -6,4 +6,6 @@
 # Exclude this from default build target but
 # if project dependent some targets of this,
 # only these targets will be built and used.
-add_subdirectory(bdwgc EXCLUDE_FROM_ALL)
+if (KANON_TESTS)
+  add_subdirectory(bdwgc EXCLUDE_FROM_ALL)
+endif ()
