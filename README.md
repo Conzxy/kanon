@@ -6,10 +6,8 @@
 `kanon`是一个使用`C++11`编写的基于 **事件驱动** (event-driven)的网络库(network libaray)。  
 具体来说，该库基于`Reactor`模式，其网络模型是`同步非阻塞`（synchronized-unblocking），依赖的的API是：`poll()`(unix-like/linux)，`epoll`(linux)、`GetQueuedCompletionStatusEx()`(Windows)。  
 但是，实际上该库是暴露 **回调注册接口** 来处理各种IO事件，因此在使用上是类似`异步`的，这也是事件驱动的一个体现和优势。  
-除此之外，为了充分利用 **多核优势** ，该库支持启动多个线程，而 **主线程仅接受(accept)连接** ，而这些线程处理 **IO事件** ，因此一般这些线程称作`IO线程`。
-
-> 旧：该库目前不考虑跨平台，因为`Windows`的网络API不贴近`Reactor`，兼容的话要承担一定的额外开销，同时，对现在的我而言也没这个必要。  
-> 新：现在kanon支持Windows的 **Client** ，底层采用IOCP抽象为Poller来进行同步等待。
+除此之外，为了充分利用 **多核优势** ，该库支持启动多个线程，而 **主线程仅接受(accept)连接** ，而这些线程处理 **IO事件** ，因此一般这些线程称作`IO线程`。  
+> 注意：该库现在仅可在Windows和Linux编译，其中Windows目前仅支持Client，Server请不要使用！  
 
 另外，该库也实现了其他有用的组件，它们也是构成网络库的一部分，但对于编写应用程序的其他 **非网络模块** 也是十分有用的:
 | 模块 | 描述 | 相关文件 |
