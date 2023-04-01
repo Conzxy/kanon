@@ -1,5 +1,5 @@
 GenLib(kanon_protobuf generic_pb_codec.cc chunk_stream.cc)
-target_link_libraries(kanon_protobuf PRIVATE protobuf PUBLIC kanon_net)
+target_link_libraries(kanon_protobuf PUBLIC protobuf::libprotobuf PUBLIC kanon_net)
 
 file(GLOB KANON_PROTOBUF_INCLUDE "*.h")
 
