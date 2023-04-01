@@ -66,19 +66,37 @@ class TimeStamp
   /* Setter                                           */
   /*--------------------------------------------------*/
 
-  void SetMicroseconds(int64_t us) KANON_NOEXCEPT { microseconds_ = us; }
+  void SetMicroseconds(int64_t us) KANON_NOEXCEPT
+  {
+    microseconds_ = us;
+  }
 
   /*--------------------------------------------------*/
   /* Getter                                           */
   /*--------------------------------------------------*/
 
-  int64_t GetMicrosecondsSinceEpoch() const KANON_NOEXCEPT { return microseconds_; }
+  int64_t GetMicrosecondsSinceEpoch() const KANON_NOEXCEPT
+  {
+    return microseconds_;
+  }
 
-  int64_t microseconds() const KANON_NOEXCEPT { return GetMicroseconds(); }
-  int64_t milliseconds() const KANON_NOEXCEPT { return GetMilliseconds(); }
-  int64_t seconds() const KANON_NOEXCEPT { return GetSeconds(); }
+  int64_t microseconds() const KANON_NOEXCEPT
+  {
+    return GetMicroseconds();
+  }
+  int64_t milliseconds() const KANON_NOEXCEPT
+  {
+    return GetMilliseconds();
+  }
+  int64_t seconds() const KANON_NOEXCEPT
+  {
+    return GetSeconds();
+  }
 
-  int64_t GetMicroseconds() const KANON_NOEXCEPT { return microseconds_; }
+  int64_t GetMicroseconds() const KANON_NOEXCEPT
+  {
+    return microseconds_;
+  }
 
   int64_t GetSeconds() const KANON_NOEXCEPT
   {
@@ -100,9 +118,21 @@ class TimeStamp
     return TimeStamp(microseconds_ - rhs.microseconds_);
   }
 
+  TimeStamp &operator-=(TimeStamp rhs) KANON_NOEXCEPT
+  {
+    microseconds_ -= rhs.microseconds_;
+    return *this;
+  }
+
   TimeStamp operator+(TimeStamp rhs) const KANON_NOEXCEPT
   {
     return TimeStamp(microseconds_ + rhs.microseconds_);
+  }
+
+  TimeStamp &operator+=(TimeStamp rhs) KANON_NOEXCEPT
+  {
+    microseconds_ += rhs.microseconds_;
+    return *this;
   }
 
   TimeStamp operator+(double seconds) const KANON_NOEXCEPT
@@ -150,12 +180,14 @@ class TimeStamp
     return ts + seconds;
   }
 
-  friend TimeStamp operator+(TimeStamp::Microsecond us, TimeStamp ts) KANON_NOEXCEPT
+  friend TimeStamp operator+(TimeStamp::Microsecond us,
+                             TimeStamp ts) KANON_NOEXCEPT
   {
     return ts + us;
   }
 
-  friend TimeStamp operator+(TimeStamp::MilliSecond ms, TimeStamp ts) KANON_NOEXCEPT
+  friend TimeStamp operator+(TimeStamp::MilliSecond ms,
+                             TimeStamp ts) KANON_NOEXCEPT
   {
     return ts + ms;
   }
@@ -185,7 +217,10 @@ class TimeStamp
     return -(ts - sec);
   }
 
-  TimeStamp operator-() KANON_NOEXCEPT { return TimeStamp(-microseconds_); }
+  TimeStamp operator-() KANON_NOEXCEPT
+  {
+    return TimeStamp(-microseconds_);
+  }
 
   /*--------------------------------------------------*/
   /* Utility                                          */
@@ -199,7 +234,8 @@ class TimeStamp
   KANON_CORE_API static TimeStamp
   FromTimeStr(char const *format, std::string const &rep, bool *ok = nullptr);
 
-  static TimeStamp FromUnixTime(time_t seconds, int64_t microseconds) KANON_NOEXCEPT
+  static TimeStamp FromUnixTime(time_t seconds,
+                                int64_t microseconds) KANON_NOEXCEPT
   {
     return TimeStamp(static_cast<int64_t>(seconds * kMicrosecondsPerSeconds_ +
                                           microseconds));
