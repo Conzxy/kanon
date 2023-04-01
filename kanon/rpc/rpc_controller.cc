@@ -8,16 +8,14 @@ using namespace kanon::protobuf::rpc;
 using namespace kanon;
 
 RpcController::RpcController()
-  : timeout_((Timeout)-1)
+  : deadline_((Deadline)-1)
 {
 }
 
 RpcController::~RpcController() noexcept {}
 
-void RpcController::SetTimeout(Timeout tm) { timeout_ = tm; }
-
 void RpcController::Reset() {
-  timeout_ = (Timeout)-1;
+  deadline_ = (Deadline)-1;
 }
 
 bool RpcController::Failed() const
@@ -33,9 +31,11 @@ std::string RpcController::ErrorText() const { return ""; }
 
 bool RpcController::IsCanceled() const
 {
-  if (timeout_ != (Timeout)-1) {
-    uint64_t now = TimeStamp::Now().GetMicrosecondsSinceEpoch() / 1000;
-    if (now > timeout()) return true;
+  if (deadline_ != (Deadline)-1) {
+    uint64_t now_ms = TimeStamp::Now().GetMicrosecondsSinceEpoch() / 1000;
+    LOG_DEBUG_KANON << "Now: " << now_ms;
+    LOG_DEBUG_KANON << "deadline: " << deadline();
+    if (now_ms > deadline()) return true;
   }
 
   return false;

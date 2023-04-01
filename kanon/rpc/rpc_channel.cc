@@ -50,7 +50,6 @@ void RpcChannel::CallMethod(MethodDescriptor const *method,
 
   RpcMessage message;
   auto id = id_.load(std::memory_order_relaxed);
-  ;
   message.set_id(id);
   id_.fetch_add(1, std::memory_order_relaxed);
 
@@ -87,14 +86,15 @@ void RpcChannel::SendRpcRequest(RpcMessage &message, Message *response,
     KANON_ASSERT(!response, "Notifiction(done is NULL) no need to set response");
   }
 
-  if (controller->timeout() != INVALID_TIMEOUT)
-    message.set_timeout(controller->timeout());
+  if (controller->deadline() != INVALID_DEADLINE)
+    message.set_deadline(controller->deadline());
+
   codec_.Send(conn_, &message);
 
-  if (controller->timeout() != INVALID_TIMEOUT) {
+  if (controller->deadline() != INVALID_DEADLINE) {
     auto id = message.id();
-    conn_->GetLoop()->RunAfterMs([this, id]() { outstanding_calls_.erase(id); },
-                                 controller->timeout());
+    conn_->GetLoop()->RunAt([this, id]() { outstanding_calls_.erase(id); },
+                                 TimeStamp(controller->deadline() * 1000));
   }
 }
 
@@ -189,7 +189,7 @@ void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
     //              "The outstanding_call must be setted before the RpcMessage "
     //              "on_message Callback");
 
-    // If timeout is setted, may the done is erased
+    // If deadline is setted, may the done is erased
     if (it == outstanding_calls_.end()) {
       return;
     }
@@ -286,9 +286,9 @@ void RpcChannel::OnRpcMessageForRequest(TcpConnectionPtr const &conn,
           //
           // The request need managed by concrete service function
           RpcController *controller = new RpcController;
-          if (message->has_timeout()) {
-            controller->SetTimeout(message->timeout());
-            LOG_DEBUG << "timeout=" << controller->timeout() << " Ms";
+          if (message->has_deadline()) {
+            controller->SetDeadline(message->deadline());
+            LOG_DEBUG << "deadline=" << controller->deadline() << " Ms";
           }
           service->CallMethod(
               method, controller, request, response,
