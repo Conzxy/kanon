@@ -49,7 +49,7 @@
 #  define KANON_ALWAYS_INLINE __forceinline
 #else
 #  define KANON_ALWAYS_INLINE
-#endif // !defined(__GUNC__) || defined(__clang__)
+#endif // !defined(__GNUC__) || defined(__clang__)
 
 #define KANON_INLINE inline KANON_ALWAYS_INLINE
 
@@ -70,15 +70,15 @@
 
 #define KANON_ASSERT(cond, msg) assert((cond) && (msg))
 
-#if defined(__GUNC__) || defined(__clang__)
-#  define KANON_LIKELY(cond)   KANON_BUILTIN_EXPECT(!!(cond), 1)
-#  define KANON_UNLIKELY(cond) KANON_BUILTIN_EXPECT(!!(cond), 0)
+#if defined(__GNUC__) || defined(__clang__)
+#  define KANON_LIKELY(cond)   __builtin_expect(!!(cond), 1)
+#  define KANON_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
 #else
 #  define KANON_LIKELY(cond)   (cond)
 #  define KANON_UNLIKELY(cond) (cond)
 #endif
 
-#if defined(__GUNC__) || defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #  define KANON_TLS __thread
 #elif defined(_MSC_VER)
 #  define KANON_TLS __declspec(thread)
