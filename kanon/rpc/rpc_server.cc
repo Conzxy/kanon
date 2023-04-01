@@ -13,9 +13,11 @@ RpcServer::RpcServer(EventLoop *loop, InetAddr const &addr, StringArg name,
     if (conn->IsConnected()) {
       auto channel = new RpcChannel(conn);
       channel->SetServices(services_);
-      conn->SetContext(channel);
+      conn->SetContext(*channel);
     } else {
-      delete *AnyCast<RpcChannel *>(conn->GetContext());
+      auto p = AnyCast<RpcChannel>(conn->GetContext());
+      assert(p);
+      delete p;
     }
   });
 }
