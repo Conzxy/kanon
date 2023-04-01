@@ -19,8 +19,10 @@ namespace kanon {
 
 ChunkList::~ChunkList() KANON_NOEXCEPT
 {
-  auto first_size = free_buffers_.front().GetMaxSize();
-  if (first_size < CHUNK_SIZE) buffers_.pop_front_size(first_size);
+  if (!free_buffers_.empty()) {
+      auto first_size = free_buffers_.front().GetMaxSize();
+      if (first_size < CHUNK_SIZE) buffers_.pop_front_size(first_size);
+  }
   buffers_.clear_size(CHUNK_SIZE);
   free_buffers_.clear_size(CHUNK_SIZE);
 }
@@ -91,7 +93,7 @@ void ChunkList::AdvanceRead(size_t len)
     // reuse also can avoid to call ::malloc()
     if (len >= first_block->GetReadableSize()) {
       if (!PutToFreeChunk()) {
-        assert(CHUNK_SIZE == buffers_.front().GetMaxSize());
+        assert(CHUNK_SIZE != buffers_.front().GetMaxSize());
         buffers_.drop_node_size(buffers_.extract_front_node(), CHUNK_SIZE);
       }
 
