@@ -4,6 +4,7 @@
 #include <atomic>
 #include <type_traits>
 
+#include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
 
 namespace kanon {
