@@ -2,6 +2,14 @@
 #define KANON_CURRENT_THREAD_H
 
 #include "kanon/util/macro.h"
+#include "kanon/process/process_info.h"
+#include "kanon/string/lexical_cast.h"
+
+#ifdef KANON_ON_WIN
+#include "kanon/win/core/thread/current_thread.inl.h"
+#elif defined(KANON_ON_UNIX)
+#include "kanon/linux/core/thread/current_thread.inl.h"
+#endif
 
 namespace kanon {
 

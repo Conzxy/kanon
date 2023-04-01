@@ -2,14 +2,6 @@
 
 #include <cstring>
 
-#include "kanon/process/process_info.h"
-#include "kanon/string/lexical_cast.h"
-
-#ifdef KANON_ON_WIN
-#include "kanon/win/core/thread/current_thread.inl.h"
-#elif defined(KANON_ON_UNIX)
-#include "kanon/linux/core/thread/current_thread.inl.h"
-#endif
 
 // In C++17
 // you can write as:

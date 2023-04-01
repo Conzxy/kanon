@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+#include "kanon/linux/core/process/process_info.h"
+
 namespace kanon {
 namespace CurrentThread {
 
