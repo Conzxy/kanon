@@ -58,7 +58,7 @@
 #define KANON_NET_DEPRECATED        KANON_DEPRECATED_ATTR
 #define KANON_NET_DEPRECATED_NO_API KANON_DEPRECATED_ATTR KANON_NET_NO_API
 
-#ifdef defined(__GNUC__) || defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #define KANON___THREAD_DEFINED 1
 #else
 #define KANON___THREAD_DEFINED 0
