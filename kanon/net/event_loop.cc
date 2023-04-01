@@ -300,14 +300,15 @@ void EventLoop::Quit() KANON_NOEXCEPT
 
 TimerId EventLoop::RunAt(TimerCallback cb, TimeStamp expiration)
 {
-  return timer_queue_->AddTimer(std::move(cb), expiration - TimeStamp::Now(),
+  LOG_DEBUG << "expiration = " << expiration.ToFormattedString();
+  return timer_queue_->AddTimer(std::move(cb), expiration,
                                 0.0);
 }
 
 TimerId EventLoop::RunEvery(TimerCallback cb, TimeStamp expiration,
                             double interval)
 {
-  return timer_queue_->AddTimer(std::move(cb), expiration - TimeStamp::Now(),
+  return timer_queue_->AddTimer(std::move(cb), expiration,
                                 interval);
 }
 

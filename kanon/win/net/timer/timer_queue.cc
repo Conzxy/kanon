@@ -34,6 +34,7 @@ VOID kanon::timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired)
 
 TimerId TimerQueue::AddTimer(TimerCallback cb, TimeStamp time, double interval)
 {
+  time -= TimeStamp::Now();
   Timer timer(cb, time, interval);
   timer.BindTimerQueue(this);
   auto pair = timer_map_.emplace(timer.sequence(), std::move(timer));
