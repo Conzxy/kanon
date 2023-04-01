@@ -34,7 +34,7 @@ class ForwardListBase
   using HeaderAllocTraits = std::allocator_traits<HeaderAllocator<Alloc>>;
 
  public:
-  ForwardListBase()
+  KANON_INLINE ForwardListBase()
   try : header_(HeaderAllocTraits::allocate(*this, sizeof(Header))) {
     reset();
   }
@@ -42,18 +42,26 @@ class ForwardListBase
     throw;
   }
 
-  ForwardListBase(ForwardListBase &&other) KANON_NOEXCEPT
+  KANON_INLINE ForwardListBase(ForwardListBase &&other) KANON_NOEXCEPT
     : header_(other.header_)
   {
     other.header_ = nullptr;
   }
 
-  ~ForwardListBase() KANON_NOEXCEPT
+  KANON_INLINE ~ForwardListBase() KANON_NOEXCEPT
   {
-    HeaderAllocTraits::deallocate(*this, header_, sizeof(Header));
+    /*
+     * Allocator requires pointer argument
+     * must returned by allocate().
+     * The null check is don't managed by
+     * deallocate().
+     * \see
+     * https://en.cppreference.com/w/cpp/memory/allocator/deallocate
+     */
+    if (header_) HeaderAllocTraits::deallocate(*this, header_, sizeof(Header));
   }
 
-  void reset() KANON_NOEXCEPT
+  KANON_INLINE void reset() KANON_NOEXCEPT
   {
     header_->prev = header_;
     header_->next = nullptr;
@@ -112,9 +120,9 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   using NodeAllocator = typename Alloc::template rebind<Node>::other;
   using AllocTraits = std::allocator_traits<NodeAllocator>;
 
-  ForwardList() = default;
+  KANON_INLINE ForwardList() = default;
 
-  explicit ForwardList(SizeType n, ValueType const &val = {})
+  KANON_INLINE explicit ForwardList(SizeType n, ValueType const &val = {})
   {
     insert_after(cbefore_begin(), n, val);
   }
@@ -122,13 +130,13 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   template <typename InputIterator,
             typename = zstl::enable_if_t<
                 zstl::is_input_iterator<InputIterator>::value>>
-  ForwardList(InputIterator first, InputIterator last)
+  KANON_INLINE ForwardList(InputIterator first, InputIterator last)
   {
     insert_after(cbefore_begin(), first, last);
   }
 
   template <typename E>
-  ForwardList(std::initializer_list<E> il)
+  KANON_INLINE ForwardList(std::initializer_list<E> il)
     : ForwardList(il.begin(), il.end())
   {
   }
@@ -136,28 +144,34 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   /**
    * Special member function
    */
-  ~ForwardList() KANON_NOEXCEPT { clear(); }
+  KANON_INLINE ~ForwardList() KANON_NOEXCEPT
+  {
+    clear();
+  }
 
-  ForwardList(ForwardList const &other)
+  KANON_INLINE ForwardList(ForwardList const &other)
     : Base()
   {
     insert_after(cbefore_begin(), other.cbegin(), other.cend());
   }
 
-  ForwardList(ForwardList &&other) KANON_NOEXCEPT
+  KANON_INLINE ForwardList(ForwardList &&other) KANON_NOEXCEPT
     : Base(std::move(other))
   {
   }
 
   Self &operator=(Self const &other);
 
-  Self &operator=(Self &&other) KANON_NOEXCEPT
+  KANON_INLINE Self &operator=(Self &&other) KANON_NOEXCEPT
   {
     this->swap(other);
     return *this;
   }
 
-  allocator_type get_allocator() const KANON_NOEXCEPT { return allocator_type{}; }
+  KANON_INLINE allocator_type get_allocator() const KANON_NOEXCEPT
+  {
+    return allocator_type{};
+  }
 
   void assign(SizeType count, ValueType const &value);
   template <typename InputIterator,
@@ -165,46 +179,62 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
                 zstl::is_input_iterator<InputIterator>::value>>
   void assign(InputIterator first, InputIterator last);
   template <typename U>
-  void assign(std::initializer_list<U> il)
+  KANON_INLINE void assign(std::initializer_list<U> il)
   {
     assign(il.begin(), il.end());
   }
-  void resize(SizeType n) { resize_impl(n, ValueType{}); }
+
+  KANON_INLINE void resize(SizeType n)
+  {
+    resize_impl<ValueType>(n, ValueType{});
+  }
   void resize(SizeType n, ValueType const &val);
 
   // Insert after header
   template <typename... Args>
-  void emplace_front(Args &&...args)
+  KANON_INLINE void emplace_front(Args &&... args)
   {
     push_front(create_node(STD_FORWARD(Args, args)...));
   }
   // It is may be better for builtin type that use value-passed parameter.
   // But we can not suppose the move operation for ValueType is cheap
   // Thus, I still write const&/&& or better.
-  void push_front(ValueType const &val) { push_front(create_node(val)); }
-  void push_front(ValueType &&val) { push_front(create_node(std::move(val))); }
+  KANON_INLINE void push_front(ValueType const &val)
+  {
+    push_front(create_node(val));
+  }
+  KANON_INLINE void push_front(ValueType &&val)
+  {
+    push_front(create_node(std::move(val)));
+  }
 
   // Insert before header
   // Not standard required
   template <typename... Args>
-  void emplace_back(Args &&...args)
+  KANON_INLINE void emplace_back(Args &&... args)
   {
     push_back(create_node(STD_FORWARD(Args, args)...));
   }
-  void push_back(ValueType const &val) { push_back(create_node(val)); }
-  void push_back(ValueType &&val) { push_back(create_node(std::move(val))); }
+  KANON_INLINE void push_back(ValueType const &val)
+  {
+    push_back(create_node(val));
+  }
+  KANON_INLINE void push_back(ValueType &&val)
+  {
+    push_back(create_node(std::move(val)));
+  }
 
   // Insert after given position(presented by iterator)
   template <typename... Args>
-  void emplace_after(ConstIterator pos, Args &&...args)
+  KANON_INLINE void emplace_after(ConstIterator pos, Args &&... args)
   {
     insert_after(pos, create_node(STD_FORWARD(Args, args)...));
   }
-  void insert_after(ConstIterator pos, ValueType const &val)
+  KANON_INLINE void insert_after(ConstIterator pos, ValueType const &val)
   {
     insert_after(pos, create_node(val));
   }
-  void insert_after(ConstIterator pos, ValueType &&val)
+  KANON_INLINE void insert_after(ConstIterator pos, ValueType &&val)
   {
     insert_after(pos, create_node(std::move(val)));
   }
@@ -212,9 +242,15 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   // Based on Node, thus we can reuse extracted node(throught call
   // extract_xxx()) Maybe this is the implementation function of
   // std::forward_list<> But I expose these. Not standard required
-  KANON_INLINE void push_front(Iterator node) { push_front(node.extract()); }
+  KANON_INLINE void push_front(Iterator node)
+  {
+    push_front(node.extract());
+  }
 
-  KANON_INLINE void push_back(Iterator node) { push_back(node.extract()); }
+  KANON_INLINE void push_back(Iterator node)
+  {
+    push_back(node.extract());
+  }
 
   KANON_INLINE void insert_after(ConstIterator pos, Iterator node)
   {
@@ -261,57 +297,103 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   }
 
   // accessor
-  Iterator begin() KANON_NOEXCEPT { return Iterator(header_->next); }
+  KANON_INLINE Iterator begin() KANON_NOEXCEPT
+  {
+    return Iterator(header_->next);
+  }
   // Don't write as header_->prev->next since header_->prev may be nullptr
-  Iterator end() KANON_NOEXCEPT { return Iterator(nullptr); }
-  ConstIterator begin() const KANON_NOEXCEPT { return ConstIterator(header_->next); }
-  ConstIterator end() const KANON_NOEXCEPT { return ConstIterator(nullptr); }
-  ConstIterator cbegin() const KANON_NOEXCEPT { return begin(); }
-  ConstIterator cend() const KANON_NOEXCEPT { return end(); }
-  Iterator before_begin() KANON_NOEXCEPT { return header_; }
-  ConstIterator before_begin() const KANON_NOEXCEPT { return header_; }
-  ConstIterator cbefore_begin() const KANON_NOEXCEPT { return header_; }
+  KANON_INLINE Iterator end() KANON_NOEXCEPT
+  {
+    return Iterator(nullptr);
+  }
+  KANON_INLINE ConstIterator begin() const KANON_NOEXCEPT
+  {
+    return ConstIterator(header_->next);
+  }
+  KANON_INLINE ConstIterator end() const KANON_NOEXCEPT
+  {
+    return ConstIterator(nullptr);
+  }
+  KANON_INLINE ConstIterator cbegin() const KANON_NOEXCEPT
+  {
+    return begin();
+  }
+  KANON_INLINE ConstIterator cend() const KANON_NOEXCEPT
+  {
+    return end();
+  }
+  KANON_INLINE Iterator before_begin() KANON_NOEXCEPT
+  {
+    return header_;
+  }
+  KANON_INLINE ConstIterator before_begin() const KANON_NOEXCEPT
+  {
+    return header_;
+  }
+  KANON_INLINE ConstIterator cbefore_begin() const KANON_NOEXCEPT
+  {
+    return header_;
+  }
 
   // Not standard required
-  Iterator before_end() KANON_NOEXCEPT { return header_->prev; }
-  ConstIterator before_end() const KANON_NOEXCEPT { return header_->prev; }
-  ConstIterator cbefore_end() const KANON_NOEXCEPT { return header_->prev; }
+  KANON_INLINE Iterator before_end() KANON_NOEXCEPT
+  {
+    return header_->prev;
+  }
+  KANON_INLINE ConstIterator before_end() const KANON_NOEXCEPT
+  {
+    return header_->prev;
+  }
+  KANON_INLINE ConstIterator cbefore_end() const KANON_NOEXCEPT
+  {
+    return header_->prev;
+  }
 
-  Ref front() KANON_NOEXCEPT
+  KANON_INLINE Ref front() KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->next);
   }
-  ConstRef front() const KANON_NOEXCEPT
+  KANON_INLINE ConstRef front() const KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->next);
   }
 
   // Not standard required
-  Ref back() KANON_NOEXCEPT
+  KANON_INLINE Ref back() KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->prev);
   }
-  ConstRef back() const KANON_NOEXCEPT
+  KANON_INLINE ConstRef back() const KANON_NOEXCEPT
   {
     assert(!empty());
     return GET_LINKED_NODE_VALUE(header_->prev);
   }
 
   // capacity
-  SizeType max_size() const KANON_NOEXCEPT { return static_cast<SizeType>(-1); }
-  bool empty() const KANON_NOEXCEPT { return header_->next == nullptr; }
+  KANON_INLINE SizeType max_size() const KANON_NOEXCEPT
+  {
+    return static_cast<SizeType>(-1);
+  }
+  KANON_INLINE bool empty() const KANON_NOEXCEPT
+  {
+    return header_ == nullptr || header_->next == nullptr;
+  }
+
   // STL don't provide the size() API
   // Not standard required
-  SizeType size() const KANON_NOEXCEPT { return header_->count; }
+  KANON_INLINE SizeType size() const KANON_NOEXCEPT
+  {
+    return header_ ? header_->count : 0;
+  }
   KANON_INLINE void swap(Self &other) KANON_NOEXCEPT;
 
   // Search the before iterator of the given value.
   // It's useful for calling erase_after() and insert_after().
   // Not standard required
-  Iterator search_before(ValueType const &val, ConstIterator pos)
+  KANON_INLINE Iterator search_before(ValueType const &val, ConstIterator pos)
   {
     return search_before(
         [&val](ValueType const &value) {
@@ -323,12 +405,12 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   template <typename UnaryPred>
   Iterator search_before(UnaryPred pred, ConstIterator pos);
 
-  Iterator search_before(ValueType const &val)
+  KANON_INLINE Iterator search_before(ValueType const &val)
   {
     return search_before(val, cbefore_begin());
   }
   template <typename UnaryPred>
-  Iterator search_before(UnaryPred pred)
+  KANON_INLINE Iterator search_before(UnaryPred pred)
   {
     return search_before(pred, cbefore_begin());
   }
@@ -341,17 +423,20 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
    * std::forward_list<> but this is O(min(len1, len2)) + O(1) = O(min(len1,
    * len2)) It is more efficient.
    */
-  void merge(Self &list)
+  KANON_INLINE void merge(Self &list)
   {
     merge(list, [](ValueType const &x, ValueType const &y) {
       return x < y;
     });
   }
-  void merge(Self &&list) { merge(list); }
+  KANON_INLINE void merge(Self &&list)
+  {
+    merge(list);
+  }
   template <typename BinaryPred>
   void merge(Self &list, BinaryPred pred);
   template <typename BinaryPred>
-  void merge(Self &&list, BinaryPred pred)
+  KANON_INLINE void merge(Self &&list, BinaryPred pred)
   {
     merge(list, std::move(pred));
   }
@@ -360,23 +445,27 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
    * It is O(n) to std::forward_list<>, but this is O(1) here since header->prev
    */
   void splice_after(ConstIterator pos, Self &list);
-  void splice_after(ConstIterator pos, Self &&list) { splice_after(pos, list); }
+  KANON_INLINE void splice_after(ConstIterator pos, Self &&list)
+  {
+    splice_after(pos, list);
+  }
   void splice_after(ConstIterator pos, Self &list, ConstIterator it);
-  void splice_after(ConstIterator pos, Self &&list, ConstIterator it)
+  KANON_INLINE void splice_after(ConstIterator pos, Self &&list,
+                                 ConstIterator it)
   {
     splice_after(pos, list, it);
   }
   void splice_after(ConstIterator pos, Self &list, ConstIterator first,
                     ConstIterator last);
-  void splice_after(ConstIterator pos, Self &&list, ConstIterator first,
-                    ConstIterator last)
+  KANON_INLINE void splice_after(ConstIterator pos, Self &&list,
+                                 ConstIterator first, ConstIterator last)
   {
     splice_after(pos, list, first, last);
   }
 
   // In C++20, the return type is modified to size_type(i.e. SizeType here).
   // It indicates the number of removed elements
-  SizeType remove(ValueType const &val)
+  KANON_INLINE SizeType remove(ValueType const &val)
   {
     return remove_if([&val](ValueType const &value) {
       return value == val;
@@ -389,7 +478,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
 
   // In C++20, the return type is modified to size_type(i.e. SizeType here).
   // It indicates the number of removed elements
-  SizeType unique()
+  KANON_INLINE SizeType unique()
   {
     return unique([](ValueType const &x, ValueType const &y) {
       return x == y;
@@ -400,7 +489,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
 
   // O(nlgn) and stable(Don't destroy iterator)
   // Merge sort(but only merge stage, no need to partition)
-  void sort()
+  KANON_INLINE void sort()
   {
     return sort([](ValueType const &x, ValueType const &y) {
       return x < y;
@@ -430,7 +519,7 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   // HACK method
   // 实现侵入式链表
   template <typename... Args>
-  Node *create_node_size(size_t sz, Args &&...args)
+  KANON_INLINE Node *create_node_size(size_t sz, Args &&... args)
   {
     auto node = AllocTraits::allocate(*this, sizeof(Node) + sz);
 
@@ -441,19 +530,19 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   }
 
   template <typename... Args>
-  Node *create_node(Args &&...args)
+  KANON_INLINE Node *create_node(Args &&... args)
   {
     return create_node_size(0, std::forward<Args>(args)...);
   }
 
-  void drop_node(BaseNode *_node) KANON_NOEXCEPT
+  KANON_INLINE void drop_node(BaseNode *_node) KANON_NOEXCEPT
   {
     auto node = static_cast<Node *>(_node);
     AllocTraits::destroy(*this, node);
     AllocTraits::deallocate(*this, node, sizeof(Node));
   }
 
-  void drop_node_size(BaseNode *_node, size_t sz)
+  KANON_INLINE void drop_node_size(BaseNode *_node, size_t sz)
   {
     auto node = static_cast<Node *>(_node);
     AllocTraits::destroy(*this, node);
@@ -465,9 +554,9 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
 #endif
 
  private:
-  template <typename Dummy = zstl::enable_if_t<
-                std::is_default_constructible<ValueType>::value>>
-  void resize_impl(size_t n)
+  template <typename U, typename Dummy = zstl::enable_if_t<
+                            std::is_default_constructible<U>::value>>
+  KANON_INLINE void resize_impl(size_t n)
   {
     resize(n, ValueType{});
   }
