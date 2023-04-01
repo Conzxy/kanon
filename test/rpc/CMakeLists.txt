@@ -5,7 +5,7 @@ function (register_rpc_test filename_we)
     message(STATUS "${filename_we} excluded from target all")
     add_executable(${filename_we} EXCLUDE_FROM_ALL ${filename_we}.cc ${ARGN})
   endif (${BUILD_ALL_TESTS})
-  target_link_libraries(${filename_we} protobuf_rpc kanon_base kanon_net)
+  target_link_libraries(${filename_we} kanon_protobuf_rpc kanon_base kanon_net)
   set_target_properties(${filename_we}
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
