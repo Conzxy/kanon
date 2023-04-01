@@ -4,6 +4,7 @@
 #include <memory>
 #include <type_traits>
 #include <assert.h>
+#include <utility> // std:move()
 
 #include "kanon/util/macro.h"
 
@@ -122,6 +123,31 @@ using DeferDelete = std::unique_ptr<T>;
 
 template <typename T, typename D>
 using DeferDelete2 = std::unique_ptr<T, D>;
+
+/**
+ * A convenient macro to define a dummy object 
+ * that used for defering delete.
+ *
+ * User no need to declare and define a actual object 
+ * to defer delete.
+ * If no such macros, user may writes:
+ * ```cpp
+ * DeferDelete<T> xxxx(obj);
+ * auto dter = [](T* obj) { ... };
+ * DeferDelete<T, decltype(dter)> xxxx(obj, dter);
+ * ```
+ * These are unnecessary and ugly code I think.
+ *
+ * \note
+ *  Since the obj__ is unique identifier.
+ *  (since C++ requires variable name must be unique in same scope).
+ */
+#define KANON_DEFER_DELETE(type__, obj__) \
+  kanon::DeferDelete<type__> type__##__defer__dummy__##obj__{obj__}
+
+#define KANON_DEFER_DELETE2(type__, obj__, dter__) \
+  auto type__##_##obj__##deleter___ = dter__; \
+  kanon::DeferDelete2<type__, decltype(type__##_##obj__##deleter___)> type__##__defer_dummy__##obj__{obj__, std::move(type__##_##obj__##deleter___)}
 
 /**
  * std::make_shared requires the constructor of the object
