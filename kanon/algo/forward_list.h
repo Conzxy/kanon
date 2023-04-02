@@ -34,48 +34,48 @@ class ForwardListBase
   using HeaderAllocTraits = std::allocator_traits<HeaderAllocator<Alloc>>;
 
  public:
-  KANON_INLINE ForwardListBase()
-  try : header_(HeaderAllocTraits::allocate(*this, sizeof(Header))) {
+  KANON_INLINE ForwardListBase() KANON_NOEXCEPT
+  {
     reset();
-  }
-  catch (std::bad_alloc const &ex) {
-    throw;
   }
 
   KANON_INLINE ForwardListBase(ForwardListBase &&other) KANON_NOEXCEPT
     : header_(other.header_)
   {
-    other.header_ = nullptr;
+    header_.count = other.header_.count;
+    header_.next = other.header_.next;
+    header_.prev = (header_.count == 0) ? &header_ : other.header_.prev;
+    other.reset();
   }
 
-  KANON_INLINE ~ForwardListBase() KANON_NOEXCEPT
+  // KANON_INLINE ForwardListBase(ForwardListBase const &other) KANON_NOEXCEPT
+  //{
+  //  header_.count = other.header_.count;
+  //  header_.next = other.header_.next;
+  //  header_.prev = &header_;
+  //}
+
+  KANON_INLINE void swap(ForwardListBase &other) KANON_NOEXCEPT
   {
-    /*
-     * Allocator requires pointer argument
-     * must returned by allocate().
-     * The null check is don't managed by
-     * deallocate().
-     * \see
-     * https://en.cppreference.com/w/cpp/memory/allocator/deallocate
-     */
-    if (header_) HeaderAllocTraits::deallocate(*this, header_, sizeof(Header));
+    std::swap(header_.count, other.header_.count);
+    std::swap(header_.next, other.header_.next);
+    auto old_header_prev = header_.prev;
+    header_.prev = (header_.count == 0) ? &header_ : other.header_.prev;
+    other.header_.prev =
+        (other.header_.count == 0) ? &other.header_ : old_header_prev;
   }
+
+  KANON_INLINE ~ForwardListBase() KANON_NOEXCEPT {}
 
   KANON_INLINE void reset() KANON_NOEXCEPT
   {
-    header_->prev = header_;
-    header_->next = nullptr;
-    header_->count = 0;
+    header_.prev = &header_;
+    header_.next = nullptr;
+    header_.count = 0;
   }
 
  protected:
-  // Must be pointer instead of Header
-  // since swap() need to determine the
-  // linked-list if is empty and set .prev.
-  // This is not good!
-
-  // In kanon, need call swap()
-  Header *header_;
+  Header header_;
 };
 
 } // namespace forward_list_detail
@@ -83,8 +83,10 @@ class ForwardListBase
 /**
  * ForwardList represents a single linked-list
  * The Implementation of STL is so trivial, such that I rewrite, and provide
- * some useage 1) The interface extract node in list but don't remove it from
- * memory, so we can reuse node 2) Support push_back() which time complexity is
+ * some useage:
+ * 1) The interface extract node in list but don't remove it from
+ * memory, so we can reuse node.
+ * 2) Support push_back() which time complexity is
  * O(1), then we can implementation queue, such as std::queue<ForwardList>(I
  * can't sure it is good, my zstl::queue<Container> support at least)
  */
@@ -299,16 +301,16 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   // accessor
   KANON_INLINE Iterator begin() KANON_NOEXCEPT
   {
-    return Iterator(header_->next);
+    return Iterator(header_.next);
   }
-  // Don't write as header_->prev->next since header_->prev may be nullptr
+  // Don't write as header_.prev->next since header_.prev may be nullptr
   KANON_INLINE Iterator end() KANON_NOEXCEPT
   {
     return Iterator(nullptr);
   }
   KANON_INLINE ConstIterator begin() const KANON_NOEXCEPT
   {
-    return ConstIterator(header_->next);
+    return ConstIterator(header_.next);
   }
   KANON_INLINE ConstIterator end() const KANON_NOEXCEPT
   {
@@ -324,52 +326,52 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   }
   KANON_INLINE Iterator before_begin() KANON_NOEXCEPT
   {
-    return header_;
+    return &header_;
   }
   KANON_INLINE ConstIterator before_begin() const KANON_NOEXCEPT
   {
-    return header_;
+    return &header_;
   }
   KANON_INLINE ConstIterator cbefore_begin() const KANON_NOEXCEPT
   {
-    return header_;
+    return &header_;
   }
 
   // Not standard required
   KANON_INLINE Iterator before_end() KANON_NOEXCEPT
   {
-    return header_->prev;
+    return header_.prev;
   }
   KANON_INLINE ConstIterator before_end() const KANON_NOEXCEPT
   {
-    return header_->prev;
+    return header_.prev;
   }
   KANON_INLINE ConstIterator cbefore_end() const KANON_NOEXCEPT
   {
-    return header_->prev;
+    return header_.prev;
   }
 
   KANON_INLINE Ref front() KANON_NOEXCEPT
   {
     assert(!empty());
-    return GET_LINKED_NODE_VALUE(header_->next);
+    return GET_LINKED_NODE_VALUE(header_.next);
   }
   KANON_INLINE ConstRef front() const KANON_NOEXCEPT
   {
     assert(!empty());
-    return GET_LINKED_NODE_VALUE(header_->next);
+    return GET_LINKED_NODE_VALUE(header_.next);
   }
 
   // Not standard required
   KANON_INLINE Ref back() KANON_NOEXCEPT
   {
     assert(!empty());
-    return GET_LINKED_NODE_VALUE(header_->prev);
+    return GET_LINKED_NODE_VALUE(header_.prev);
   }
   KANON_INLINE ConstRef back() const KANON_NOEXCEPT
   {
     assert(!empty());
-    return GET_LINKED_NODE_VALUE(header_->prev);
+    return GET_LINKED_NODE_VALUE(header_.prev);
   }
 
   // capacity
@@ -379,14 +381,15 @@ class ForwardList : protected forward_list_detail::ForwardListBase<T, Alloc> {
   }
   KANON_INLINE bool empty() const KANON_NOEXCEPT
   {
-    return header_ == nullptr || header_->next == nullptr;
+    assert(((header_.count == 0) ^ (header_.next == nullptr)) == 0);
+    return header_.count == 0;
   }
 
   // STL don't provide the size() API
   // Not standard required
   KANON_INLINE SizeType size() const KANON_NOEXCEPT
   {
-    return header_ ? header_->count : 0;
+    return header_.count;
   }
   KANON_INLINE void swap(Self &other) KANON_NOEXCEPT;
 

@@ -2,14 +2,14 @@
 #define STL_SUP_FORWARD_LIST_IMPL_H
 
 #ifndef STL_SUP_FORWARD_LIST_H
-#include "../forward_list.h"
+#  include "../forward_list.h"
 #endif
 
 #include <algorithm>
 #include <utility>
 
 #ifdef FORWARD_LIST_DEBUG
-#include <iostream>
+#  include <iostream>
 #endif
 
 #include "algorithm.h"
@@ -67,8 +67,7 @@ void FORWARD_LIST_TEMPLATE::assign(InputIterator first, InputIterator last)
 {
   Iterator beg;
   for (beg = before_begin(); beg.next() != end() && first != last;
-       ++beg, ++first)
-  {
+       ++beg, ++first) {
     AllocTraits::destroy(*this, &*beg.next());
     AllocTraits::construct(*this, &*beg.next(), *first);
   }
@@ -97,24 +96,24 @@ auto FORWARD_LIST_TEMPLATE::operator=(Self const &other) -> Self &
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::push_front(Node *new_node) KANON_NOEXCEPT
 {
-  forward_list_detail::push_front(header_, new_node);
-  ++header_->count;
+  forward_list_detail::push_front(&header_, new_node);
+  ++header_.count;
 }
 
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::push_back(Node *new_node) KANON_NOEXCEPT
 {
-  forward_list_detail::push_back(header_, new_node);
-  ++header_->count;
+  forward_list_detail::push_back(&header_, new_node);
+  ++header_.count;
 }
 
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, Node *new_node)
 {
   auto node = pos.to_iterator().extract();
-  forward_list_detail::insert_after(header_, node, new_node);
+  forward_list_detail::insert_after(&header_, node, new_node);
 
-  ++header_->count;
+  ++header_.count;
 }
 
 FORWARD_LIST_TEMPLATE_LIST
@@ -123,7 +122,7 @@ void FORWARD_LIST_TEMPLATE::insert_after(ConstIterator pos, SizeType count,
 {
   // At first, I want create a list whose length is count
   // the first node do some work like insert_after()
-  // And update header_->prev in term of pos
+  // And update header_.prev in term of pos
   // But it is easy to make fault.
 
   // The push_back() is so simple, thus not wrong.
@@ -160,10 +159,10 @@ void FORWARD_LIST_TEMPLATE::pop_front_size(size_t sz)
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-auto FORWARD_LIST_TEMPLATE::extract_front_node() KANON_NOEXCEPT->Node *
+auto FORWARD_LIST_TEMPLATE::extract_front_node() KANON_NOEXCEPT -> Node *
 {
-  --header_->count;
-  return static_cast<Node *>(forward_list_detail::extract_front(header_));
+  --header_.count;
+  return static_cast<Node *>(forward_list_detail::extract_front(&header_));
 }
 
 FORWARD_LIST_TEMPLATE_LIST
@@ -182,12 +181,12 @@ auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator pos, size_t sz)
 }
 
 FORWARD_LIST_TEMPLATE_LIST
-auto FORWARD_LIST_TEMPLATE::extract_after_node(ConstIterator pos)
-    KANON_NOEXCEPT->Node *
+auto FORWARD_LIST_TEMPLATE::extract_after_node(ConstIterator pos) KANON_NOEXCEPT
+    -> Node *
 {
-  --header_->count;
-  return static_cast<Node *>(
-      forward_list_detail::extract_after(header_, pos.to_iterator().extract()));
+  --header_.count;
+  return static_cast<Node *>(forward_list_detail::extract_after(
+      &header_, pos.to_iterator().extract()));
 }
 
 FORWARD_LIST_TEMPLATE_LIST
@@ -195,7 +194,7 @@ auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator first, ConstIterator last)
     -> Iterator
 {
   auto first_next = forward_list_detail::extract_after(
-      header_, first.to_iterator().extract(), last.to_iterator().extract());
+      &header_, first.to_iterator().extract(), last.to_iterator().extract());
 
   BaseNode *old_next;
 
@@ -205,7 +204,7 @@ auto FORWARD_LIST_TEMPLATE::erase_after(ConstIterator first, ConstIterator last)
       old_next = first_next->next;
       drop_node(static_cast<Node *>(first_next));
       first_next = old_next;
-      --header_->count;
+      --header_.count;
     }
   }
 
@@ -218,7 +217,7 @@ auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator first,
     -> Iterator
 {
   auto first_next = forward_list_detail::extract_after(
-      header_, first.to_iterator().extract(), last.to_iterator().extract());
+      &header_, first.to_iterator().extract(), last.to_iterator().extract());
 
   BaseNode *old_next;
 
@@ -228,60 +227,43 @@ auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator first,
       old_next = first_next->next;
       drop_node_size(static_cast<Node *>(first_next), sz);
       first_next = old_next;
-      --header_->count;
+      --header_.count;
     }
   }
 
   return last.to_iterator();
 }
 
+#define KANON_FORWARD_LIST_CLEAR_ROUTINE__(func__)                             \
+  while (header_.next) {                                                       \
+    auto node = header_.next;                                                  \
+    header_.next = node->next;                                                 \
+    func__(node);                                                              \
+  }                                                                            \
+                                                                               \
+  Base::reset()
+
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::clear() KANON_NOEXCEPT
 {
-  if (!header_) {
-    return;
-  }
-
-  while (header_->next) {
-    auto node = header_->next;
-    header_->next = node->next;
-    drop_node(node);
-  }
-
-  Base::reset();
+  /* Just reset the state of header
+   * the lifetime of header is managed
+   * by Base
+   */
+  KANON_FORWARD_LIST_CLEAR_ROUTINE__(drop_node);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::clear_size(size_t sz) KANON_NOEXCEPT
 {
-  if (!header_) {
-    return;
-  }
-
-  while (header_->next) {
-    auto node = header_->next;
-    header_->next = node->next;
-    drop_node_size(node, sz);
-  }
-
-  Base::reset();
+  KANON_FORWARD_LIST_CLEAR_ROUTINE__(drop_node_size);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
 template <typename DropCb>
 void FORWARD_LIST_TEMPLATE::clear(DropCb cb) KANON_NOEXCEPT
 {
-  if (!header_) {
-    return;
-  }
-
-  while (header_->next) {
-    auto node = header_->next;
-    header_->next = node->next;
-    cb(node);
-  }
-
-  Base::reset();
+  KANON_FORWARD_LIST_CLEAR_ROUTINE__(cb);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
@@ -306,13 +288,12 @@ void FORWARD_LIST_TEMPLATE::merge(Self &list, BinaryPred pred)
 {
   if (list.empty()) return;
 
-  BaseNode *beg = header_;
-  BaseNode *obeg = list.header_;
+  BaseNode *beg = &header_;
+  BaseNode *obeg = &list.header_;
 
   while (beg->next != nullptr && obeg->next != nullptr) {
     if (pred(GET_LINKED_NODE_VALUE(obeg->next),
-             GET_LINKED_NODE_VALUE(beg->next)))
-    {
+             GET_LINKED_NODE_VALUE(beg->next))) {
       auto old_node = obeg->next->next;
       insert_after(beg, list.extract_after(obeg));
       beg = beg->next;
@@ -360,12 +341,12 @@ void FORWARD_LIST_TEMPLATE::splice_after(ConstIterator pos, Self &list)
   auto old_next = pos_node->next;
 
   if (pos == before_end()) {
-    header_->prev = list.before_end().extract();
+    header_.prev = list.before_end().extract();
   }
 
   pos_node->next = list.begin().extract();
   list.before_end().extract()->next = old_next;
-  header_->count += list.size();
+  header_.count += list.size();
 
   list.reset();
   KANON_ASSERT(list.empty(), "The list must be empty");
@@ -396,7 +377,7 @@ void FORWARD_LIST_TEMPLATE::reverse() KANON_NOEXCEPT
     return;
   }
 
-  forward_list_detail::reverse(header_);
+  forward_list_detail::reverse(&header_);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
@@ -404,7 +385,7 @@ template <typename BinaryPred>
 auto FORWARD_LIST_TEMPLATE::unique(BinaryPred pred) -> SizeType
 {
   SizeType count = 0;
-  for (BaseNode *beg = header_;
+  for (BaseNode *beg = &header_;
        beg->next != nullptr && beg->next->next != nullptr;)
   {
     // Adjacent node with same value
@@ -511,7 +492,7 @@ void FORWARD_LIST_TEMPLATE::sort2()
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::swap(Self &other) KANON_NOEXCEPT
 {
-  std::swap(this->header_, other.header_);
+  Base::swap(other);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
@@ -527,7 +508,7 @@ void FORWARD_LIST_TEMPLATE::print() const KANON_NOEXCEPT
 {
   std::cout << "==== print forward_list ====\n";
   std::cout << "Header -> ";
-  for (auto i = header_->next; i != nullptr; i = i->next) {
+  for (auto i = header_.next; i != nullptr; i = i->next) {
     std::cout << GET_LINKED_NODE_VALUE(i) << " -> ";
   }
 

@@ -64,7 +64,8 @@ void insert_after(Header *header, BaseLinkedNode *pos,
   pos->next = new_node;
 }
 
-BaseLinkedNode *extract_after(Header *header, BaseLinkedNode *pos) KANON_NOEXCEPT
+BaseLinkedNode *extract_after(Header *header,
+                              BaseLinkedNode *pos) KANON_NOEXCEPT
 {
   KANON_ASSERT(pos != nullptr, "The position argument must not be end()");
   KANON_ASSERT(!FORWARD_LIST_EMPTY, "ForwardList must be not empty");
@@ -123,7 +124,7 @@ void reverse(Header *header) KANON_NOEXCEPT
     cur_next = cur->next;
     cur->next = prev;
     prev = cur;
-    cur = cur->next;
+    cur = cur_next;
   }
 }
 
