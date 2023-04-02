@@ -40,8 +40,7 @@ usize kanon::BufferReadFromFd(Buffer &buffer, FdType fd, int &saved_errno)
   return (size_t)readen_bytes;
 }
 
-void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
-                              void *overlap)
+void kanon::BufferOverlapRecv(Buffer &, FdType, int &, void *)
 {
   LOG_FATAL << "BufferOverlapRecv() isn't implemented for Linux";
 }

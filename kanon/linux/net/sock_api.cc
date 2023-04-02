@@ -53,7 +53,7 @@ FdType sock::Accept(FdType fd, sockaddr_in6 *addr) KANON_NOEXCEPT
       case EINTR:
       case EMFILE: // per-process limit on the number of open fd has been
                    // reached
-        LOG_SYSERROR << "accept() expected error occurred";
+        LOG_SYSERROR_KANON << "accept() expected error occurred";
         break;
       case EFAULT:
       case EINVAL:

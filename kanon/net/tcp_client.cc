@@ -110,11 +110,11 @@ void TcpClient::NewConnection(FdType sockfd, InetAddr const &serv_addr,
 
   if (!cli || cli->conn_) return;
 
-  LOG_TRACE << " New connection fd = " << sockfd;
+  LOG_TRACE_KANON << " New connection fd = " << sockfd;
   auto new_conn = TcpConnection::NewTcpConnection(
       cli->loop_, cli->name_, sockfd, sock::GetLocalAddr(sockfd), serv_addr);
 
-  LOG_TRACE << "New connection: " << new_conn.get();
+  LOG_TRACE_KANON << "New connection: " << new_conn.get();
   // Must copy callback instead of moving them
   new_conn->SetMessageCallback(cli->message_callback_);
   new_conn->SetWriteCompleteCallback(cli->write_complete_callback_);
@@ -141,7 +141,7 @@ void TcpClient::NewConnection(FdType sockfd, InetAddr const &serv_addr,
     {
       MutexGuard guard{cli->mutex_};
       cli->conn_.reset();
-      LOG_INFO << conn->GetName() << " has removed";
+      LOG_INFO_KANON << conn->GetName() << " has removed";
     }
 
     // ! In event handling phase, don't remove channel(disable is allowed)

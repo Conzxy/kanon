@@ -26,7 +26,7 @@ static CompletionContext *cached_completion_context = nullptr;
 void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
                                  void *overlap)
 {
-  LOG_TRACE << "ChunkListOverlapSend, fd = " << fd;
+  LOG_TRACE_KANON << "ChunkListOverlapSend, fd = " << fd;
   auto conn = (TcpConnection *)overlap;
   auto ch = conn->channel();
   auto &bufs = conn->wsabufs;
@@ -50,7 +50,7 @@ void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
   switch (ret) {
     case 0: // Complete immediately
     {
-      LOG_TRACE << "WSASend() complete immediately";
+      LOG_TRACE_KANON << "WSASend() complete immediately";
       // conn->HandleWriteImmediately(send_bytes);
     } break;
     case SOCKET_ERROR: {
@@ -59,7 +59,7 @@ void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
         cached_completion_context = nullptr;
       } else {
         conn->ForceClose();
-        LOG_SYSERROR << "Failed to call WSASend()";
+        LOG_SYSERROR_KANON << "Failed to call WSASend()";
       }
     } break;
 
@@ -68,8 +68,8 @@ void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
   }
 }
 
-ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
-                                            int &saved_errno) KANON_NOEXCEPT
+ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &, FdType,
+                                            int &) KANON_NOEXCEPT
 {
   LOG_FATAL << "ChunkListWriteFd() isn't implemented for Windows";
   return (-1);

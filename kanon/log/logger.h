@@ -21,12 +21,18 @@ KANON_CORE_API extern bool g_all_log;
 /**
  * Enable/Disable the logging of kanon library
  */
-KANON_INLINE void SetKanonLog(bool val) KANON_NOEXCEPT { g_kanon_log = val; }
+KANON_INLINE void SetKanonLog(bool val) KANON_NOEXCEPT
+{
+  g_kanon_log = val;
+}
 
 /**
  * Control the logging of logger(i.e. All logs output by kanon)
  */
-KANON_INLINE void EnableAllLog(bool value) KANON_NOEXCEPT { g_all_log = value; }
+KANON_INLINE void EnableAllLog(bool value) KANON_NOEXCEPT
+{
+  g_all_log = value;
+}
 
 /**
  * \brief Format the log message to specified device
@@ -62,16 +68,17 @@ class Logger : noncopyable {
    * e.g. current log level is DEBUG, user call LOG_TRACE is no effect
    * i.e. Log condiftion is current log level <= XXX
    */
-  enum KANON_CORE_API LogLevel {
+  enum LogLevel {
     KANON_LL_TRACE = 0,
-    KANON_LL_DEBUG,
-    KANON_LL_INFO,
-    KANON_LL_WARN,
-    KANON_LL_ERROR,
-    KANON_LL_FATAL,
-    KANON_LL_SYS_ERROR,
-    KANON_LL_SYS_FATAL,
-    KANON_LL_NUM_LOG_LEVEL,
+    KANON_LL_DEBUG = 1,
+    KANON_LL_INFO = 2,
+    KANON_LL_WARN = 3,
+    KANON_LL_ERROR = (1 << 2),
+    KANON_LL_SYS_ERROR = KANON_LL_ERROR + 1,
+    KANON_LL_FATAL = (1 << 3),
+    KANON_LL_SYS_FATAL = KANON_LL_FATAL + 1,
+    KANON_LL_NUM_LOG_LEVEL = 8,
+    KANON_LL_OFF = (1 << 4),
   };
 
   // Since __FIEL__ is fullname, including all parent path
@@ -129,9 +136,15 @@ class Logger : noncopyable {
   // Do output and flush
   KANON_CORE_API ~Logger() KANON_NOEXCEPT;
 
-  KANON_INLINE LogStream &stream() KANON_NOEXCEPT { return stream_; }
+  KANON_INLINE LogStream &stream() KANON_NOEXCEPT
+  {
+    return stream_;
+  }
 
-  KANON_INLINE static void SetColor(bool c) KANON_NOEXCEPT { need_color_ = c; }
+  KANON_INLINE static void SetColor(bool c) KANON_NOEXCEPT
+  {
+    need_color_ = c;
+  }
   KANON_INLINE static LogLevel GetLogLevel() KANON_NOEXCEPT
   {
     return log_level_;
@@ -186,51 +199,92 @@ KANON_CORE_API char const *win_last_strerror(int win_errno);
 KANON_CORE_API void DefaultFlush();
 KANON_CORE_API void DefaultOutput(char const *, size_t);
 
+#ifdef LOG_TRACE
+#  undef LOG_TRACE
+#endif
+
+#ifdef LOG_DEBUG
+#  undef LOG_DEBUG
+#endif
+
+#ifdef LOG_INFO
+#  undef LOG_INFO
+#endif
+
+#ifdef LOG_WARN
+#  undef LOG_WARN
+#endif
+
+#ifdef LOG_ERROR
+#  undef LOG_ERROR
+#endif
+
+#ifdef LOG_FATAL
+#  undef LOG_FATAL
+#endif
+
+#ifdef LOG_SYSERROR
+#  undef LOG_SYSERROR
+#endif
+
+#ifdef LOG_SYSFATAL
+#  undef LOG_SYSFATAL
+#endif
+
 #define LOG_TRACE                                                              \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_TRACE &&         \
-      kanon::g_all_log)                                                        \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_TRACE)           \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_TRACE, __func__)   \
       .stream()
 
-#define LOG_TRACE_KANON                                                        \
-  if (g_kanon_log) LOG_TRACE
-
 #define LOG_DEBUG                                                              \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_DEBUG &&         \
-      kanon::g_all_log)                                                        \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_DEBUG)           \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_DEBUG, __func__)   \
       .stream()
 
-#define LOG_DEBUG_KANON                                                        \
-  if (g_kanon_log) LOG_DEBUG
-
 #define LOG_INFO                                                               \
-  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_INFO &&          \
-      kanon::g_all_log)                                                        \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_INFO)            \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_INFO).stream()
 
 #define LOG_WARN                                                               \
-  if (kanon::g_all_log)                                                        \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_WARN)            \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_WARN).stream()
 
 #define LOG_ERROR                                                              \
-  if (kanon::g_all_log)                                                        \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_ERROR)           \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_ERROR).stream()
 
 #define LOG_FATAL                                                              \
-  if (kanon::g_all_log)                                                        \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_FATAL).stream()
 
 #define LOG_SYSERROR                                                           \
-  if (kanon::g_all_log)                                                        \
+  if (kanon::Logger::GetLogLevel() <= kanon::Logger::KANON_LL_SYS_ERROR)       \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_SYS_ERROR, true)   \
       .stream()
 
 #define LOG_SYSFATAL                                                           \
-  if (kanon::g_all_log)                                                        \
   kanon::Logger(__FILE__, __LINE__, kanon::Logger::KANON_LL_SYS_FATAL, true)   \
       .stream()
 
+// Kanon lib macro
+#define LOG_TRACE_KANON                                                        \
+  if (g_kanon_log) LOG_TRACE
+
+#define LOG_DEBUG_KANON                                                        \
+  if (g_kanon_log) LOG_DEBUG
+
+#define LOG_INFO_KANON                                                         \
+  if (g_kanon_log) LOG_INFO
+
+#define LOG_WARN_KANON                                                         \
+  if (g_kanon_log) LOG_WARN
+
+#define LOG_ERROR_KANON                                                        \
+  if (g_kanon_log) LOG_ERROR
+
+#define LOG_SYSERROR_KANON                                                     \
+  if (g_kanon_log) LOG_SYSERROR
+
+// Format logging macros
 #define FMT_LOG_TRACE(fmt, ...)                                                \
   LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
 

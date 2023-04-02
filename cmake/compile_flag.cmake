@@ -16,27 +16,30 @@ else ()
 
   set(CXX_FLAGS 
   -Wall
-  -Wno-deprecated-declarations
   -Wextra
+  -Wno-deprecated-declarations
+  # Allow lambda local variable to 
+  # shadow th local variable of this function
+  # contains lambda
   -Wno-shadow
+  # Disable visibility hidden warning
   -Wno-attributes
-  -Wno-return-local-addr
-  -Wno-unused-parameter
-  -Wno-unused-function
-  -Wno-switch
-  -Wno-format-security
+
+  #-Wno-return-local-addr
+  #-Wno-unused-parameter
+  #-Wno-unused-function
+  #-Wno-switch
+  #-Wno-format-security
   # support INT2DOUBLE
-  -Wno-strict-aliasing
+  #-Wno-strict-aliasing
   # -Werror
+
   # make non-trivial(but like "trivial") class can reallocate
   -Wno-class-memaccess
   -Wno-implicit-fallthrough
-  -Wconversion
-  #-Wshadow
   -Wno-maybe-uninitialized
   -Wwrite-strings # in fact, this is default specified
   -pthread
-      
   # linker opt
   -rdynamic
   # machine opt

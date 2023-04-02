@@ -52,7 +52,7 @@ FdType sock::CreateNonBlockAndCloExecSocket(bool ipv6) KANON_NOEXCEPT
     LOG_SYSFATAL << "create new socket fd error";
     return INVALID_SOCKET;
   } else {
-    LOG_DEBUG << "New socket = " << sockfd;
+    LOG_DEBUG_KANON << "New socket = " << sockfd;
   }
   return sockfd;
 }
@@ -65,7 +65,7 @@ FdType sock::CreateOverlappedSocket(bool ipv6) KANON_NOEXCEPT
     LOG_SYSFATAL << "create new socket fd error";
     return INVALID_SOCKET;
   } else {
-    LOG_DEBUG << "New socket = " << sockfd;
+    LOG_DEBUG_KANON << "New socket = " << sockfd;
   }
   return sockfd;
 }
@@ -98,7 +98,7 @@ FdType sock::Accept(FdType fd, sockaddr_in6 *addr) KANON_NOEXCEPT
     if (setsockopt(cli_sock, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
                    (char const *)&flag, sizeof(flag)))
     {
-      LOG_SYSERROR << "Failed to setsockopt(SO_UPDATE_ACCPET_CONTEXT)";
+      LOG_SYSERROR_KANON << "Failed to setsockopt(SO_UPDATE_ACCPET_CONTEXT)";
     }
 
     if (bRetVal == FALSE) {

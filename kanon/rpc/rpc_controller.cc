@@ -1,5 +1,6 @@
 #include "rpc_controller.h"
 
+#include "kanon/rpc/logger.h"
 #include "kanon/net/event_loop.h"
 
 #include "kanon/rpc/rpc.pb.h"
@@ -14,7 +15,8 @@ RpcController::RpcController()
 
 RpcController::~RpcController() noexcept {}
 
-void RpcController::Reset() {
+void RpcController::Reset()
+{
   deadline_ = (Deadline)-1;
 }
 
@@ -27,18 +29,24 @@ void RpcController::StartCancel() {}
 
 void RpcController::SetFailed(std::string const & /*reason*/) {}
 
-std::string RpcController::ErrorText() const { return ""; }
+std::string RpcController::ErrorText() const
+{
+  return "";
+}
 
 bool RpcController::IsCanceled() const
 {
   if (deadline_ != (Deadline)-1) {
     uint64_t now_ms = TimeStamp::Now().GetMicrosecondsSinceEpoch() / 1000;
-    LOG_DEBUG_KANON << "Now: " << now_ms;
-    LOG_DEBUG_KANON << "deadline: " << deadline();
+    LOG_DEBUG_KANON_PROTOBUF_RPC << "Now: " << now_ms;
+    LOG_DEBUG_KANON_PROTOBUF_RPC << "deadline: " << deadline();
     if (now_ms > deadline()) return true;
   }
 
   return false;
 }
 
-void RpcController::NotifyOnCancel(::google::protobuf::Closure *cb) {}
+void RpcController::NotifyOnCancel(::google::protobuf::Closure *cb)
+{
+  KANON_UNUSED(cb);
+}

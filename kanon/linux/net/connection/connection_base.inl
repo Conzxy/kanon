@@ -42,7 +42,7 @@ void ConnectionBase<D>::SendInLoopForBuf(InputBuffer &buffer)
                   << "], fd = " << channel_->GetFd();
 
   if (state_ != kConnected) {
-    LOG_WARN << "This connection[" << name_
+    LOG_WARN_KANON << "This connection[" << name_
              << "] is not connected, don't send any message";
     return;
   }
@@ -61,7 +61,7 @@ void ConnectionBase<D>::SendInLoopForBuf(InputBuffer &buffer)
     auto n = ChunkListWriteFd(output_buffer_, channel_->GetFd(), saved_errno);
 
     if (saved_errno && saved_errno != EAGAIN) {
-      LOG_SYSERROR << "write unexpected error occurred";
+      LOG_SYSERROR_KANON << "write unexpected error occurred";
     }
 
     if (n > 0) {
@@ -108,7 +108,7 @@ void ConnectionBase<D>::SendInLoopForChunkList(OutputBuffer &buffer)
   auto write_n = ChunkListWriteFd(buffer, channel_->GetFd(), saved_errno);
 
   if (saved_errno && saved_errno != EAGAIN) {
-    LOG_SYSERROR << "write unexpected error occurred";
+    LOG_SYSERROR_KANON << "write unexpected error occurred";
   }
 
   if (write_n > 0) {
@@ -151,7 +151,7 @@ void ConnectionBase<D>::SendInLoop(void const *data, size_t len)
   // But connection also can be closed in the phase 2
   // when this is called in phase 3
   if (state_ != kConnected) {
-    LOG_WARN << "This connection [" << name_
+    LOG_WARN_KANON << "This connection [" << name_
              << "] is not connected, don't send any message";
     return;
   }
@@ -243,7 +243,7 @@ void ConnectionBase<D>::SendInLoop(void const *data, size_t len)
       }
     } else {
       if (errno != EAGAIN) // EWOULDBLOCK
-        LOG_SYSERROR << "write unexpected error occurred";
+        LOG_SYSERROR_KANON << "write unexpected error occurred";
       return;
     }
   }

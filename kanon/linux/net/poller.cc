@@ -55,7 +55,7 @@ TimeStamp Poller::Poll(int ms, ChannelVec &active_channels) KANON_NOEXCEPT
     LOG_TRACE_KANON << "none events are ready";
   } else {
     if (ret != EINTR) {
-      LOG_SYSERROR << "Poll() error occurred";
+      LOG_SYSERROR_KANON << "Poll() error occurred";
     }
   }
 

@@ -73,8 +73,8 @@ TimeStamp IocpPoller::Poll(int ms, ChannelVec &active_channels)
     for (size_t i = 0; i < removed_entries_num; ++i) {
       auto &entry = entries_[i];
       auto ch = (Channel *)entry.lpCompletionKey;
-      LOG_DEBUG << "Channel ID = [" << ch << "]";
-      LOG_DEBUG << "Transferred bytes = " << entry.dwNumberOfBytesTransferred;
+      LOG_DEBUG_KANON << "Channel ID = [" << ch << "]";
+      LOG_DEBUG_KANON << "Transferred bytes = " << entry.dwNumberOfBytesTransferred;
       ch->transferred_bytes = entry.dwNumberOfBytesTransferred;
       ch->PushCompleteContext((CompletionContext *)entry.lpOverlapped);
       active_channels.push_back(ch);

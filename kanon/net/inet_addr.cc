@@ -258,9 +258,9 @@ std::vector<InetAddr> InetAddr::Resolve(StringArg hostname, StringArg service,
       }
     }
   } else {
-    LOG_SYSERROR << "Resolve the hostname to address error: "
+    LOG_SYSERROR_KANON << "Resolve the hostname to address error: "
                  << ::gai_strerror(ret);
-    LOG_SYSERROR << "User can retry get address later";
+    LOG_SYSERROR_KANON << "User can retry get address later";
   }
 
   return addrs;

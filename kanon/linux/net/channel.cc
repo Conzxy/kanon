@@ -69,7 +69,7 @@ void Channel::HandleEvents(TimeStamp receive_time)
    * \see https://stackoverflow.com/questions/56177060/pollhup-vs-pollrdhup
    */
   if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
-    LOG_WARN << "fd = " << fd_ << " POLLHUP happened";
+    LOG_WARN_KANON << "fd = " << fd_ << " POLLHUP happened";
 
     if (close_callback_) close_callback_();
   }
@@ -89,7 +89,7 @@ void Channel::HandleEvents(TimeStamp receive_time)
    */
   if (revents_ & (POLLERR | POLLNVAL)) {
     if (revents_ & POLLNVAL) {
-      LOG_WARN << "fd = " << fd_ << " POLLNVAL(fd not open) happend";
+      LOG_WARN_KANON << "fd = " << fd_ << " POLLNVAL(fd not open) happend";
     }
     if (error_callback_) error_callback_();
   }

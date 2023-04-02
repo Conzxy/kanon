@@ -20,12 +20,7 @@ namespace kanon {
 static KANON_TLS time_t t_lastSecond = 0;
 static KANON_TLS char t_timebuf[64] = {0};
 
-#ifndef NDEBUG
 bool g_kanon_log = true;
-#else
-bool g_kanon_log = false;
-#endif
-
 bool g_all_log = true;
 
 bool Logger::need_color_ = true;
@@ -41,16 +36,34 @@ static char const *g_logLevelColor[] = {CYAN, BLUE,  GREEN, YELLOW,
 
 static Logger::LogLevel initLogLevel() KANON_NOEXCEPT
 {
-  char *env = nullptr;
-  if ((env = ::getenv("KANON_NDEBUG")) && strcmp(env, "1") == 0)
-    return Logger::LogLevel::KANON_LL_INFO;
+  if (!g_all_log) return Logger::KANON_LL_OFF;
+  auto log_enable = ::getenv("KANON_LOG_ENABLE");
+  if (log_enable && !StrCaseCompare(log_enable, "0")) {
+    g_kanon_log = 0;
+  }
 
-  if ((env = ::getenv("KANON_TRACE")) && strcmp(env, "1") == 0)
+  auto log_level = ::getenv("KANON_LOG");
+  if (!log_level) return Logger::LogLevel::KANON_LL_INFO;
+
+  if (!StrCaseCompare(log_level, "trace")) {
     return Logger::LogLevel::KANON_LL_TRACE;
-
-  if ((env = ::getenv("KANON_DEBUG")) && strcmp(env, "1") == 0)
+  }
+  if (!StrCaseCompare(log_level, "debug")) {
     return Logger::LogLevel::KANON_LL_DEBUG;
-
+  }
+  if (!StrCaseCompare(log_level, "warn") ||
+      !StrCaseCompare(log_level, "warning")) {
+    return Logger::LogLevel::KANON_LL_WARN;
+  }
+  if (!StrCaseCompare(log_level, "error")) {
+    return Logger::LogLevel::KANON_LL_ERROR;
+  }
+  if (!StrCaseCompare(log_level, "fatal")) {
+    return Logger::LogLevel::KANON_LL_FATAL;
+  }
+  if (!StrCaseCompare(log_level, "off")) {
+    return Logger::LogLevel::KANON_LL_OFF;
+  }
   return Logger::LogLevel::KANON_LL_INFO;
 }
 
@@ -123,6 +136,8 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
 Logger::Logger(SourceFile basefile, size_t line, LogLevel level, bool is_sys)
   : Logger(basefile, line, level)
 {
+  // dummy parameter
+  KANON_UNUSED(is_sys);
   char error_buf[4096];
 #ifdef KANON_ON_UNIX
   auto savedErrno = errno;
@@ -146,8 +161,7 @@ Logger::~Logger() KANON_NOEXCEPT
   stream_ << " - " << basename_ << ":" << line_ << "\n";
   output_callback_(stream_.data(), stream_.size());
 
-  if (cur_log_level_ == KANON_LL_FATAL || cur_log_level_ == KANON_LL_SYS_FATAL)
-  {
+  if (cur_log_level_ & KANON_LL_FATAL) {
     flush_callback_();
     abort();
   }

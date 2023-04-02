@@ -90,9 +90,9 @@ void sock::SetReuseAddr(FdType fd, int flag) KANON_NOEXCEPT
   auto ret = ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
   if (ret < 0) {
-    LOG_SYSERROR << "setsockopt error(SO_REUSEADDR)";
+    LOG_SYSERROR_KANON << "setsockopt error(SO_REUSEADDR)";
   } else {
-    LOG_INFO << "SO_REUSEADDR option is set to " << static_cast<bool>(flag);
+    LOG_INFO_KANON << "SO_REUSEADDR option is set to " << static_cast<bool>(flag);
   }
 }
 
@@ -104,12 +104,12 @@ void sock::SetReusePort(FdType fd, int flag) KANON_NOEXCEPT
                           static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) {
-    LOG_SYSERROR << "setsockopt error(SO_REUSEPORT)";
+    LOG_SYSERROR_KANON << "setsockopt error(SO_REUSEPORT)";
   } else {
-    LOG_INFO << "SO_REUSEPORT option is set to " << static_cast<bool>(flag);
+    LOG_INFO_KANON << "SO_REUSEPORT option is set to " << static_cast<bool>(flag);
   }
 #else
-  LOG_INFO << "linux version less than 3.9, there no reuseport option can set";
+  LOG_INFO_KANON << "linux version less than 3.9, there no reuseport option can set";
 #endif
 #endif
 }
@@ -119,7 +119,7 @@ void sock::SetNoDelay(FdType fd, int flag) KANON_NOEXCEPT
   auto ret = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char const *)&flag,
                           static_cast<socklen_t>(sizeof flag));
 
-  if (ret < 0) LOG_SYSERROR << "set sockopt error(tcp: nodelay)";
+  if (ret < 0) LOG_SYSERROR_KANON << "set sockopt error(tcp: nodelay)";
 }
 
 void sock::SetKeepAlive(FdType fd, int flag) KANON_NOEXCEPT
@@ -128,7 +128,7 @@ void sock::SetKeepAlive(FdType fd, int flag) KANON_NOEXCEPT
                           static_cast<socklen_t>(sizeof flag));
 
   if (ret < 0) {
-    LOG_SYSERROR << "set sockeopt error(socket: keepalive)";
+    LOG_SYSERROR_KANON << "set sockeopt error(socket: keepalive)";
   }
 }
 
@@ -139,7 +139,7 @@ struct sockaddr_in6 sock::GetLocalAddr(FdType fd) KANON_NOEXCEPT
   ::memset(&addr, 0, sizeof addr);
 
   if (::getsockname(fd, sock::to_sockaddr(&addr), &len)) {
-    LOG_SYSERROR << "fail to get local address by getsockname()";
+    LOG_SYSERROR_KANON << "fail to get local address by getsockname()";
   }
 
   return addr;
@@ -152,7 +152,7 @@ struct sockaddr_in6 sock::GetPeerAddr(FdType fd) KANON_NOEXCEPT
   ::memset(&addr, 0, sizeof addr);
 
   if (::getpeername(fd, sock::to_sockaddr(&addr), &len)) {
-    LOG_SYSERROR << "fail to get peer address by getpeername()";
+    LOG_SYSERROR_KANON << "fail to get peer address by getpeername()";
   }
 
   return addr;
@@ -164,7 +164,7 @@ static bool GetLocalAddrSafe(FdType fd, struct sockaddr_in6 &addr) KANON_NOEXCEP
   ::memset(&addr, 0, sizeof addr);
 
   if (::getsockname(fd, sock::to_sockaddr(&addr), &len)) {
-    LOG_SYSERROR << "fail to get peer address by getsockname()";
+    LOG_SYSERROR_KANON << "fail to get peer address by getsockname()";
     return false;
   }
   return true;
@@ -175,7 +175,7 @@ static bool GetPeerAddrSafe(FdType fd, struct sockaddr_in6 &addr) KANON_NOEXCEPT
   socklen_t len = sizeof addr;
   ::memset(&addr, 0, sizeof addr);
   if (::getpeername(fd, sock::to_sockaddr(&addr), &len)) {
-    LOG_SYSERROR << "fail to get peer address by getpeerkname()";
+    LOG_SYSERROR_KANON << "fail to get peer address by getpeerkname()";
     return false;
   }
   return true;

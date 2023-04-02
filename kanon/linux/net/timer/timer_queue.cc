@@ -26,7 +26,7 @@ static KANON_INLINE int CreateTimerFd() KANON_NOEXCEPT
   LOG_TRACE_KANON << "Timer Fd: " << timerfd << " created";
 
   if (timerfd < 0) {
-    LOG_SYSERROR << "::timer_create() error occurred";
+    LOG_SYSERROR_KANON << "::timer_create() error occurred";
   }
 
   return timerfd;
@@ -87,7 +87,7 @@ static KANON_INLINE void SetTimerFd(int timerfd, Timer const &timer,
 
   // The default interpretation of .it_value is relative time
   if (::timerfd_settime(timerfd, 0, &new_value, NULL)) {
-    LOG_SYSERROR << "::timerfd_settime() error occurred";
+    LOG_SYSERROR_KANON << "::timerfd_settime() error occurred";
   } else {
     LOG_TRACE_KANON << "Reset successfully";
   }
@@ -99,7 +99,7 @@ static KANON_INLINE void ReadTimerFd(int timerfd) KANON_NOEXCEPT
   uint64_t n = 0;
 
   if ((n = ::read(timerfd, &dummy, sizeof dummy)) != sizeof dummy) {
-    LOG_SYSERROR << "::read() of timerfd error occurred";
+    LOG_SYSERROR_KANON << "::read() of timerfd error occurred";
   } else {
     LOG_TRACE_KANON << "Read " << n << " bytes";
   }
@@ -116,7 +116,7 @@ TimerQueue::TimerQueue(EventLoop *loop)
       std::bind(&TimerQueue::ProcessAllExpiredTimers, this, _1));
 
   timer_channel_->SetErrorCallback([]() {
-    LOG_SYSERROR << "Timer event handler error occurred";
+    LOG_SYSERROR_KANON << "Timer event handler error occurred";
   });
 
   timer_channel_->EnableReading();
@@ -210,12 +210,12 @@ void TimerQueue::ProcessAllExpiredTimers(TimeStamp recv_time)
       timer->run();
     }
     catch (std::exception const &ex) {
-      LOG_ERROR << "caught the std::exception in calling of timer callback";
-      LOG_ERROR << "exception message: " << ex.what();
+      LOG_ERROR_KANON << "caught the std::exception in calling of timer callback";
+      LOG_ERROR_KANON << "exception message: " << ex.what();
       KANON_RETHROW;
     }
     catch (...) {
-      LOG_ERROR << "caught the unknown exception in calling of timer callback";
+      LOG_ERROR_KANON << "caught the unknown exception in calling of timer callback";
       KANON_RETHROW;
     }
   }
