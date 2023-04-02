@@ -243,6 +243,14 @@ auto FORWARD_LIST_TEMPLATE::erase_after_size(ConstIterator first,
                                                                                \
   Base::reset()
 
+#define KANON_FORWARD_LIST_CLEAR_ROUTINE_SIZE_(func__, sz__)                   \
+  while (header_.next) {                                                       \
+    auto node = header_.next;                                                  \
+    header_.next = node->next;                                                 \
+    func__(node, sz__);                                                        \
+  }                                                                            \
+                                                                               \
+  Base::reset()
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::clear() KANON_NOEXCEPT
 {
@@ -256,7 +264,7 @@ void FORWARD_LIST_TEMPLATE::clear() KANON_NOEXCEPT
 FORWARD_LIST_TEMPLATE_LIST
 void FORWARD_LIST_TEMPLATE::clear_size(size_t sz) KANON_NOEXCEPT
 {
-  KANON_FORWARD_LIST_CLEAR_ROUTINE__(drop_node_size);
+  KANON_FORWARD_LIST_CLEAR_ROUTINE_SIZE_(drop_node_size, sz);
 }
 
 FORWARD_LIST_TEMPLATE_LIST
