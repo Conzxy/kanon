@@ -19,6 +19,7 @@
 
 #include "kanon/util/compiler_macro.h"
 #include "kanon/util/noncopyable.h"
+#include "kanon/zstl/type_traits.h"
 #include "kanon/thread/mutex_lock.h"
 
 namespace kanon {
@@ -55,7 +56,10 @@ class Condition : noncopyable {
   }
 
   KANON_CORE_API bool WaitForSeconds(double seconds);
-  KANON_INLINE bool WaitForSeconds(uint64_t seconds)
+
+  template <typename T,
+            typename = zstl::enable_if_t<std::is_integral<T>::value>>
+  KANON_INLINE bool WaitForSeconds(T seconds)
   {
     return WaitForSeconds((double)seconds);
   }

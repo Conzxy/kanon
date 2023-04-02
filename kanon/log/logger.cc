@@ -92,10 +92,11 @@ KANON_TLS char t_lastErrorBuf[ERRNO_BUFFER_SIZE];
 char const *strerror_tl(int savedErrno)
 {
 #ifdef KANON_ON_UNIX
-  ::strerror_r(savedErrno, t_errorBuf, ERRNO_BUFFER_SIZE);
+  auto ret = ::strerror_r(savedErrno, t_errorBuf, ERRNO_BUFFER_SIZE);
 #else
-  ::strerror_s(t_errorBuf, ERRNO_BUFFER_SIZE, savedErrno);
+  auto ret = ::strerror_s(t_errorBuf, ERRNO_BUFFER_SIZE, savedErrno);
 #endif
+  KANON_UNUSED(ret);
   return t_errorBuf;
 }
 
@@ -116,7 +117,8 @@ Logger::Logger(SourceFile file, size_t line, LogLevel level)
 {
   FormatTime();
   CurrentThread::tid();
-  stream_ << StringView(CurrentThread::t_tidString, CurrentThread::t_tidLength)
+  stream_ << StringView(CurrentThread::t_tidString,
+                        (StringView::size_type)CurrentThread::t_tidLength)
           << " ";
   if (CurrentThread::t_name)
     stream_ << CurrentThread::t_name << " ";
