@@ -163,6 +163,8 @@ void RpcChannel::OnRpcMessage(TcpConnectionPtr const &conn,
 void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
                                          RpcMessagePtr message, TimeStamp stamp)
 {
+  KANON_UNUSED(conn);
+  KANON_UNUSED(stamp);
   /**
    * Receive the response from the RpcServer
    * 0. Check error, response
@@ -234,6 +236,8 @@ void RpcChannel::OnRpcMessageForResponse(TcpConnectionPtr const &conn,
 void RpcChannel::OnRpcMessageForRequest(TcpConnectionPtr const &conn,
                                         RpcMessagePtr message, TimeStamp stamp)
 {
+  KANON_UNUSED(conn);
+  KANON_UNUSED(stamp);
   /**
    * Receive the request message from RpcClient
    * 1. Check the service

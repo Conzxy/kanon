@@ -14,7 +14,8 @@ RpcController::RpcController()
 
 RpcController::~RpcController() noexcept {}
 
-void RpcController::Reset() {
+void RpcController::Reset()
+{
   deadline_ = (Deadline)-1;
 }
 
@@ -27,7 +28,10 @@ void RpcController::StartCancel() {}
 
 void RpcController::SetFailed(std::string const & /*reason*/) {}
 
-std::string RpcController::ErrorText() const { return ""; }
+std::string RpcController::ErrorText() const
+{
+  return "";
+}
 
 bool RpcController::IsCanceled() const
 {
@@ -41,4 +45,7 @@ bool RpcController::IsCanceled() const
   return false;
 }
 
-void RpcController::NotifyOnCancel(::google::protobuf::Closure *cb) {}
+void RpcController::NotifyOnCancel(::google::protobuf::Closure *cb)
+{
+  KANON_UNUSED(cb);
+}

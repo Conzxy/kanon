@@ -53,8 +53,7 @@ ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
   return ret;
 }
 
-void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
-                                 void *overlap)
+void kanon::ChunkListOverlapSend(ChunkList &, FdType, int &, void *)
 {
   LOG_FATAL << "ChunkListOverlapSend() isn't implemented for Linux";
 }

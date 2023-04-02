@@ -75,13 +75,14 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
                             std::allocator<TcpConnection>());
   }
 
-  static TcpConnectionPtr
+  static KANON_DEPRECATED_ATTR TcpConnectionPtr
   NewTcpConnectionRaw(EventLoop *loop, std::string const &name, int sockfd,
                       InetAddr const &local_addr, InetAddr const &peer_addr)
   {
     return TcpConnectionPtr(
         new TcpConnection(loop, name, sockfd, local_addr, peer_addr),
         [](TcpConnection *ptr) {
+          KANON_UNUSED(ptr);
           LOG_TRACE << "Don't delete the connection to reuse";
         });
   }
@@ -108,9 +109,15 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
   //! Whether disable keep-alive timer
   KANON_NET_API void SetKeepAlive(bool flag) KANON_NOEXCEPT;
 
-  InetAddr const &GetLocalAddr() const KANON_NOEXCEPT { return local_addr_; }
+  InetAddr const &GetLocalAddr() const KANON_NOEXCEPT
+  {
+    return local_addr_;
+  }
 
-  InetAddr const &GetPeerAddr() const KANON_NOEXCEPT { return peer_addr_; }
+  InetAddr const &GetPeerAddr() const KANON_NOEXCEPT
+  {
+    return peer_addr_;
+  }
 
  private:
   InetAddr const local_addr_;
