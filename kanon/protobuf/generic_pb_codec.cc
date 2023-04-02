@@ -3,7 +3,7 @@
 #include <google/protobuf/message.h>
 
 #include "chunk_stream.h"
-#include "kanon/log/logger.h"
+#include "kanon/protobuf/logger.h"
 #include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/endian_api.h"
 
@@ -21,8 +21,8 @@ GenericPbCodec::GenericPbCodec(PROTOBUF::Message const *prototype,
   // Default error callback
   // Log error and Disconnect peer
   SetErrorCallback([](TcpConnectionPtr const &conn, ErrorCode error_code) {
-    LOG_ERROR << "Error occurred in error callback of GenericPbCodec: "
-              << ErrorToString(error_code);
+    LOG_ERROR_KANON_PROTOBUF << "Error occurred in error callback of GenericPbCodec: "
+                    << ErrorToString(error_code);
     if (conn && conn->IsConnected()) {
       conn->ShutdownWrite();
     }
@@ -58,7 +58,7 @@ void GenericPbCodec::Send(TcpConnectionPtr const &conn,
      force cache it, we can reuse it to avoid computation */
   message->SerializePartialToZeroCopyStream(&stream);
   uint32_t bytes = message->GetCachedSize();
-  LOG_DEBUG << "bytes = " << bytes;
+  LOG_DEBUG_KANON_PROTOBUF << "bytes = " << bytes;
   assert(buffer.GetReadableSize() == bytes + tag_.size());
 
   auto state = XXH32_createState();
@@ -80,12 +80,12 @@ void GenericPbCodec::Send(TcpConnectionPtr const &conn,
   KANON_ASSERT(ok, "XXH32_update() error");
   uint32_t check_sum = XXH32_digest(state);
   XXH32_freeState(state);
-  LOG_DEBUG << "CheckSum = " << check_sum;
+  LOG_DEBUG_KANON_PROTOBUF << "CheckSum = " << check_sum;
 
   buffer.Prepend32(uint32_t(tag_.size() + bytes + kChecksumLength));
   buffer.Append32(check_sum);
 
-  LOG_DEBUG << "buffer readable size = " << buffer.GetReadableSize();
+  LOG_DEBUG_KANON_PROTOBUF << "buffer readable size = " << buffer.GetReadableSize();
 #endif
   assert(buffer.GetReadableSize() ==
          tag_.size() + kSizeLength + bytes + kChecksumLength);
@@ -109,7 +109,7 @@ void GenericPbCodec::OnMessage(TcpConnectionPtr const &conn, Buffer &buffer,
   // Use while here since maybe not just one message in buffer
   while (buffer.GetReadableSize() >= kMinMessageLength) {
     const uint32_t size_header = buffer.GetReadBegin32();
-    LOG_DEBUG_KANON << "size_header = " << size_header;
+    LOG_DEBUG_KANON_PROTOBUF << "size_header = " << size_header;
     if (size_header < kChecksumLength || size_header >= kMaxMessageLength) {
       error_callback_(conn, kInvalidLength);
       break;
@@ -156,7 +156,7 @@ auto GenericPbCodec::Parse(char const *buffer, uint32_t size,
       {
         ret = kParseError;
       } else {
-        LOG_DEBUG_KANON << "[parse message] = " << message.DebugString();
+        LOG_DEBUG_KANON_PROTOBUF << "[parse message] = " << message.DebugString();
       }
     } else {
       ret = kInvalidMessage;
@@ -186,7 +186,7 @@ uint32_t GenericPbCodec::SerializeToBuffer(PROTOBUF::Message const &message,
   auto *begin = reinterpret_cast<uint8_t *>(buffer.GetWriteBegin());
   auto *last = message.SerializeWithCachedSizesToArray(begin);
 
-  LOG_DEBUG_KANON << "[payload] = " << message.DebugString();
+  LOG_DEBUG_KANON_PROTOBUF << "[payload] = " << message.DebugString();
 
   if ((size_t)(last - begin) == has_written_bytes) {
     buffer.AdvanceWrite(has_written_bytes);
@@ -223,8 +223,8 @@ bool GenericPbCodec::CheckCheckSum(void const *buffer, size_t len) noexcept
            kChecksumLength);
   old_checksum = sock::ToHostByteOrder32(old_checksum);
 
-  LOG_DEBUG_KANON << "new_checksum = " << new_checksum;
-  LOG_DEBUG_KANON << "old_checksum = " << old_checksum;
+  LOG_DEBUG_KANON_PROTOBUF << "new_checksum = " << new_checksum;
+  LOG_DEBUG_KANON_PROTOBUF << "old_checksum = " << old_checksum;
   return new_checksum == old_checksum;
 }
 
@@ -250,13 +250,13 @@ void GenericPbCodec::PrintRawMessage(Buffer &buffer)
 {
   auto view = buffer.ToStringView();
   uint32_t checksum = 0;
-  LOG_DEBUG_KANON << "[Size Header] = " << buffer.GetReadBegin32();
-  LOG_DEBUG_KANON << "[tag] = " << view.substr(kSizeLength, tag_.size());
+  LOG_DEBUG_KANON_PROTOBUF << "[Size Header] = " << buffer.GetReadBegin32();
+  LOG_DEBUG_KANON_PROTOBUF << "[tag] = " << view.substr(kSizeLength, tag_.size());
 
   auto checksum_view =
       view.substr(buffer.GetReadableSize() - kChecksumLength, kChecksumLength);
   ::memcpy(&checksum, checksum_view.data(), kChecksumLength);
-  LOG_DEBUG_KANON << "[checksum] = " << sock::ToHostByteOrder32(checksum);
+  LOG_DEBUG_KANON_PROTOBUF << "[checksum] = " << sock::ToHostByteOrder32(checksum);
 }
 
 KANON_INLINE uint32_t GenericPbCodec::GetCheckSum(void const *buffer,
