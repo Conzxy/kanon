@@ -5,8 +5,8 @@
 #include <string.h>
 
 #ifdef KANON_ON_UNIX
-#include <netdb.h>
-#include <sys/socket.h>
+#  include <netdb.h>
+#  include <sys/socket.h>
 #endif
 
 #include "kanon/string/string_view.h"
@@ -139,16 +139,22 @@ InetAddr::InetAddr(StringView addr)
       // ip must be dotted decimal presentation
       if (ip == "*") ip = "0.0.0.0";
       auto const port = addr.substr(colon_pos + 1).ToString();
-      sock::FromIpPort(ip, ::atoi(port.c_str()), addr_);
-      return;
+      auto o_port = StringViewToU16(port);
+      if (o_port) {
+        sock::FromIpPort(ip, *o_port, addr_);
+        return;
+      }
     }
   } else if (addr[0] == '[') {
     auto right_pos = addr.find(']');
     if (right_pos != StringView::npos) {
       auto const ip = addr.substr_range(1, right_pos).ToString();
       auto const port = addr.substr(right_pos + 2).ToString();
-      sock::FromIpPort(ip.c_str(), ::atoi(port.c_str()), addr6_);
-      return;
+      auto o_port = StringViewToU16(port);
+      if (o_port) {
+        sock::FromIpPort(ip, *o_port, addr6_);
+        return;
+      }
     }
   }
 
