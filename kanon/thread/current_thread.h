@@ -6,9 +6,9 @@
 #include "kanon/string/lexical_cast.h"
 
 #ifdef KANON_ON_WIN
-#include "kanon/win/core/thread/current_thread.inl.h"
+#  include "kanon/win/core/thread/current_thread.inl.h"
 #elif defined(KANON_ON_UNIX)
-#include "kanon/linux/core/thread/current_thread.inl.h"
+#  include "kanon/linux/core/thread/current_thread.inl.h"
 #endif
 
 namespace kanon {
@@ -37,8 +37,9 @@ KANON_INLINE void cacheTid() KANON_NOEXCEPT
 {
   t_tid = gettid();
   auto view = lexical_cast<StringView>(t_tid);
-  t_tidLength = view.size();
+  t_tidLength = (int)view.size();
   strncpy(t_tidString, view.data(), view.size());
+  t_tidString[view.size()] = 0;
 }
 
 KANON_INLINE int tid() KANON_NOEXCEPT
@@ -49,10 +50,22 @@ KANON_INLINE int tid() KANON_NOEXCEPT
   return t_tid;
 }
 
-KANON_INLINE char const *tidString() KANON_NOEXCEPT { return t_tidString; }
-KANON_INLINE int tidLength() KANON_NOEXCEPT { return t_tidLength; }
-KANON_INLINE int GetTid() KANON_NOEXCEPT { return t_tid; }
-KANON_INLINE char const *tidName() KANON_NOEXCEPT { return t_name; }
+KANON_INLINE char const *tidString() KANON_NOEXCEPT
+{
+  return t_tidString;
+}
+KANON_INLINE int tidLength() KANON_NOEXCEPT
+{
+  return t_tidLength;
+}
+KANON_INLINE int GetTid() KANON_NOEXCEPT
+{
+  return t_tid;
+}
+KANON_INLINE char const *tidName() KANON_NOEXCEPT
+{
+  return t_name;
+}
 KANON_INLINE bool isMainThread() KANON_NOEXCEPT
 {
   return CurrentThread::t_tid == process::Pid();

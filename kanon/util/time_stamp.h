@@ -137,7 +137,8 @@ class TimeStamp
 
   TimeStamp operator+(double seconds) const KANON_NOEXCEPT
   {
-    return TimeStamp(microseconds_ + seconds * kMicrosecondsPerSeconds_);
+    return TimeStamp(microseconds_ +
+                     (int64_t)(seconds * kMicrosecondsPerSeconds_));
   }
 
   TimeStamp operator+(Microsecond us) const KANON_NOEXCEPT
@@ -157,7 +158,8 @@ class TimeStamp
 
   TimeStamp operator-(double seconds) const KANON_NOEXCEPT
   {
-    return TimeStamp(microseconds_ - seconds * kMicrosecondsPerSeconds_);
+    return TimeStamp(microseconds_ -
+                     int64_t(seconds * kMicrosecondsPerSeconds_));
   }
 
   TimeStamp operator-(Microsecond us) const KANON_NOEXCEPT
@@ -251,6 +253,13 @@ class TimeStamp
   static constexpr int kMicrosecondsPerSeconds_ = 1000000;
 
  private:
+  /**
+   * Following the fileds of `struct timeval`,
+   * the field indicates micorseconds should be signed integer.
+   *
+   * I guess the reason is make operator and compare is intuitive and
+   * easy to use(unsigned compare is to be likely misused).
+   */
   int64_t microseconds_;
 };
 
@@ -279,7 +288,7 @@ KANON_INLINE TimeStamp AddTime(TimeStamp x, double seconds) KANON_NOEXCEPT
 
 KANON_INLINE TimeStamp AddTimeUs(TimeStamp x, uint64_t us) KANON_NOEXCEPT
 {
-  return TimeStamp(x.GetMicrosecondsSinceEpoch() + us);
+  return TimeStamp(x.GetMicrosecondsSinceEpoch() + (int64_t)us);
 }
 
 KANON_INLINE TimeStamp AddTimeMs(TimeStamp x, uint64_t ms) KANON_NOEXCEPT

@@ -15,9 +15,11 @@ else ()
   # FYI https://gcc.gnu.org/onlinedocs/gcc-5.5.0/gcc/Warning-Options.html#Warning-Options
 
   set(CXX_FLAGS 
-  #-Wall
-  -w
+  -Wall
+  -Wno-deprecated-declarations
   -Wextra
+  -Wno-shadow
+  -Wno-attributes
   -Wno-return-local-addr
   -Wno-unused-parameter
   -Wno-unused-function
@@ -30,7 +32,7 @@ else ()
   -Wno-class-memaccess
   -Wno-implicit-fallthrough
   -Wconversion
-  -Wshadow
+  #-Wshadow
   -Wno-maybe-uninitialized
   -Wwrite-strings # in fact, this is default specified
   -pthread

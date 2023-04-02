@@ -5,7 +5,7 @@
 #include <utility>
 #include <stdio.h>
 
-#include "kanon/util/compiler_macro.h"
+#include "kanon/util/macro.h"
 
 // Hide the implementation detail for users
 namespace zstl {
@@ -40,6 +40,13 @@ struct KANON_CORE_API Header : BaseLinkedNode {
   BaseLinkedNode *prev = nullptr;
   size_t count = 0;
 };
+
+KANON_INLINE void swap(Header &x, Header y) KANON_NOEXCEPT
+{
+  std::swap(x.prev, y.prev);
+  std::swap(x.next, y.next);
+  std::swap(x.count, y.count);
+}
 
 // Useful macro for ForwardList<>
 #define GET_LINKED_NODE_VALUE(node) static_cast<Node *>(node)->val

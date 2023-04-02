@@ -8,11 +8,11 @@
 // #define CHUNK_LIST_DEBUG
 
 #ifdef CHUNK_LIST_DEBUG
-#include <stdio.h>
+#  include <stdio.h>
 
-#define DLOG(str, ...) ::printf(str, __VA_ARGS__)
+#  define DLOG(str, ...) ::printf(str, __VA_ARGS__)
 #else
-#define DLOG(str, ...)
+#  define DLOG(str, ...)
 #endif
 
 namespace kanon {
@@ -20,8 +20,8 @@ namespace kanon {
 ChunkList::~ChunkList() KANON_NOEXCEPT
 {
   if (!free_buffers_.empty()) {
-      auto first_size = free_buffers_.front().GetMaxSize();
-      if (first_size < CHUNK_SIZE) buffers_.pop_front_size(first_size);
+    auto first_size = free_buffers_.front().GetMaxSize();
+    if (first_size < CHUNK_SIZE) buffers_.pop_front_size(first_size);
   }
   buffers_.clear_size(CHUNK_SIZE);
   free_buffers_.clear_size(CHUNK_SIZE);
@@ -40,7 +40,7 @@ void ChunkList::Append(void const *data, size_t len)
     DLOG("Last chunk writable size = %zu\n", last_block_wsize);
     if (last_block_wsize > 0) {
       if (last_block_wsize >= len) {
-        last_block->Append(buf, len);
+        last_block->Append(buf, (Chunk::size_type)len);
         assert(last_block->GetWritableSize() == last_block_wsize - len);
         DLOG("len = %zu < writable size of last chunk\n", len);
         return;
@@ -71,7 +71,7 @@ void ChunkList::Append(void const *data, size_t len)
       len -= CHUNK_SIZE;
       buf += CHUNK_SIZE;
     } else {
-      free_buffer->Append(buf, len);
+      free_buffer->Append(buf, (Chunk::size_type)len);
       return;
     }
   }
@@ -99,7 +99,7 @@ void ChunkList::AdvanceRead(size_t len)
 
       len -= rsize;
     } else {
-      first_block->AdvanceRead(len);
+      first_block->AdvanceRead((Chunk::size_type)len);
       return;
     }
   }

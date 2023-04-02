@@ -7,11 +7,11 @@
  * Otherwise, std::min() and std::max() will be replace by these macros.
  */
 #ifdef min
-#undef min
+#  undef min
 #endif
 
 #ifdef max
-#undef max
+#  undef max
 #endif
 
 #include <assert.h>
@@ -49,7 +49,10 @@ class StringArg {
     return data_;
   }
 
-  KANON_INLINE operator char const *() const { return data_; }
+  KANON_INLINE operator char const *() const
+  {
+    return data_;
+  }
 
  private:
   char const *data_;
@@ -149,14 +152,26 @@ class StringView {
   // constexpr operator char const*() const { return data_; }
 
   // capacity
-  constexpr bool empty() const KANON_NOEXCEPT { return len_ == 0; }
+  constexpr bool empty() const KANON_NOEXCEPT
+  {
+    return len_ == 0;
+  }
 
-  constexpr size_type size() const KANON_NOEXCEPT { return len_; }
+  constexpr size_type size() const KANON_NOEXCEPT
+  {
+    return len_;
+  }
 
   // position
-  constexpr char const *begin() const KANON_NOEXCEPT { return data_; }
+  constexpr char const *begin() const KANON_NOEXCEPT
+  {
+    return data_;
+  }
 
-  constexpr char const *end() const KANON_NOEXCEPT { return data_ + len_; }
+  constexpr char const *end() const KANON_NOEXCEPT
+  {
+    return data_ + len_;
+  }
 
   // data access
   constexpr const_reference operator[](size_type n) const KANON_NOEXCEPT
@@ -171,14 +186,20 @@ class StringView {
                      : data_[n];
   }
 
-  constexpr const_reference front() const KANON_NOEXCEPT { return data_[0]; }
+  constexpr const_reference front() const KANON_NOEXCEPT
+  {
+    return data_[0];
+  }
 
   constexpr const_reference back() const KANON_NOEXCEPT
   {
     return data_[len_ - 1];
   }
 
-  constexpr const_pointer data() const KANON_NOEXCEPT { return data_; }
+  constexpr const_pointer data() const KANON_NOEXCEPT
+  {
+    return data_;
+  }
 
   void swap(StringView &rhs) KANON_NOEXCEPT
   {
@@ -193,7 +214,10 @@ class StringView {
     len_ -= n;
   }
 
-  KANON_CONSTEXPR void remove_suffix(size_type n) KANON_NOEXCEPT { len_ -= n; }
+  KANON_CONSTEXPR void remove_suffix(size_type n) KANON_NOEXCEPT
+  {
+    len_ -= n;
+  }
 
   KANON_INLINE size_type copy(char *dst, size_type count,
                               size_type pos = 0) const
@@ -290,9 +314,15 @@ class StringView {
     return npos;
   }
 
-  bool contains(StringView v) const KANON_NOEXCEPT { return find(v) != npos; }
+  bool contains(StringView v) const KANON_NOEXCEPT
+  {
+    return find(v) != npos;
+  }
 
-  bool contains(char c) const KANON_NOEXCEPT { return find(c) != npos; }
+  bool contains(char c) const KANON_NOEXCEPT
+  {
+    return find(c) != npos;
+  }
 
   bool starts_with(StringView v) const KANON_NOEXCEPT
   {
@@ -353,10 +383,12 @@ class StringView {
   size_type find_last_of(StringView v,
                          size_type pos = npos) const KANON_NOEXCEPT
   {
-    int i = static_cast<int>(std::min(len_ - 1, pos));
+    if (KANON_UNLIKELY(len_ == 0)) return npos;
+    auto i = std::min(len_ - 1, pos);
 
-    for (; i >= 0; --i) {
+    for (; i > 0;) {
       if (charInRange(data_[i], v)) return i;
+      if (i == 0) break;
     }
 
     return npos;
@@ -364,10 +396,13 @@ class StringView {
 
   size_type find_last_of(char c, size_type pos = npos) const KANON_NOEXCEPT
   {
-    int i = std::min(len_ - 1, pos);
+    if (KANON_UNLIKELY(len_ == 0)) return npos;
+    auto i = std::min(len_ - 1, pos);
 
-    for (; i >= 0; --i)
+    for (; i > 0; --i) {
       if (data_[i] == c) return pos;
+      if (i == 0) break;
+    }
 
     return npos;
   }
@@ -392,10 +427,12 @@ class StringView {
   size_type find_last_not_of(StringView v,
                              size_type pos = npos) const KANON_NOEXCEPT
   {
-    int i = static_cast<int>(std::min(len_ - 1, pos));
+    if (KANON_UNLIKELY(len_ == 0)) return npos;
+    auto i = std::min(len_ - 1, pos);
 
-    for (; i >= 0; --i) {
+    for (; i > 0; --i) {
       if (!charInRange(data_[i], v)) return i;
+      if (i == 0) break;
     }
 
     return npos;
@@ -403,10 +440,12 @@ class StringView {
 
   size_type find_last_not_of(char c, size_type pos = npos) const KANON_NOEXCEPT
   {
-    int i = static_cast<int>(std::min(len_ - 1, pos));
+    if (KANON_UNLIKELY((len_ == 0))) return npos;
+    auto i = std::min(len_ - 1, pos);
 
-    for (; i >= 0; --i) {
+    for (; i > 0; --i) {
       if (data_[i] == c) return i;
+      if (i == 0) break;
     }
 
     return npos;
@@ -465,7 +504,10 @@ class StringView {
 
   KANON_CORE_API std::vector<std::string> split(StringView spliter = " ") const;
 
-  std::string ToString() const { return std::string{data(), size()}; }
+  std::string ToString() const
+  {
+    return std::string{data(), size()};
+  }
 
  private:
   // helper
@@ -485,7 +527,7 @@ class StringView {
   // static
   // as end indicator or error indicator
  public:
-  static constexpr size_type npos = -1;
+  static constexpr size_type npos = (size_type)-1;
 };
 
 // This is only used for string literal

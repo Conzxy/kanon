@@ -22,15 +22,16 @@ ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
 {
   if (buffer.GetChunkSize() == 1) {
     auto first_chunk = buffer.GetFirstChunk();
-    return sock::Write(fd, buffer.GetFirstChunk()->GetReadBegin(),
-                       first_chunk->GetReadableSize());
+    return (ChunkList::SizeType)sock::Write(
+        fd, buffer.GetFirstChunk()->GetReadBegin(),
+        first_chunk->GetReadableSize());
   }
 
   FixedVector<struct iovec> iovecs(buffer.GetChunkSize());
   auto first_chunk = buffer.begin();
   auto cnt = RoundUpDivideIn2(buffer.GetChunkSize(), IOVEC_MAX);
 
-  int ret = 0;
+  ChunkList::SizeType ret = 0;
 
   while (cnt--) {
     for (auto &x : iovecs) {
@@ -39,10 +40,10 @@ ChunkList::SizeType kanon::ChunkListWriteFd(ChunkList &buffer, FdType fd,
       ++first_chunk;
     }
 
-    auto n = ::writev(fd, iovecs.data(), iovecs.size());
+    auto n = ::writev(fd, iovecs.data(), (int)iovecs.size());
 
     if (n >= 0) {
-      ret += n;
+      ret += (ChunkList::SizeType)n;
     } else {
       saved_errno = errno;
       break;

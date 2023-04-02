@@ -14,7 +14,6 @@
 #include "kanon/string/string_view.h"
 #include "kanon/util/noncopyable.h"
 
-
 #define PROTOBUF ::google::protobuf
 
 namespace google {
@@ -129,8 +128,9 @@ class GenericPbCodec : noncopyable {
    * much faster. \see ${USER_PATH}/include/zlib.h, in linux, ${USER_PATH} might
    * be /usr
    */
-  static inline uint32_t GetCheckSum(void const *buffer, int len) noexcept;
-  static bool CheckCheckSum(void const *buffer, int len) noexcept;
+  static KANON_INLINE uint32_t GetCheckSum(void const *buffer,
+                                           size_t len) noexcept;
+  static bool CheckCheckSum(void const *buffer, size_t len) noexcept;
 
   static char const *ErrorToString(ErrorCode err) noexcept;
 
@@ -159,9 +159,7 @@ class GenericPbCodec : noncopyable {
   ErrorCallback error_callback_;
 };
 
-
 } // namespace internal
-
 } // namespace protobuf
 } // namespace kanon
 

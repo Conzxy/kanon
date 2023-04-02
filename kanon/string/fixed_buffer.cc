@@ -4,7 +4,8 @@
 namespace kanon {
 namespace detail {
 
-unsigned ptrToHexStr(char* buf, uintptr_t p) {
+unsigned ptrToHexStr(char *buf, uintptr_t p)
+{
   static char const hex_digits[] = "0123456789ABCDEF";
   static_assert(sizeof hex_digits == 17, "hex_digits size should be 17");
 
@@ -28,7 +29,7 @@ unsigned ptrToHexStr(char* buf, uintptr_t p) {
   std::reverse(buf, end);
   *end = 0;
 
-  return end - buf;
+  return unsigned(end - buf);
 }
 
 template class FixedBuffer<kSmallStreamSize>;

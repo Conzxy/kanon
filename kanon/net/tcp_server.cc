@@ -18,7 +18,8 @@ using namespace kanon;
 
 static EventLoop *g_loop = nullptr;
 
-KANON_INLINE void SignalHandler(int signo, int expected, char const *msg) KANON_NOEXCEPT
+KANON_INLINE void SignalHandler(int signo, int expected,
+                                char const *msg) KANON_NOEXCEPT
 {
   assert(signo == expected);
   LOG_INFO << msg;
@@ -128,7 +129,7 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
           auto io_loop = conn->GetLoop();
           io_loop->AssertInThread();
 
-          int n = 0;
+          size_t n = 0;
           KANON_UNUSED(n);
           {
             MutexGuard guard(lock_conn_);
@@ -180,7 +181,10 @@ TcpServer::~TcpServer() KANON_NOEXCEPT
   }
 }
 
-void TcpServer::SetLoopNum(int num) KANON_NOEXCEPT { pool_->SetLoopNum(num); }
+void TcpServer::SetLoopNum(int num) KANON_NOEXCEPT
+{
+  pool_->SetLoopNum(num);
+}
 
 void TcpServer::StartRun() KANON_NOEXCEPT
 {
@@ -214,4 +218,7 @@ void TcpServer::StartRun() KANON_NOEXCEPT
   }
 }
 
-bool TcpServer::IsRunning() KANON_NOEXCEPT { return acceptor_->Listening(); }
+bool TcpServer::IsRunning() KANON_NOEXCEPT
+{
+  return acceptor_->Listening();
+}

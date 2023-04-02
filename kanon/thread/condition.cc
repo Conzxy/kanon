@@ -4,7 +4,7 @@
 #include <errno.h>
 
 #if !defined(KANON_ON_UNIX)
-#include <chrono>
+#  include <chrono>
 #endif
 
 static constexpr int64_t NANOSECONDS = 1000000000;
@@ -25,10 +25,11 @@ bool Condition::WaitForSeconds(double seconds)
   spec.tv_sec  = static_cast<time_t>(Now/NANOSECONDS);
   spec.tv_nsec = static_cast<long>(Now%NANOSECONDS);
   */
-  const int64_t NANOSECONDS2 = seconds * NANOSECONDS;
-  spec.tv_sec +=
-      static_cast<time_t>((spec.tv_nsec + NANOSECONDS2) / NANOSECONDS);
-  spec.tv_nsec = static_cast<long>((spec.tv_nsec + NANOSECONDS2) % NANOSECONDS);
+  const auto NANOSECONDS2 = uint64_t(seconds * NANOSECONDS);
+  spec.tv_sec += static_cast<time_t>(
+      ((unsigned long)spec.tv_nsec + NANOSECONDS2) / NANOSECONDS);
+  spec.tv_nsec = static_cast<long>(
+      ((unsigned long)spec.tv_nsec + NANOSECONDS2) % NANOSECONDS);
 
   MutexLock::UnassignHolder holder(mutex_);
   return ETIMEDOUT == pthread_cond_timedwait(&cond_, &mutex_.GetMutex(), &spec);

@@ -22,7 +22,9 @@ namespace kanon {
  */
 class KANON_CORE_NO_API Chunk {
  public:
-  explicit Chunk(size_t sz = 4096)
+  using size_type = unsigned int;
+
+  explicit Chunk(size_type sz = 4096)
     : read_index_(0)
     , write_index_(0)
     , max_size_(sz)
@@ -31,27 +33,31 @@ class KANON_CORE_NO_API Chunk {
 
   ~Chunk() = default;
 
-  void AdvanceRead(size_t len) KANON_NOEXCEPT
+  void AdvanceRead(size_type len) KANON_NOEXCEPT
   {
     assert(read_index_ <= write_index_);
     read_index_ += len;
     assert(read_index_ <= write_index_);
   }
 
-  /* len is signed integer
-     allow back write index */
-  void AdvanceWrite(int len) KANON_NOEXCEPT
+  void AdvanceWrite(size_type len) KANON_NOEXCEPT
   {
     assert(write_index_ <= max_size_);
     write_index_ += len;
     assert(write_index_ <= max_size_);
   }
 
-  void AdvanceReadAll() KANON_NOEXCEPT { AdvanceRead(GetReadableSize()); }
+  void AdvanceReadAll() KANON_NOEXCEPT
+  {
+    AdvanceRead(GetReadableSize());
+  }
 
-  void AdvanceWriteAll() KANON_NOEXCEPT { AdvanceWrite(GetWritableSize()); }
+  void AdvanceWriteAll() KANON_NOEXCEPT
+  {
+    AdvanceWrite(GetWritableSize());
+  }
 
-  void Append(void const *data, size_t len) KANON_NOEXCEPT
+  void Append(void const *data, size_type len) KANON_NOEXCEPT
   {
     assert(len <= GetWritableSize());
     ::memcpy(GetBuf() + write_index_, data, len);
@@ -63,8 +69,14 @@ class KANON_CORE_NO_API Chunk {
     return StringView(GetBuf() + read_index_, write_index_ - read_index_);
   }
 
-  char *GetReadBegin() KANON_NOEXCEPT { return GetBuf() + read_index_; }
-  char *GetWriteBegin() KANON_NOEXCEPT { return GetBuf() + write_index_; }
+  char *GetReadBegin() KANON_NOEXCEPT
+  {
+    return GetBuf() + read_index_;
+  }
+  char *GetWriteBegin() KANON_NOEXCEPT
+  {
+    return GetBuf() + write_index_;
+  }
   char const *GetReadBegin() const KANON_NOEXCEPT
   {
     return GetBuf() + read_index_;
@@ -73,17 +85,23 @@ class KANON_CORE_NO_API Chunk {
   {
     return GetBuf() + write_index_;
   }
-  size_t GetReadableSize() const KANON_NOEXCEPT
+  size_type GetReadableSize() const KANON_NOEXCEPT
   {
     return write_index_ - read_index_;
   }
-  size_t GetWritableSize() const KANON_NOEXCEPT
+  size_type GetWritableSize() const KANON_NOEXCEPT
   {
     return max_size_ - write_index_;
   }
-  size_t GetMaxSize() const KANON_NOEXCEPT { return max_size_; }
+  size_type GetMaxSize() const KANON_NOEXCEPT
+  {
+    return max_size_;
+  }
 
-  void Reset() KANON_NOEXCEPT { read_index_ = write_index_ = 0; }
+  void Reset() KANON_NOEXCEPT
+  {
+    read_index_ = write_index_ = 0;
+  }
 
  private:
   // The buffer in the start position of the padding
@@ -96,9 +114,9 @@ class KANON_CORE_NO_API Chunk {
     return reinterpret_cast<const char *>(this) + sizeof(Chunk);
   }
 
-  size_t read_index_;
-  size_t write_index_;
-  size_t max_size_;
+  size_type read_index_;
+  size_type write_index_;
+  size_type max_size_;
 
   // padding buffer
 };
@@ -157,7 +175,10 @@ class ChunkList final {
   // chunklist to callable
   // since std::function requires callable must be copyable
   // (type erasure need "virtual" copy constructor to support copy)
-  ChunkList(ChunkList const &) { assert(false); }
+  ChunkList(ChunkList const &)
+  {
+    assert(false);
+  }
   ChunkList &operator=(ChunkList const &)
   {
     assert(false);
@@ -167,7 +188,10 @@ class ChunkList final {
   ChunkList &operator=(ChunkList &&other) KANON_NOEXCEPT = default;
 
   KANON_CORE_API void Append(void const *data, size_t len);
-  void Append(StringView data) { Append(data.data(), data.size()); }
+  void Append(StringView data)
+  {
+    Append(data.data(), data.size());
+  }
 
 #define AppendInt_Macro(size)                                                  \
   void Append##size(uint##size##_t i)                                          \
@@ -176,7 +200,10 @@ class ChunkList final {
     Append(&ni, sizeof ni);                                                    \
   }
 
-  void Append8(uint8_t i) { Append(&i, sizeof i); }
+  void Append8(uint8_t i)
+  {
+    Append(&i, sizeof i);
+  }
 
   AppendInt_Macro(16)
   AppendInt_Macro(32)
@@ -239,40 +266,79 @@ class ChunkList final {
   ReadInt_Macro(64)
 
   KANON_CORE_API void AdvanceRead(size_t len);
-  void AdvanceReadAll() { AdvanceRead(GetReadableSize()); }
+  void AdvanceReadAll()
+  {
+    AdvanceRead(GetReadableSize());
+  }
   KANON_CORE_API void Shrink(size_t chunk_size);
   KANON_CORE_API void ReserveFreeChunk(size_t chunk_size);
   KANON_CORE_API void ReserveWriteChunk(size_t chunk_size);
 
-  SizeType GetChunkSize() const KANON_NOEXCEPT { return buffers_.size(); }
+  SizeType GetChunkSize() const KANON_NOEXCEPT
+  {
+    return buffers_.size();
+  }
   SizeType GetFreeChunkSize() const KANON_NOEXCEPT
   {
     return free_buffers_.size();
   }
   KANON_CORE_API SizeType GetReadableSize() const KANON_NOEXCEPT;
 
-  bool IsEmpty() const KANON_NOEXCEPT { return buffers_.empty(); }
-  bool HasReadable() const KANON_NOEXCEPT { return !IsEmpty(); }
+  bool IsEmpty() const KANON_NOEXCEPT
+  {
+    return buffers_.empty();
+  }
+  bool HasReadable() const KANON_NOEXCEPT
+  {
+    return !IsEmpty();
+  }
 
-  Chunk *GetFirstChunk() KANON_NOEXCEPT { return &buffers_.front(); }
+  Chunk *GetFirstChunk() KANON_NOEXCEPT
+  {
+    return &buffers_.front();
+  }
   Chunk const *GetFirstChunk() const KANON_NOEXCEPT
   {
     return &buffers_.front();
   }
-  Chunk *GetLastChunk() KANON_NOEXCEPT { return &buffers_.back(); }
-  Chunk const *GetLastChunk() const KANON_NOEXCEPT { return &buffers_.back(); }
+  Chunk *GetLastChunk() KANON_NOEXCEPT
+  {
+    return &buffers_.back();
+  }
+  Chunk const *GetLastChunk() const KANON_NOEXCEPT
+  {
+    return &buffers_.back();
+  }
 
-  iterator begin() KANON_NOEXCEPT { return buffers_.begin(); }
+  iterator begin() KANON_NOEXCEPT
+  {
+    return buffers_.begin();
+  }
 
-  iterator end() KANON_NOEXCEPT { return buffers_.end(); }
+  iterator end() KANON_NOEXCEPT
+  {
+    return buffers_.end();
+  }
 
-  const_iterator begin() const KANON_NOEXCEPT { return buffers_.begin(); }
+  const_iterator begin() const KANON_NOEXCEPT
+  {
+    return buffers_.begin();
+  }
 
-  const_iterator end() const KANON_NOEXCEPT { return buffers_.end(); }
+  const_iterator end() const KANON_NOEXCEPT
+  {
+    return buffers_.end();
+  }
 
-  const_iterator cbegin() const KANON_NOEXCEPT { return buffers_.begin(); }
+  const_iterator cbegin() const KANON_NOEXCEPT
+  {
+    return buffers_.begin();
+  }
 
-  const_iterator cend() const KANON_NOEXCEPT { return buffers_.end(); }
+  const_iterator cend() const KANON_NOEXCEPT
+  {
+    return buffers_.end();
+  }
 
   void swap(ChunkList &other) KANON_NOEXCEPT
   {
@@ -283,7 +349,10 @@ class ChunkList final {
   // void SetFreeMaxSize(size_t max_size) KANON_NOEXCEPT { free_max_size_ =
   // max_size; } size_t GetFreeMaxSize() const KANON_NOEXCEPT { return
   // free_max_size_; }
-  static SizeType GetSingleChunkSize() KANON_NOEXCEPT { return CHUNK_SIZE; }
+  static SizeType GetSingleChunkSize() KANON_NOEXCEPT
+  {
+    return CHUNK_SIZE;
+  }
 
  private:
   bool PutToFreeChunk() KANON_NOEXCEPT;

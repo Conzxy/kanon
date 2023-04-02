@@ -2,7 +2,7 @@
 #define KANON_CONDVARIABLE_H
 
 #ifndef PTHREAD_CHECK
-#define PTHREAD_CHECK
+#  define PTHREAD_CHECK
 #endif
 
 #include "kanon/util/macro.h"
@@ -10,11 +10,11 @@
 #include <stdio.h>
 
 #ifdef KANON_ON_UNIX
-#include <pthread.h>
-#include "kanon/thread/pthread_macro.h"
+#  include <pthread.h>
+#  include "kanon/thread/pthread_macro.h"
 #else
-#include <condition_variable>
-#include <system_error>
+#  include <condition_variable>
+#  include <system_error>
 #endif
 
 #include "kanon/util/compiler_macro.h"
@@ -55,6 +55,10 @@ class Condition : noncopyable {
   }
 
   KANON_CORE_API bool WaitForSeconds(double seconds);
+  KANON_INLINE bool WaitForSeconds(uint64_t seconds)
+  {
+    return WaitForSeconds((double)seconds);
+  }
 
   void Notify()
   {

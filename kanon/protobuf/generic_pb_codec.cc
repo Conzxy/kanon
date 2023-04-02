@@ -82,7 +82,7 @@ void GenericPbCodec::Send(TcpConnectionPtr const &conn,
   XXH32_freeState(state);
   LOG_DEBUG << "CheckSum = " << check_sum;
 
-  buffer.Prepend32(tag_.size() + bytes + kChecksumLength);
+  buffer.Prepend32(uint32_t(tag_.size() + bytes + kChecksumLength));
   buffer.Append32(check_sum);
 
   LOG_DEBUG << "buffer readable size = " << buffer.GetReadableSize();
@@ -152,7 +152,7 @@ auto GenericPbCodec::Parse(char const *buffer, uint32_t size,
   if (CheckCheckSum(buffer, size - kChecksumLength)) {
     if (0 == ::memcmp(buffer, tag_.data(), tag_.size())) {
       if (!ParseFromBuffer(buffer + tag_.size(),
-                           size - kChecksumLength - tag_.size(), message))
+                           int(size - kChecksumLength - tag_.size()), message))
       {
         ret = kParseError;
       } else {
@@ -197,14 +197,14 @@ uint32_t GenericPbCodec::SerializeToBuffer(PROTOBUF::Message const &message,
                  "you problem?";
   }
 
-  return has_written_bytes;
+  return (uint32_t)has_written_bytes;
 }
 
 uint32_t GenericPbCodec::SerializeToBuffer(Message const &message,
                                            ChunkList &buffer,
                                            uint32_t &chunk_sum)
 {
-  const auto has_written_bytes = message.ByteSizeLong();
+  const auto has_written_bytes = (uint32_t)message.ByteSizeLong();
 
   /* FIXME Not efficient */
   auto raw_buffer = (google::protobuf::uint8 *)malloc(has_written_bytes);
@@ -215,7 +215,7 @@ uint32_t GenericPbCodec::SerializeToBuffer(Message const &message,
   return has_written_bytes;
 }
 
-bool GenericPbCodec::CheckCheckSum(void const *buffer, int len) noexcept
+bool GenericPbCodec::CheckCheckSum(void const *buffer, size_t len) noexcept
 {
   auto new_checksum = GetCheckSum(buffer, len);
   uint32_t old_checksum = 0;
@@ -231,18 +231,18 @@ bool GenericPbCodec::CheckCheckSum(void const *buffer, int len) noexcept
 char const *GenericPbCodec::ErrorToString(ErrorCode err) noexcept
 {
   switch (err) {
-  case kInvalidLength:
-    return "Invalid Length";
-  case kInvalidMessage:
-    return "Invalid Message";
-  case kInvalidChecksum:
-    return "Invalid Checksum";
-  case kParseError:
-    return "Parse Error";
-  case kNoError:
-    return "No Error";
-  default:
-    return "Unknown Error";
+    case kInvalidLength:
+      return "Invalid Length";
+    case kInvalidMessage:
+      return "Invalid Message";
+    case kInvalidChecksum:
+      return "Invalid Checksum";
+    case kParseError:
+      return "Parse Error";
+    case kNoError:
+      return "No Error";
+    default:
+      return "Unknown Error";
   }
 }
 
@@ -259,8 +259,8 @@ void GenericPbCodec::PrintRawMessage(Buffer &buffer)
   LOG_DEBUG_KANON << "[checksum] = " << sock::ToHostByteOrder32(checksum);
 }
 
-inline uint32_t GenericPbCodec::GetCheckSum(void const *buffer,
-                                            int len) noexcept
+KANON_INLINE uint32_t GenericPbCodec::GetCheckSum(void const *buffer,
+                                                  size_t len) noexcept
 {
   return XXH32(buffer, len, 0);
 }

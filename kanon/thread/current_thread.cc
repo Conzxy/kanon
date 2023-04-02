@@ -2,7 +2,6 @@
 
 #include <cstring>
 
-
 // In C++17
 // you can write as:
 // namespace kanon::CurrentThread
@@ -22,6 +21,7 @@ void cacheTid() KANON_NOEXCEPT
   auto view = lexical_cast<StringView>(t_tid);
   t_tidLength = view.size();
   strncpy(t_tidString, view.data(), view.size());
+  t_tidString[view.size()] = 0;
 }
 
 int tid() KANON_NOEXCEPT
@@ -32,11 +32,23 @@ int tid() KANON_NOEXCEPT
   return t_tid;
 }
 
-int GetTid() KANON_NOEXCEPT { return t_tid; }
+int GetTid() KANON_NOEXCEPT
+{
+  return t_tid;
+}
 
-char const *tidString() KANON_NOEXCEPT { return t_tidString; }
-int tidLength() KANON_NOEXCEPT { return t_tidLength; }
-char const *tidName() KANON_NOEXCEPT { return t_name; }
+char const *tidString() KANON_NOEXCEPT
+{
+  return t_tidString;
+}
+int tidLength() KANON_NOEXCEPT
+{
+  return t_tidLength;
+}
+char const *tidName() KANON_NOEXCEPT
+{
+  return t_name;
+}
 
 bool isMainThread() KANON_NOEXCEPT
 {
