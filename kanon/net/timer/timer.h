@@ -24,7 +24,7 @@ class KANON_NET_NO_API Timer : noncopyable {
   // friend class TimerQueue;
   typedef std::function<void()> TimerCallback;
 
-  Timer(TimerCallback cb, TimeStamp expiration, double interval)
+  KANON_INLINE Timer(TimerCallback cb, TimeStamp expiration, double interval)
     : callback_{std::move(cb)}
     , expiration_{expiration}
     , interval_{interval}
@@ -32,19 +32,19 @@ class KANON_NET_NO_API Timer : noncopyable {
   {
   }
 
-  TimeStamp expiration() const KANON_NOEXCEPT { return expiration_; }
-  double interval() const KANON_NOEXCEPT { return interval_; }
-  bool repeat() const KANON_NOEXCEPT { return interval_ > 0.0; }
-  uint64_t sequence() const KANON_NOEXCEPT { return sequence_; }
-  TimerQueue *timer_queue() KANON_NOEXCEPT { return timer_queue_; }
+  KANON_INLINE TimeStamp expiration() const KANON_NOEXCEPT { return expiration_; }
+  KANON_INLINE double interval() const KANON_NOEXCEPT { return interval_; }
+  KANON_INLINE bool repeat() const KANON_NOEXCEPT { return interval_ > 0.0; }
+  KANON_INLINE uint64_t sequence() const KANON_NOEXCEPT { return sequence_; }
+  KANON_INLINE TimerQueue *timer_queue() KANON_NOEXCEPT { return timer_queue_; }
 
-  void BindTimerQueue(TimerQueue *queue) KANON_NOEXCEPT
+  KANON_INLINE void BindTimerQueue(TimerQueue *queue) KANON_NOEXCEPT
   {
     timer_queue_ = queue;
   }
 
-  void run() { callback_(); }
-  void restart(TimeStamp now) KANON_NOEXCEPT
+  KANON_INLINE void run() { callback_(); }
+  KANON_INLINE void restart(TimeStamp now) KANON_NOEXCEPT
   {
     expiration_ = AddTime(now, interval_);
   }
