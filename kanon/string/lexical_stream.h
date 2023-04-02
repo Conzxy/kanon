@@ -204,6 +204,7 @@ class KANON_DEPRECATED_ATTR Fmt {
   size_type len_;
 };
 
+#if 0
 template <unsigned SZ>
 KANON_DEPRECATED_ATTR LexicalStream<SZ> &operator<<(LexicalStream<SZ> &stream,
                                                     Fmt const &fmt)
@@ -211,6 +212,7 @@ KANON_DEPRECATED_ATTR LexicalStream<SZ> &operator<<(LexicalStream<SZ> &stream,
   stream.Append(fmt.buf(), fmt.len());
   return stream;
 }
+#endif
 
 } // namespace kanon
 
