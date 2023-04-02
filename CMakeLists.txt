@@ -45,7 +45,7 @@ if (KANON_INSTALL)
     list(APPEND kanon_export_targets kanon_net)
   endif ()
 
-  if (KANON_BUILD_PROTOBUF)
+  if (KANON_BUILD_PROTOBUF OR KANON_BUILD_PROTOBUF_RPC)
     list(APPEND kanon_export_targets kanon_protobuf)
   endif ()
   if (KANON_BUILD_PROTOBUF_RPC)
