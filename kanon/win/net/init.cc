@@ -11,7 +11,7 @@ void kanon::KanonNetInitialize()
     LOG_TRACE_KANON << "Kanon net resources initialization: OK";
     return;
   }
-  LOG_ERROR << "Kanon net resources initialization: Failed";
+  LOG_ERROR_KANON << "Kanon net resources initialization: Failed";
 
   switch (err) {
     case WSASYSNOTREADY:
@@ -37,7 +37,7 @@ void kanon::KanonNetTeardown() KANON_NOEXCEPT
     const auto err = ::WSAGetLastError();
     switch (err) {
       case WSANOTINITIALISED:
-        LOG_ERROR << "KanonNetTeardown() has called successfully before "
+        LOG_ERROR_KANON << "KanonNetTeardown() has called successfully before "
                      "calling this function";
         break;
       case WSAENETDOWN:
@@ -46,7 +46,7 @@ void kanon::KanonNetTeardown() KANON_NOEXCEPT
       case WSAEINPROGRESS:
         return;
       default:
-        LOG_ERROR << "Kanon net resources teardown: Failed";
+        LOG_ERROR_KANON << "Kanon net resources teardown: Failed";
         LOG_SYSFATAL
             << "Unexpected error occurred when releasing net resources";
     }

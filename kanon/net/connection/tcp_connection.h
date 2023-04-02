@@ -83,7 +83,7 @@ class TcpConnection : public ConnectionBase<TcpConnection> {
         new TcpConnection(loop, name, sockfd, local_addr, peer_addr),
         [](TcpConnection *ptr) {
           KANON_UNUSED(ptr);
-          LOG_TRACE << "Don't delete the connection to reuse";
+          LOG_TRACE_KANON << "Don't delete the connection to reuse";
         });
   }
 

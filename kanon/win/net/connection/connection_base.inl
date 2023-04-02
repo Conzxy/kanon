@@ -26,7 +26,7 @@ void ConnectionBase<D>::HandleRead(TimeStamp recv_time)
     message_callback_(shared_from_this(), input_buffer_, recv_time);
   } else {
     input_buffer_.AdvanceAll();
-    LOG_WARN << "If user want to process message from peer, should set "
+    LOG_WARN_KANON << "If user want to process message from peer, should set "
                 "proper message_callback_";
   }
 
@@ -121,7 +121,7 @@ void ConnectionBase<D>::HandleReadImmediately(size_t readn)
     }
   } else {
     input_buffer_.AdvanceAll();
-    LOG_WARN << "If user want to process message from peer, should set "
+    LOG_WARN_KANON << "If user want to process message from peer, should set "
                 "proper message_callback_";
   }
 

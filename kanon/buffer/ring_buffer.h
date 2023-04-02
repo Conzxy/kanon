@@ -153,7 +153,7 @@ RingBuffer<T>::RingBuffer(size_type n)
 
   status = ::unlink(path);
   if (status < 0) {
-    LOG_SYSERROR << "unlink temp file for ring buffer error";
+    LOG_SYSERROR_KANON << "unlink temp file for ring buffer error";
   }
 
   count_ = ROUNDUP_PGSIZE(n * sizeof(T));
@@ -202,7 +202,7 @@ RingBuffer<T>::RingBuffer(size_type n)
   status = ::close(fd);
 
   if (status < 0) {
-    LOG_SYSERROR << "close temp file for ring buffer error";
+    LOG_SYSERROR_KANON << "close temp file for ring buffer error";
   }
 
   assert(read_index_ == 0);

@@ -70,7 +70,7 @@ TimeStamp Epoller::Poll(int ms, ChannelVec &active_channels)
     // use saved_errno to avoid misunderstand error
     if (saved_errno != EINTR) {
       errno = saved_errno;
-      LOG_SYSERROR << "epoll_wait() error occurred";
+      LOG_SYSERROR_KANON << "epoll_wait() error occurred";
     }
   }
 

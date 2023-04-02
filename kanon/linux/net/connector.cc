@@ -60,7 +60,7 @@ void Connector::Connect()
       break;
 
     default:
-      LOG_SYSERROR << "Unexpected error in Connector::Connect()";
+      LOG_SYSERROR_KANON << "Unexpected error in Connector::Connect()";
       sock::Close(sockfd);
   }
 }
@@ -88,7 +88,7 @@ void Connector::CompleteConnect(FdType sockfd)
 
       if (err) {
         // Fatal errors have handled in Connect()
-        LOG_WARN << "SO_ERROR = " << err << " " << strerror_tl(err);
+        LOG_WARN_KANON << "SO_ERROR = " << err << " " << strerror_tl(err);
         Retry(sockfd);
       } else if (sock::IsSelfConnect(sockfd)) {
         // Self connection happend only when:
@@ -102,7 +102,7 @@ void Connector::CompleteConnect(FdType sockfd)
         // \see /proc/sys/net/ipv4/ip_local_port_range
         // \see
         // https://github.com/pirDOL/kaka/blob/master/Miscellaneous/TCP-client-self-connect.md
-        LOG_WARN << "self connect";
+        LOG_WARN_KANON << "self connect";
         // Discard the client address and retry
         // until self connection is skipped
         Retry(sockfd);
@@ -114,13 +114,13 @@ void Connector::CompleteConnect(FdType sockfd)
           if (new_connection_callback_)
             new_connection_callback_(sockfd);
           else {
-            LOG_WARN << "There is no new connection callback, cannot to create "
+            LOG_WARN_KANON << "There is no new connection callback, cannot to create "
                         "connection";
           }
           LOG_TRACE_KANON << "Connection is established successfully";
         } else {
           // Must after Stop() is called
-          LOG_WARN << "Cannot to complete connect since user stop it";
+          LOG_WARN_KANON << "Cannot to complete connect since user stop it";
           sock::Close(sockfd);
         }
       }
@@ -133,7 +133,7 @@ void Connector::CompleteConnect(FdType sockfd)
       ResetChannel();
       int err = sock::GetSocketError(sockfd);
       if (err) {
-        LOG_ERROR << "SO_ERROR = " << err << " " << strerror_tl(err);
+        LOG_ERROR_KANON << "SO_ERROR = " << err << " " << strerror_tl(err);
       }
 
       Retry(sockfd);

@@ -19,7 +19,7 @@ TimerQueue::~TimerQueue() KANON_NOEXCEPT { DeleteTimerQueueEx(timer_queue_, NULL
 
 VOID kanon::timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired)
 {
-  LOG_TRACE << "Timer callback";
+  LOG_TRACE_KANON << "Timer callback";
   if (timer_fired) {
     auto timer = (Timer *)ctx;
     timer->timer_queue()->loop()->QueueToLoop([timer]() {
@@ -28,7 +28,7 @@ VOID kanon::timer_callback(_In_ PVOID ctx, _In_ BOOLEAN timer_fired)
         timer->timer_queue()->timer_map_.erase(timer->sequence());
     });
   } else {
-    LOG_WARN << "This is maybe not a valid timer";
+    LOG_WARN_KANON << "This is maybe not a valid timer";
   }
 }
 

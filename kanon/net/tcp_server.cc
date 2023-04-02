@@ -22,14 +22,14 @@ KANON_INLINE void SignalHandler(int signo, int expected,
                                 char const *msg) KANON_NOEXCEPT
 {
   assert(signo == expected);
-  LOG_INFO << msg;
+  LOG_INFO_KANON << msg;
 
   if (g_loop) {
-    LOG_INFO << "The event loop is quiting...";
+    LOG_INFO_KANON << "The event loop is quiting...";
     g_loop->Quit();
   }
 
-  LOG_INFO << "The server exit successfully";
+  LOG_INFO_KANON << "The server exit successfully";
 }
 
 #ifdef KANON_ON_UNIX
@@ -103,10 +103,10 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
       conn = TcpConnection::NewTcpConnection(io_loop, conn_name, cli_sock, local_addr, cli_addr);  
     }
 #else
-        LOG_TRACE << "Pool block num = " << conn_pool_.GetBlockNum();
-        LOG_TRACE << "Pool usage = "
+        LOG_TRACE_KANON << "Pool block num = " << conn_pool_.GetBlockNum();
+        LOG_TRACE_KANON << "Pool usage = "
                   << conn_pool_.GetUsage(sizeof(TcpConnection));
-        LOG_TRACE << "The number of alive connections: " << connections_.size();
+        LOG_TRACE_KANON << "The number of alive connections: " << connections_.size();
 
         auto conn =
             enable_pool_
@@ -134,7 +134,7 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
           {
             MutexGuard guard(lock_conn_);
             n = connections_.erase(conn->GetName());
-            LOG_TRACE << "The number of alive connections(closing): "
+            LOG_TRACE_KANON << "The number of alive connections(closing): "
                       << connections_.size();
           }
 
@@ -148,10 +148,10 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
 #if 0
           if (conn.use_count() != 1) return;
           if (conn_pool_.IsFull()) {
-            LOG_TRACE << "Delete the connection since pool is full";
+            LOG_TRACE_KANON << "Delete the connection since pool is full";
             delete conn.get();
           } else {
-            LOG_TRACE << "Push the connection to pool";
+            LOG_TRACE_KANON << "Push the connection to pool";
             auto raw_conn = conn.get();
             raw_conn->~TcpConnection();
             conn_pool_.Push(raw_conn);
@@ -211,7 +211,7 @@ void TcpServer::StartRun() KANON_NOEXCEPT
         init_cb_(loop_);
       }
       pool_->StartRun(init_cb_);
-      LOG_INFO << "Listening in " << ip_port_;
+      LOG_INFO_KANON << "Listening in " << ip_port_;
       acceptor_->Listen();
       start_once_ = true;
     });

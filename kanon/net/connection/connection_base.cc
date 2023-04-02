@@ -55,7 +55,7 @@ void ConnectionBase<D>::ConnectionEstablished()
   // and call the OnConnection callback which
   // is set by user or default.
   channel_->EnableReading();
-  LOG_DEBUG << "Fd = " << channel_->GetFd();
+  LOG_DEBUG_KANON << "Fd = " << channel_->GetFd();
 
 #ifdef KANON_ON_WIN
   int saved_errno = 0;
@@ -109,7 +109,7 @@ void ConnectionBase<D>::HandleLtRead(TimeStamp recv_time)
     errno = saved_errno;
 
     if (errno != EAGAIN) {
-      LOG_SYSERROR << "Read event handle error";
+      LOG_SYSERROR_KANON << "Read event handle error";
       HandleError();
     }
   } else if (n == 0) {
@@ -127,7 +127,7 @@ void ConnectionBase<D>::HandleLtRead(TimeStamp recv_time)
       message_callback_(this->shared_from_this(), input_buffer_, recv_time);
     } else {
       input_buffer_.AdvanceAll();
-      LOG_WARN << "If user want to process message from peer, should set "
+      LOG_WARN_KANON << "If user want to process message from peer, should set "
                   "proper message_callback_";
     }
   }
@@ -160,7 +160,7 @@ void ConnectionBase<D>::HandleEtRead(TimeStamp recv_time)
 
     if (saved_errno != 0) {
       if (saved_errno != EAGAIN) {
-        LOG_SYSERROR << "Read event handle error";
+        LOG_SYSERROR_KANON << "Read event handle error";
         HandleError();
       } else {
         break;
@@ -181,7 +181,7 @@ void ConnectionBase<D>::HandleEtRead(TimeStamp recv_time)
       message_callback_(this->shared_from_this(), input_buffer_, recv_time);
     } else {
       input_buffer_.AdvanceAll();
-      LOG_WARN << "If user want to process message from peer, should set "
+      LOG_WARN_KANON << "If user want to process message from peer, should set "
                   "proper message_callback_";
     }
   }
@@ -210,7 +210,7 @@ void ConnectionBase<D>::HandleLtWrite()
                   << ", fd: " << channel_->GetFd() << "]";
 
   if (saved_errno && saved_errno != EAGAIN) {
-    LOG_SYSERROR << "Write event handle error";
+    LOG_SYSERROR_KANON << "Write event handle error";
     HandleError();
   }
 
@@ -293,7 +293,7 @@ void ConnectionBase<D>::HandleEtWrite()
 
     if (saved_errno) {
       if (saved_errno != EAGAIN) {
-        LOG_SYSERROR << "Write event handle error";
+        LOG_SYSERROR_KANON << "Write event handle error";
         HandleError();
       }
     }
@@ -332,7 +332,7 @@ void ConnectionBase<D>::HandleError()
 {
   loop_->AssertInThread();
   int err = sock::GetSocketError(channel_->GetFd());
-  LOG_SYSERROR << "ConnectionBase<D> [" << name_ << "] - [errno: " << err
+  LOG_SYSERROR_KANON << "ConnectionBase<D> [" << name_ << "] - [errno: " << err
                << "; errmsg: " << strerror_tl(err) << "]";
 }
 

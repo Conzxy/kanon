@@ -51,7 +51,7 @@ static KANON_INLINE int CreateEventFd() KANON_NOEXCEPT
   LOG_TRACE_KANON << "eventfd: " << evfd << " created";
 
   if (evfd < 0) {
-    LOG_SYSERROR << "eventfd() error occurred";
+    LOG_SYSERROR_KANON << "eventfd() error occurred";
   }
 
   return evfd;
@@ -68,14 +68,14 @@ static KANON_INLINE void ReadEventFd(int evfd) KANON_NOEXCEPT
 {
   uint64_t dummy;
   if (sizeof dummy != ::read(evfd, &dummy, sizeof dummy))
-    LOG_SYSERROR << "ReadEventFd() error occurred";
+    LOG_SYSERROR_KANON << "ReadEventFd() error occurred";
 }
 
 static KANON_INLINE void WriteEventFd(int evfd) KANON_NOEXCEPT
 {
   uint64_t dummy = 1;
   if (sizeof dummy != ::write(evfd, &dummy, sizeof dummy))
-    LOG_SYSERROR << "WriteEventFd() error occurred";
+    LOG_SYSERROR_KANON << "WriteEventFd() error occurred";
 }
 #endif
 
@@ -180,13 +180,13 @@ void EventLoop::RunInLoop(FunctorCallback cb)
       cb();
     }
     catch (std::exception const &ex) {
-      LOG_ERROR << "std::exception(including its derived class) is caught in "
+      LOG_ERROR_KANON << "std::exception(including its derived class) is caught in "
                    "RunInLoop()";
-      LOG_ERROR << "Reason: " << ex.what();
+      LOG_ERROR_KANON << "Reason: " << ex.what();
       KANON_RETHROW;
     }
     catch (...) {
-      LOG_ERROR << "Unknown exception is caught in RunInLoop()";
+      LOG_ERROR_KANON << "Unknown exception is caught in RunInLoop()";
       KANON_RETHROW;
     }
   } else {
@@ -248,13 +248,13 @@ void EventLoop::CallFunctors()
       }
     }
     catch (std::exception const &ex) {
-      LOG_ERROR << "std::exception caught in CallFunctors()";
-      LOG_ERROR << "Reason: " << ex.what();
+      LOG_ERROR_KANON << "std::exception caught in CallFunctors()";
+      LOG_ERROR_KANON << "Reason: " << ex.what();
       calling_functors_ = false;
       KANON_RETHROW;
     }
     catch (...) {
-      LOG_ERROR << "Unknown exception caught in CallFunctors()";
+      LOG_ERROR_KANON << "Unknown exception caught in CallFunctors()";
       calling_functors_ = false;
       KANON_RETHROW;
     }
@@ -300,7 +300,7 @@ void EventLoop::Quit() KANON_NOEXCEPT
 
 TimerId EventLoop::RunAt(TimerCallback cb, TimeStamp expiration)
 {
-  LOG_DEBUG << "expiration = " << expiration.ToFormattedString();
+  LOG_DEBUG_KANON << "expiration = " << expiration.ToFormattedString();
   return timer_queue_->AddTimer(std::move(cb), expiration,
                                 0.0);
 }

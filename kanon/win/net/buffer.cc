@@ -12,7 +12,7 @@ using namespace kanon;
 void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
                               void *overlap)
 {
-  LOG_TRACE << "BufferOverlapRecv(), fd = " << fd;
+  LOG_TRACE_KANON << "BufferOverlapRecv(), fd = " << fd;
 
   auto conn = (TcpConnection *)overlap;
   auto ch = conn->channel();
@@ -34,14 +34,14 @@ void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,
   switch (ret) {
     case 0: // Complete immediately
     {
-      LOG_TRACE << "WSARecv() complete immediately";
+      LOG_TRACE_KANON << "WSARecv() complete immediately";
       // conn->HandleReadImmediately(recv_bytes);
     } break;
 
     case SOCKET_ERROR: {
       auto err = WSAGetLastError();
       if (err != WSA_IO_PENDING) {
-        LOG_SYSERROR << "Failed to call WSARecv()";
+        LOG_SYSERROR_KANON << "Failed to call WSARecv()";
       }
     } break;
   }

@@ -33,8 +33,8 @@ void Connector::Connect()
   if (!ret) {
     auto saved_errno = ::WSAGetLastError();
     auto err = GetLastError();
-    LOG_ERROR << "err = " << err;
-    LOG_ERROR << "wsa error = " << saved_errno;
+    LOG_ERROR_KANON << "err = " << err;
+    LOG_ERROR_KANON << "wsa error = " << saved_errno;
     switch (saved_errno) {
       case WSA_IO_PENDING:
         // case WSAEINPROGRESS:
@@ -49,7 +49,7 @@ void Connector::Connect()
         Retry(sockfd);
         break;
       default:
-        LOG_SYSERROR << "Failed to call ConnectEx()";
+        LOG_SYSERROR_KANON << "Failed to call ConnectEx()";
         sock::Close(sockfd);
         ResetChannel();
         ::WSACleanup();
@@ -82,14 +82,14 @@ void Connector::CompleteConnect(FdType sockfd)
                                 (char *)&seconds, (PINT)&bytes);
       bool can_retry = false;
       if (iResult != NO_ERROR) {
-        LOG_SYSERROR << "Failed to call getsockopt(SO_CONNECT_TIME)";
+        LOG_SYSERROR_KANON << "Failed to call getsockopt(SO_CONNECT_TIME)";
         can_retry = true;
       } else {
         if (seconds == (0xffffffff)) {
-          LOG_DEBUG << "Connection isn't established!";
+          LOG_DEBUG_KANON << "Connection isn't established!";
           can_retry = true;
         } else {
-          LOG_DEBUG << "Connection has been established " << seconds
+          LOG_DEBUG_KANON << "Connection has been established " << seconds
                     << " seconds";
         }
       }
@@ -103,13 +103,13 @@ void Connector::CompleteConnect(FdType sockfd)
       if (setsockopt(sockfd, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT,
                      (char const *)&flag, sizeof(flag)))
       {
-        LOG_SYSERROR << "Failed to setsockopt(SO_UPDATE_CONNECT_CONTEXT)";
+        LOG_SYSERROR_KANON << "Failed to setsockopt(SO_UPDATE_CONNECT_CONTEXT)";
       }
 
       if (err) {
         // Fatal errors have handled in Connect()
-        LOG_WARN << "SO_ERROR = " << err << " " << strerror_tl(err);
-        LOG_SYSERROR << "GetOverlappedResult(): ";
+        LOG_WARN_KANON << "SO_ERROR = " << err << " " << strerror_tl(err);
+        LOG_SYSERROR_KANON << "GetOverlappedResult(): ";
         Retry(sockfd);
       } else if (sock::IsSelfConnect(sockfd)) {
         // Self connection happend only when:
@@ -123,7 +123,7 @@ void Connector::CompleteConnect(FdType sockfd)
         // \see /proc/sys/net/ipv4/ip_local_port_range
         // \see
         // https://github.com/pirDOL/kaka/blob/master/Miscellaneous/TCP-client-self-connect.md
-        LOG_WARN << "self connect";
+        LOG_WARN_KANON << "self connect";
         // Discard the client address and retry
         // until self connection is skipped
         Retry(sockfd);
@@ -134,13 +134,13 @@ void Connector::CompleteConnect(FdType sockfd)
           if (new_connection_callback_) {
             new_connection_callback_(sockfd);
           } else {
-            LOG_WARN << "There is no new connection callback, cannot to create "
+            LOG_WARN_KANON << "There is no new connection callback, cannot to create "
                         "connection";
           }
           LOG_TRACE_KANON << "Connection is established successfully";
         } else {
           // Must after Stop() is called
-          LOG_WARN << "Cannot to complete connect since user stop it";
+          LOG_WARN_KANON << "Cannot to complete connect since user stop it";
           sock::Close(sockfd);
         }
       }
@@ -153,7 +153,7 @@ void Connector::CompleteConnect(FdType sockfd)
       ResetChannel();
       int err = sock::GetSocketError(sockfd);
       if (err) {
-        LOG_ERROR << "SO_ERROR = " << err << " " << strerror_tl(err);
+        LOG_ERROR_KANON << "SO_ERROR = " << err << " " << strerror_tl(err);
       }
 
       Retry(sockfd);

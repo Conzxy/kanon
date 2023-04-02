@@ -84,7 +84,7 @@ void Connector::Restrat()
      *      if connection is not established.
      */
     if (state_ != kConnected) {
-      // LOG_WARN << "Restart() must be used for reconnecting when passive
+      // LOG_WARN_KANON << "Restart() must be used for reconnecting when passive
       // closed by peer";
     }
     SetState(State::kDisconnected);

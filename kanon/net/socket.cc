@@ -40,7 +40,7 @@ void Socket::ShutdownWrite() KANON_NOEXCEPT
   LOG_TRACE_KANON << "Shutdown peer in write direction";
 
   if (sock::ShutdownWrite(fd_)) {
-    LOG_SYSERROR << "Shutdown write error";
+    LOG_SYSERROR_KANON << "Shutdown write error";
   }
 }
 
@@ -49,6 +49,6 @@ void Socket::ShutdownTwoDirection() KANON_NOEXCEPT
   LOG_TRACE_KANON << "Shutdown peer in two dierction(read/write)";
 
   if (sock::ShutdownTwoDirection(fd_)) {
-    LOG_SYSERROR << "Shutdown read/write error";
+    LOG_SYSERROR_KANON << "Shutdown read/write error";
   }
 }

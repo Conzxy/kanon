@@ -37,6 +37,10 @@ static char const *g_logLevelColor[] = {CYAN, BLUE,  GREEN, YELLOW,
 static Logger::LogLevel initLogLevel() KANON_NOEXCEPT
 {
   if (!g_all_log) return Logger::KANON_LL_OFF;
+  auto log_enable = ::getenv("KANON_LOG_ENABLE");
+  if (log_enable && !StrCaseCompare(log_enable, "0")) {
+    g_kanon_log = 0;
+  }
 
   auto log_level = ::getenv("KANON_LOG");
   if (!log_level) return Logger::LogLevel::KANON_LL_INFO;
