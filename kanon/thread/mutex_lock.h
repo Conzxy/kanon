@@ -4,9 +4,9 @@
 #include "kanon/util/macro.h"
 
 #ifdef KANON_ON_UNIX
-#include <pthread.h>
+#  include <pthread.h>
 #else
-#include <mutex>
+#  include <mutex>
 #endif
 
 #include "kanon/util/noncopyable.h"
@@ -18,9 +18,9 @@
 // The attributes can be safely erased when compiling with other compilers.
 // \see https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
 #if defined(__clang__) && (!defined(SWIG))
-#define THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
+#  define THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
 #else
-#define THREAD_ANNOTATION_ATTRIBUTE__(x) // no-op
+#  define THREAD_ANNOTATION_ATTRIBUTE__(x) // no-op
 #endif
 
 #define CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
@@ -100,9 +100,15 @@ class CAPABILITY("mutexlock") MutexLock : noncopyable {
 #endif
   }
 
-  bool IsLockedInThisThread() { return holder_ == CurrentThread::tid(); }
+  bool IsLockedInThisThread()
+  {
+    return holder_ == CurrentThread::tid();
+  }
 
-  void AssertLocked() { ASSERT(IsLockedInThisThread()); }
+  void AssertLocked()
+  {
+    ASSERT(IsLockedInThisThread());
+  }
 
   void Lock() ACQUIRE()
   {
@@ -155,7 +161,10 @@ class CAPABILITY("mutexlock") MutexLock : noncopyable {
   }
 #endif
 
-  MutexT &GetMutex() { return mutex_; }
+  MutexT &GetMutex()
+  {
+    return mutex_;
+  }
 
  private:
   friend class Condition;
@@ -168,15 +177,24 @@ class CAPABILITY("mutexlock") MutexLock : noncopyable {
       mutex_.unassignHolder();
     }
 
-    ~UnassignHolder() { mutex_.assignHolder(); }
+    ~UnassignHolder()
+    {
+      mutex_.assignHolder();
+    }
 
    private:
     MutexLock &mutex_;
   };
 
-  void assignHolder() KANON_NOEXCEPT { holder_ = CurrentThread::tid(); }
+  void assignHolder() KANON_NOEXCEPT
+  {
+    holder_ = CurrentThread::tid();
+  }
 
-  void unassignHolder() KANON_NOEXCEPT { holder_ = 0; }
+  void unassignHolder() KANON_NOEXCEPT
+  {
+    holder_ = 0;
+  }
 
  private:
 #ifdef KANON_ON_UNIX
@@ -196,7 +214,10 @@ class SCOPED_CAPABILITY MutexGuard : noncopyable {
     mutex_.Lock();
   }
 
-  ~MutexGuard() RELEASE() { mutex_.Unlock(); }
+  ~MutexGuard() RELEASE()
+  {
+    mutex_.Unlock();
+  }
 
  private:
   MutexLock &mutex_;
@@ -211,7 +232,10 @@ class SCOPED_CAPABILITY MutexGuardT : noncopyable {
     mutex_.Lock();
   }
 
-  ~MutexGuardT() RELEASE() { mutex_.Unlock(); }
+  ~MutexGuardT() RELEASE()
+  {
+    mutex_.Unlock();
+  }
 
  private:
   T &mutex_;
@@ -224,6 +248,10 @@ class SCOPED_CAPABILITY MutexGuardT : noncopyable {
 #define MutexGuardT(x)                                                         \
   static_assert(sizeof(x) < 0, "error useage of MutexGuard"                    \
                                "(i.e. tempory object)");
+#define KANON_MUTEX_GUARD(obj__) MutexGuard mutex_guard___##obj__(obj__)
+
+#define KANON_MUTEX_LOCKTYPE_GUARD(lock_type__, obj__)                         \
+  MutexGuardT<lock_type__> mutex_guard_##lock_type__##_##obj__(obj__)
 
 } // namespace kanon
 
