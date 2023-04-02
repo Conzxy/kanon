@@ -58,7 +58,7 @@ KANON_INLINE LogFile<T>::~LogFile() KANON_NOEXCEPT
 template <bool T>
 void LogFile<T>::Append(char const *data, size_t num) KANON_NOEXCEPT
 {
-  MutexGuardT<MutexPolicy> guard(lock_);
+  KANON_MUTEX_LOCKTYPE_GUARD(MutexPolicy, lock_);
 
   file_->Append(data, num);
 
@@ -90,7 +90,7 @@ void LogFile<T>::Append(char const *data, size_t num) KANON_NOEXCEPT
     log_files_dup_.swap(log_files_);
     log_files_.emplace_back(std::move(last_file));
 
-    MutexGuard guard(remove_mtx_);
+    KANON_MUTEX_GUARD(remove_mtx_);
     remove_cond_.Notify();
   }
 }

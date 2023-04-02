@@ -32,7 +32,8 @@ static KANON_INLINE int CreateTimerFd() KANON_NOEXCEPT
   return timerfd;
 }
 
-static KANON_INLINE struct timespec GetTimeFromNow(TimeStamp time) KANON_NOEXCEPT
+static KANON_INLINE struct timespec
+GetTimeFromNow(TimeStamp time) KANON_NOEXCEPT
 {
   int64_t interval = time.GetMicrosecondsSinceEpoch() -
                      TimeStamp::Now().GetMicrosecondsSinceEpoch();
@@ -47,9 +48,10 @@ static KANON_INLINE struct timespec GetTimeFromNow(TimeStamp time) KANON_NOEXCEP
   return expire;
 }
 
-static KANON_INLINE struct timespec GetTimerInterval(double interval) KANON_NOEXCEPT
+static KANON_INLINE struct timespec
+GetTimerInterval(double interval) KANON_NOEXCEPT
 {
-  const int64_t val = interval * kNanosecond;
+  const int64_t val = int64_t(interval * kNanosecond);
   struct timespec spec;
 
   spec.tv_sec = static_cast<time_t>(val / kNanosecond);
@@ -68,7 +70,7 @@ static KANON_INLINE void PrintItimerspec(struct itimerspec const &spec)
 }
 
 static KANON_INLINE void SetTimerFd(int timerfd, Timer const &timer,
-                              bool set_interval = false) KANON_NOEXCEPT
+                                    bool set_interval = false) KANON_NOEXCEPT
 {
   struct itimerspec new_value;
   MemoryZero(new_value.it_interval);

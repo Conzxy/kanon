@@ -37,7 +37,7 @@ KANON_INLINE void cacheTid() KANON_NOEXCEPT
 {
   t_tid = gettid();
   auto view = lexical_cast<StringView>(t_tid);
-  t_tidLength = view.size();
+  t_tidLength = (int)view.size();
   strncpy(t_tidString, view.data(), view.size());
   t_tidString[view.size()] = 0;
 }

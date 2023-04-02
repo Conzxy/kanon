@@ -55,10 +55,10 @@ void ConnectionBase<D>::ConnectionEstablished()
   // and call the OnConnection callback which
   // is set by user or default.
   channel_->EnableReading();
-  int saved_errno = 0;
   LOG_DEBUG << "Fd = " << channel_->GetFd();
 
 #ifdef KANON_ON_WIN
+  int saved_errno = 0;
   kanon::BufferOverlapRecv(input_buffer_, channel_->GetFd(), saved_errno, this);
 #endif
   LOG_TRACE_KANON << "Connection [" << name_ << "] is established";
@@ -528,9 +528,9 @@ void ConnectionBase<D>::SetChannel(std::unique_ptr<Channel> ch)
   channel_->SetCloseCallback(std::bind(&ConnectionBase::HandleClose, this));
 }
 #ifdef KANON_ON_WIN
-#include "kanon/win/net/connection/connection_base.inl"
+#  include "kanon/win/net/connection/connection_base.inl"
 #elif defined(KANON_ON_UNIX)
-#include "kanon/linux/net/connection/connection_base.inl"
+#  include "kanon/linux/net/connection/connection_base.inl"
 #endif
 
 #include "tcp_connection.h"
@@ -555,7 +555,10 @@ template class ConnectionBase<TcpConnection>;
 
 #ifdef KANON_ON_UNIX
 struct IgnoreSignalPipe {
-  IgnoreSignalPipe() { ::signal(SIGPIPE, SIG_IGN); }
+  IgnoreSignalPipe()
+  {
+    ::signal(SIGPIPE, SIG_IGN);
+  }
 };
 
 static IgnoreSignalPipe dummy_ignore_singal_pipe{};

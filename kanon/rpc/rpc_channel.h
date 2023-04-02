@@ -125,14 +125,15 @@ class RpcChannel
     PROTOBUF::Closure *done;
   };
 
+  using IdType = uint64_t;
   /**
    * OutstandingCall is a pair of <response, done>
    * response and done is filled by client
    * ! Used for client side
    */
-  std::unordered_map<int, OutstandingCall> outstanding_calls_;
+  std::unordered_map<IdType, OutstandingCall> outstanding_calls_;
 
-  std::unordered_map<int, OutstandingCall> canceling_calls_;
+  std::unordered_map<IdType, OutstandingCall> canceling_calls_;
 };
 
 } // namespace rpc

@@ -31,24 +31,44 @@ class FixedBuffer {
   using Self = FixedBuffer;
 
  public:
+  using size_type = unsigned;
+
   FixedBuffer()
     : len_(0)
   {
   }
 
   // prohibit modify througt data()
-  char const *data() const KANON_NOEXCEPT { return data_; }
+  char const *data() const KANON_NOEXCEPT
+  {
+    return data_;
+  }
 
   // length, avaliable space
-  unsigned len() const KANON_NOEXCEPT { return len_; }
+  unsigned len() const KANON_NOEXCEPT
+  {
+    return len_;
+  }
 
-  StringView ToStringView() const KANON_NOEXCEPT { return StringView(data_, len_); }
+  StringView ToStringView() const KANON_NOEXCEPT
+  {
+    return StringView(data_, len_);
+  }
 
-  bool empty() const KANON_NOEXCEPT { return len() == 0; }
+  bool empty() const KANON_NOEXCEPT
+  {
+    return len() == 0;
+  }
 
-  unsigned avali() const KANON_NOEXCEPT { return SZ - len_; }
+  unsigned avali() const KANON_NOEXCEPT
+  {
+    return SZ - len_;
+  }
 
-  char const *end() const KANON_NOEXCEPT { return data_ + SZ; }
+  char const *end() const KANON_NOEXCEPT
+  {
+    return data_ + SZ;
+  }
 
   // append
   void Append(char const *str, unsigned len) KANON_NOEXCEPT
@@ -60,7 +80,10 @@ class FixedBuffer {
     }
   }
 
-  void Append(StringView str) KANON_NOEXCEPT { Append(str.data(), str.size()); }
+  void Append(StringView str) KANON_NOEXCEPT
+  {
+    Append(str.data(), (size_type)str.size());
+  }
 
   template <typename T>
   void appendInt(T i) KANON_NOEXCEPT
@@ -80,7 +103,10 @@ class FixedBuffer {
     }
   }
 
-  void appendChar(char c) KANON_NOEXCEPT { Append(&c, 1); }
+  void appendChar(char c) KANON_NOEXCEPT
+  {
+    Append(&c, 1);
+  }
 
   void appendFloat(double d) KANON_NOEXCEPT
   {
@@ -108,9 +134,15 @@ class FixedBuffer {
 
   // inplace modify
   // cur() -> set()
-  char *cur() KANON_NOEXCEPT { return data_ + len_; }
+  char *cur() KANON_NOEXCEPT
+  {
+    return data_ + len_;
+  }
 
-  void reset() KANON_NOEXCEPT { len_ = 0; }
+  void reset() KANON_NOEXCEPT
+  {
+    len_ = 0;
+  }
 
   void AdvanceRead(unsigned diff) KANON_NOEXCEPT
   {
@@ -124,7 +156,10 @@ class FixedBuffer {
     std::swap(len_, other.len_);
   }
 
-  void zero() KANON_NOEXCEPT { ::memset(data_, 0, SZ); }
+  void zero() KANON_NOEXCEPT
+  {
+    ::memset(data_, 0, SZ);
+  }
 
  private:
   static constexpr unsigned kMaxIntSize = 32;
@@ -141,8 +176,8 @@ class FixedBuffer {
 // constexpr unsigned FixedBuffer<SZ>::kMaxIntSize;
 
 template <unsigned SZ>
-void swap(FixedBuffer<SZ> &lhs,
-          FixedBuffer<SZ> &rhs) KANON_NOEXCEPT_OP(KANON_NOEXCEPT_OP(lhs.swap(rhs)))
+void swap(FixedBuffer<SZ> &lhs, FixedBuffer<SZ> &rhs)
+    KANON_NOEXCEPT_OP(KANON_NOEXCEPT_OP(lhs.swap(rhs)))
 {
   lhs.swap(rhs);
 }
@@ -170,7 +205,7 @@ unsigned int2Str(char *buf, T integer)
   *end = 0;
   std::reverse(buf, end);
 
-  return end - buf;
+  return unsigned(end - buf);
 }
 
 } // namespace detail

@@ -80,10 +80,10 @@ void RpcChannel::SendRpcRequest(RpcMessage &message, Message *response,
   if (done) {
     // outstanding_calls_.emplace_hint(outstanding_calls_.end(), message.id(),
     //                                 OutstandingCall{response, done});
-    outstanding_calls_.emplace(message.id(),
-                               OutstandingCall{response, done});
+    outstanding_calls_.emplace(message.id(), OutstandingCall{response, done});
   } else {
-    KANON_ASSERT(!response, "Notifiction(done is NULL) no need to set response");
+    KANON_ASSERT(!response,
+                 "Notifiction(done is NULL) no need to set response");
   }
 
   if (controller->deadline() != INVALID_DEADLINE)
@@ -93,8 +93,11 @@ void RpcChannel::SendRpcRequest(RpcMessage &message, Message *response,
 
   if (controller->deadline() != INVALID_DEADLINE) {
     auto id = message.id();
-    conn_->GetLoop()->RunAt([this, id]() { outstanding_calls_.erase(id); },
-                                 TimeStamp(controller->deadline() * 1000));
+    conn_->GetLoop()->RunAt(
+        [this, id]() {
+          outstanding_calls_.erase(id);
+        },
+        TimeStamp((int64_t)controller->deadline() * 1000));
   }
 }
 
@@ -115,20 +118,20 @@ void RpcChannel::SendRpcResponse(Message *response, uint64_t id)
 static char const *GetRpcErrorString(RpcMessage::ErrorCode error) noexcept
 {
   switch (error) {
-  case RpcMessage::kNoError:
-    return "No Error";
-  case RpcMessage::kNoMethod:
-    return "No Method";
-  case RpcMessage::kNoService:
-    return "No Service";
-  case RpcMessage::kInvalidMessage:
-    return "Invalid Message";
-  case RpcMessage::kInvalidRequest:
-    return "Invalid Request";
-  case RpcMessage::kInvalidResponse:
-    return "Invalid Response";
-  default:
-    return "Unknown Error";
+    case RpcMessage::kNoError:
+      return "No Error";
+    case RpcMessage::kNoMethod:
+      return "No Method";
+    case RpcMessage::kNoService:
+      return "No Service";
+    case RpcMessage::kInvalidMessage:
+      return "Invalid Message";
+    case RpcMessage::kInvalidRequest:
+      return "Invalid Request";
+    case RpcMessage::kInvalidResponse:
+      return "Invalid Response";
+    default:
+      return "Unknown Error";
   }
 }
 

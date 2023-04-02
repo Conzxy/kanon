@@ -25,18 +25,19 @@ usize kanon::BufferReadFromFd(Buffer &buffer, FdType fd, int &saved_errno)
 
   auto cache_writable_size = buffer.GetWritableSize();
 
-  auto readen_bytes = ::readv(fd, vec, vec_count);
+  auto readen_bytes = ::readv(fd, vec, (int)vec_count);
 
   if (readen_bytes < 0) {
     saved_errno = errno;
-  } else if (static_cast<Buffer::size_type>(readen_bytes) <= cache_writable_size) {
-    buffer.AdvanceWrite(readen_bytes);
+  } else if (static_cast<Buffer::size_type>(readen_bytes) <=
+             cache_writable_size) {
+    buffer.AdvanceWrite((size_t)readen_bytes);
   } else {
     buffer.SetWriteIndex(buffer.GetCapacity());
-    buffer.Append(extra_buf, readen_bytes - cache_writable_size);
+    buffer.Append(extra_buf, (size_t)readen_bytes - cache_writable_size);
   }
 
-  return readen_bytes;
+  return (size_t)readen_bytes;
 }
 
 void kanon::BufferOverlapRecv(Buffer &buffer, FdType fd, int &saved_errno,

@@ -8,42 +8,40 @@ using namespace kanon;
 
 #define BUFFER_BOUND 16
 
-AsyncLog::AsyncLog(
-    StringView basename,
-    size_t roll_size,
-    StringView prefix,
-    size_t log_file_num,
-    size_t roll_interval,
-    size_t flush_interval)
-    : basename_{ basename.ToString() }
-    , roll_size_{ roll_size }
-    , prefix_{ prefix.ToString() }
-    , log_file_num_(log_file_num)
-    , roll_interval_(roll_interval)
-    , flush_interval_{ flush_interval }
-    , running_{ false }
-    , current_buffer_{ kanon::make_unique<Buffer>() }
-    , next_buffer_{ kanon::make_unique<Buffer>() }
-    , mutex_{ }
-    , not_empty_{ mutex_ }
-    , back_thr_{ "AsyncLog" }
-    , latch_{ 1 }
+AsyncLog::AsyncLog(StringView basename, size_t roll_size, StringView prefix,
+                   size_t log_file_num, size_t roll_interval,
+                   size_t flush_interval)
+  : basename_{basename.ToString()}
+  , roll_size_{roll_size}
+  , prefix_{prefix.ToString()}
+  , log_file_num_(log_file_num)
+  , roll_interval_(roll_interval)
+  , flush_interval_{flush_interval}
+  , running_{false}
+  , current_buffer_{kanon::make_unique<Buffer>()}
+  , next_buffer_{kanon::make_unique<Buffer>()}
+  , mutex_{}
+  , not_empty_{mutex_}
+  , back_thr_{"AsyncLog"}
+  , latch_{1}
 {
   // warm up
   current_buffer_->zero();
   next_buffer_->zero();
   buffers_.reserve(16);
 
-  Logger::SetColor(false); 
+  Logger::SetColor(false);
 }
 
-AsyncLog::~AsyncLog() KANON_NOEXCEPT {
+AsyncLog::~AsyncLog() KANON_NOEXCEPT
+{
   if (running_) {
     Stop();
   }
 }
 
-void AsyncLog::StartRun() {
+void AsyncLog::StartRun()
+{
   assert(!running_);
 
   running_ = true;
@@ -54,17 +52,17 @@ void AsyncLog::StartRun() {
     latch_.Countdown();
 
     // In back thread, we also can set two buffer for front threads using,
-    BufferUPtr buffer1{ kanon::make_unique<Buffer>() };
-    BufferUPtr buffer2{ kanon::make_unique<Buffer>() };
+    BufferUPtr buffer1{kanon::make_unique<Buffer>()};
+    BufferUPtr buffer2{kanon::make_unique<Buffer>()};
 
     // Warm up
     buffer1->zero();
-    buffer2->zero();  
+    buffer2->zero();
 
     // write to disk
     // Not thread-safe is OK here.
-    LogFile<> output(basename_, roll_size_, 
-      prefix_, log_file_num_, roll_interval_, flush_interval_);
+    LogFile<> output(basename_, roll_size_, prefix_, log_file_num_,
+                     roll_interval_, flush_interval_);
 
     // back thread do long loop
     while (running_) {
@@ -73,8 +71,8 @@ void AsyncLog::StartRun() {
       assert(buffers_dup_.empty());
 
       {
-        MutexGuard guard{ mutex_ };
-        // \warning 
+        MutexGuard guard{mutex_};
+        // \warning
         //   You shouldn't use while.
         //   Otherwise, it will wait infinitly
         //   when current message accumulation
@@ -106,24 +104,23 @@ void AsyncLog::StartRun() {
       // we discard these part to avoid accumulation
       if (buffers_dup_.size() > BUFFER_BOUND) {
         char buf[64];
-        ::snprintf(
-          buf, sizeof buf, "Discard %lu large buffer at %s\n",
-          buffers_dup_.size() - BUFFER_BOUND, 
-          TimeStamp::Now().ToFormattedString().c_str());
+        ::snprintf(buf, sizeof buf, "Discard %lu large buffer at %s\n",
+                   buffers_dup_.size() - BUFFER_BOUND,
+                   TimeStamp::Now().ToFormattedString().c_str());
         // ::fputs(buf, stderr);
         output.Append(buf, strlen(buf));
 
-        buffers_dup_.erase(buffers_dup_.begin() + BUFFER_BOUND, buffers_dup_.end());
-      }  
+        buffers_dup_.erase(buffers_dup_.begin() + BUFFER_BOUND,
+                           buffers_dup_.end());
+      }
 
-      for (auto& buffer : buffers_dup_) {
+      for (auto &buffer : buffers_dup_) {
         output.Append(buffer->data(), buffer->len());
       }
-    
+
       // only leave the two warmed buffer
       // and move to buffer1 and buffer2
-      if (buffers_dup_.size() > 2)
-        buffers_dup_.resize(2);
+      if (buffers_dup_.size() > 2) buffers_dup_.resize(2);
 
       if (!buffer1) {
         buffer1 = std::move(buffers_dup_.back());
@@ -137,7 +134,7 @@ void AsyncLog::StartRun() {
         buffer2->reset();
         buffers_dup_.pop_back();
       }
-      
+
       buffers_dup_.clear();
 
       output.Flush();
@@ -151,7 +148,8 @@ void AsyncLog::StartRun() {
   latch_.Wait();
 }
 
-void AsyncLog::Stop() KANON_NOEXCEPT {
+void AsyncLog::Stop() KANON_NOEXCEPT
+{
   assert(running_);
 
   running_ = false;
@@ -159,28 +157,30 @@ void AsyncLog::Stop() KANON_NOEXCEPT {
   back_thr_.Join();
 }
 
-void AsyncLog::Append(char const* data, size_t len) KANON_NOEXCEPT {
-    MutexGuard guard{ mutex_ };
-  
-    // If there are no space for data in @var current_buffer_,
-    // swap with @var next_buffer_, and append new buffer
-    // then notify @var back_thr_ to log message
-    if (len < current_buffer_->avali()) {
-      current_buffer_->Append(data, len);
-    } else {
-      buffers_.emplace_back(std::move(current_buffer_));
+void AsyncLog::Append(char const *data, size_t len) KANON_NOEXCEPT
+{
+  MutexGuard guard{mutex_};
 
-      if (!next_buffer_) {
-        next_buffer_.reset(new Buffer{});
-      }
+  // If there are no space for data in @var current_buffer_,
+  // swap with @var next_buffer_, and append new buffer
+  // then notify @var back_thr_ to log message
+  if (len < current_buffer_->avali()) {
+    current_buffer_->Append(data, (unsigned)len);
+  } else {
+    buffers_.emplace_back(std::move(current_buffer_));
 
-      current_buffer_ = std::move(next_buffer_);
-      assert(!next_buffer_);
-      current_buffer_->Append(data, len);
-      not_empty_.Notify();
+    if (!next_buffer_) {
+      next_buffer_.reset(new Buffer{});
     }
+
+    current_buffer_ = std::move(next_buffer_);
+    assert(!next_buffer_);
+    current_buffer_->Append(data, (unsigned)len);
+    not_empty_.Notify();
+  }
 }
 
-void AsyncLog::Flush() KANON_NOEXCEPT {
+void AsyncLog::Flush() KANON_NOEXCEPT
+{
   // The flush operation is called in back thread
 }

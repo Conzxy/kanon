@@ -71,16 +71,17 @@ class TimerQueue : public ITimerQueuePlatform {
       }
     };
 
-    KANON_INLINE bool operator()(Helper const &x, Heler const &y) const KANON_NOEXCEPT
+    KANON_INLINE bool operator()(Helper const &x,
+                                 Heler const &y) const KANON_NOEXCEPT
     {
       return x.key < y.key;
     }
 #else
     KANON_INLINE bool operator()(TimerEntry const &x,
-                           TimerEntry const &y) const KANON_NOEXCEPT
+                                 TimerEntry const &y) const KANON_NOEXCEPT
     {
-      int res = (x.first->expiration().GetMicrosecondsSinceEpoch() -
-                 y.first->expiration().GetMicrosecondsSinceEpoch());
+      auto res = (x.first->expiration().GetMicrosecondsSinceEpoch() -
+                  y.first->expiration().GetMicrosecondsSinceEpoch());
       if (res == 0) {
         return x.second < y.second;
       }

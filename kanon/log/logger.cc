@@ -11,8 +11,8 @@
 #include "kanon/log/terminal_color.h"
 
 #ifdef KANON_ON_WIN
-#include <windows.h>
-#include <winbase.h>
+#  include <windows.h>
+#  include <winbase.h>
 #endif
 
 namespace kanon {
@@ -61,7 +61,10 @@ void DefaultOutput(char const *data, size_t num)
   ::fwrite(data, 1, num, stdout);
 }
 
-void DefaultFlush() { ::fflush(stdout); }
+void DefaultFlush()
+{
+  ::fflush(stdout);
+}
 
 Logger::OutputCallback Logger::output_callback_ = &DefaultOutput;
 Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
@@ -154,7 +157,7 @@ void Logger::FormatTime() KANON_NOEXCEPT
   kanon::GetTimeOfDay(&tv, NULL);
 
   time_t nowSecond = tv.tv_sec;
-  int microsecond = tv.tv_usec;
+  auto microsecond = (int)tv.tv_usec;
 
   // Don't use TimeStamp::Now()
   // Cache second to decrease the count of calling sys API.
@@ -179,8 +182,13 @@ void Logger::FormatTime() KANON_NOEXCEPT
     assert(strlen(t_timebuf) == 22);
     stream_ << t_timebuf << " ";
   } else {
-    Fmt us("%06d", microsecond);
-    stream_ << StringView(t_timebuf, 16) << us << " ";
+    stream_ << StringView(t_timebuf, 16);
+    char us_buf[32];
+    auto ret = ::snprintf(us_buf, sizeof us_buf, "%06d", microsecond);
+    if (ret > 0) {
+      stream_ << StringView{us_buf, (StringView::size_type)ret};
+    }
+    stream_ << ' ';
   }
 }
 
