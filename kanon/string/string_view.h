@@ -179,11 +179,13 @@ class StringView {
     return data_[n];
   }
 
-  constexpr const_reference at(size_type n) const
+  KANON_CONSTEXPR KANON_ALWAYS_INLINE const_reference at(size_type n) const
   {
-    return n >= len_ ? throw std::length_error{"Given index over or equal "
-                                               "length of StringView"}
-                     : data_[n];
+    if (KANON_UNLIKELY(n >= len_)) {
+      throw std::length_error{"Given index over or equal "
+                              "length of StringView"};
+    }
+    return data_[n];
   }
 
   constexpr const_reference front() const KANON_NOEXCEPT
