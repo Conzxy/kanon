@@ -4,6 +4,7 @@
 #include <google/protobuf/stubs/callback.h>
 
 #include "kanon/log/logger.h"
+#include "kanon/rpc/logger.h"
 #include "kanon/net/connection/tcp_connection.h"
 #include "kanon/net/event_loop.h"
 #include "kanon/util/macro.h"
@@ -143,7 +144,7 @@ void RpcChannel::OnRpcMessage(TcpConnectionPtr const &conn,
                "same with the connnection in RpcChannel");
   KANON_UNUSED(conn);
 
-  LOG_DEBUG_KANON << "RpcMessage(Not raw message) receive_time: "
+  LOG_DEBUG_KANON_PROTOBUF_RPC << "RpcMessage(Not raw message) receive_time: "
                   << receive_time.ToFormattedString();
 
   KANON_ASSERT(message->has_type() && message->has_id(),
@@ -295,7 +296,7 @@ void RpcChannel::OnRpcMessageForRequest(TcpConnectionPtr const &conn,
           RpcController *controller = new RpcController;
           if (message->has_deadline()) {
             controller->SetDeadline(message->deadline());
-            LOG_DEBUG << "deadline=" << controller->deadline() << " Ms";
+            LOG_DEBUG_KANON_PROTOBUF_RPC << "deadline=" << controller->deadline() << " Ms";
           }
           service->CallMethod(
               method, controller, request, response,

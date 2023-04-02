@@ -6,7 +6,7 @@
 using namespace kanon::protobuf::rpc;
 
 RpcServer::RpcServer(EventLoop *loop, InetAddr const &addr, StringArg name,
-                       bool reuseport)
+                     bool reuseport)
   : TcpServer(loop, addr, name, reuseport)
 {
   SetConnectionCallback([this](TcpConnectionPtr const &conn) {

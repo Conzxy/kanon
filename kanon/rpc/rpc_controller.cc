@@ -1,5 +1,6 @@
 #include "rpc_controller.h"
 
+#include "kanon/rpc/logger.h"
 #include "kanon/net/event_loop.h"
 
 #include "kanon/rpc/rpc.pb.h"
@@ -37,8 +38,8 @@ bool RpcController::IsCanceled() const
 {
   if (deadline_ != (Deadline)-1) {
     uint64_t now_ms = TimeStamp::Now().GetMicrosecondsSinceEpoch() / 1000;
-    LOG_DEBUG_KANON << "Now: " << now_ms;
-    LOG_DEBUG_KANON << "deadline: " << deadline();
+    LOG_DEBUG_KANON_PROTOBUF_RPC << "Now: " << now_ms;
+    LOG_DEBUG_KANON_PROTOBUF_RPC << "deadline: " << deadline();
     if (now_ms > deadline()) return true;
   }
 
