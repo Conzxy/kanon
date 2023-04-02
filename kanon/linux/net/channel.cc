@@ -14,10 +14,10 @@ Channel::Channel(EventLoop *loop, FdType fd)
   , events_{0}
   , revents_{0}
   , index_{-1}
+  , loop_(loop)
 #ifndef NDEBUG
-  , events_handling_{false}
+  , events_handling_(false)
 #endif
-  , loop_{loop}
 {
   LOG_TRACE_KANON << "Channel fd = " << fd_ << " created";
 }
@@ -43,7 +43,10 @@ void Channel::Update()
   loop_->UpdateChannel(this);
 }
 
-void Channel::Remove() KANON_NOEXCEPT { loop_->RemoveChannel(this); }
+void Channel::Remove() KANON_NOEXCEPT
+{
+  loop_->RemoveChannel(this);
+}
 
 void Channel::HandleEvents(TimeStamp receive_time)
 {
