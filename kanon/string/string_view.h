@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include <cctype>
 
 #include "kanon/util/macro.h"
 #include "kanon/string/strcasecmp.h"
@@ -509,6 +510,24 @@ class StringView {
   std::string ToString() const
   {
     return std::string{data(), size()};
+  }
+
+  KANON_INLINE std::string ToUpperString() const KANON_NOEXCEPT
+  {
+    std::string ret(data(), size());
+    for (size_t i = 0; i < len_; ++i) {
+      ret[i] = std::toupper(ret[i]);
+    }
+    return ret;
+  }
+
+  KANON_INLINE std::string ToLowerString() const KANON_NOEXCEPT
+  {
+    std::string ret(data(), size());
+    for (size_t i = 0; i < len_; ++i) {
+      ret[i] = std::tolower(ret[i]);
+    }
+    return ret;
   }
 
  private:
