@@ -13,25 +13,25 @@ namespace kanon {
  * To robust, reuse the libc routines
  */
 KANON_CORE_API optional<uint64_t> StringViewToU64(StringView const &sv,
-                                             int base = 10) KANON_NOEXCEPT;
+                                                  int base = 10) KANON_NOEXCEPT;
 
 /**
  * strtoul() wrapper
  */
 KANON_CORE_API optional<uint32_t> StringViewToU32(StringView const &sv,
-                                             int base = 10) KANON_NOEXCEPT;
+                                                  int base = 10) KANON_NOEXCEPT;
 
 /**
  * strtoll() wrapper
  */
 KANON_CORE_API optional<int64_t> StringViewTo64(StringView const &sv,
-                                           int base = 10) KANON_NOEXCEPT;
+                                                int base = 10) KANON_NOEXCEPT;
 
 /**
  * strtol() wrapper
  */
 KANON_CORE_API optional<int32_t> StringViewTo32(StringView const &sv,
-                                           int base = 10) KANON_NOEXCEPT;
+                                                int base = 10) KANON_NOEXCEPT;
 
 KANON_INLINE optional<int16_t> StringViewTo16(StringView const &sv,
                                               int base = 10) KANON_NOEXCEPT
