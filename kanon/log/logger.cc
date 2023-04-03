@@ -82,7 +82,7 @@ void DefaultFlush()
 Logger::OutputCallback Logger::output_callback_ = &DefaultOutput;
 Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
 
-#define ERRNO_BUFFER_SIZE 1024
+#define ERRNO_BUFFER_SIZE 1124
 #define TIME_BUFFER_SIZE  64
 
 KANON_TLS char t_errorBuf[ERRNO_BUFFER_SIZE];
