@@ -7,6 +7,12 @@ namespace kanon {
 namespace detail {
 extern bool g_kanon_protobuf_log;
 } // namespace detail
+
+KANON_INLINE void SetProtobufLog(bool val) KANON_NOEXCEPT
+{
+  detail::g_kanon_protobuf_log = val;
+}
+
 } // namespace kanon
 
 #define LOG_TRACE_KANON_PROTOBUF                                               \
