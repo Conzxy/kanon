@@ -30,6 +30,7 @@ else ()
   #-Wno-unused-function
   #-Wno-switch
   #-Wno-format-security
+  -Wno-format-truncation
   # support INT2DOUBLE
   #-Wno-strict-aliasing
   # -Werror
