@@ -61,24 +61,20 @@ class Logger : noncopyable {
 
  public:
   /**
-   * Default log level is INFO if user don't specify the environment variable
-   * The highest log level can be specified is INFO
-   * This indicates the WARN, (SYS)ERROR, (SYS)FATAL is don't effect by user.
-   * Obviously, if current log level > LOG_XXX, can't log and message
-   * e.g. current log level is DEBUG, user call LOG_TRACE is no effect
-   * i.e. Log condiftion is current log level <= XXX
+   * \warning
+   *  LogLevel also as the index of log_level_strings
    */
   enum LogLevel {
     KANON_LL_TRACE = 0,
-    KANON_LL_DEBUG = 1,
-    KANON_LL_INFO = 2,
-    KANON_LL_WARN = 3,
-    KANON_LL_ERROR = (1 << 2),
-    KANON_LL_SYS_ERROR = KANON_LL_ERROR + 1,
-    KANON_LL_FATAL = (1 << 3),
-    KANON_LL_SYS_FATAL = KANON_LL_FATAL + 1,
-    KANON_LL_NUM_LOG_LEVEL = 8,
-    KANON_LL_OFF = (1 << 4),
+    KANON_LL_DEBUG,
+    KANON_LL_INFO,
+    KANON_LL_WARN,
+    KANON_LL_ERROR,
+    KANON_LL_SYS_ERROR,
+    KANON_LL_FATAL,
+    KANON_LL_SYS_FATAL,
+    KANON_LL_NUM_LOG_LEVEL,
+    KANON_LL_OFF,
   };
 
   // Since __FIEL__ is fullname, including all parent path

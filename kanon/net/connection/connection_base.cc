@@ -128,7 +128,7 @@ void ConnectionBase<D>::HandleLtRead(TimeStamp recv_time)
     } else {
       input_buffer_.AdvanceAll();
       LOG_WARN_KANON << "If user want to process message from peer, should set "
-                  "proper message_callback_";
+                        "proper message_callback_";
     }
   }
 }
@@ -182,7 +182,7 @@ void ConnectionBase<D>::HandleEtRead(TimeStamp recv_time)
     } else {
       input_buffer_.AdvanceAll();
       LOG_WARN_KANON << "If user want to process message from peer, should set "
-                  "proper message_callback_";
+                        "proper message_callback_";
     }
   }
 }
@@ -332,8 +332,7 @@ void ConnectionBase<D>::HandleError()
 {
   loop_->AssertInThread();
   int err = sock::GetSocketError(channel_->GetFd());
-  LOG_SYSERROR_KANON << "ConnectionBase<D> [" << name_ << "] - [errno: " << err
-               << "; errmsg: " << strerror_tl(err) << "]";
+  LOG_SYSERROR_KANON << "ConnectionBase [" << name_ << "]";
 }
 
 template <typename D>
