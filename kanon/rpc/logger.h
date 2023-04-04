@@ -7,6 +7,12 @@ namespace kanon {
 namespace detail {
 extern bool g_kanon_protobuf_rpc_log_enable;
 } // namespace detail
+
+KANON_INLINE void SetProtobufRpcLog(bool val) KANON_NOEXCEPT
+{
+  detail::g_kanon_protobuf_rpc_log_enable = val;
+}
+
 } // namespace kanon
 
 #define LOG_TRACE_KANON_PROTOBUF_RPC                                           \
