@@ -1,7 +1,7 @@
 #include "time_stamp.h"
 
 #include <string.h>
-#include <time.h>
+#include <ctime>
 #include <inttypes.h>
 
 #include "kanon/util/time.h"
@@ -18,7 +18,7 @@ TimeStamp TimeStamp::Now() KANON_NOEXCEPT
 
 std::string TimeStamp::ToString() const
 {
-  char buf[64]{0};
+  char buf[64]{ 0 };
 
   int64_t seconds = microseconds_ / kMicrosecondsPerSeconds_;
   int microseconds = static_cast<int>(microseconds_ % kMicrosecondsPerSeconds_);
@@ -29,7 +29,7 @@ std::string TimeStamp::ToString() const
 
 std::string TimeStamp::ToFormattedString(bool isShowMicroseconds) const
 {
-  char buf[64]{0};
+  char buf[64]{ 0 };
 
   auto seconds = static_cast<time_t>(microseconds_ / kMicrosecondsPerSeconds_);
   struct tm tm;

@@ -1,7 +1,7 @@
 #ifndef KANON_TIMESTAMP_H
 #define KANON_TIMESTAMP_H
 
-#include <time.h>
+#include <ctime>
 #include <stdint.h>
 #include <string>
 
