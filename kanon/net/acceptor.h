@@ -4,9 +4,13 @@
 #include <functional>
 #include <atomic>
 
-#include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
 
+#ifdef KANON_ON_WIN
+#  include <winsock2.h>
+#endif
+
+#include "kanon/util/noncopyable.h"
 #include "kanon/net/socket.h"
 #include "kanon/net/channel.h"
 #include "kanon/net/inet_addr.h"

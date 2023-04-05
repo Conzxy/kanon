@@ -12,7 +12,7 @@ file(GLOB_RECURSE KANON_BASE_SRC
   buffer/*.cc 
 )
 
-file(GLOB_RECURSE KANON_NET_SRC ${CMAKE_SOURCE_DIR}/third-party/xxHash/xxhash.c net/*.cc)
+file(GLOB_RECURSE KANON_NET_SRC ${PROJECT_SOURCED_DIR}/third-party/xxHash/xxhash.c net/*.cc)
 
 #message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
 #message(STATUS "kanon net source files: ${KANON_NET_SRC}")
@@ -71,7 +71,7 @@ endif ()
 
 GenLib(kanon_base ${KANON_BASE_SRC})
 target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
-    "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 if (NOT KANON_BUILD_STATIC_LIBS)
   target_compile_definitions(kanon_base PRIVATE KANON_BUILD_CORE_SHARED
@@ -86,7 +86,7 @@ GenLib(kanon_net ${KANON_NET_SRC})
 target_link_libraries(kanon_net PUBLIC kanon_base)
 #target_link_libraries(kanon_net PRIVATE xxHash::xxhash)
 target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
-    "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 if (NOT KANON_BUILD_STATIC_LIBS)
   target_compile_definitions(kanon_net INTERFACE KANON_LINK_NET_SHARED

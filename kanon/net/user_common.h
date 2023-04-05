@@ -1,6 +1,12 @@
 #ifndef KANON_NET_USER_COMMON_H
 #define KANON_NET_USER_COMMON_H
 
+#include "kanon/util/macro.h"
+
+#ifdef KANON_ON_WIN
+#  include <winsock2.h>
+#endif
+
 #include "kanon/net/event_loop.h"
 #include "kanon/net/event_loop_thread.h"
 #include "kanon/net/connection/tcp_connection.h"

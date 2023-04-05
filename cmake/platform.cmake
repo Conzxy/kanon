@@ -3,7 +3,7 @@ if (UNIX AND NOT APPLE)
   message(STATUS "Kanon on unix/linux/solaris/... platform")
   set(KANON_ON_UNIX ON)
 else ()
-  set(AKNON_ON_UNIX OFF)
+  set(KANON_ON_UNIX OFF)
 endif ()
 
 if (WIN32)

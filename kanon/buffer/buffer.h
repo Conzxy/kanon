@@ -6,8 +6,7 @@
 #include "kanon/util/macro.h"
 #include "kanon/string/string_view.h"
 
-#include "kanon/net/endian_api.h"
-#include "kanon/net/type.h"
+#include "kanon/util/endian_api.h"
 #include "kanon/algo/reserved_array.h"
 
 namespace kanon {

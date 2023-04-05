@@ -94,7 +94,7 @@ void ChunkList::AdvanceRead(size_t len)
     if (len >= first_block->GetReadableSize()) {
       if (!PutToFreeChunk()) {
         assert(CHUNK_SIZE != buffers_.front().GetMaxSize());
-        buffers_.drop_node_size(buffers_.extract_front_node(), CHUNK_SIZE);
+        buffers_.drop_node_size(buffers_.extract_front_node(), buffers_.front().GetMaxSize());
       }
 
       len -= rsize;

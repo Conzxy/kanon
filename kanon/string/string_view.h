@@ -50,10 +50,7 @@ class StringArg {
     return data_;
   }
 
-  KANON_INLINE operator char const *() const
-  {
-    return data_;
-  }
+  KANON_INLINE operator char const *() const { return data_; }
 
  private:
   char const *data_;
@@ -71,7 +68,7 @@ class StringArg {
  */
 class StringView {
  public:
-  using size_type = unsigned long;
+  using size_type = size_t;
   using value_type = char;
   using difference_type = std::ptrdiff_t;
   using pointer = char *;
@@ -153,26 +150,14 @@ class StringView {
   // constexpr operator char const*() const { return data_; }
 
   // capacity
-  constexpr bool empty() const KANON_NOEXCEPT
-  {
-    return len_ == 0;
-  }
+  constexpr bool empty() const KANON_NOEXCEPT { return len_ == 0; }
 
-  constexpr size_type size() const KANON_NOEXCEPT
-  {
-    return len_;
-  }
+  constexpr size_type size() const KANON_NOEXCEPT { return len_; }
 
   // position
-  constexpr char const *begin() const KANON_NOEXCEPT
-  {
-    return data_;
-  }
+  constexpr char const *begin() const KANON_NOEXCEPT { return data_; }
 
-  constexpr char const *end() const KANON_NOEXCEPT
-  {
-    return data_ + len_;
-  }
+  constexpr char const *end() const KANON_NOEXCEPT { return data_ + len_; }
 
   // data access
   constexpr const_reference operator[](size_type n) const KANON_NOEXCEPT
@@ -189,20 +174,14 @@ class StringView {
     return data_[n];
   }
 
-  constexpr const_reference front() const KANON_NOEXCEPT
-  {
-    return data_[0];
-  }
+  constexpr const_reference front() const KANON_NOEXCEPT { return data_[0]; }
 
   constexpr const_reference back() const KANON_NOEXCEPT
   {
     return data_[len_ - 1];
   }
 
-  constexpr const_pointer data() const KANON_NOEXCEPT
-  {
-    return data_;
-  }
+  constexpr const_pointer data() const KANON_NOEXCEPT { return data_; }
 
   void swap(StringView &rhs) KANON_NOEXCEPT
   {
@@ -217,10 +196,7 @@ class StringView {
     len_ -= n;
   }
 
-  KANON_CONSTEXPR void remove_suffix(size_type n) KANON_NOEXCEPT
-  {
-    len_ -= n;
-  }
+  KANON_CONSTEXPR void remove_suffix(size_type n) KANON_NOEXCEPT { len_ -= n; }
 
   KANON_INLINE size_type copy(char *dst, size_type count,
                               size_type pos = 0) const
@@ -317,15 +293,9 @@ class StringView {
     return npos;
   }
 
-  bool contains(StringView v) const KANON_NOEXCEPT
-  {
-    return find(v) != npos;
-  }
+  bool contains(StringView v) const KANON_NOEXCEPT { return find(v) != npos; }
 
-  bool contains(char c) const KANON_NOEXCEPT
-  {
-    return find(c) != npos;
-  }
+  bool contains(char c) const KANON_NOEXCEPT { return find(c) != npos; }
 
   bool starts_with(StringView v) const KANON_NOEXCEPT
   {
@@ -507,10 +477,7 @@ class StringView {
 
   KANON_CORE_API std::vector<std::string> split(StringView spliter = " ") const;
 
-  std::string ToString() const
-  {
-    return std::string{data(), size()};
-  }
+  std::string ToString() const { return std::string{data(), size()}; }
 
   KANON_INLINE std::string ToUpperString() const KANON_NOEXCEPT
   {

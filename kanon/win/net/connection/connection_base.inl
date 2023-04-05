@@ -27,7 +27,7 @@ void ConnectionBase<D>::HandleRead(TimeStamp recv_time)
   } else {
     input_buffer_.AdvanceAll();
     LOG_WARN_KANON << "If user want to process message from peer, should set "
-                "proper message_callback_";
+                      "proper message_callback_";
   }
 
   if (input_buffer_.GetWritableSize() == 0) {
@@ -52,6 +52,7 @@ void ConnectionBase<D>::HandleWrite()
   output_buffer_.AdvanceRead(writen);
 
   if (!output_buffer_.HasReadable()) {
+    LOG_TRACE_KANON << "Output Buffer is empty now!";
     if (write_complete_callback_) {
       loop_->QueueToLoop(std::bind(
           &ConnectionBase<D>::CallWriteCompleteCallback, shared_from_this()));
@@ -122,7 +123,7 @@ void ConnectionBase<D>::HandleReadImmediately(size_t readn)
   } else {
     input_buffer_.AdvanceAll();
     LOG_WARN_KANON << "If user want to process message from peer, should set "
-                "proper message_callback_";
+                      "proper message_callback_";
   }
 
   BufferOverlapRecv(input_buffer_, channel_->GetFd(), saved_errno, this);
