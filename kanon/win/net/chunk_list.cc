@@ -32,11 +32,16 @@ void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
   auto &bufs = conn->wsabufs;
   bufs.resize(buffer.GetChunkSize());
   auto first_chunk_iter = buffer.begin();
+
   for (auto &buf : bufs) {
     buf.buf = first_chunk_iter->GetReadBegin();
     buf.len = first_chunk_iter->GetReadableSize();
+    ++first_chunk_iter;
   }
 
+  LOG_DEBUG_KANON << "wsabuf num = " << bufs.size();
+  LOG_DEBUG_KANON << "Output buffer readablesize = "
+                  << buffer.GetReadableSize();
   DWORD flags = 0;
   DWORD send_bytes = 0;
 
@@ -51,6 +56,7 @@ void kanon::ChunkListOverlapSend(ChunkList &buffer, FdType fd, int &saved_errno,
     case 0: // Complete immediately
     {
       LOG_TRACE_KANON << "WSASend() complete immediately";
+      LOG_TRACE_KANON << "Send bytes = " << send_bytes;
       // conn->HandleWriteImmediately(send_bytes);
     } break;
     case SOCKET_ERROR: {
