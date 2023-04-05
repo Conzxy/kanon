@@ -4,13 +4,12 @@
 #include <atomic>
 #include <functional>
 
-#include "kanon/net/timer/timer_id.h"
 #include "kanon/util/macro.h"
+#include "kanon/net/type.h"
+#include "kanon/net/timer/timer_id.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/optional.h"
 #include "kanon/util/ptr.h"
-#include "kanon/net/type.h"
-
 #include "kanon/net/inet_addr.h"
 
 namespace kanon {

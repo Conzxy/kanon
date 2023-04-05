@@ -1,6 +1,7 @@
 #ifndef _KANON_NET_BUFFER_H_
 #define _KANON_NET_BUFFER_H_
 
+#include "kanon/net/type.h"
 #include "callback.h"
 #include "kanon/buffer/buffer.h"
 #include "kanon/util/arithmetic_type.h"

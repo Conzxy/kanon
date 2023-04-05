@@ -5,9 +5,9 @@
 #include <atomic>
 #include <functional>
 
+#include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/ptr.h"
-#include "kanon/util/macro.h"
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/process/process_info.h"
 
@@ -146,7 +146,7 @@ class EventLoop : noncopyable {
   {
     return RunAt(std::move(cb), AddTimeUs(TimeStamp::Now(), delay));
   }
-    
+
   /**
    * \brief
    *   Run callback @p cb at a specific time pointer then

@@ -6,12 +6,12 @@
 
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
+#include "kanon/net/type.h"
 #include "kanon/util/time_stamp.h"
 #include "kanon/log/logger.h"
 
 #include "kanon/net/macro.h"
 #include "kanon/net/event.h"
-#include "kanon/net/type.h"
 
 namespace kanon {
 
