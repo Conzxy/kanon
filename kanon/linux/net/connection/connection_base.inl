@@ -43,7 +43,7 @@ void ConnectionBase<D>::SendInLoopForBuf(InputBuffer &buffer)
 
   if (state_ != kConnected) {
     LOG_WARN_KANON << "This connection[" << name_
-             << "] is not connected, don't send any message";
+                   << "] is not connected, don't send any message";
     return;
   }
 
@@ -100,9 +100,16 @@ void ConnectionBase<D>::SendInLoopForBuf(InputBuffer &buffer)
 template <typename D>
 void ConnectionBase<D>::SendInLoopForChunkList(OutputBuffer &buffer)
 {
-  KANON_ASSERT(
-      !output_buffer_.HasReadable(),
-      "The Send() for ChunkList must be called when output_buffer_ is empty");
+  /* Fix 1.7.5
+   * In the formal implementation of this function is ill-formed.
+   * It is should be allowed for user to call this when output_buffer_ is not
+   * empty.
+   */
+
+  // KANON_ASSERT(
+  //     !output_buffer_.HasReadable(),
+  //     "The Send() for ChunkList must be called when output_buffer_ is
+  //     empty");
 
   int saved_errno = 0;
   auto write_n = ChunkListWriteFd(buffer, channel_->GetFd(), saved_errno);
@@ -124,7 +131,15 @@ void ConnectionBase<D>::SendInLoopForChunkList(OutputBuffer &buffer)
                                      high_water_mark_));
       }
 
+#if 1
+      if (output_buffer_.HasReadable()) {
+        output_buffer_.AppendChunkList(&buffer);
+      } else {
+        output_buffer_.swap(buffer);
+      }
+#else
       output_buffer_.swap(buffer);
+#endif
     } else {
       LOG_DEBUG_KANON << "Write complete";
       if (write_complete_callback_) {
@@ -152,7 +167,7 @@ void ConnectionBase<D>::SendInLoop(void const *data, size_t len)
   // when this is called in phase 3
   if (state_ != kConnected) {
     LOG_WARN_KANON << "This connection [" << name_
-             << "] is not connected, don't send any message";
+                   << "] is not connected, don't send any message";
     return;
   }
 

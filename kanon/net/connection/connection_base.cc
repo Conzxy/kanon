@@ -331,8 +331,11 @@ template <typename D>
 void ConnectionBase<D>::HandleError()
 {
   loop_->AssertInThread();
+  int saved_errno = errno;
   int err = sock::GetSocketError(channel_->GetFd());
+  errno = err;
   LOG_SYSERROR_KANON << "ConnectionBase [" << name_ << "]";
+  errno = saved_errno;
 }
 
 template <typename D>
@@ -554,10 +557,7 @@ template class ConnectionBase<TcpConnection>;
 
 #ifdef KANON_ON_UNIX
 struct IgnoreSignalPipe {
-  IgnoreSignalPipe()
-  {
-    ::signal(SIGPIPE, SIG_IGN);
-  }
+  IgnoreSignalPipe() { ::signal(SIGPIPE, SIG_IGN); }
 };
 
 static IgnoreSignalPipe dummy_ignore_singal_pipe{};
