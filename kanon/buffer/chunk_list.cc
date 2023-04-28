@@ -208,12 +208,6 @@ void ChunkList::ReserveFreeChunk(size_t chunk_size)
   }
 }
 
-void ChunkList::ReserveWriteChunk(size_t chunk_size)
-{
-  while (chunk_size--)
-    buffers_.push_back(buffers_.create_node_size(CHUNK_SIZE));
-}
-
 auto ChunkList::ReserveWriteSpace(size_t size) -> void
 {
   assert((CHUNK_SIZE & 0x1) == 0);
