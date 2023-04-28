@@ -214,6 +214,20 @@ void ChunkList::ReserveWriteChunk(size_t chunk_size)
     buffers_.push_back(buffers_.create_node_size(CHUNK_SIZE));
 }
 
+auto ChunkList::ReserveWriteSpace(size_t size) -> void
+{
+  assert((CHUNK_SIZE & 0x1) == 0);
+
+  for (auto const &buffer : buffers_) {
+    if (size <= buffer.GetWritableSize()) return;
+    size -= buffer.GetWritableSize();
+  }
+
+  assert(size >= 1);
+  const auto chunk_size = ((size - 1) >> 12) + 1;
+  ReserveFreeChunk(chunk_size);
+}
+
 auto ChunkList::GetFreeChunk() KANON_NOEXCEPT->ListType::Iterator
 {
   if (!free_buffers_.empty()) {

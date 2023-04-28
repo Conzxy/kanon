@@ -160,6 +160,28 @@ TEST(chunk_list, MultiAppend)
   EXPECT_EQ(buffer.GetChunkSize(), 2);
 }
 
+TEST(chunk_list, Shrink)
+{
+  ChunkList buffer;
+  buffer.Append(g_buf, sizeof g_buf);
+
+  buffer.AdvanceReadAll();
+  EXPECT_EQ(buffer.GetFreeChunkSize(),
+            (sizeof g_buf / ChunkList::GetSingleChunkSize()) + 1);
+
+  buffer.Shrink(0);
+
+  EXPECT_EQ(buffer.GetFreeChunkSize(), 0);
+}
+
+TEST(chunk_list, ReserveWriteSpace)
+{
+  ChunkList buffer;
+  buffer.ReserveWriteSpace((1 << 14) + 1);
+
+  EXPECT_EQ(buffer.GetFreeChunkSize(), 5);
+}
+
 int main()
 {
   ::testing::InitGoogleTest();
