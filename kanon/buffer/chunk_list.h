@@ -278,7 +278,11 @@ class ChunkList final {
   void ShrinkChunk(size_t chunk_size) { Shrink(chunk_size); }
 
   KANON_CORE_API void ReserveFreeChunk(size_t chunk_size);
-  KANON_CORE_API void ReserveWriteChunk(size_t chunk_size);
+  KANON_INLINE void ReserveChunk(size_t chunk_size)
+  {
+    ReserveFreeChunk(chunk_size);
+  }
+
   KANON_CORE_API void ReserveWriteSpace(size_t size);
 
   SizeType GetChunkSize() const KANON_NOEXCEPT { return buffers_.size(); }
