@@ -69,9 +69,11 @@ void Buffer::ReserveWriteSpace(size_type len) KANON_NOEXCEPT
     // }
   } else {
     // FIXME The assert is needed?
-    KANON_ASSERT(BUFFER_PREFIX_SIZE <= read_index_,
-                 "read_index_ should after prefix size"
-                 "i.e. message size should prepend at last");
+    // Not necessary! Allow user append even the size header has prepended.
+    //
+    // KANON_ASSERT(BUFFER_PREFIX_SIZE <= read_index_,
+    //              "read_index_ should after prefix size"
+    //              "i.e. message size should prepend at last");
 
     auto readable = GetReadableSize();
 

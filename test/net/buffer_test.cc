@@ -5,21 +5,25 @@
 using namespace std;
 using namespace kanon;
 
-TEST(BufferTest, findCRLF) {
+char g_buf[1 << 16];
+
+TEST(BufferTest, findCRLF)
+{
   Buffer buffer;
   buffer.Append("findCRLF\r\n");
 
-  string tmp; 
+  string tmp;
   EXPECT_TRUE(buffer.FindCrLf(tmp));
 
   EXPECT_TRUE(::strcmp(tmp.data(), "findCRLF") == 0);
-  
+
   Buffer buffer2;
   buffer2.Append("findCRLF");
   EXPECT_FALSE(buffer2.FindCrLf(tmp));
 }
 
-TEST(BufferTest, prepend) {
+TEST(BufferTest, prepend)
+{
   Buffer buffer;
   uint32_t i = 1;
 
@@ -29,8 +33,24 @@ TEST(BufferTest, prepend) {
   EXPECT_EQ(buffer.GetReadBegin32(), 1);
 }
 
-int main() {
-    testing::InitGoogleTest();
+TEST(BufferTest, append)
+{
+  Buffer buffer;
+  buffer.Append(g_buf, sizeof g_buf);
+}
 
-    return RUN_ALL_TESTS();
+TEST(BufferTest, multi_append)
+{
+  Buffer buffer;
+
+  for (int i = 0; i < 16; ++i) {
+    buffer.Append(g_buf, sizeof(g_buf) / 16);
+  }
+}
+
+int main()
+{
+  testing::InitGoogleTest();
+
+  return RUN_ALL_TESTS();
 }
