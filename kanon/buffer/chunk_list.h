@@ -61,6 +61,7 @@ class KANON_CORE_NO_API Chunk {
 
   void Append(void const *data, size_type len) KANON_NOEXCEPT
   {
+
     assert(len <= GetWritableSize());
     ::memcpy(GetBuf() + write_index_, data, len);
     write_index_ += len;
@@ -280,7 +281,9 @@ class ChunkList final {
   KANON_CORE_API void ReserveFreeChunk(size_t chunk_size);
   KANON_INLINE void ReserveChunk(size_t chunk_size)
   {
-    ReserveFreeChunk(chunk_size);
+    while (chunk_size--) {
+      buffers_.emplace_back();
+    }
   }
 
   KANON_CORE_API void ReserveWriteSpace(size_t size);
