@@ -43,10 +43,10 @@ GenTest(KANON_TEST_SOURCES ${KANON_TEST_LIBS})
 GenTest(KANON_BENCH_SOURCES ${KANON_BENCH_LIBS})
 
 if (KANON_BUILD_PROTOBUF)
-  add_subdirectory(rpc)
+  add_subdirectory(protobuf)
 endif ()
 if (KANON_BUILD_PROTOBUF_RPC)
-  add_subdirectory(protobuf)
+  add_subdirectory(rpc)
 endif ()
 
 if (KANON_BUILD_PERF_TEST)
