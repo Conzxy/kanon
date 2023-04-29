@@ -8,7 +8,8 @@ using namespace kanon::protobuf;
 
 char buf[4096 * 10];
 
-int main() {
+int main()
+{
   for (size_t i = 0; i < sizeof buf; ++i) {
     buf[i] = '0';
   }
@@ -19,11 +20,11 @@ int main() {
 
   args.SerializeToZeroCopyStream(&stream);
 
-  auto &chunk_list = stream.chunk_list();
-  for (auto &chunk : stream.chunk_list()) {
+  auto &chunk_list = stream.chunk_list;
+  for (auto &chunk : stream.chunk_list) {
     std::cout << "readable: " << chunk.GetReadableSize()
-      << "\nwritable: " << chunk.GetWritableSize()
-      << "\nmax: " << chunk.GetMaxSize() << std::endl;
+              << "\nwritable: " << chunk.GetWritableSize()
+              << "\nmax: " << chunk.GetMaxSize() << std::endl;
   }
 
   auto end = chunk_list.GetChunkSize();
@@ -34,10 +35,10 @@ int main() {
   }
 
   std::cout << "After: \n";
-  for (auto &chunk : stream.chunk_list()) {
+  for (auto &chunk : stream.chunk_list) {
     std::cout << "readable: " << chunk.GetReadableSize()
-      << "\nwritable: " << chunk.GetWritableSize()
-      << "\nmax: " << chunk.GetMaxSize() << std::endl;
+              << "\nwritable: " << chunk.GetWritableSize()
+              << "\nmax: " << chunk.GetMaxSize() << std::endl;
   }
 
   std::cout << "readable size: " << chunk_list.GetReadableSize() << "\n";

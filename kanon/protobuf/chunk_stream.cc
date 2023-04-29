@@ -4,12 +4,11 @@ using namespace kanon::protobuf;
 
 bool ChunkStream::Next(void **data, int *size)
 {
-  Chunk *last_chunk = (chunk_list_.IsEmpty()) ? nullptr : chunk_list_.GetLastChunk();
-  if (!last_chunk ||
-      last_chunk->GetWritableSize() == 0)
-  {
-    chunk_list_.ReserveWriteChunk(1);
-    last_chunk = chunk_list_.GetLastChunk();
+  Chunk *last_chunk =
+      (chunk_list.IsEmpty()) ? nullptr : chunk_list.GetLastChunk();
+  if (!last_chunk || last_chunk->GetWritableSize() == 0) {
+    chunk_list.ReserveChunk(1);
+    last_chunk = chunk_list.GetLastChunk();
   }
   *data = last_chunk->GetWriteBegin();
   *size = last_chunk->GetWritableSize();
@@ -19,16 +18,14 @@ bool ChunkStream::Next(void **data, int *size)
 
 void ChunkStream::BackUp(int count)
 {
-  auto last_chunk = chunk_list_.GetLastChunk();
+  auto last_chunk = chunk_list.GetLastChunk();
   last_chunk->AdvanceWrite(-count);
 }
 
-int64_t ChunkStream::ByteCount() const
-{
-  return chunk_list_.GetReadableSize();
-}
+int64_t ChunkStream::ByteCount() const { return chunk_list.GetReadableSize(); }
 
-bool ChunkStream::WriteAliasedRaw(void const *data, int size) {
-  chunk_list_.Append(data, size);
+bool ChunkStream::WriteAliasedRaw(void const *data, int size)
+{
+  chunk_list.Append(data, size);
   return true;
 }
