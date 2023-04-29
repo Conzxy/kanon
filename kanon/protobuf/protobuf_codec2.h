@@ -26,6 +26,7 @@ class Buffer;
 
 namespace protobuf {
 
+// clang-format off
 /**
  * Message Raw Format:
  * +---------------+
@@ -38,6 +39,18 @@ namespace protobuf {
  * | checksum| 4B  |  |
  * +---------------+ ----
  *
+ * To the old ProtbufCodec(`GenericProtobufCodec`), the codec is more
+ * flexible.
+ * Its MessageCallback signature is `void(TcpConnectionPtr, Buffer&,
+ * size_t payload_size, TimeStamp)`, the `payload_size` is the length of the
+ * protobuf message.
+ *
+ * Provide this argument, user can get the length directly
+ * other than calling `ByteSizeLong()`. 
+ *
+ * In most case, this is more useful than
+ * the `GenericProtobufCodec` and `ProtobufCodec`. eg. Log the message to disk
+ * that don't requires serialize and compute the length of message.
  * \note
  * 1. checksum compute the (tag, payload) content
  * 2. Only the payload is protobuf-format, others are just some trivial binary
@@ -45,16 +58,8 @@ namespace protobuf {
  *
  * \warning
  * The class just an internal class, You should use ProtobufCodec<>
- *
- * To the old ProtbufCodec(`GenericProtobufCodec`), the codec is more
- * flexible.
- * Its MessageCallback signature is `void(TcpConnectionPtr, Buffer&,
- * size_t payload_size, TimeStamp)`, the `payload_size` is the length of the
- * protobuf message. Provide this argument, user can get the length directly
- * other than calling `ByteSizeLong()`. In most case, this is more useful than
- * the `GenericProtobufCodec` and `ProtobufCodec`. eg. Log the message to disk
- * that don't requires serialize and compute the length of message.
  */
+// clang-format on
 class ProtobufCodec2 : noncopyable {
   enum ErrorCode {
     E_NOERROR = 0,
@@ -131,11 +136,6 @@ class ProtobufCodec2 : noncopyable {
   static KANON_INLINE bool VerifyCheckSum(Buffer &buffer,
                                           SizeHeaderType size_header);
   static KANON_INLINE char const *ErrorToString(ErrorCode err) noexcept;
-
-  KANON_INLINE size_t GetMinSize() const noexcept
-  {
-    return tag_.size() + CHECKSUM_LENGTH;
-  }
 
   /**
    * Identify specific message type

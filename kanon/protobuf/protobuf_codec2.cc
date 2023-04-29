@@ -47,7 +47,7 @@ void ProtobufCodec2::SetUpConnection(TcpConnectionPtr const &conn)
                                   TimeStamp receive_time) {
     // Discard too large buffer early to avoid making memory overflow
     if (buffer.GetReadableSize() >= max_size_) {
-      LOG_WARN << "A single message too large, just discard";
+      LOG_WARN_KANON_PROTOBUF << "A single message too large, just discard";
       buffer.AdvanceAll();
       buffer.Shrink();
       error_callback_(conn, E_INVALID_SIZE_HEADER);
@@ -63,7 +63,8 @@ void ProtobufCodec2::SetUpConnection(TcpConnectionPtr const &conn)
                            &size_header_len, &size_header);
       switch (decode_ret) {
         case KVARINT_OK:
-          LOG_DEBUG << "This is a valid message encoded by varint";
+          LOG_DEBUG_KANON_PROTOBUF
+              << "This is a valid message encoded by varint";
           break;
         case KVARINT_DECODE_BUF_INVALID:
           error_callback_(conn, E_INVALID_MESSAGE);
@@ -71,7 +72,8 @@ void ProtobufCodec2::SetUpConnection(TcpConnectionPtr const &conn)
         case KVARINT_DECODE_BUF_SHORT:
 #ifndef NDEBUG
           if (buffer.GetReadableSize() > 0)
-            LOG_DEBUG << "The size header is short, wait complete...";
+            LOG_DEBUG_KANON_PROTOBUF
+                << "The size header is short, wait complete...";
 #endif
           return;
       }
@@ -81,7 +83,7 @@ void ProtobufCodec2::SetUpConnection(TcpConnectionPtr const &conn)
 
       // BUG FIX:
       // Invalid message length is untrusted.
-      if (size_header < GetMinSize() ||
+      if (size_header < tag_.size() + CHECKSUM_LENGTH ||
           size_header >= max_size_ - size_header_len)
       {
         error_callback_(conn, E_INVALID_SIZE_HEADER);
