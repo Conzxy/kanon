@@ -2,7 +2,6 @@
 #define KANON_PROTOBUF_GENERIC_CODEC_H_
 
 #include <string.h>
-#include <unistd.h>
 
 #include <functional>
 #include <memory>

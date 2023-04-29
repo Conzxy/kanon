@@ -21,8 +21,9 @@ GenericPbCodec::GenericPbCodec(PROTOBUF::Message const *prototype,
   // Default error callback
   // Log error and Disconnect peer
   SetErrorCallback([](TcpConnectionPtr const &conn, ErrorCode error_code) {
-    LOG_ERROR_KANON_PROTOBUF << "Error occurred in error callback of GenericPbCodec: "
-                    << ErrorToString(error_code);
+    LOG_ERROR_KANON_PROTOBUF
+        << "Error occurred in error callback of GenericPbCodec: "
+        << ErrorToString(error_code);
     if (conn && conn->IsConnected()) {
       conn->ShutdownWrite();
     }
@@ -50,7 +51,7 @@ void GenericPbCodec::Send(TcpConnectionPtr const &conn,
 
 #else
   ChunkStream stream;
-  auto &buffer = stream.chunk_list();
+  auto &buffer = stream.chunk_list;
 
   buffer.Append(tag_);
   assert(buffer.GetReadableSize() == tag_.size());
@@ -85,7 +86,8 @@ void GenericPbCodec::Send(TcpConnectionPtr const &conn,
   buffer.Prepend32(uint32_t(tag_.size() + bytes + kChecksumLength));
   buffer.Append32(check_sum);
 
-  LOG_DEBUG_KANON_PROTOBUF << "buffer readable size = " << buffer.GetReadableSize();
+  LOG_DEBUG_KANON_PROTOBUF << "buffer readable size = "
+                           << buffer.GetReadableSize();
 #endif
   assert(buffer.GetReadableSize() ==
          tag_.size() + kSizeLength + bytes + kChecksumLength);
@@ -106,11 +108,22 @@ void GenericPbCodec::OnMessage(TcpConnectionPtr const &conn, Buffer &buffer,
    * 3.2 Otherwise, call message_callback_
    */
 
+  // Discard too large buffer early to avoid making memory overflow
+  if (buffer.GetReadableSize() >= kMaxMessageLength) {
+    LOG_WARN_KANON_PROTOBUF << "A single message too large, just discard";
+    buffer.AdvanceAll();
+    buffer.Shrink();
+    error_callback_(conn, kInvalidLength);
+    return;
+  }
+
   // Use while here since maybe not just one message in buffer
   while (buffer.GetReadableSize() >= kMinMessageLength) {
     const uint32_t size_header = buffer.GetReadBegin32();
     LOG_DEBUG_KANON_PROTOBUF << "size_header = " << size_header;
-    if (size_header < kChecksumLength || size_header >= kMaxMessageLength) {
+    if (size_header < kChecksumLength + tag_.size() ||
+        size_header >= kMaxMessageLength)
+    {
       error_callback_(conn, kInvalidLength);
       break;
     } else if (buffer.GetReadableSize() >= kSizeLength + size_header) {
@@ -156,7 +169,8 @@ auto GenericPbCodec::Parse(char const *buffer, uint32_t size,
       {
         ret = kParseError;
       } else {
-        LOG_DEBUG_KANON_PROTOBUF << "[parse message] = " << message.DebugString();
+        LOG_DEBUG_KANON_PROTOBUF << "[parse message] = "
+                                 << message.DebugString();
       }
     } else {
       ret = kInvalidMessage;
@@ -251,12 +265,14 @@ void GenericPbCodec::PrintRawMessage(Buffer &buffer)
   auto view = buffer.ToStringView();
   uint32_t checksum = 0;
   LOG_DEBUG_KANON_PROTOBUF << "[Size Header] = " << buffer.GetReadBegin32();
-  LOG_DEBUG_KANON_PROTOBUF << "[tag] = " << view.substr(kSizeLength, tag_.size());
+  LOG_DEBUG_KANON_PROTOBUF << "[tag] = "
+                           << view.substr(kSizeLength, tag_.size());
 
   auto checksum_view =
       view.substr(buffer.GetReadableSize() - kChecksumLength, kChecksumLength);
   ::memcpy(&checksum, checksum_view.data(), kChecksumLength);
-  LOG_DEBUG_KANON_PROTOBUF << "[checksum] = " << sock::ToHostByteOrder32(checksum);
+  LOG_DEBUG_KANON_PROTOBUF << "[checksum] = "
+                           << sock::ToHostByteOrder32(checksum);
 }
 
 KANON_INLINE uint32_t GenericPbCodec::GetCheckSum(void const *buffer,
