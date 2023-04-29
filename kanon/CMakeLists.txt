@@ -12,7 +12,7 @@ file(GLOB_RECURSE KANON_BASE_SRC
   buffer/*.cc 
 )
 
-file(GLOB_RECURSE KANON_NET_SRC ${PROJECT_SOURCED_DIR}/third-party/xxHash/xxhash.c net/*.cc)
+file(GLOB_RECURSE KANON_NET_SRC ${PROJECT_SOURCE_DIR}/third-party/xxHash/xxhash.c net/*.cc)
 
 #message(STATUS "kanon base source files: ${KANON_BASE_SRC}")
 #message(STATUS "kanon net source files: ${KANON_NET_SRC}")
