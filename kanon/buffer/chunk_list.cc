@@ -9,7 +9,6 @@
 
 #include <stdio.h>
 
-#define CHUNK_LIST_DEBUG
 #ifdef CHUNK_LIST_DEBUG
 
 #  define DLOG(str, ...) ::printf(str, __VA_ARGS__)
