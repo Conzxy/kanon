@@ -123,7 +123,7 @@ void ProtobufCodec2::SetUpConnection(TcpConnectionPtr const &conn)
   });
 }
 
-void ProtobufCodec2::Send(TcpConnectionPtr const &conn,
+void ProtobufCodec2::Send(TcpConnection *const conn,
                           ::google::protobuf::Message const *message)
 {
 #if 0
