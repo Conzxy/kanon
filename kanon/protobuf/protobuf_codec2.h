@@ -176,6 +176,15 @@ bool ParseFromBuffer(::google::protobuf::Message *message, size_t payload_size,
 bool ParsePartialFromBuffer(::google::protobuf::Message *message,
                             size_t payload_size, Buffer *buffer);
 
+#define DEF_SPECIFIC_TAG_PROTOBUF_CODEC(codec_name_, tag_, msize_)             \
+  class codec_name_ : public ::kanon::protobuf::ProtobufCodec2 {               \
+   public:                                                                     \
+    codec_name_()                                                              \
+      : ::kanon::protobuf::ProtobufCodec2((tag_), (msize_))                    \
+    {                                                                          \
+    }                                                                          \
+  }
+
 } // namespace protobuf
 } // namespace kanon
 
