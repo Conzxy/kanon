@@ -21,6 +21,7 @@ static EventLoop *g_loop = nullptr;
 KANON_INLINE void SignalHandler(int signo, int expected,
                                 char const *msg) KANON_NOEXCEPT
 {
+  KANON_UNUSED(signo);
   assert(signo == expected);
   LOG_INFO_KANON << msg;
 
@@ -105,8 +106,9 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
 #else
         LOG_TRACE_KANON << "Pool block num = " << conn_pool_.GetBlockNum();
         LOG_TRACE_KANON << "Pool usage = "
-                  << conn_pool_.GetUsage(sizeof(TcpConnection));
-        LOG_TRACE_KANON << "The number of alive connections: " << connections_.size();
+                        << conn_pool_.GetUsage(sizeof(TcpConnection));
+        LOG_TRACE_KANON << "The number of alive connections: "
+                        << connections_.size();
 
         auto conn =
             enable_pool_
@@ -135,7 +137,7 @@ TcpServer::TcpServer(EventLoop *loop, InetAddr const &listen_addr,
             MutexGuard guard(lock_conn_);
             n = connections_.erase(conn->GetName());
             LOG_TRACE_KANON << "The number of alive connections(closing): "
-                      << connections_.size();
+                            << connections_.size();
           }
 
           assert(n == 1);
@@ -181,10 +183,7 @@ TcpServer::~TcpServer() KANON_NOEXCEPT
   }
 }
 
-void TcpServer::SetLoopNum(int num) KANON_NOEXCEPT
-{
-  pool_->SetLoopNum(num);
-}
+void TcpServer::SetLoopNum(int num) KANON_NOEXCEPT { pool_->SetLoopNum(num); }
 
 void TcpServer::StartRun() KANON_NOEXCEPT
 {
@@ -218,7 +217,4 @@ void TcpServer::StartRun() KANON_NOEXCEPT
   }
 }
 
-bool TcpServer::IsRunning() KANON_NOEXCEPT
-{
-  return acceptor_->Listening();
-}
+bool TcpServer::IsRunning() KANON_NOEXCEPT { return acceptor_->Listening(); }

@@ -62,6 +62,7 @@ GetTimerInterval(double interval) KANON_NOEXCEPT
 
 static KANON_INLINE void PrintItimerspec(struct itimerspec const &spec)
 {
+  KANON_UNUSED(spec);
 #ifndef NDEBUG
   LOG_DEBUG_KANON << "Reset the expiration(sec, nsec): ("
                   << spec.it_value.tv_sec << ", " << spec.it_value.tv_nsec
@@ -210,12 +211,14 @@ void TimerQueue::ProcessAllExpiredTimers(TimeStamp recv_time)
       timer->run();
     }
     catch (std::exception const &ex) {
-      LOG_ERROR_KANON << "caught the std::exception in calling of timer callback";
+      LOG_ERROR_KANON
+          << "caught the std::exception in calling of timer callback";
       LOG_ERROR_KANON << "exception message: " << ex.what();
       KANON_RETHROW;
     }
     catch (...) {
-      LOG_ERROR_KANON << "caught the unknown exception in calling of timer callback";
+      LOG_ERROR_KANON
+          << "caught the unknown exception in calling of timer callback";
       KANON_RETHROW;
     }
   }
