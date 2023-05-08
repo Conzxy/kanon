@@ -3,43 +3,52 @@
 #include "kanon/string/type.h"
 #include "kanon/string/fmt_stream.h"
 
-TEST(fmt_stream_test, int) {
+#define TEST_STREAM(fmt, ...)                                                  \
+  do {                                                                         \
+    kanon::SmallFmtStream stream(fmt, __VA_ARGS__);                            \
+    ::puts(kanon::SmallFmtStream().ToStringView().data());                     \
+  } while (0)
+
+#define TEST_STREAM2(fmt)                                                      \
+  do {                                                                         \
+    kanon::SmallFmtStream stream(fmt);                                         \
+    ::puts(kanon::SmallFmtStream().ToStringView().data());                     \
+  } while (0)
+
+TEST(fmt_stream_test, int)
+{
   int i = 1;
-  kanon::SmallFmtStream stream(
-    "Connection [%] established", i);
-
-  ::puts(stream.ToStringView().data());
-
-  ::puts(kanon::SmallFmtStream("a % b % c % d % ", 1, 2, 3, 4).ToStringView().data());
+  TEST_STREAM("Connection [%] established", i);
+  TEST_STREAM("a % b % c % d % ", 1, 2, 3, 4);
 }
 
-TEST(fmt_stream_test, double) {
+TEST(fmt_stream_test, double)
+{
   double d = 2.0;
-  kanon::SmallFmtStream stream(
-    "price: %", d);
-  ::puts(stream.ToStringView().data());
+  TEST_STREAM("price: %", d);
 }
 
-TEST(fmt_stream_test, ptr) {
+TEST(fmt_stream_test, ptr)
+{
   int i = 1;
-  int* p = &i;
+  int *p = &i;
 
-  ::puts(kanon::SmallFmtStream("ptr: %", p).ToStringView().data());
-  ::puts(kanon::SmallFmtStream("ptr: %", nullptr).ToStringView().data());
+  TEST_STREAM("ptr: %", p);
+  TEST_STREAM("ptr: %", nullptr);
 }
 
-TEST(fmt_stream_test, bool) {
+TEST(fmt_stream_test, bool)
+{
   bool b = true;
 
-  ::puts(kanon::SmallFmtStream("boolean: %", b).ToStringView().data());
-  ::puts(kanon::SmallFmtStream("boolean: %", false).ToStringView().data());
+  TEST_STREAM("boolean: %", b);
+  TEST_STREAM("boolean: %", false);
 }
 
-TEST(fmt_stream_test, str) {
-  ::puts(kanon::SmallFmtStream("str: %%").ToStringView().data());
-}
+TEST(fmt_stream_test, str) { TEST_STREAM2("str: %%"); }
 
-TEST(fmt_stream_test, assert) {
+TEST(fmt_stream_test, assert)
+{
   // Argument < %
   kanon::SmallFmtStream("str: % ");
   kanon::SmallFmtStream("str % %", 1);

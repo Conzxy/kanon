@@ -10,6 +10,7 @@
 
 #include "kanon/string/string_view.h"
 #include "kanon/string/stream_common.h"
+#include "kanon/string/fmt_stream.h"
 #include "kanon/string/fixed_buffer.h"
 
 namespace kanon {
@@ -29,30 +30,15 @@ class LexicalStream : noncopyable {
     buffer_.Append(buf, len);
   }
 
-  void reset() KANON_NOEXCEPT
-  {
-    buffer_.reset();
-  }
+  void reset() KANON_NOEXCEPT { buffer_.reset(); }
 
-  char const *data() const KANON_NOEXCEPT
-  {
-    return buffer_.data();
-  }
+  char const *data() const KANON_NOEXCEPT { return buffer_.data(); }
 
-  Buffer &buffer() KANON_NOEXCEPT
-  {
-    return buffer_;
-  }
+  Buffer &buffer() KANON_NOEXCEPT { return buffer_; }
 
-  unsigned size() const KANON_NOEXCEPT
-  {
-    return buffer_.len();
-  }
+  unsigned size() const KANON_NOEXCEPT { return buffer_.len(); }
 
-  unsigned maxsize() const KANON_NOEXCEPT
-  {
-    return SZ;
-  }
+  unsigned maxsize() const KANON_NOEXCEPT { return SZ; }
 
   KANON_INLINE Self &operator<<(bool);
   KANON_INLINE Self &operator<<(char);
@@ -67,10 +53,10 @@ class LexicalStream : noncopyable {
   KANON_INLINE Self &operator<<(unsigned long long);
   KANON_INLINE Self &operator<<(unsigned char);
 
-  Self &operator<<(float f)
-  {
-    return *this << static_cast<double>(f);
-  }
+  template <unsigned N>
+  KANON_INLINE Self &operator<<(FmtStream<N> const &fmt_stream);
+
+  Self &operator<<(float f) { return *this << static_cast<double>(f); }
 
   KANON_INLINE Self &operator<<(double);
 
@@ -168,6 +154,14 @@ auto LexicalStream<SZ>::operator<<(void const *p) -> Self &
   return *this;
 }
 
+template <unsigned SZ>
+template <unsigned N>
+auto LexicalStream<SZ>::operator<<(FmtStream<N> const &fmt_stream) -> Self &
+{
+  buffer_.Append(fmt_stream.ToStringView());
+  return *this;
+}
+
 /**
  * Please use FmtStream to replace this in new code
  */
@@ -189,15 +183,9 @@ class KANON_DEPRECATED_ATTR Fmt {
   {
   }
 
-  char const *buf() const KANON_NOEXCEPT
-  {
-    return buf_;
-  }
+  char const *buf() const KANON_NOEXCEPT { return buf_; }
 
-  size_type len() const KANON_NOEXCEPT
-  {
-    return len_;
-  }
+  size_type len() const KANON_NOEXCEPT { return len_; }
 
  private:
   char buf_[32];

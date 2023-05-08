@@ -21,18 +21,12 @@ KANON_CORE_API extern bool g_all_log;
 /**
  * Enable/Disable the logging of kanon library
  */
-KANON_INLINE void SetKanonLog(bool val) KANON_NOEXCEPT
-{
-  g_kanon_log = val;
-}
+KANON_INLINE void SetKanonLog(bool val) KANON_NOEXCEPT { g_kanon_log = val; }
 
 /**
  * Control the logging of logger(i.e. All logs output by kanon)
  */
-KANON_INLINE void EnableAllLog(bool value) KANON_NOEXCEPT
-{
-  g_all_log = value;
-}
+KANON_INLINE void EnableAllLog(bool value) KANON_NOEXCEPT { g_all_log = value; }
 
 /**
  * \brief Format the log message to specified device
@@ -132,15 +126,9 @@ class Logger : noncopyable {
   // Do output and flush
   KANON_CORE_API ~Logger() KANON_NOEXCEPT;
 
-  KANON_INLINE LogStream &stream() KANON_NOEXCEPT
-  {
-    return stream_;
-  }
+  KANON_INLINE LogStream &stream() KANON_NOEXCEPT { return stream_; }
 
-  KANON_INLINE static void SetColor(bool c) KANON_NOEXCEPT
-  {
-    need_color_ = c;
-  }
+  KANON_INLINE static void SetColor(bool c) KANON_NOEXCEPT { need_color_ = c; }
   KANON_INLINE static LogLevel GetLogLevel() KANON_NOEXCEPT
   {
     return log_level_;
@@ -282,28 +270,26 @@ KANON_CORE_API void DefaultOutput(char const *, size_t);
 
 // Format logging macros
 #define FMT_LOG_TRACE(fmt, ...)                                                \
-  LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_TRACE << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
 #define FMT_LOG_DEBUG(fmt, ...)                                                \
-  LOG_DEBUG << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_DEBUG << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
-#define FMT_LOG_INFO(fmt, ...)                                                 \
-  LOG_INFO << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+#define FMT_LOG_INFO(fmt, ...) LOG_INFO << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
-#define FMT_LOG_WARN(fmt, ...)                                                 \
-  LOG_WARN << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+#define FMT_LOG_WARN(fmt, ...) LOG_WARN << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
 #define FMT_LOG_ERROR(fmt, ...)                                                \
-  LOG_ERROR << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_ERROR << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
 #define FMT_LOG_FATAL(fmt, ...)                                                \
-  LOG_FATAL << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_FATAL << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
 #define FMT_LOG_SYSERROR(fmt, ...)                                             \
-  LOG_SYSERROR << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_SYSERROR << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
 #define FMT_LOG_SYSFATAL(fmt, ...)                                             \
-  LOG_SYSFATAL << kanon::LogFmtStream(fmt, __VA_ARGS__).ToStringView()
+  LOG_SYSFATAL << kanon::LogFmtStream(fmt, __VA_ARGS__)
 
 } // namespace kanon
 
