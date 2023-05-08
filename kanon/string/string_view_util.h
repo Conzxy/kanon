@@ -5,6 +5,8 @@
 #include "kanon/string/string_view.h"
 #include "kanon/util/optional.h"
 
+#include <cstdint>
+
 namespace kanon {
 
 /**
