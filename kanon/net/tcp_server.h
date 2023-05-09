@@ -3,7 +3,7 @@
 
 #include "kanon/util/platform_macro.h"
 #ifdef KANON_ON_WIN
-#include <winsock2.h>
+#  include <winsock2.h>
 #endif
 
 #include <unordered_map>
@@ -29,10 +29,7 @@ class EventLoopPool;
 
 //! \addtogroup server
 //!@{
-
-/**
- * \brief A Tcp server instance
- *
+/** \brief A Tcp server instance
  * User don't care of server how to accept connection and other detail. \n
  * Just write business logic in the callback and register it. \n
  * The Server can start mutilple IO event loop(thread）to process events
@@ -54,6 +51,9 @@ class EventLoopPool;
  */
 class TcpServer : noncopyable {
   using ThreadInitCallback = EventLoopThread::ThreadInitCallback;
+
+  using ConnectionMap =
+      std::unordered_map<std::string, kanon::TcpConnectionPtr>;
 
  public:
   /**
@@ -128,10 +128,61 @@ class TcpServer : noncopyable {
 
   //!@}
 
- private:
-  typedef std::unordered_map<std::string, kanon::TcpConnectionPtr>
-      ConnectionMap;
+  //!\name Connection iterator
+  //!@{
 
+  /**
+   * \brief
+   *
+   * \return
+   *
+   * \warning
+   *  Not thread-safe
+   */
+  KANON_INLINE ConnectionMap::iterator ConnBegin() KANON_NOEXCEPT
+  {
+    return connections_.begin();
+  }
+
+  KANON_INLINE ConnectionMap::const_iterator ConnBegin() const KANON_NOEXCEPT
+  {
+    return connections_.begin();
+  }
+
+  /**
+   * \brief
+   *
+   * \return
+   *
+   * \warning
+   *  Not thread-safe
+   */
+  KANON_INLINE ConnectionMap::iterator ConnEnd() KANON_NOEXCEPT
+  {
+    return connections_.end();
+  }
+
+  KANON_INLINE ConnectionMap::const_iterator ConnEnd() const KANON_NOEXCEPT
+  {
+    return connections_.end();
+  }
+  //!@}
+
+  KANON_INLINE MutexLock &ConnLock() noexcept { return lock_conn_; }
+
+  using ConnApplyCb = std::function<void(TcpConnectionPtr const &)>;
+
+  /**
+   * \brief Apply the callback to all connections(ie. peers)
+   *
+   * \param cb The callback accepts `TcpConnectionPtr const &`
+   * \ref ConnApplyCb
+   * \note
+   *  Thread-safe
+   */
+  void ApplyAllPeers(ConnApplyCb cb);
+
+ private:
   EventLoop *loop_;
   std::string const ip_port_;
   std::string const name_;

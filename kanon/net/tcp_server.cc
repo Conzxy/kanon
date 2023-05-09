@@ -22,6 +22,7 @@ KANON_INLINE void SignalHandler(int signo, int expected,
                                 char const *msg) KANON_NOEXCEPT
 {
   KANON_UNUSED(signo);
+  KANON_UNUSED(expected);
   assert(signo == expected);
   LOG_INFO_KANON << msg;
 
@@ -218,3 +219,11 @@ void TcpServer::StartRun() KANON_NOEXCEPT
 }
 
 bool TcpServer::IsRunning() KANON_NOEXCEPT { return acceptor_->Listening(); }
+
+void TcpServer::ApplyAllPeers(ConnApplyCb cb)
+{
+  MutexGuard gaurd(lock_conn_);
+  for (auto &name_conn : connections_) {
+    cb(name_conn.second);
+  }
+}
