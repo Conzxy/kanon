@@ -4,4 +4,4 @@ if [ $# -lt 1 ]; then
   exit -1
 fi
 tag_name=$1
-git cliff -c .cliff.toml --workdir . --unreleased --tag $tag_name --output change-logs/$tag_name.md
+git cliff -c .cliff.toml --workdir . --tag $tag_name --output change_log.md
