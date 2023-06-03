@@ -18,7 +18,7 @@
 namespace kanon {
 
 static KANON_TLS time_t t_lastSecond = 0;
-static KANON_TLS char t_timebuf[64] = { 0 };
+static KANON_TLS char t_timebuf[64] = {0};
 
 bool g_kanon_log = true;
 bool g_all_log = true;
@@ -27,12 +27,12 @@ bool Logger::need_color_ = true;
 
 char const
     *Logger::s_log_level_names_[Logger::LogLevel::KANON_LL_NUM_LOG_LEVEL] = {
-      "TRACE", "DEBUG", "INFO",      "WARN",
-      "ERROR", "FATAL", "SYS_ERROR", "SYS_FATAL",
-    };
+        "TRACE", "DEBUG",     "INFO",  "WARN",
+        "ERROR", "SYS_ERROR", "FATAL", "SYS_FATAL",
+};
 
-static char const *g_logLevelColor[] = { CYAN, BLUE,  GREEN, YELLOW,
-                                         RED,  L_RED, RED,   L_RED };
+static char const *g_logLevelColor[] = {CYAN, BLUE,  GREEN, YELLOW,
+                                        RED,  L_RED, RED,   L_RED};
 
 static Logger::LogLevel initLogLevel() KANON_NOEXCEPT
 {
@@ -52,7 +52,8 @@ static Logger::LogLevel initLogLevel() KANON_NOEXCEPT
     return Logger::LogLevel::KANON_LL_DEBUG;
   }
   if (!StrCaseCompare(log_level, "warn") ||
-      !StrCaseCompare(log_level, "warning")) {
+      !StrCaseCompare(log_level, "warning"))
+  {
     return Logger::LogLevel::KANON_LL_WARN;
   }
   if (!StrCaseCompare(log_level, "error")) {
@@ -74,10 +75,7 @@ void DefaultOutput(char const *data, size_t num)
   ::fwrite(data, 1, num, stdout);
 }
 
-void DefaultFlush()
-{
-  ::fflush(stdout);
-}
+void DefaultFlush() { ::fflush(stdout); }
 
 Logger::OutputCallback Logger::output_callback_ = &DefaultOutput;
 Logger::FlushCallback Logger::flush_callback_ = &DefaultFlush;
@@ -203,7 +201,7 @@ void Logger::FormatTime() KANON_NOEXCEPT
     char us_buf[32];
     auto ret = ::snprintf(us_buf, sizeof us_buf, "%06d", microsecond);
     if (ret > 0) {
-      stream_ << StringView{ us_buf, (StringView::size_type)ret };
+      stream_ << StringView{us_buf, (StringView::size_type)ret};
     }
     stream_ << ' ';
   }

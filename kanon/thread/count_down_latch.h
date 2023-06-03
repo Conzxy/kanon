@@ -1,9 +1,9 @@
 #ifndef KANON_COUNTDOWN_LATCH_H
 #define KANON_COUNTDOWN_LATCH_H
 
+#include <cassert>
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/macro.h"
-
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/thread/condition.h"
 
@@ -26,16 +26,62 @@ class CountDownLatch : noncopyable {
   {
   }
 
-  void Reset(int count) KANON_NOEXCEPT { count_ = count; }
+  void Reset(int count) KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    count_ = count;
+  }
 
-  void Add(int count) KANON_NOEXCEPT { count_ += count; }
+  void ResetAndWait(int count) KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    count_ = count;
+    if (count_ > 0) cond_.Wait();
+  }
 
-  void Minus(int count) KANON_NOEXCEPT { count_ -= count; }
+  void Add(int count) KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    count_ += count;
+  }
 
-  void Incr() KANON_NOEXCEPT { Add(1); }
-  void Decr() KANON_NOEXCEPT { Minus(1); }
+  void AddAndWait(int count) KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    count_ += count;
+    if (count_ > 0) cond_.Wait();
+  }
 
-  int GetCount() const KANON_NOEXCEPT { return count_; }
+  void Incr() KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    ++count_;
+  }
+
+  void IncrAndWait() KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    ++count_;
+    if (count_ > 0) cond_.Wait();
+  }
+
+  KANON_DEPRECATED_ATTR void Minus(int count) KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    count_ -= count;
+  }
+
+  KANON_DEPRECATED_ATTR void Decr() KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    --count_;
+  }
+
+  int GetCount() const KANON_NOEXCEPT
+  {
+    MutexGuard guard(mutex_);
+    return count_;
+  }
 
   void Wait()
   {
@@ -46,13 +92,16 @@ class CountDownLatch : noncopyable {
   void Countdown() KANON_NOEXCEPT
   {
     MutexGuard guard(mutex_);
-    if (--count_ == 0) cond_.NotifyAll();
+    --count_;
+    if (count_ == 0) {
+      cond_.NotifyAll();
+    }
   }
 
  private:
   int count_;
-  MutexLock mutex_;
-  Condition cond_;
+  mutable MutexLock mutex_;
+  Condition cond_ GUARDED_BY(mutex_);
 };
 
 } // namespace kanon

@@ -23,17 +23,18 @@ class LexicalCast {
   }
 };
 
-static CastLexicalStream stream;
+extern CastLexicalStream _cast_stream;
+
 #define DST_STRING_SPECIALIZATION(type)                                        \
   template <typename Src>                                                      \
   class LexicalCast<type, Src, false> {                                        \
    public:                                                                     \
     static type apply(Src const &src)                                          \
     {                                                                          \
-      stream.reset();                                                          \
-      stream << src;                                                           \
-      stream << '\0';                                                          \
-      return type(stream.data(), stream.size() - 1);                           \
+      _cast_stream.reset();                                                    \
+      _cast_stream << src;                                                     \
+      _cast_stream << '\0';                                                    \
+      return type(_cast_stream.data(), _cast_stream.size() - 1);               \
     }                                                                          \
   }
 
@@ -42,10 +43,10 @@ class LexicalCast<char const *, Src, false> {
  public:
   static KANON_CORE_DEPRECATED char const *apply(Src const &src)
   {
-    stream.reset();
-    stream << src;
-    stream << '\0';
-    return stream.data();
+    _cast_stream.reset();
+    _cast_stream << src;
+    _cast_stream << '\0';
+    return _cast_stream.data();
   }
 };
 

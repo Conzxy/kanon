@@ -282,7 +282,7 @@ class ChunkList final {
   KANON_INLINE void ReserveChunk(size_t chunk_size)
   {
     while (chunk_size--) {
-      buffers_.emplace_back();
+      buffers_.push_back(buffers_.create_node_size(CHUNK_SIZE));
     }
   }
 

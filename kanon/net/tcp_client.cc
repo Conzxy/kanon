@@ -1,6 +1,6 @@
 #include "kanon/util/platform_macro.h"
 #ifdef KANON_ON_WIN
-#include <winsock2.h>
+#  include <winsock2.h>
 #endif
 
 #include "kanon/net/tcp_client.h"
@@ -56,6 +56,8 @@ TcpClient::~TcpClient() KANON_NOEXCEPT
     conn = conn_;
   }
 
+  LOG_INFO << "is_unique: " << is_unique;
+
   // Has established new connection
   if (conn) {
     assert(conn->GetLoop() == loop_);
@@ -110,6 +112,8 @@ void TcpClient::NewConnection(FdType sockfd, InetAddr const &serv_addr,
 
   if (!cli || cli->conn_) return;
 
+  LOG_DEBUG_KANON << "cli sc = " << cli.use_count();
+
   LOG_TRACE_KANON << " New connection fd = " << sockfd;
   auto new_conn = TcpConnection::NewTcpConnection(
       cli->loop_, cli->name_, sockfd, sock::GetLocalAddr(sockfd), serv_addr);
@@ -131,31 +135,11 @@ void TcpClient::NewConnection(FdType sockfd, InetAddr const &serv_addr,
   }
 
   // RemoveConnection
-  cli->conn_->SetCloseCallback([cli](TcpConnectionPtr const &conn) {
-    cli->loop_->AssertInThread();
-    // passive close connection
-    assert(conn == cli->conn_);
-    assert(conn->GetLoop() == cli->loop_);
-
-    // Like TcpServer, we remove connection from TcpClient
-    {
-      MutexGuard guard{cli->mutex_};
-      cli->conn_.reset();
-      LOG_INFO_KANON << conn->GetName() << " has removed";
-    }
-
-    // ! In event handling phase, don't remove channel(disable is allowed)
-    // ! conn must be copied(\see TcoConnection::HandleClose())
-    cli->loop_->QueueToLoop([conn]() {
-      conn->ConnectionDestroyed();
-    });
-
-    // If user does not call Disconnect() and
-    // support restart when passive close occurred
-    if (cli->retry_) {
-      cli->connector_->Restrat();
-    }
-  });
+  //
+  // The client shouldn't passed in std::shared_ptr reference or duplicate.
+  // Pass it as weak_ptr and check it.
+  cli->conn_->SetCloseCallback(std::bind(&TcpClient::CloseConnectionHandler,
+                                         std::weak_ptr<TcpClient>(cli), _1));
 
   // enable reading
   cli->conn_->ConnectionEstablished();
@@ -170,4 +154,52 @@ TcpClientPtr kanon::NewTcpClient(EventLoop *loop, InetAddr const &serv_addr,
           : std::shared_ptr<TcpClient>(new TcpClient(loop, serv_addr, name));
   ret->Init();
   return ret;
+}
+
+/*
+ * Suppose `cli` is the object of `TcpClient` and `cli->conn` is the connection
+ * member of it.
+ * In some cases, other thread hold the duplicate of `cli->conn` but don't hold
+ * the duplicate of `cli`.
+ *
+ * If main thread decrease the ref-count of `cli`, the client can't be destoryed
+ * since the ref-count is greater than 1. we can't pass it be shard_ptr
+ * duplicate.
+ *
+ * If pass it as reference, the client may be invalid in the callback.
+ * If main thread destroy the client, and conn is not
+ * unique. The close is called by other thread, and the close handler must be
+ * valid.
+ */
+void TcpClient::CloseConnectionHandler(std::weak_ptr<TcpClient> const &wp_cli,
+                                       TcpConnectionPtr const &conn)
+{
+  auto cli = wp_cli.lock();
+  if (!cli) {
+    return;
+  }
+
+  cli->loop_->AssertInThread();
+  // passive close connection
+  assert(conn == cli->conn_);
+  assert(conn->GetLoop() == cli->loop_);
+
+  // Like TcpServer, we remove connection from TcpClient
+  {
+    MutexGuard guard{cli->mutex_};
+    cli->conn_.reset();
+    LOG_INFO_KANON << conn->GetName() << " has removed";
+  }
+
+  // ! In event handling phase, don't remove channel(disable is allowed)
+  // ! conn must be copied(\see TcoConnection::HandleClose())
+  cli->loop_->QueueToLoop([conn]() {
+    conn->ConnectionDestroyed();
+  });
+
+  // If user does not call Disconnect() and
+  // support restart when passive close occurred
+  if (cli->retry_) {
+    cli->connector_->Restrat();
+  }
 }
