@@ -124,6 +124,10 @@ class TcpClient
   NewConnection(FdType sockfd, InetAddr const &serv_addr,
                 std::weak_ptr<TcpClient> const &cli);
 
+  KANON_NET_NO_API static void
+  CloseConnectionHandler(std::weak_ptr<TcpClient> const &wp_cli,
+                         TcpConnectionPtr const &conn);
+
   EventLoop *loop_;
   std::shared_ptr<Connector> connector_;
 

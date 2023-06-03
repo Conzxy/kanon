@@ -18,8 +18,8 @@
 #include "kanon/net/event.h"
 
 #ifdef KANON_ON_WIN
-#include <winsock2.h>
-#include <windows.h>
+#  include <winsock2.h>
+#  include <windows.h>
 #endif
 
 namespace kanon {
@@ -191,6 +191,12 @@ class ConnectionBase
    * or destroyed.
    */
   bool IsConnected() const KANON_NOEXCEPT { return state_ == kConnected; }
+  bool IsConnecting() const KANON_NOEXCEPT { return state_ == kConnecting; }
+  bool IsDisconnecting() const KANON_NOEXCEPT
+  {
+    return state_ == kDisconnecting;
+  }
+  bool IsDisconnected() const KANON_NOEXCEPT { return state_ == kDisconnected; }
 
   ContextType &GetContext() KANON_NOEXCEPT { return context_; }
 

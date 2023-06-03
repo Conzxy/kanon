@@ -39,7 +39,7 @@ ConnectionBase<D>::ConnectionBase(EventLoop *loop, std::string const &name,
 template <typename D>
 ConnectionBase<D>::~ConnectionBase()
 {
-  assert(state_ == kDisconnected);
+  assert(state_ == kDisconnecting || state_ == kDisconnected);
   LOG_TRACE_KANON << "~ConnectionBase()";
 }
 
@@ -392,10 +392,8 @@ void ConnectionBase<D>::ForceClose() KANON_NOEXCEPT
   if (state_ == kConnected || state_ == kDisconnecting) {
     state_ = kDisconnecting;
 
-    loop_->RunInLoop([this]() {
-      loop_->AssertInThread();
-      HandleClose();
-    });
+    loop_->RunInLoop(
+        std::bind(&ConnectionBase<D>::HandleClose, this->shared_from_this()));
   }
 }
 
