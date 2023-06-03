@@ -1,13 +1,13 @@
 #include "kanon/util/platform_macro.h"
 #ifdef KANON_ON_UNIX
-#include <sys/eventfd.h>
-#include <unistd.h>
-#include "kanon/net/poll/poller.h"
-#include "kanon/net/poll/epoller.h"
+#  include <sys/eventfd.h>
+#  include <unistd.h>
+#  include "kanon/net/poll/poller.h"
+#  include "kanon/net/poll/epoller.h"
 #elif defined(KANON_ON_WIN)
-#include <winsock2.h>
-#include <ioapiset.h>
-#include "kanon/net/poll/iocp_poller.h"
+#  include <winsock2.h>
+#  include <ioapiset.h>
+#  include "kanon/net/poll/iocp_poller.h"
 #endif
 
 #include "kanon/net/sock_api.h"
@@ -31,9 +31,9 @@ using namespace kanon::process;
 // Don't set timeout parameter of poll()/epoll_wait()
 // to negative or zero
 #ifdef KANON_ON_UNIX
-#define POLLTIME -1 // 10s
+#  define POLLTIME -1 // 10s
 #elif defined(KANON_ON_WIN)
-#define POLLTIME INFINITE
+#  define POLLTIME INFINITE
 #endif
 
 namespace kanon {
@@ -97,12 +97,12 @@ EventLoop::EventLoop(bool is_poller)
   , calling_functors_{false}
   , is_poller_{is_poller}
 #ifdef KANON_ON_UNIX
-#ifdef ENABLE_EPOLL
+#  ifdef ENABLE_EPOLL
   , poller_{is_poller_ ? static_cast<PollerBase *>(new Poller(this))
                        : static_cast<PollerBase *>(new Epoller(this))}
-#else
+#  else
   , poller_(std::make_unique<Poller>(this))
-#endif
+#  endif
 #elif defined(KANON_ON_WIN)
   , poller_(std::make_unique<IocpPoller>(this))
 #endif
@@ -142,7 +142,12 @@ EventLoop::~EventLoop()
   //    it don't considered by user.
   LOG_TRACE_KANON << "EventLoop " << this << " destroyed";
 
-  assert(!looping_);
+  // In some case, this assertion will hide the actual reason of crash
+  // eg. If you make a exception in the callback in the eventloop thread,
+  //     it will log error and abort program.
+  //     BUT! The assertion will make effect at first, and the exception
+  //     information is messing.
+  // assert(!looping_);
 }
 
 void EventLoop::StartLoop()
@@ -180,8 +185,9 @@ void EventLoop::RunInLoop(FunctorCallback cb)
       cb();
     }
     catch (std::exception const &ex) {
-      LOG_ERROR_KANON << "std::exception(including its derived class) is caught in "
-                   "RunInLoop()";
+      LOG_ERROR_KANON
+          << "std::exception(including its derived class) is caught in "
+             "RunInLoop()";
       LOG_ERROR_KANON << "Reason: " << ex.what();
       KANON_RETHROW;
     }
@@ -301,15 +307,13 @@ void EventLoop::Quit() KANON_NOEXCEPT
 TimerId EventLoop::RunAt(TimerCallback cb, TimeStamp expiration)
 {
   LOG_DEBUG_KANON << "expiration = " << expiration.ToFormattedString();
-  return timer_queue_->AddTimer(std::move(cb), expiration,
-                                0.0);
+  return timer_queue_->AddTimer(std::move(cb), expiration, 0.0);
 }
 
 TimerId EventLoop::RunEvery(TimerCallback cb, TimeStamp expiration,
                             double interval)
 {
-  return timer_queue_->AddTimer(std::move(cb), expiration,
-                                interval);
+  return timer_queue_->AddTimer(std::move(cb), expiration, interval);
 }
 
 void EventLoop::CancelTimer(TimerId timer_id)

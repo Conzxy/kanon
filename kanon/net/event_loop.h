@@ -8,6 +8,7 @@
 #include "kanon/util/macro.h"
 #include "kanon/util/noncopyable.h"
 #include "kanon/util/ptr.h"
+#include "kanon/util/raw_any.h"
 #include "kanon/thread/mutex_lock.h"
 #include "kanon/process/process_info.h"
 
@@ -206,6 +207,19 @@ class EventLoop : noncopyable {
    */
   KANON_NET_API void Wakeup() KANON_NOEXCEPT;
 
+  using context_t = RawAny;
+
+  KANON_INLINE void SetContext(context_t ctx) KANON_NOEXCEPT
+  {
+    context_ = std::move(ctx);
+  }
+
+  KANON_INLINE context_t &context() KANON_NOEXCEPT { return context_; }
+  KANON_INLINE context_t const &context() const KANON_NOEXCEPT
+  {
+    return context_;
+  }
+
  private:
   /**
    * \brief Call all functors in functors_(better name: callable)
@@ -263,6 +277,8 @@ class EventLoop : noncopyable {
       GUARDED_BY(lock_); //!< Store all functors that register before phase3
 
   std::unique_ptr<TimerQueue> timer_queue_; //!< Used for timer API
+
+  context_t context_;
 };
 
 //!@}
