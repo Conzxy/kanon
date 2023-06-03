@@ -211,7 +211,7 @@ void TcpServer::StartRun() KANON_NOEXCEPT
         init_cb_(loop_);
       }
       pool_->StartRun(init_cb_);
-      LOG_INFO_KANON << "Listening in " << ip_port_;
+      LOG_INFO_KANON << name_ << " is listening in " << ip_port_;
       acceptor_->Listen();
       start_once_ = true;
     });
