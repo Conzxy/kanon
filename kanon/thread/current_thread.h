@@ -36,10 +36,9 @@ extern KANON_TLS char const *t_name;
 KANON_INLINE void cacheTid() KANON_NOEXCEPT
 {
   t_tid = gettid();
-  auto view = lexical_cast<StringView>(t_tid);
-  t_tidLength = (int)view.size();
-  strncpy(t_tidString, view.data(), view.size());
-  t_tidString[view.size()] = 0;
+  char buf[64];
+  t_tidLength = snprintf(buf, sizeof buf, "%d", t_tid);
+  strncpy(t_tidString, buf, t_tidLength);
 }
 
 KANON_INLINE int tid() KANON_NOEXCEPT
@@ -50,22 +49,10 @@ KANON_INLINE int tid() KANON_NOEXCEPT
   return t_tid;
 }
 
-KANON_INLINE char const *tidString() KANON_NOEXCEPT
-{
-  return t_tidString;
-}
-KANON_INLINE int tidLength() KANON_NOEXCEPT
-{
-  return t_tidLength;
-}
-KANON_INLINE int GetTid() KANON_NOEXCEPT
-{
-  return t_tid;
-}
-KANON_INLINE char const *tidName() KANON_NOEXCEPT
-{
-  return t_name;
-}
+KANON_INLINE char const *tidString() KANON_NOEXCEPT { return t_tidString; }
+KANON_INLINE int tidLength() KANON_NOEXCEPT { return t_tidLength; }
+KANON_INLINE int GetTid() KANON_NOEXCEPT { return t_tid; }
+KANON_INLINE char const *tidName() KANON_NOEXCEPT { return t_name; }
 KANON_INLINE bool isMainThread() KANON_NOEXCEPT
 {
   return CurrentThread::t_tid == process::Pid();
