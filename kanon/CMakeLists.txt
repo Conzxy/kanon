@@ -69,7 +69,7 @@ if (KANON_ON_UNIX)
   list(APPEND KANON_NET_SRC ${KANON_LINUX_NET_SRC})
 endif ()
 
-GenLib(kanon_base ${KANON_BASE_SRC})
+kanon_gen_lib(kanon_base ${KANON_BASE_SRC})
 target_include_directories(kanon_base ${KANON_LIB_POPULATE_KEYWORD}
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
@@ -82,7 +82,7 @@ if (KANON_ON_WIN)
   set_target_properties(kanon_base PROPERTIES LINKER_LANGUAGE CXX)
 endif ()
 
-GenLib(kanon_net ${KANON_NET_SRC})
+kanon_gen_lib(kanon_net ${KANON_NET_SRC})
 target_link_libraries(kanon_net PUBLIC kanon_base)
 #target_link_libraries(kanon_net PRIVATE xxHash::xxhash)
 target_include_directories(kanon_net ${KANON_LIB_POPULATE_KEYWORD}
@@ -122,7 +122,6 @@ if (KANON_INSTALL)
 endif()
 
 if (KANON_BUILD_PROTOBUF OR KANON_BUILD_PROTOBUF_RPC)
-  find_package(Protobuf REQUIRED)
   add_subdirectory(protobuf)
 endif ()
 

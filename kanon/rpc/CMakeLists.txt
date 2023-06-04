@@ -7,7 +7,7 @@ add_custom_command(
 aux_source_directory(. KANON_PROTOBUF_RPC_SRC)
 list(APPEND KANON_PROTOBUF_RPC_SRC rpc.pb.cc)
 
-GenLib(kanon_protobuf_rpc ${KANON_PROTOBUF_RPC_SRC})
+kanon_gen_lib(kanon_protobuf_rpc ${KANON_PROTOBUF_RPC_SRC})
 target_include_directories(kanon_protobuf_rpc PRIVATE ${PROJECT_BINARY_DIR}) # i.e. kanon/build
 target_link_libraries(kanon_protobuf_rpc PUBLIC kanon_protobuf)
 
