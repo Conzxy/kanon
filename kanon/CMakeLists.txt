@@ -22,16 +22,17 @@ file(GLOB_RECURSE KANON_NET_SRC ${PROJECT_SOURCE_DIR}/third-party/xxHash/xxhash.
 # User can set generate shared libraries as following command
 # cd build && cmake .. -D BUILD_SHARED_LIBS=ON
 ##########################################################
+file(GLOB ALGO_INCLUDE algo/*.h)
+file(GLOB ALGO_FORWARD_LIST_INCLUDE algo/forward_list/*.h)
+file(GLOB BUFFER_INCLUDE buffer/*.h)
 file(GLOB LOG_INCLUDE log/*.h)
 file(GLOB PROCESS_INCLUDE process/*.h)
 file(GLOB STRING_INCLUDE string/*.h)
 file(GLOB THREAD_INCLUDE thread/*.h)
 file(GLOB UTIL_INCLUDE util/*.h)
-file(GLOB BUFFER_INCLUDE buffer/*.h)
 file(GLOB ZSTL_INCLUDE zstl/*.h)
-file(GLOB ALGO_INCLUDE algo/*.h)
 file(GLOB MEM_INCLUDE mem/*.h)
-file(GLOB ALGO_FORWARD_LIST_INCLUDE algo/forward_list/*.h)
+
 set(KANON_BASE_INCLUDE ${LOG_INCLUDE} ${PROCESS_INCLUDE} ${STRING_INCLUDE}
     ${THREAD_INCLUDE} ${UTIL_INCLUDE} ${BUFFER_INCLUDE} ${ZSTL_INCLUDE} ${ALGO_INCLUDE}
     ${MEM_INCLUDE} ${ALGO_FORWARD_LIST_INCLUDE})
@@ -111,6 +112,7 @@ if (KANON_INSTALL)
   install(FILES ${UTIL_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/util)
   install(FILES ${BUFFER_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/buffer)
   install(FILES ${ZSTL_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/zstl)
+  install(FILES ${MEM_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/mem)
   install(FILES ${ALGO_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/algo)
   install(FILES ${ALGO_FORWARD_LIST_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/algo/forward_list)
 
@@ -119,6 +121,20 @@ if (KANON_INSTALL)
   install(FILES ${NET_POLL_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/net/poll)
   install(FILES ${NET_TIMER_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/net/timer)
   install(FILES ${XXHASH_INCLUDE} DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/third-party/xxHash)
+  message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/linux/")
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/linux/ DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/linux
+          FILES_MATCHING 
+          PATTERN "*.h"
+          PATTERN "*.inl"
+          PATTERN "*.hpp"
+          PATTERN "*.tcc")
+
+  install(DIRECTORY win DESTINATION ${KANON_INSTALL_INCLUDE_PREFIX}/win
+          FILES_MATCHING
+          PATTERN "*.h"
+          PATTERN "*.inl"
+          PATTERN "*.hpp"
+          PATTERN "*.tcc")
 endif()
 
 if (KANON_BUILD_PROTOBUF OR KANON_BUILD_PROTOBUF_RPC)
