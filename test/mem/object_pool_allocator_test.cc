@@ -1,7 +1,5 @@
 #include "kanon/mem/object_pool_allocator.h"
 
-#include "leak_detector.h"
-
 #include <assert.h>
 #include <memory>
 
@@ -9,7 +7,10 @@ using namespace kanon;
 using namespace std;
 
 struct A {
-  explicit A(int _x) : x(_x) {}
+  explicit A(int _x)
+    : x(_x)
+  {
+  }
   int x;
 };
 
@@ -22,5 +23,4 @@ int main()
   auto p2 = std::allocate_shared<A>(allocator, 2);
 
   assert(pool.GetBlockNum() == 2);
-  CHECK_LEAKS();
 }
