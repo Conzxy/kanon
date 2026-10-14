@@ -1,7 +1,8 @@
 kanon_gen_lib(kanon_protobuf generic_pb_codec.cc logger.cc protobuf_codec2.cc chunk_stream.cc kvarint/kvarint.c)
+target_compile_features(kanon_protobuf PUBLIC cxx_std_17)
 
 if (KANON_LINK_PROTOBUF)
-  find_package(Protobuf REQUIRED)
+  find_package(Protobuf REQUIRED CONFIG)
   target_link_libraries(kanon_protobuf PUBLIC protobuf::libprotobuf)
 else ()
   if ("${kanon_protobuf_to_link}" STREQUAL "")
