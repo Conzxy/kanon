@@ -51,6 +51,8 @@ else ()
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     list(REMOVE_ITEM CXX_FLAGS "-Wno-return-local-addr")
     list(REMOVE_ITEM CXX_FLAGS "-rdynamic")
+    list(REMOVE_ITEM CXX_FLAGS "-Wno-class-memaccess")
+    list(REMOVE_ITEM CXX_FLAGS "-Wno-maybe-uninitialized")
     list(APPEND CXX_FLAGS "-Wthread-safety")
   endif()
 

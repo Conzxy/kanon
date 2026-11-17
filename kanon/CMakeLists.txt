@@ -122,7 +122,7 @@ if (KANON_INSTALL)
 endif()
 
 if (KANON_BUILD_PROTOBUF OR KANON_BUILD_PROTOBUF_RPC)
-  find_package(Protobuf REQUIRED)
+  find_package(Protobuf REQUIRED CONFIG)
   add_subdirectory(protobuf)
 endif ()
 
