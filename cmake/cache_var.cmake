@@ -28,3 +28,5 @@ option(KANON_BUILD_PERF_TEST "Build performance test file" OFF)
 
 option(KANON_BUILD_PROTOBUF "Build protobuf module" OFF)
 option(KANON_BUILD_PROTOBUF_RPC "Build protobuf-rpc module" OFF)
+
+option(KANON_LINK_PROTOBUF "Link to the protobuf library provided by find_package" ON)

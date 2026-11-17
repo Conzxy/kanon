@@ -24,13 +24,18 @@ function(kanon_extract_version)
     set(KANON_VERSION "${ver_major}.${ver_minor}.${ver_patch}" PARENT_SCOPE)
 endfunction()
 
-function (GenLib lib)
+function (kanon_gen_lib lib)
   #if (NOT ${BUILD_SHARED_LIBS})
   if (KANON_BUILD_STATIC_LIBS)
     message(STATUS "Build static library: ${lib}")
     add_library(${lib} STATIC ${ARGN})
+    
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+      set(archive_output_path "${CMAKE_BINARY_DIR}/kanon/lib/debug")
+    else ()
+      set(archive_output_path "${CMAKE_BINARY_DIR}/kanon/lib/release")
+    endif ()
 
-    set(archive_output_path "${CMAKE_BINARY_DIR}/kanon/lib")
     message(STATUS "${lib} output dir: ${archive_output_path}")
     set_target_properties(${lib}
      PROPERTIES
@@ -39,30 +44,45 @@ function (GenLib lib)
   else ()
     message(STATUS "Build shared library: ${lib}")
     add_library(${lib} SHARED ${ARGN})
+    # Follow the windows convention
+    # *.dll to bin directory
     if (WIN32)
       set(so_output_dir bin)
     else ()
       set(so_output_dir lib)
     endif ()
-    set(shared_output_path "${CMAKE_BINARY_DIR}/kanon/${so_output_dir}")
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+      set(shared_output_path "${CMAKE_BINARY_DIR}/kanon/${so_output_dir}/debug")
+    else ()
+      set(shared_output_path "${CMAKE_BINARY_DIR}/kanon/${so_output_dir}/release")
+    endif ()
+      
     message(STATUS "${lib} output dir: ${shared_output_path}")
+    
     if (WIN32)
+      # In windows, CMake think it is RUNTIME output instead of LIBRARY
       set_target_properties(${lib}
        PROPERTIES
        RUNTIME_OUTPUT_DIRECTORY 
        ${shared_output_path})
+
+      # In windows, need consider *.Lib file
+      # Don't put *.dll and *.Lib in same directory
       set(dll_lib_output_dir ${shared_output_path}/lib)
       message(STATUS "DLL lib output dir: ${dll_lib_output_dir}")
       set_target_properties(${lib}
        PROPERTIES
        ARCHIVE_OUTPUT_DIRECTORY 
        ${dll_lib_output_dir})
+    else ()
+      set_target_properties(${lib}
+       PROPERTIES
+       LIBRARY_OUTPUT_DIRECTORY 
+       ${shared_output_path})
     endif ()
-    set_target_properties(${lib}
-     PROPERTIES
-     LIBRARY_OUTPUT_DIRECTORY 
-     ${shared_output_path})
   endif ()
+
   message(STATUS "Lib ${lib} Sources: ${ARGN}")
 endfunction ()
 

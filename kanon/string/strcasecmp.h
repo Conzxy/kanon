@@ -1,4 +1,4 @@
-#ifndef KANON_STRINT_STRCASECMP_H__
+#ifndef KANON_STRING_STRCASECMP_H__
 #define KANON_STRING_STRCASECMP_H__
 
 #include "kanon/util/compiler_macro.h"

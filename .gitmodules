@@ -1,6 +1,3 @@
-[submodule "third-party/bdwgc"]
-	path = third-party/bdwgc
-	url = https://github.com/ivmai/bdwgc
 [submodule "kanon/protobuf/kvarint"]
 	path = kanon/protobuf/kvarint
 	url = https://github.com/Conzxy/kvarint
